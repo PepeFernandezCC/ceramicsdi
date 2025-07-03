@@ -1,0 +1,17 @@
+ 
+
+{shop_url}
+
+Olá {firstname} {lastname},
+
+Encomenda nº {order_name} - Encomenda cancelada
+
+A sua encomenda com a referência {order_name} da loja {shop_name} foi cancelada pelo comerciante.
+
+Vá à sua conta de cliente para saber mais.
+
+Se tem uma conta de convidado, pode seguir a sua encomenda na secção [Rastreio de Visitantes]({guest_tracking_url}) na nossa loja.
+
+[{shop_name}]({shop_url})
+
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)

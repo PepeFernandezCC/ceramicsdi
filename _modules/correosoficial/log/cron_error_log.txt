@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>401 Unauthorized</title>
+</head><body>
+<h1>Unauthorized</h1>
+<p>This server could not verify that you
+are authorized to access the document
+requested.  Either you supplied the wrong
+credentials (e.g., bad password), or your
+browser doesn't understand how to supply
+the credentials required.</p>
+</body></html>
+[04-10-2023 12:23:25:561900] ERROR 15530: No es posible conectar con el servicio de CRON [04-10-2023 12:23:26:129100]
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>401 Unauthorized</title>
+</head><body>
+<h1>Unauthorized</h1>
+<p>This server could not verify that you
+are authorized to access the document
+requested.  Either you supplied the wrong
+credentials (e.g., bad password), or your
+browser doesn't understand how to supply
+the credentials required.</p>
+</body></html>
+[01-02-2024 13:57:11:360800] ERROR 15530: No es posible conectar con el servicio de CRON [01-02-2024 13:57:12:549000]
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>401 Unauthorized</title>
+</head><body>
+<h1>Unauthorized</h1>
+<p>This server could not verify that you
+are authorized to access the document
+requested.  Either you supplied the wrong
+credentials (e.g., bad password), or your
+browser doesn't understand how to supply
+the credentials required.</p>
+</body></html>
+[02-04-2024 11:35:19:809300] ERROR 15530: No es posible conectar con el servicio de CRON [02-04-2024 11:35:21:807500]
+
+[03-04-2024 07:09:48:097200] La respuesta del servidor no es ni de Correos ni de Correos Express [03-04-2024 07:09:48:706900]
+
+[18-04-2024 07:18:03:280400] La respuesta del servidor no es ni de Correos ni de Correos Express [18-04-2024 07:18:05:608700]
+
+[22-05-2024 11:07:46:335200] Notice: Trying to access array offset on value of type null [22-05-2024 11:08:07:934300]
+

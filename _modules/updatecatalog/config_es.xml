@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>updatecatalog</name>
+    <displayName><![CDATA[Actualizar Cat&aacute;logo de Precios]]></displayName>
+    <version><![CDATA[1.0.0]]></version>
+    <description><![CDATA[Actualiza el cat&aacute;logo de precios]]></description>
+    <author><![CDATA[Jos&eacute; Fern&aacute;ndez]]></author>
+    <tab><![CDATA[front_office_features]]></tab>
+    <is_configurable>1</is_configurable>
+    <need_instance>1</need_instance>
+	<limited_countries></limited_countries>
+</module>

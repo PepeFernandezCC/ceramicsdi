@@ -1,0 +1,29 @@
+ 
+
+{shop_url}
+
+Message d'un client de {shop_name}
+
+Sujet : {contact_name}
+
+Adresse électronique du client : {email}
+
+Prénom : {customName}
+
+Nom : {customSurname}
+
+Ville : {customCity}
+
+Profession : {customOccupation}
+
+Pays : {customCountry}
+
+Abonnement aux informations et offres : {customNewsletter}
+
+Message du client :
+
+{message}
+
+[{shop_name}]({shop_url})
+
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)

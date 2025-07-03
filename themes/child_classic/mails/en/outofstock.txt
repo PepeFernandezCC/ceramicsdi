@@ -1,0 +1,23 @@
+ 
+
+{shop_url}
+
+Hello {firstname} {lastname},
+
+Thank you for shopping at {shop_name} - Your order number is {order_name}
+
+Your orde {order_name} - Currently out of stock
+
+Unfortunately, one or more items are currently out of stock, which may cause a slight delay in delivery. Please accept our apologies for the inconvenience, and rest assured that we are working to rectify the situation as soon as possible.
+
+Remember that you will receive a new order preparation message once we have restocked the missing products.
+
+If you have any questions or concerns, you can contact us by filling out our [Contact form]({https://ceramicconnection.com/en/contact-us}) or calling our Customer Service.
+
+You can check your order and download your invoice from our store by going to the [Order history and details]({history_url}) section of your customer account.
+
+If you have a guest account, you can track your order from the [Order history]({history_url}) section on our shop.
+
+[{shop_name}]({shop_url})
+
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)

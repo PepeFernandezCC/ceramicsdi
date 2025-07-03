@@ -1,0 +1,2 @@
+id_request_sql;name;sql
+1;"Base de datos > Gestor SQL";"SELECT rs.* FROM ps_request_sql rs ORDER BY `id_request_sql` desc LIMIT 10"

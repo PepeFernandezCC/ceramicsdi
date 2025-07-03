@@ -1,0 +1,15 @@
+ 
+
+{shop_url}
+
+Olá {firstname} {lastname},
+
+Devolução #{id_order_return} - Atualização
+
+Foi atualizado o progresso da sua devolução nº {id_order_return}; o novo estado é o seguinte: "{state_order_return}".
+
+Siga a sua encomenda e transfira a sua fatura na nossa loja, vá para a secção [Histórico de encomendas e detalhes]({history_url}) da sua conta de cliente.
+
+[{shop_name}]({shop_url})
+
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)

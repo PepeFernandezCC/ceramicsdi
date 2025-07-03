@@ -1,0 +1,21 @@
+ 
+
+{shop_url}
+
+Hola {firstname} {lastname},
+
+{meta_products}
+
+¡Su pedido {order_name} está en reparto!
+
+Su pedido con referencia {order_name} está en camino.
+
+Recuerde que puede contactar con nuestro departamento de Atención al cliente para más información.
+
+Puede consultar su pedido y descargar su factura desde nuestra tienda, diríjase a la sección [Historial y detalles de mis pedidos]({history_url}) de su cuenta de cliente.
+
+Si tiene una cuenta de invitado, puede seguir su pedido desde la sección: [Seguimiento de pedido]({guest_tracking_url}) de nuestra tienda.
+
+[{shop_name}]({shop_url})
+
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)

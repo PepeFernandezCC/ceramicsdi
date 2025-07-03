@@ -1,0 +1,17 @@
+ 
+
+{shop_url}
+
+Olá {firstname} {lastname},
+
+Encomenda nº {order_name} - Código de voucher gerado
+
+Temos o prazer de o informar que um Vale de Desconto foi gerado no seu nome para a encomenda com referência {order_name}.
+
+Código do Vale de Desconto: {voucher_num} no valor de {voucher_amount}
+
+Para o usar, insira este código no momento de checkout.
+
+[{shop_name}]({shop_url})
+
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)

@@ -1,0 +1,13 @@
+ 
+
+{shop_url}
+
+Hallo {firstname} {lastname},
+
+Je factuur is nu beschikbaar
+
+De factuur voor je bestelling {order_name} is nu beschikbaar. Je kunt deze bekijken en downloaden via je klantprofiel.
+
+[{shop_name}]({shop_url})
+
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)

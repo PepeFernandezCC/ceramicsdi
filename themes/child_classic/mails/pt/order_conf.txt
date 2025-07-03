@@ -1,0 +1,43 @@
+ 
+
+{shop_url}
+
+Olá {firstname} {lastname},
+
+Obrigado por fazer compras em {shop_name}!
+
+Detalhes da encomenda
+
+Encomenda: {order_name} Realizada a {date}
+
+Pagamento: {payment}
+
+Referência	Produto	Preço unitário	Quantidade	Preço total  {products_txt} {discounts_txt}
+Produtos	{total_products}
+Descontos	{total_discounts}
+Embrulho de presente	{total_wrapping}
+Envio	{total_shipping}
+Incluindo total de taxas	{total_tax_paid}
+Total pago	{total_paid}
+
+Envio
+
+Transportadora: {carrier}
+
+Pagamento: {payment}
+
+Endereço de entrega
+
+{delivery_block_txt}
+
+Endereço de faturação
+
+{invoice_block_txt}
+
+Siga a sua encomenda e transfira a sua fatura na nossa loja, vá para a secção [Histórico de encomendas e detalhes]({history_url}) da sua conta de cliente.
+
+Se tem uma conta de convidado, pode seguir a sua encomenda na secção [Rastreio de Visitantes]({guest_tracking_url}) na nossa loja.
+
+[{shop_name}]({shop_url})
+
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)

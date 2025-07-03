@@ -1,0 +1,31 @@
+<?php
+
+global $_MODULE;
+$_MODULE = array();
+$_MODULE['<{planatec}prestashop>planatec_dbccb2ec9a6c605d11c9c92c28ce8b9d'] = 'Planatec';
+$_MODULE['<{planatec}prestashop>planatec_1f2658cfcc04b9e54e3e0e328e837f3e'] = 'Module de fonctionnement de Planatec';
+$_MODULE['<{planatec}prestashop>planatec_876f23178c29dc2552c0b48bf23cd9bd'] = 'Êtes-vous sur de vouloir désinstaller?';
+$_MODULE['<{planatec}prestashop>planatec_0f40e8817b005044250943f57a21c5e7'] = 'Aucun nom fourni';
+$_MODULE['<{planatec}prestashop>planatec_5da61723eede0f953b4d638300d5efc4'] = 'Images pour les formats';
+$_MODULE['<{planatec}prestashop>planatec_c9cc8cce247e49bae79f15173ce97354'] = 'Sauvegarder';
+$_MODULE['<{planatec}prestashop>planatec_9b66a1f5c0ca32259cdd48f867f3b158'] = 'Texte du bouton';
+$_MODULE['<{planatec}prestashop>planatec_05007875cc2a447050fe8e89e2c6115a'] = 'Contenu supplémentaire pour les catégories';
+$_MODULE['<{planatec}prestashop>planatec_cab40186fc6c8bf55e82e212031e39db'] = 'Collection en vedette';
+$_MODULE['<{planatec}prestashop>planatec_5146f694362623beb50afd95e85b20eb'] = 'Informations sur le transport';
+$_MODULE['<{planatec}prestashop>planatec_a6d420c9a4dfc9fc135795d1c827c17b'] = 'Livraison';
+$_MODULE['<{planatec}prestashop>planatec_018dc642975e47a5c0bc91837bd6f590'] = 'Utilisez {dias_plazo} pour entrer le délai de livraison qui a été indiqué dans la fiche produit.';
+$_MODULE['<{planatec}prestashop>planatec_0812273c3e0b81be0a860657b3d9d80e'] = 'Échantillons';
+$_MODULE['<{planatec}prestashop>planatec_f07c86a82f99b8b7348ab89205fdfe3b'] = 'Utilisez {texto_muestra} pour saisir le texte de l\'échantillon qui a été indiqué dans la fiche produit.';
+$_MODULE['<{planatec}prestashop>planatec_5833fea129e39dd505f2abba40d4028d'] = 'Informations sur l\'utilisation et l\'entretien';
+$_MODULE['<{planatec}prestashop>planatec_1f3f1c5dbf51803a8a469ea2b7bb50f0'] = 'Informations sur l\'expédition et les retours';
+$_MODULE['<{planatec}prestashop>planatec_12cdf1030936df4b7704ba76590001c4'] = 'Image';
+$_MODULE['<{planatec}prestashop>planatec_4609a5fd7c5609bd0868144bc49d6da6'] = 'Section pour la page d\'accueil';
+$_MODULE['<{planatec}prestashop>planatec_5060e9deb31d5ddf54afb9b35c19e429'] = 'Contenu';
+$_MODULE['<{planatec}prestashop>planatec_2f3fc4c2b8ce7370c8eac36c29f367bb'] = 'URL du bouton';
+$_MODULE['<{planatec}prestashop>planatec_b9a96fff45c1ed7ea469f12da938b20b'] = 'Demander';
+$_MODULE['<{planatec}prestashop>planatec_29e2c839350a514859d039c310a4b5b6'] = 'Répondre';
+$_MODULE['<{planatec}prestashop>planatec_1fe917b01f9a3f87fa2d7d3b7643fac1'] = 'FAQ';
+$_MODULE['<{planatec}prestashop>planatec_01f7ac959c1e6ebbb2e0ee706a7a5255'] = 'Meilleures ventes';
+$_MODULE['<{planatec}prestashop>planatec_969214bc8c499460c5a25997fda6b3de'] = 'Acheter pour l\'espace';
+$_MODULE['<{planatec}prestashop>planatec_f0411ca83e625da2c18b5f0c0682bd93'] = 'Savoir plus';
+$_MODULE['<{planatec}prestashop>planatec_b040376c5d23e1f6fb7ae0b0dd61bc09'] = 'Sélectionner par matériau';

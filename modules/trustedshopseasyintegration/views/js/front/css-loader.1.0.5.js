@@ -1,0 +1,2 @@
+!function(){var e=document.getElementsByTagName("etrusted-widget");if(e&&e.length&&window.trustedshopseasyintegration_css){var t=document.getElementsByTagName("head")[0],s=document.createElement("link");s.id="trustedshopseasyintegration_css",s.rel="stylesheet",s.type="text/css",s.href=window.trustedshopseasyintegration_css,s.media="all",t.appendChild(s)}}();
+//# sourceMappingURL=css-loader.1.0.5.js.map

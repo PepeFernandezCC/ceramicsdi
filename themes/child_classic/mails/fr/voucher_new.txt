@@ -1,0 +1,15 @@
+ 
+
+{shop_url}
+
+Bonjour {firstname} {lastname},
+
+Votre code de réduction a bien été activé
+
+Voici votre nouveau code de réduction : {voucher_num}
+
+Veuillez noter que pour bénéficier de cette réduction, vous devez ajouter ce code lors de l'achat.
+
+[{shop_name}]({shop_url})
+
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)

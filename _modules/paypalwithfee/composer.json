@@ -1,0 +1,21 @@
+{
+    "name": "fourwebs/paypalwithfee",
+    "config": {
+        "prepend-autoloader": false,
+        "platform": {
+            "php": "7.0.0"
+        }
+    },
+    "authors": [
+        {
+            "name": "4Webs",
+            "homepage": "https://4webs.es"
+        }
+    ],
+    "require-dev": {
+        "paypal/paypal-checkout-sdk": "1.0.1"
+    },
+    "require": {
+        "paypal/paypal-checkout-sdk": "1.0.1"
+    }
+}

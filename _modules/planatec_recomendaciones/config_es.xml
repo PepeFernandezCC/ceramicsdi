@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>planatec_recomendaciones</name>
+    <displayName><![CDATA[Planatec - Recomendaciones]]></displayName>
+    <version><![CDATA[1.0.0]]></version>
+    <description><![CDATA[M&oacute;dulo que gestiona las p&aacute;ginas de Recomendaciones]]></description>
+    <author><![CDATA[Planatec]]></author>
+    <tab><![CDATA[front_office_features]]></tab>
+	<confirmUninstall><![CDATA[¿Estás seguro de que deseas desinstalar el módulo?]]></confirmUninstall>
+    <is_configurable>1</is_configurable>
+    <need_instance>1</need_instance>
+	<limited_countries></limited_countries>
+</module>

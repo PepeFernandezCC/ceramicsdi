@@ -1,0 +1,4 @@
+                                                                 Hi {customer_first_name} {customer_last_name}!
+                                                                Request type "{meta_type_request}" that sent to us has been confirmed.
+                                                                If you have any questions please contact us.
+                {shop_name}. {shop_address}

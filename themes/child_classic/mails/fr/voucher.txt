@@ -1,0 +1,17 @@
+ 
+
+{shop_url}
+
+Bonjour {firstname} {lastname},
+
+Le code de réduction de votre commande {order_name} a bien été activé
+
+Nous avons le plaisir de vous informer qu'un bon de réduction a été généré à votre nom relatif à votre commande ayant pour référence {order_name}.
+
+CODE DE REDUCTION : {voucher_num} d'un montant de {voucher_amount}
+
+Veuillez noter que pour bénéficier de cette réduction, vous devez ajouter ce code lors de l'achat.
+
+[{shop_name}]({shop_url})
+
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)

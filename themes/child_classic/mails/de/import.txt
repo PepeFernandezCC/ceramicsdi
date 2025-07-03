@@ -1,0 +1,13 @@
+ 
+
+{shop_url}
+
+Hallo {firstname} {lastname},
+
+Ihre Rechnung ist jetzt verfügbar
+
+Bitte beachten Sie, dass die Rechnung für Ihre Bestellung {order_name} jetzt verfügbar ist. Sie können sie in Ihrem Kundenprofil einsehen und herunterladen.
+
+[{shop_name}]({shop_url})
+
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)

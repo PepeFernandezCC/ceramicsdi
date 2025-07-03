@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>n1mcookies</name>
+    <displayName><![CDATA[N1mCookies ConsentV2 Plugin]]></displayName>
+    <version><![CDATA[1.0.0]]></version>
+    <description><![CDATA[A&ntilde;ade el c&oacute;digo de consentimiento de cookies de Google.]]></description>
+    <author><![CDATA[N1mCookies]]></author>
+    <tab><![CDATA[front_office_features]]></tab>
+	<confirmUninstall><![CDATA[¿Estás seguro de que quieres desinstalar?]]></confirmUninstall>
+    <is_configurable>1</is_configurable>
+    <need_instance>0</need_instance>
+	<limited_countries></limited_countries>
+</module>

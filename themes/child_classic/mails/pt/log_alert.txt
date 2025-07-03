@@ -1,0 +1,15 @@
+ 
+
+{shop_url}
+
+Olá,
+
+Nova mensagem de alerta guardada
+
+Aviso: recebeu um novo alerta de registo na sua área de administração.
+
+Pode verificar na secção Parâmetros Avançados > Registos na Área de Administração.
+
+[{shop_name}]({shop_url})
+
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)

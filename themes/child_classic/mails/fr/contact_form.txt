@@ -1,0 +1,19 @@
+ 
+
+{shop_url}
+
+Bonjour {firstname} {lastname},
+
+Merci de nous avoir écrit ! Votre message a été reçu correctement !
+
+ID commande # :  {order_name}
+
+Produit :  {product_name}
+
+Pièce jointe : {attached_file}
+
+Nous vous contacterons dans les plus brefs délais.
+
+[{shop_name}]({shop_url})
+
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)

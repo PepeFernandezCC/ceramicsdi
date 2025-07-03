@@ -1,0 +1,8 @@
+[data-module="sdevadeo"] .panel--full-height {
+    min-height: calc(100vh - 160px);
+}
+
+[data-module="sdevadeo"] #navAdminConfig {
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 2em;
+}

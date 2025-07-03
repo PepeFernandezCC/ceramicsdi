@@ -1,0 +1,163 @@
+/**
+* 2007-2021 PrestaShop
+*
+* NOTICE OF LICENSE
+*
+* This source file is subject to the Academic Free License (AFL 3.0)
+* that is bundled with this package in the file LICENSE.txt.
+* It is also available through the world-wide-web at this URL:
+* http://opensource.org/licenses/afl-3.0.php
+* If you did not receive a copy of the license and are unable to
+* obtain it through the world-wide-web, please send an email
+* to license@prestashop.com so we can send you a copy immediately.
+*
+* DISCLAIMER
+*
+* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+* versions in the future. If you wish to customize PrestaShop for your
+* needs please refer to http://www.prestashop.com for more information.
+*
+*  @author    PrestaShop SA <contact@prestashop.com>
+*  @copyright 2007-2021 PrestaShop SA
+*  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+*  International Registered Trademark & Property of PrestaShop SA
+*
+* Don't forget to prefix your containers with your own identifier
+* to avoid any conflicts with others containers.
+*/
+
+.VATTabs {
+    border-width: 0;
+    background: transparent;
+}
+ul.validateVATUl {
+    list-style-type: none;
+    padding-left: 0px !important;
+    margin-bottom: 20px;
+}
+.VATTabs > ul > li {
+    float: left;
+    /*margin: 0 .5em 0 0;*/
+    border-radius: 3px;
+    border-color: #ddd;
+    border-bottom-width: 1px !important;
+}
+.VATTabs > ul > li > a:hover {
+    cursor: pointer;
+    text-decoration: none;
+    color: black;
+}
+.VATTabs {
+    margin: 0;
+    padding: 0 0 .5em;
+    border: none;
+    background: transparent;
+}
+.VATTabs > ul > li > a {
+    background: #fff;
+    color: #55554B;
+}
+
+.VATTabs > ul > li.active a {
+    color: #fff;
+}
+.VATTabs > ul > li.active > i {
+    color: #fff;
+}
+.VATTabs > ul > li > a {
+    line-height: 17px;
+    padding: 9px 15px;
+}
+#content > .VATTabs {
+    position: relative;
+}
+
+#content.bootstrap .panel {
+    margin-bottom: 0;
+}
+.VATTabs {
+    background: transparent;
+}
+
+.VATTabs > ul li a:focus, ul li:focus {
+    outline: 0;
+}
+.VATTabs > ul {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+div.VATTabs {
+    border: none;
+    background: transparent;
+}
+
+/*!* Fonts *!*/
+.ui-widget {
+    font-family: inherit !important;
+    font-size: inherit !important;
+}
+
+.logoPreview {
+    margin-top:20px;
+}
+
+.validateVATUl:after {
+    clear: both;
+}
+.validateVATUl:before, .validateVATUl:after {
+    content: " ";
+    display: table;
+}
+.VATTabs > ul > li.active > a {
+    text-decoration: none;
+    color:black;
+    background: #3893fc;
+}
+.VATTabs > ul > li > a {
+    text-align:center;
+    text-shadow: none;
+    border: 1px solid ;
+    border-radius: 3px;
+    border-color: #ddd;
+    border-bottom-width: 1px !important;
+    margin-right: 5px;
+}
+.VATTabs > ul > li.active > a {
+    background: #3893fc;
+    color:white;
+}
+
+.panel-heading-action, .cc_button {
+    display: none;
+}
+
+/*
+Controller css- status buttons
+ */
+
+a#acceptRequest {
+    margin-right: 5px;
+    padding: 5px;
+    background-image: url("../img/accept.png");
+    height:16px;
+    width:16px;
+}
+a#acceptRequest:hover {
+    background-image: url("../img/acceptHover.png");
+    height:16px;
+    width:16px;
+}
+a#denyRequest {
+    padding: 5px;
+    background-image: url("../img/denied.png");
+    height:16px;
+    width:16px;
+}
+a#denyRequest:hover {
+    background-image: url("../img/deniedHover.png");
+    height:16px;
+    width:16px;
+}
+/*.VATTabs > ul > li:nth-child(2) {*/
+    /*display: none;*/
+/*}*/

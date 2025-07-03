@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>validatevatnumber</name>
+    <displayName><![CDATA[Validar n&uacute;mero de IVA]]></displayName>
+    <version><![CDATA[2.4.0]]></version>
+    <description><![CDATA[Verifique y valide el n&uacute;mero de VAT de sus clientes personalizados]]></description>
+    <author><![CDATA[ActiveDesign]]></author>
+    <tab><![CDATA[billing_invoicing]]></tab>
+    <is_configurable>1</is_configurable>
+    <need_instance>1</need_instance>
+	<limited_countries></limited_countries>
+</module>

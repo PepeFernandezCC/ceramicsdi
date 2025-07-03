@@ -1,0 +1,20 @@
+/**
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Commercial License and is not open source.
+ * Each license that you purchased is only available for 1 website only.
+ * You can't distribute, modify or sell this code.
+ * If you want to use this file on more websites, you need to purchase additional licenses.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file.
+ * If you need help please contact <attechteams@gmail.com>
+ *
+ * @author    Alpha Tech <attechteams@gmail.com>
+ * @copyright 2022 Alpha Tech
+ * @license   opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
+ */
+
+(function(){AP.putBaseBlock( "  " +Render.render('corecookie_menu', {}, '')+ " " +Render.render('master_page', {gray:1}, '' +Render.render('page_header', {title:__("Cookie Categories"), subtitle:__("Managing your store cookies"), compact:1, borderless:1}, '' +Render.render('side', {}, '' +Render.render('search', {id: "js-qsearch" , bind:1}, '')+ " " +Render.render('button', {label:__("Cookie"), icon: "plus" , url: ":cookie/-/create" , cta:1}, '')+ '')+ '')+ " " +Render.render('page_body', {gray:1, borderless:1, scroll:1}, "<div id='js-cookie-board'></div>")+ '')+ '','#ap650721cf8ea37')})();
+    CookieManagement.board.renderBoard("#js-cookie-board");

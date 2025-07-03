@@ -1,0 +1,17 @@
+ 
+
+{shop_url}
+
+Olá {firstname} {lastname},
+
+Apoio ao Cliente — Mensagem(s) reencaminhada(s)
+
+{employee} pretende reencaminhar esta(s) mensagem(s) para si.
+
+Histórico da discussão: {messages}
+
+{employee} adicionou "{comment}"
+
+[{shop_name}]({shop_url})
+
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)

@@ -1,0 +1,19 @@
+ 
+
+{shop_url}
+
+Bonjour {firstname} {lastname},
+
+Votre commande de {shop_name} a été expédiée !
+
+Votre commande avec la référence {order_name} a été expédiée.
+
+Veuillez noter qu'aucune annulation ou modification de commande ne sera plus acceptée..
+
+Pour suivre votre commande et télécharger votre facture sur notre site, veuillez vous rendre dans la section [Historique et détails de mes commandes]({history_url}) de votre compte client.
+
+Si vous avez un compte invité, vous pouvez suivre votre commande via la section [Suivi de commande]({guest_tracking_url}) sur notre site web.
+
+[{shop_name}]({shop_url})
+
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)

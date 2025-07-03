@@ -1,0 +1,252 @@
+@font-face {
+  font-family: 'modules_icons_font';
+  src:  url('../fonts/modules_icons_font.eot?sbax19');
+  src:  url('../fonts/modules_icons_font.eot?sbax19#iefix') format('embedded-opentype'),
+    url('../fonts/modules_icons_font.ttf?sbax19') format('truetype'),
+    url('../fonts/modules_icons_font.woff?sbax19') format('woff'),
+    url('../fonts/modules_icons_font.svg?sbax19#modules_icons_font') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+[class^="mic-"], [class*=" mic-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'modules_icons_font' !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.mic-check-mark:before {
+  content: "\e900";
+}
+.mic-comments-regular:before {
+  content: "\e901";
+}
+.mic-chevron-right-solid:before {
+  content: "\e902";
+}
+.mic-plus-solid:before {
+  content: "\e903";
+}
+.mic-life-ring-regular:before {
+  content: "\e904";
+}
+.mic-long-arrow-alt-right-solid:before {
+  content: "\e905";
+}
+.mic-arrow-alt-circle-right-regular:before {
+  content: "\e906";
+}
+.mic-arrow-right-solid:before {
+  content: "\e907";
+}
+.mic-check-circle-regular:before {
+  content: "\e908";
+}
+.mic-calendar:before {
+  content: "\e909";
+}
+.mic-times-solid:before {
+  content: "\e90a";
+}
+.mic-calendar-week-solid:before {
+  content: "\e90b";
+}
+.mic-calendar-day-solid:before {
+  content: "\e90c";
+}
+.mic-calendar-solid:before {
+  content: "\e90d";
+}
+.mic-clock-solid:before {
+  content: "\e90e";
+}
+.mic-exclamation-triangle-solid:before {
+  content: "\e90f";
+}
+.mic-communication:before {
+  content: "\e910";
+}
+.mic-files:before {
+  content: "\e911";
+}
+.mic-question-circle-solid:before {
+  content: "\e912";
+}
+.mic-info-circle-solid:before {
+  content: "\e913";
+}
+.mic-align-justify-solid:before {
+  content: "\e914";
+}
+.mic-angle-double-right-solid:before {
+  content: "\e915";
+}
+.mic-dollar-sign-solid:before {
+  content: "\e916";
+}
+.mic-searchengin-brands:before {
+  content: "\e917";
+}
+.mic-truck-solid:before {
+  content: "\e918";
+}
+.mic-object-group-solid:before {
+  content: "\e919";
+}
+.mic-boxes-solid:before {
+  content: "\e91a";
+}
+.mic-sliders-h-solid:before {
+  content: "\e91b";
+}
+.mic-paste-solid:before {
+  content: "\e91c";
+}
+.mic-filter-solid:before {
+  content: "\e91d";
+}
+.mic-sort-solid:before {
+  content: "\e91e";
+}
+.mic-minus-circle-solid:before {
+  content: "\e91f";
+}
+.mic-folder-solid:before {
+  content: "\e920";
+}
+.mic-folder-open-solid:before {
+  content: "\e921";
+}
+.mic-search-solid:before {
+  content: "\e922";
+}
+.mic-plus-circle-solid:before {
+  content: "\e923";
+}
+.mic-stream-solid:before {
+  content: "\e924";
+}
+.mic-arrows-alt-v-solid:before {
+  content: "\e925";
+}
+.mic-info-solid:before {
+  content: "\e926";
+}
+.mic-cogs-solid:before {
+  content: "\e927";
+}
+.mic-greater-than-solid:before {
+  content: "\e928";
+}
+.mic-less-than-solid:before {
+  content: "\e929";
+}
+.mic-infinity-solid:before {
+  content: "\e92a";
+}
+.mic-greater-than-equal-solid:before {
+  content: "\e92b";
+}
+.mic-equals-solid:before {
+  content: "\e92c";
+}
+.mic-less-than-equal-solid:before {
+  content: "\e92d";
+}
+.mic-ellipsis-v-solid:before {
+  content: "\e92e";
+}
+.mic-more:before {
+  content: "\e92f";
+}
+.mic-play-solid:before {
+  content: "\e930";
+}
+.mic-bell-solid:before {
+  content: "\e931";
+}
+.mic-flag-solid:before {
+  content: "\e932";
+}
+.mic-table-solid:before {
+  content: "\e933";
+}
+.mic-cloud-upload-alt-solid:before {
+  content: "\e934";
+}
+.mic-business-time-solid:before {
+  content: "\e935";
+}
+.mic-stop-solid:before {
+  content: "\e936";
+}
+.mic-file-alt-solid:before {
+  content: "\e937";
+}
+.mic-sticky-note-solid:before {
+  content: "\e938";
+}
+.mic-download-solid:before {
+  content: "\e939";
+}
+.mic-save-solid:before {
+  content: "\e93a";
+}
+.mic-copy-solid:before {
+  content: "\e93b";
+}
+.mic-copy-regular:before {
+  content: "\e93c";
+}
+.mic-random-solid:before {
+  content: "\e93d";
+}
+.mic-asterisk-solid:before {
+  content: "\e93e";
+}
+.mic-redo-alt-solid:before {
+  content: "\e93f";
+}
+.mic-clock-regular:before {
+  content: "\e940";
+}
+.mic-long-arrow-alt-left-solid:before {
+  content: "\e941";
+}
+.mic-chevron-down-solid:before {
+  content: "\e942";
+}
+.mic-chevron-up-solid:before {
+  content: "\e943";
+}
+.mic-chevron-left-solid:before {
+  content: "\e944";
+}
+.mic-tune:before {
+  content: "\e945";
+}
+.mic-play-down-solid:before {
+  content: "\e946";
+}
+.mic-google-brands:before {
+  content: "\e947";
+}
+.mic-drag:before {
+  content: "\e948";
+}
+.mic-solid_external-link-alt:before {
+  content: "\e949";
+}
+.mic-question-circle-solid-2:before {
+  content: "\e94a";
+}

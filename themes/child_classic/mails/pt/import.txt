@@ -1,0 +1,13 @@
+ 
+
+{shop_url}
+
+Olá {firstname} {lastname},
+
+A sua fatura já está disponível
+
+A fatura da sua encomenda {order_name} já está disponível. Pode visualizá-la e descarregá-la a partir do seu perfil de cliente..
+
+[{shop_name}]({shop_url})
+
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)

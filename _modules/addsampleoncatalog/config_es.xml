@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>addsampleoncatalog</name>
+    <displayName><![CDATA[Agregar al Carrito en Cat&aacute;logo]]></displayName>
+    <version><![CDATA[1.0.0]]></version>
+    <description><![CDATA[Agrega el bot&oacute;n a&ntilde;adir al carrito en el cat&aacute;logo de productos]]></description>
+    <author><![CDATA[Jos&eacute; Fern&aacute;ndez]]></author>
+    <tab><![CDATA[front_office_features]]></tab>
+    <is_configurable>1</is_configurable>
+    <need_instance>1</need_instance>
+	<limited_countries></limited_countries>
+</module>

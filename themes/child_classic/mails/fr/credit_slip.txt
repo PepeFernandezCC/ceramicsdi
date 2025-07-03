@@ -1,0 +1,15 @@
+ 
+
+{shop_url}
+
+Bonjour {firstname} {lastname},
+
+Voici votre facture d'avoir de la commande {order_name} 
+
+Une facture d'avoir a été générée à votre nom pour votre commande ayant pour numéro de référence {order_name}.
+
+Pour voir votre facture d'avoir et la télécharger sur notre site, veuillez vous rendre dans la section Avoirs de votre compte client.
+
+[{shop_name}]({shop_url})
+
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)

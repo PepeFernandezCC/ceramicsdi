@@ -1,0 +1,519 @@
+<?php
+/**
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to a commercial license from ScaleDEV.
+ * Use, copy, modification or distribution of this source file without written
+ * license agreement from ScaleDEV is strictly forbidden.
+ * In order to obtain a license, please contact us: contact@scaledev.fr
+ * ...........................................................................
+ * INFORMATION SUR LA LICENCE D'UTILISATION
+ *
+ * L'utilisation de ce fichier source est soumise à une licence commerciale
+ * concédée par la société ScaleDEV.
+ * Toute utilisation, reproduction, modification ou distribution du présent
+ * fichier source sans contrat de licence écrit de la part de ScaleDEV est
+ * expressément interdite.
+ * Pour obtenir une licence, veuillez nous contacter : contact@scaledev.fr
+ * ...........................................................................
+ * @author ScaleDEV <contact@scaledev.fr>
+ * @copyright Copyright (c) ScaleDEV - 12 RUE CHARLES MORET - 10120 SAINT-ANDRE-LES-VERGERS - FRANCE
+ * @license Commercial license
+ * @package Scaledev\Adeo
+ * Support: support@scaledev.fr
+ */
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
+require_once(dirname(__FILE__).'/autoload.php');
+
+/**
+ * This class is instanced by PrestaShop automatically.
+ *
+ * @package Scaledev\Adeo
+ * @author Pascal Fischer <contact@scaledev.fr>
+ */
+class SdevAdeo extends Module
+{
+    /**
+     * Corresponds to the "id_product" provided by PrestaShop when the module is
+     * published on Addons.
+     */
+    const PS_PRODUCT_ID = null;
+
+    /**
+     * Corresponds to the URL through which users should contact us.
+     */
+    const PS_SUPPORT_URL = 'https://addons.prestashop.com/fr/contactez-nous'
+        .'?id_product='.self::PS_PRODUCT_ID
+    ;
+
+    /**
+     * Correspond to the minimum PHP version.
+     */
+    const PHP_MIN_VERSION = '5.6';
+
+    /**
+     * Correspond to the minimum value for PHP variable "max_execution_time".
+     */
+    const PHP_MIN_MAX_EXECUTION_TIME = 60;
+
+    /**
+     * Corresponds to the minimum value for PHP variable "memory_limit" as mb.
+     */
+    const PHP_MIN_MEMORY_LIMIT_MB = 256;
+
+    /**
+     * The module's hooks list.
+     *
+     * @var string[]
+     */
+    private static $hooksList = array(
+        'actionOrderStatusPostUpdate',
+        'actionProductSave',
+        'displayAdminOrder',
+        'displayAdminProductExtra',
+    );
+
+    /**
+     * The module's tabs list.
+     *
+     * @var array
+     */
+    private static $tabsList = array();
+
+    /**
+     * The module's table list.
+     *
+     * @var array
+     */
+    private static $tableList = array(
+        SdevAdeoCategoryRule::class,
+        SdevAdeoCategoryMapping::class,
+        SdevAdeoCarrierRule::class,
+        SdevAdeoPricingRule::class,
+        SdevAdeoImportLogs::class,
+        SdevAdeoLogisticClass::class
+    );
+
+    /**
+     * The module's configuration data list.
+     *
+     * @var array
+     */
+    private $configurationData = array(
+        \Scaledev\Adeo\Component\Configuration::PRODUCT_BURST => 100,
+        \Scaledev\Adeo\Component\Configuration::OFFER_FLOW_IN_PROGRESS => '0',
+        \Scaledev\Adeo\Component\Configuration::PRODUCT_FLOW_IN_PROGRESS => '0',
+        \Scaledev\Adeo\Component\Configuration::USED_DESCRIPTION => 'short',
+    );
+
+    /**
+     * SdevAdeo constructor.
+     */
+    public function __construct()
+    {
+        $this->version = '1.1.7';
+        $this->author = 'ScaleDEV';
+        $this->name = 'sdevadeo';
+        $this->tab = 'administration';
+        $this->displayName = $this->l('Adeo marketplace');
+        $this->description = $this->l('Module to manage products and orders for the Adeo marketplace.');
+        $this->ps_versions_compliancy = array(
+            'min' => '1.6.1.24',
+            'max' => _PS_VERSION_,
+        );
+
+        // Module key provided by addons.prestashop.com.
+        $this->module_key = '';
+
+        // Defines the module's controllers list.
+        self::$tabsList = array(
+            'index' => $this->displayName,
+            'info' => $this->l('Information'),
+            'authentication' => $this->l('Authentication'),
+            'parameters' => $this->l('Parameters'),
+            'categoriesRules' => $this->l('Categories rules'),
+            'categoriesMapping' => $this->l('Categories mapping'),
+            'productsFlow' => $this->l('Products flow'),
+            'ordersFlow' => $this->l('Orders flow'),
+            'scheduledTasks' => $this->l('Scheduled tasks'),
+        );
+
+        parent::__construct();
+    }
+
+    /**
+     * Redirect the module's configuration to the "Index" controller of this
+     * module.
+     *
+     * @return void
+     */
+    public function getContent()
+    {
+        Scaledev\Adeo\Core\Tools::redirectAdmin($this->context->link->getAdminLink(
+            'Admin'.get_class($this).'Index'
+        ));
+    }
+
+    public function isUsingNewTranslationSystem()
+    {
+        return false; // TODO: Change the autogenerated stub
+    }
+
+    /**
+     * Hook executed after the order status update.
+     *
+     * @param array $hookParametersList
+     * @return void
+     */
+    public function hookActionOrderStatusPostUpdate($hookParametersList)
+    {
+        (new \Scaledev\Adeo\Hook\ActionOrderStatusPostUpdateHook())
+            ->execute($hookParametersList)
+        ;
+    }
+
+    /**
+     * Hook executed during the product save.
+     *
+     * @param array $hookParametersList
+     * @return void
+     */
+    public function hookActionProductSave($hookParametersList)
+    {
+        (new \Scaledev\Adeo\Hook\ActionProductSaveHook())
+            ->execute($hookParametersList)
+        ;
+    }
+
+    /**
+     * Hook executed during the order display in the back-office.
+     *
+     * @param array $hookParametersList
+     * @return void
+     */
+    public function hookDisplayAdminOrder($hookParametersList)
+    {
+        (new \Scaledev\Adeo\Hook\DisplayAdminOrderHook())
+            ->execute($hookParametersList)
+        ;
+    }
+
+    /**
+     * Hook executed during the product sheet display in the back-office.
+     *
+     * @param array $hookParametersList
+     * @return void
+     */
+    public function hookDisplayAdminProductsExtra($hookParametersList)
+    {
+        (new \Scaledev\Adeo\Hook\DisplayAdminProductsExtraHook())
+            ->execute($hookParametersList)
+        ;
+    }
+
+    /**
+     * Installs the module.
+     *
+     * @return bool
+     */
+    public function install()
+    {
+        try {
+            if (Shop::isFeatureActive()) {
+                Shop::setContext(Shop::CONTEXT_ALL);
+            }
+
+            $this
+                ->installTableList()
+                ->installHooksList()
+                ->installTabsList()
+                ->initConfigurationValues()
+            ;
+
+            return parent::install();
+        } catch (PrestaShopException $e) {
+            $this->_errors[] = $e->getMessage();
+        } catch (Scaledev\Adeo\Exception\TooLongConfigNameException $e) {
+            $this->_errors[] = $e->getMessage();
+        }
+
+        return false;
+    }
+
+    /**
+     * Uninstalls the module.
+     *
+     * @return bool
+     */
+    public function uninstall()
+    {
+        try {
+            $this
+                ->uninstallHooksList()
+                ->uninstallTabsList()
+                ->uninstallTableList()
+            ;
+
+            return parent::uninstall();
+        } catch (PrestaShopException $e) {
+            $this->_errors[] = $e->getMessage();
+        }
+
+        return false;
+    }
+
+    /**
+     * Create the module database tables.
+     *
+     * @return $this|false
+     */
+    private function installTableList()
+    {
+        foreach (self::$tableList as $model) {
+            if (!$model::createTable()) {
+                $this->_errors[] = sprintf(
+                    $this->l('An issue appears while installation of table: %s.'),
+                    $model::getTableName()
+                );
+            }
+        }
+        if (
+            !Scaledev\Adeo\Core\Tools::dbAddColumn('orders', 'mp_order_id', 'VARCHAR', 255, false)
+            || !Scaledev\Adeo\Core\Tools::dbAddIndex('orders', 'mp_order_id')
+        ) {
+            $this->_errors[] = $this->l('An issue appears while instantiation of order\'s \'marketplace identifier\' column');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Drop the module database tables.
+     *
+     * @return $this|false
+     */
+    private function uninstallTableList()
+    {
+        foreach (array_reverse(self::$tableList) as $model) {
+            if (!$model::dropTable()) {
+                $this->_errors[] = sprintf(
+                    $this->l('An issue appears while uninstallation of table: %s.'),
+                    $model::getTableName()
+                );
+                return false;
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Installs the module's hooks list.
+     *
+     * @return $this|false
+     */
+    private function installHooksList()
+    {
+        foreach (self::getHooksList() as $hook) {
+            if (!$this->registerHook($hook)) {
+                $this->_errors[] = sprintf(
+                    $this->l('Impossible to register hook: %s.'),
+                    $hook
+                );
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Uninstalls the module's hooks list.
+     *
+     * @return $this|false
+     */
+    private function uninstallHooksList()
+    {
+        foreach (self::getHooksList() as $hook) {
+            if (!$this->unregisterHook($hook)) {
+                $this->_errors[] = sprintf(
+                    $this->l('Impossible to unregister hook: %s.'),
+                    $hook
+                );
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Installs the module's tabs list.
+     *
+     * @return $this
+     */
+    private function installTabsList()
+    {
+        $parentTabId = Tab::getIdFromClassName('AdminParentModules'.(
+            Scaledev\Adeo\Core\Tools::version_compare(_PS_VERSION_, '1.7', '>=') ? 'Sf' : null
+            ));
+
+        foreach (self::getTabsList() as $tabIndex => $tabName) {
+            $tab = new Tab();
+
+            foreach (Language::getLanguages() as $language) {
+                $tab->name[$language['id_lang']] = $tabName;
+            }
+
+            // The tab's class_name must be like: 'AdminSdevAdeoIndex'.
+            $tab->class_name = 'Admin';
+            $tab->class_name .= get_class($this);
+            $tab->class_name .= Scaledev\Adeo\Core\Tools::ucfirst($tabIndex);
+
+            $tab->module = $this->name;
+            $tab->id_parent = (int)$parentTabId;
+            $tab->position = Tab::getNewLastPosition((int)$parentTabId);
+            $tab->active = ($tabIndex == 'index');
+
+            if (!$tab->add()) {
+                $this->_errors[] = sprintf(
+                    $this->l('Impossible to add tab: %s.'),
+                    $tabName
+                );
+                return $this;
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Uninstalls the module's tabs list.
+     *
+     * @return $this
+     * @throws PrestaShopException
+     */
+    private function uninstallTabsList()
+    {
+        /** @var Tab $tab */
+        foreach (Tab::getCollectionFromModule($this->name) as $tab) {
+            if (!$tab->delete()) {
+                $this->_errors[] = sprintf(
+                    $this->l('Impossible to delete tab: %s.'),
+                    $tab->name[$this->context->language->id]
+                );
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get classes from directories.
+     *
+     * NOTE: Redefine this method to get more clarity about its functionality.
+     *
+     * @return array
+     */
+    public function getClassesListFromDir($path, $hostMode = false)
+    {
+        $classesList = array();
+        $rootDir = $hostMode
+            ? rtrim(_PS_ROOT_DIR_, '/\\').DIRECTORY_SEPARATOR
+            : _PS_ROOT_DIR_.'/';
+
+        if (!file_exists($rootDir.$path)) {
+            return array();
+        }
+
+        foreach (scandir($rootDir.$path) as $file) {
+            if ($file[0] != '.') {
+                if (is_dir($rootDir.$path.$file)) {
+                    $classesList = array_merge(
+                        $classesList,
+                        $this->getClassesListFromDir($path.$file.'/', $hostMode)
+                    );
+                } elseif (Scaledev\Adeo\Core\Tools::substr($file, -4) == '.php') {
+                    $content = Scaledev\Adeo\Core\Tools::file_get_contents($rootDir.$path.$file);
+
+                    $namespacePattern = '[\\a-z0-9_]*[\\]';
+
+                    $pattern = '#\W((abstract\s+)?class|interface)\s+(?P<classname>'
+                        .basename($file, '.php').'(?:Core)?)'.'(?:\s+extends\s+'
+                        .$namespacePattern.'[a-z][a-z0-9_]*)?(?:\s+implements\s+'
+                        .$namespacePattern.'[a-z][\\a-z0-9_]*(?:\s*,\s*'
+                        .$namespacePattern.'[a-z][\\a-z0-9_]*)*)?\s*\{#i'
+                    ;
+
+                    if (preg_match($pattern, $content, $m)) {
+                        $classesList[$m['classname']] = array(
+                            'path' => $path.$file,
+                            'type' => trim($m[1]),
+                            'override' => $hostMode
+                        );
+
+                        if (Scaledev\Adeo\Core\Tools::substr($m['classname'], -4) == 'Core') {
+                            $classesList[Scaledev\Adeo\Core\Tools::substr($m['classname'], 0, -4)] = array(
+                                'path' => '',
+                                'type' => $classesList[$m['classname']]['type'],
+                                'override' => $hostMode
+                            );
+                        }
+                    }
+                }
+            }
+        }
+
+        return (array)$classesList;
+    }
+
+    /**
+     * Test if this module has overrides.
+     *
+     * @return bool
+     */
+    public function hasOverrides()
+    {
+        return file_exists(
+            _PS_ROOT_DIR_.'/override/'.$this->name.'/'.$this->name.'.php'
+        );
+    }
+
+    /**
+     * Get the module's hooks list.
+     *
+     * @return string[]
+     */
+    public static function getHooksList()
+    {
+        return self::$hooksList;
+    }
+
+    /**
+     * Get the module's tabs list.
+     *
+     * @return array
+     */
+    public static function getTabsList()
+    {
+        return self::$tabsList;
+    }
+
+    /**
+     * Initiate the configuration value depending on configurationData private property.
+     *
+     * @return $this
+     * @throws Scaledev\Adeo\Exception\TooLongConfigNameException
+     */
+    private function initConfigurationValues()
+    {
+        $configurationData = array_merge([\Scaledev\Adeo\Component\Configuration::MODULE_TOKEN => md5(_COOKIE_KEY_.uniqid())], $this->configurationData);
+        foreach ($configurationData as $name => $value) {
+            \Scaledev\Adeo\Component\Configuration::updateValue($name, $value);
+        }
+        return $this;
+    }
+
+}

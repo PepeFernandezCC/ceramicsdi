@@ -1,0 +1,23 @@
+ 
+
+{shop_url}
+
+Hola {firstname} {lastname},
+
+Gracias por comprar en {shop_name} - Su número de pedido es {order_name}.
+
+Su pedido {order_name} - Actualmente sin stock
+
+Desafortunadamente, uno o más artículos están actualmente fuera de stock y esto puede causar un ligero retraso en la entrega. Por favor, acepte nuestras disculpas por el inconveniente y tenga por seguro de que estamos trabajando para corregir la situación lo antes posible.
+
+Recuerde que recibirá un nuevo mensaje de preparación de su pedido una vez hayamos repuesto el stock de los productos faltantes.
+
+Si tiene alguna duda o consulta al respecto, puede contactarnos rellenando nuestro formulario de contacto o llamando a nuestro servicio de Atención al cliente.
+
+Puede consultar su pedido y descargar su factura desde nuestra tienda, diríjase a la sección [Historial y detalles de mis pedidos]({history_url}) de su cuenta de cliente.
+
+Si tiene una cuenta de invitado, puede seguir su pedido desde la sección: [Seguimiento de pedido]({guest_tracking_url}) de nuestra tienda.
+
+[{shop_name}]({shop_url})
+
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)

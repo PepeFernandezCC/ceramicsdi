@@ -1,0 +1,10 @@
+{
+  "skuType": "sku",
+  "gtinType": "ean13",
+  "order_status_reviews": {
+    "all": {
+      "trigger_order_status_id": 4,
+      "reviews_nb_days": 3
+    }
+  }
+}

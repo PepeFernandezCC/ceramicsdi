@@ -1,0 +1,1 @@
+ALTER TABLE `PREFIX_gmcp_tags` ADD `custom_label_set_postion` CHAR(120) NOT NULL DEFAULT "custom_label_0"

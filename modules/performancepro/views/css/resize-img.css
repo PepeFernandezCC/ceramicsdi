@@ -1,0 +1,14 @@
+.js-qv-product-cover, .product-cover-modal, .product-images img, .product-line-grid-left img, .imageFeaturedLink img, #order-items img {
+    height: auto;
+    max-height: none !important;
+}
+
+.manufacturer-logo, .header-logo img {
+    width: auto;
+}
+
+.product-thumbnail img, .product-thumb-images img {
+    width: auto;
+    height: 100%;
+    max-height: 100% !important;
+}

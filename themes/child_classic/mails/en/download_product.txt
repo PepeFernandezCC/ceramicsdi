@@ -1,0 +1,22 @@
+ 
+
+{shop_url}
+
+Hello {firstname} {lastname},
+
+Your order {order_name} from {shop_name} has been delivered!
+
+Your order has been delivered to:
+
+Shipping Address:
+{delivery_block_html}
+
+If you have any queries, you can contact our Customer Service department through the [contact form](https://ceramicconnection.com/en/contact-us)
+
+Remember that you can download your invoice from our store by going to the [Order history and details]({history_url}) section of your customer account.
+
+If you have a guest account, you can track your order from the [Order history]({history_url}) section of our shop.
+
+[{shop_name}]({shop_url})
+
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)

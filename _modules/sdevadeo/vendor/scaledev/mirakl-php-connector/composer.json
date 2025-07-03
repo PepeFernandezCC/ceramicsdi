@@ -1,0 +1,20 @@
+{
+    "name": "scaledev/mirakl-php-connector",
+    "description": "PHP connector for the Mirakl API",
+    "type": "library",
+    "license": "Commercial",
+    "autoload": {
+        "psr-4": {
+            "Scaledev\\MiraklPhpConnector\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "ScaleDEV",
+            "email": "contact@scaledev.fr"
+        }
+    ],
+    "require": {
+        "php": ">=5.6"
+    }
+}

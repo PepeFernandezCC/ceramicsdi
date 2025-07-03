@@ -1,0 +1,15 @@
+ 
+
+{shop_url}
+
+Hello {firstname} {lastname},
+
+The refund for your order {order_name} has been processed
+
+The refund for your order with reference number {order_name} from {shop_name} has been processed, and your credit note has been created successfully.
+
+You can review the credit note and download your invoice from our store by going to the [Credit slips]({history_url}) section of your customer account.
+
+[{shop_name}]({shop_url})
+
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)

@@ -1,0 +1,23 @@
+ 
+
+{shop_url}
+
+Bonjour {firstname} {lastname},
+
+Merci pour votre commande avec numéro de référence {order_name} sur {shop_name}
+
+Votre commande {order_name} - En rupture de stock
+
+Malheureusement, un ou plusieurs produits sont actuellement en rupture de stock, cela peut entraîner un léger retard de livraison. Veuillez nous excuser pour les inconvénients, soyez assurés que nous faisons notre possible pour rétablir la situation.
+
+Vous recevrez un nouveau message de préparation de votre commande une fois que nous aurons résolu cet inconvénient.
+
+Si vous avez des questions, vous pouvez nous contacter en remplissant notre formulaire de contact ou en appelant notre Service clientèle.
+
+Pour suivre votre commande et télécharger votre facture sur notre site, veuillez vous rendre dans la section [Historique et détails de mes commandes]({history_url}) de votre compte client.
+
+Si vous avez un compte invité, vous pouvez suivre votre commande via la section [Suivi de commande]({guest_tracking_url}) sur notre site web.
+
+[{shop_name}]({shop_url})
+
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)

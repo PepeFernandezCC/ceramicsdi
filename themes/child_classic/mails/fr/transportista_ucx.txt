@@ -1,0 +1,23 @@
+{shop_url}
+
+Votre commande {order_name} - Informatios sur le transporteur
+
+Le transporteur pour la livraison de votre commande avec la référence {order_name} de {shop_name} est UCX. Dès que les marchandises quittent nos locaux, vous recevrez un e-mail contenant le numéro de suivi.
+
+Il est important que vous gardiez à l'esprit les considérations suivantes:
+
+1) Le matériel est livré palettisé.
+
+2) N'oubliez pas que les matériaux de construction sont généralement assez lourds et que, s'il s'agit d'un grand format, la manutention des cartons peut être coûteuse.
+
+3) La commande est livrée au niveau de la rue. Si le transpalette ne peut pas atteindre votre porte, il sera déchargé au point le plus proche possible.
+
+4) Il est fortement recommandé de contacter UCX via le numéro de portable 616281914 (WhatsApp uniquement) pour convenir de l'heure de livraison. Le transporteur fera de son mieux pour faciliter le processus de livraison. Prévoyez votre disponibilité pour recevoir le matériel, soit vous-même, soit les professionnels de la construction concernés, afin d'éviter les échecs de livraison.
+
+Pour suivre votre commande et télécharger votre facture sur notre site, veuillez vous rendre dans la section [Historique et détails de mes commandes]({history_url}) de votre compte client.
+
+Si vous avez un compte invité, vous pouvez suivre votre commande via la section [Suivi de commande]({guest_tracking_url}) de commande sur notre site web.
+
+[{shop_name}]({shop_url})
+
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)

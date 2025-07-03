@@ -1,0 +1,13 @@
+ 
+
+{shop_url}
+
+Hola {firstname} {lastname},
+
+Su factura ya está disponible
+
+Le informamos de que la factura de su pedido {order_name} ya está disponible. Podrá consultarla y descargarla desde su perfil de cliente. 
+
+[{shop_name}]({shop_url})
+
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)

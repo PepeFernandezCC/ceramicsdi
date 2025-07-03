@@ -1,0 +1,17 @@
+{shop_url}
+
+Bonjour {firstname} {lastname},
+
+Votre commande {order_name} est prête à être collectée
+
+Votre commande avec le numéro de référence {order_name} de {shop_name} est maintenant prête à être collectée. Vous disposez d'un délai de 30 jours calendaires pour le récupérer. Si vous n'êtes pas en mesure de le faire dans les 30 jours, veuillez nous en informer via le formulaire de contact de notre Service clientèle. Si la commande n'est pas retirée dans les 30 jours, elle sera annulée.
+
+Veuillez noter que les produits sont livrées palettisées afin d'éviter qu'elles ne se cassent pendant le transport, et qu'il est donc recommandé d'utiliser une camionnette ou un autre moyen de transport similaire. Si la dépalettisation est nécessaire dans nos locaux, nous ne serons pas responsables du transfert des boîtes de produits dans votre véhicule privé.
+
+Pour suivre votre commande et télécharger votre facture sur notre site, veuillez vous rendre dans la section [Historique et détails de mes commandes]({history_url}) de votre compte client.
+
+Si vous avez un compte invité, vous pouvez suivre votre commande via la section [Seguimiento de pedido]({guest_tracking_url}) de commande sur notre site web.
+
+[{shop_name}]({shop_url})
+
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)

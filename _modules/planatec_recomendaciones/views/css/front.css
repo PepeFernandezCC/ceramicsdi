@@ -1,0 +1,187 @@
+#module-planatec_recomendaciones-display #content-wrapper .page-content {
+  padding: 0;
+  margin: 0;
+}
+#module-planatec_recomendaciones-display #content-wrapper .page-content #recomendacion-secciones .recomendacion-seccion {
+  cursor: pointer;
+  padding: 1.25rem;
+  border-bottom: 1px solid black;
+  margin-bottom: -1px;
+}
+#module-planatec_recomendaciones-display #content-wrapper .page-content #recomendacion-secciones .recomendacion-seccion:nth-child(3n+1), #module-planatec_recomendaciones-display #content-wrapper .page-content #recomendacion-secciones .recomendacion-seccion:nth-child(3n+2) {
+  border-right: 1px solid black;
+}
+@media (max-width: 1024px) {
+  #module-planatec_recomendaciones-display #content-wrapper .page-content #recomendacion-secciones .recomendacion-seccion:nth-child(2n+1) {
+    border-right: 1px solid black;
+  }
+  #module-planatec_recomendaciones-display #content-wrapper .page-content #recomendacion-secciones .recomendacion-seccion:nth-child(2n+2) {
+    border-right: none;
+  }
+}
+@media (max-width: 767px) {
+  #module-planatec_recomendaciones-display #content-wrapper .page-content #recomendacion-secciones .recomendacion-seccion:nth-child(n) {
+    border-right: none;
+  }
+}
+#module-planatec_recomendaciones-display #content-wrapper .page-content #recomendacion-secciones .recomendacion-seccion img {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+}
+#module-planatec_recomendaciones-display #content-wrapper .page-content #recomendacion-secciones .recomendacion-seccion .title {
+  margin-top: 20px;
+  text-align: center;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+#module-planatec_recomendaciones-display #content-wrapper .page-content #recomendacion-secciones .recomendacion-seccion:hover img {
+  opacity: 0.8;
+}
+#module-planatec_recomendaciones-display #content-wrapper .page-content .recomendacion-apartados {
+  display: flex;
+  padding: 0;
+}
+@media (max-width: 767px) {
+  #module-planatec_recomendaciones-display #content-wrapper .page-content .recomendacion-apartados {
+    flex-direction: column;
+  }
+}
+#module-planatec_recomendaciones-display #content-wrapper .page-content .recomendacion-apartados .recomendacion-apartados-lista {
+  padding: 0;
+  border-bottom: 1px solid black;
+  margin-bottom: -1px;
+}
+#module-planatec_recomendaciones-display #content-wrapper .page-content .recomendacion-apartados .recomendacion-apartados-lista.col-md-3 {
+  width: 20%;
+}
+@media (max-width: 767px) {
+  #module-planatec_recomendaciones-display #content-wrapper .page-content .recomendacion-apartados .recomendacion-apartados-lista.col-md-3 {
+    width: 100% !important;
+  }
+}
+#module-planatec_recomendaciones-display #content-wrapper .page-content .recomendacion-apartados .recomendacion-apartados-lista .recomendacion-seccion {
+  padding: 0;
+}
+#module-planatec_recomendaciones-display #content-wrapper .page-content .recomendacion-apartados .recomendacion-apartados-lista .recomendacion-seccion:not(:last-child) {
+  border-bottom: 1px solid black;
+}
+#module-planatec_recomendaciones-display #content-wrapper .page-content .recomendacion-apartados .recomendacion-apartados-lista .recomendacion-seccion .recomendacion-seccion-titulo {
+  cursor: pointer;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 1.25rem;
+  font-size: 0.8em;
+}
+#module-planatec_recomendaciones-display #content-wrapper .page-content .recomendacion-apartados .recomendacion-apartados-lista .recomendacion-seccion .recomendacion-seccion-titulo:after {
+  content: "+";
+  float: right;
+  font-size: 12.8px;
+}
+#module-planatec_recomendaciones-display #content-wrapper .page-content .recomendacion-apartados .recomendacion-apartados-lista .recomendacion-seccion .recomendacion-seccion-titulo.open:after {
+  content: "-";
+  margin-right: -3px;
+}
+#module-planatec_recomendaciones-display #content-wrapper .page-content .recomendacion-apartados .recomendacion-apartados-lista .recomendacion-seccion .recomendacion-apartado-titulo {
+  font-size: 0.9em;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+#module-planatec_recomendaciones-display #content-wrapper .page-content .recomendacion-apartados .recomendacion-apartados-lista .recomendacion-seccion .recomendacion-apartado-titulo span {
+  cursor: pointer;
+  color: #232323;
+  font-size: 13px;
+}
+#module-planatec_recomendaciones-display #content-wrapper .page-content .recomendacion-apartados .recomendacion-apartados-lista .recomendacion-seccion .recomendacion-apartado-titulo span:hover {
+  font-weight: bold;
+}
+#module-planatec_recomendaciones-display #content-wrapper .page-content .recomendacion-apartados .recomendacion-apartados-lista .recomendacion-seccion .recomendacion-apartado-titulo:last-of-type {
+  padding-bottom: 1.25rem;
+}
+#module-planatec_recomendaciones-display #content-wrapper .page-content .recomendacion-apartados .recomendacion-apartados-contenido-global {
+  padding: 0;
+  border-left: 1px solid black;
+}
+@media (max-width: 767px) {
+  #module-planatec_recomendaciones-display #content-wrapper .page-content .recomendacion-apartados .recomendacion-apartados-contenido-global {
+    border-left: none;
+  }
+}
+#module-planatec_recomendaciones-display #content-wrapper .page-content .recomendacion-apartados .recomendacion-apartados-contenido-global.col-md-9 {
+  width: 80%;
+}
+@media (max-width: 767px) {
+  #module-planatec_recomendaciones-display #content-wrapper .page-content .recomendacion-apartados .recomendacion-apartados-contenido-global.col-md-9 {
+    width: 100% !important;
+  }
+}
+#module-planatec_recomendaciones-display #content-wrapper .page-content .recomendacion-apartados .recomendacion-apartados-contenido-global .recomendacion-apartados-contenido {
+  padding: 0;
+}
+#module-planatec_recomendaciones-display #content-wrapper .page-content .recomendacion-apartados .recomendacion-apartados-contenido-global .recomendacion-apartados-contenido .recomendacion-seccion-titulo {
+  text-transform: uppercase;
+  font-size: 20px;
+  font-weight: bold;
+  padding: 2.5rem 1.25rem 1.25rem 1.25rem;
+}
+#module-planatec_recomendaciones-display #content-wrapper .page-content .recomendacion-apartados .recomendacion-apartados-contenido-global .recomendacion-apartados-contenido .recomendacion-apartado-contenido {
+  padding: 2.5rem 1.25rem;
+  overflow: hidden;
+  border-top: 1px solid black;
+}
+#module-planatec_recomendaciones-display #content-wrapper .page-content .recomendacion-apartados .recomendacion-apartados-contenido-global .recomendacion-apartados-contenido .recomendacion-apartado-contenido .recomendacion-apartado-titulo {
+  text-transform: uppercase;
+  padding: 0 10px 0 0;
+}
+@media (max-width: 767px) {
+  #module-planatec_recomendaciones-display #content-wrapper .page-content .recomendacion-apartados .recomendacion-apartados-contenido-global .recomendacion-apartados-contenido .recomendacion-apartado-contenido .recomendacion-apartado-titulo {
+    padding-bottom: 1.563rem;
+  }
+}
+#module-planatec_recomendaciones-display #content-wrapper .page-content .recomendacion-apartados .recomendacion-apartados-contenido-global .recomendacion-apartados-contenido .recomendacion-apartado-contenido .recomendacion-apartado-titulo .iteracion {
+  font-size: 25px;
+}
+#module-planatec_recomendaciones-display #content-wrapper .page-content .recomendacion-apartados .recomendacion-apartados-contenido-global .recomendacion-apartados-contenido .recomendacion-apartado-contenido .recomendacion-apartado-texto {
+  color: black;
+  padding: 0 5rem 0 0;
+}
+@media (max-width: 1024px) {
+  #module-planatec_recomendaciones-display #content-wrapper .page-content .recomendacion-apartados .recomendacion-apartados-contenido-global .recomendacion-apartados-contenido .recomendacion-apartado-contenido .recomendacion-apartado-texto {
+    padding: 0;
+  }
+}
+@media (max-width: 767px) {
+  #module-planatec_recomendaciones-display #content-wrapper .page-content .recomendacion-apartados .recomendacion-apartados-contenido-global .recomendacion-apartados-contenido .recomendacion-apartado-contenido .recomendacion-apartado-texto ul {
+    padding-left: 1.25rem;
+  }
+}
+#module-planatec_recomendaciones-display #content-wrapper .page-content .recomendacion-apartados .recomendacion-apartados-contenido-global .recomendacion-apartados-contenido .recomendacion-apartado-contenido .recomendacion-apartado-texto p {
+  color: black;
+}
+
+#recomendacion-apartados-seccion-mobile .recomendacion-apartados-lista .recomendacion-seccion .recomendacion-apartado-titulo {
+  padding-bottom: 0.521rem;
+}
+#recomendacion-apartados-seccion-mobile .recomendacion-apartados-lista .recomendacion-seccion .recomendacion-apartado-titulo span {
+  text-transform: uppercase;
+  font-weight: normal !important;
+}
+#recomendacion-apartados-seccion-mobile .recomendacion-apartados-lista .recomendacion-seccion .recomendacion-apartado-titulo:after {
+  content: "+";
+  float: right;
+  font-size: 12.8px;
+}
+#recomendacion-apartados-seccion-mobile .recomendacion-apartados-lista .recomendacion-seccion .recomendacion-apartado-titulo.open:after {
+  content: "-";
+  margin-right: -3px;
+}
+#recomendacion-apartados-seccion-mobile .recomendacion-apartados-lista .recomendacion-seccion .recomendacion-apartados-contenido-global .recomendacion-apartados-contenido .recomendacion-apartado-contenido {
+  border-top: none !important;
+  padding-top: 1.563rem !important;
+}
+
+.d-none {
+  display: none !important;
+}
+
+/*# sourceMappingURL=front.css.map */

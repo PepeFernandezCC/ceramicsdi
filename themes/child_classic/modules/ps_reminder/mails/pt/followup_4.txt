@@ -1,0 +1,21 @@
+ 
+
+{shop_url}
+
+Olá {firstname} {lastname},
+
+O seu carrinho em {shop_name}
+
+Parabéns! Você é um dos nossos melhores clientes, no entanto não fez nenhuma encomenda nos últimos {days_threshold} dias.
+
+O carrinho foi guardado, pode continuar as suas compras na nossa loja: {shop_url}
+
+Temos o prazer de lhe oferecer um desconto no valor de {amount}% na sua próxima compra. Esta oferta é valida por {days} dias, por isso não perca a oportunidade!
+
+Aqui está o seu código do Vale de Desconto: {voucher_num}
+
+Digite este código no seu carrinho de compras para obter o desconto.
+
+[{shop_name}]({shop_url})
+
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)

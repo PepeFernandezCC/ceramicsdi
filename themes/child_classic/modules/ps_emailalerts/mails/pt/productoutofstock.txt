@@ -1,0 +1,17 @@
+ 
+
+{shop_url}
+
+Olá,
+
+O produto {product} está quase esgotado.
+
+Existem menos de {last_qty} items em stock.
+
+Quantidade restante: {qty}
+
+Reabasteça o seu inventário, vá à secção Catálogo > Stocks na Área de Administração para gerir o seu stock.
+
+[{shop_name}]({shop_url})
+
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)

@@ -1,0 +1,19 @@
+ 
+
+{shop_url}
+
+Hola {firstname} {lastname},
+
+Su pedido {order_name} ya está listo para cargar
+
+Su pedido con la referencia {order_name} de {shop_name} está listo para cargar. Dispone de 30 días naturales para pasar a recogerlo, en caso de no poder hacerlo dentro de los 30 días por favor notifíquelo a nuestro departamento de Atención al cliente a través de nuestro formulario de contacto. De no retirarse el pedido dentro de los 30 días se procederá a anular el pedido.
+
+Por favor, tenga en cuenta que la mercancía se entrega paletizada para evitar roturas en el transporte, por ello el uso de furgoneta u otro medio de transporte de mercancías es recomendable. En caso de requerir despaletización en nuestras instalaciones, no nos hacemos responsables del traspaso de las cajas del producto a su vehículo particular.
+
+Puede descargar su factura desde nuestra tienda, diríjase a la sección [Historial y detalles de mis pedidos]({history_url}) de su cuenta de cliente.
+
+Si tiene una cuenta de invitado, puede seguir su pedido desde la sección: [Seguimiento de pedido]({guest_tracking_url}) de nuestra tienda.
+
+[{shop_name}]({shop_url})
+
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)

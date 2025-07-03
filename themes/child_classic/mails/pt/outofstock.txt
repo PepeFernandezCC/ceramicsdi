@@ -1,0 +1,19 @@
+ 
+
+{shop_url}
+
+Olá {firstname} {lastname},
+
+Obrigado pela sua encomenda com a referência {order_name} da loja {shop_name}.
+
+Encomenda nº {order_name} - Reabastecimento necessário
+
+Infelizmente, um ou mais itens encontram-se atualmente esgotados o que poderá causar um ligeiro atraso na sua entrega. Queira por isso aceitar as nossas desculpas. Gostaríamos de lhe assegurar que estamos a fazer os possíveis para retificar esta situação de modo a que tenha o mínimo impacto possível.
+
+Siga a sua encomenda e transfira a sua fatura na nossa loja, vá para a secção [Histórico de encomendas e detalhes]({history_url}) da sua conta de cliente.
+
+Se tem uma conta de convidado, pode seguir a sua encomenda na secção [Rastreio de Visitantes]({guest_tracking_url}) na nossa loja.
+
+[{shop_name}]({shop_url})
+
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)

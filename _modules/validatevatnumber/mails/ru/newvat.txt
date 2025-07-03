@@ -1,0 +1,13 @@
+
+[{shop_url}]
+
+Hello {$administrator},
+
+New VAT Number submitted
+
+Firstname: {firstname}
+Lastname: {lastname}
+VAT Number: {vatnr}
+
+
+

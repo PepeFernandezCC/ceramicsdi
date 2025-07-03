@@ -1,0 +1,10 @@
+                                                                 Hi {customer_first_name} {customer_last_name}!
+                                                                You have just submitted a request of type "{meta_type_request}" at the
+                                                                      {shop_name}
+                                                                    store.
+                                                                {customer_content_email}
+                                                                    To confirm, please click the link below. If you did not submit this request,
+                                                                      change your account password
+                                                                   and ignore this message.
+                                                                        Verify Request
+                {shop_name}. {shop_address}

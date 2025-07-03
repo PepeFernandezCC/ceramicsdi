@@ -1,0 +1,21 @@
+ 
+
+{shop_url}
+
+Olá {firstname} {lastname},
+
+{meta_products}
+
+Encomenda nº {order_name} - Em trânsito
+
+A sua encomenda com a referência {order_name} está a caminho.
+
+Pode seguir a sua encomenda usando a seguinte ligação: {followup}
+
+Siga a sua encomenda e transfira a sua fatura na nossa loja, vá para a secção [Histórico de encomendas e detalhes]({history_url}) da sua conta de cliente.
+
+Se tem uma conta de convidado, pode seguir a sua encomenda na secção [Rastreio de Visitantes]({guest_tracking_url}) na nossa loja.
+
+[{shop_name}]({shop_url})
+
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)

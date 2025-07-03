@@ -1,0 +1,19 @@
+/**
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Commercial License and is not open source.
+ * Each license that you purchased is only available for 1 website only.
+ * You can't distribute, modify or sell this code.
+ * If you want to use this file on more websites, you need to purchase additional licenses.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file.
+ * If you need help please contact <attechteams@gmail.com>
+ *
+ * @author    Alpha Tech <attechteams@gmail.com>
+ * @copyright 2022 Alpha Tech
+ * @license   opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
+ */
+
+(function(){AP.putBaseBlock( "  " +Render.render('master_header', {id: "core-header" }, '' +Render.render('master_header_main', {}, '' +Render.render('tabs', {persistent:1}, '' +Render.render('tab', {blank: "1" , url:Client.paths.dash_path}, "Back Office")+ " " +Render.render('tab', {blank: "1" , url:Client.base_link}, "Front Office")+ '')+ '')+ " " +Render.render('master_header_side', {}, '' +Render.render('header_item', {icon_color: "yellow" , icon_size: "32" , url: "https://addons.prestashop.com/en/ratings.php" , data_blank: "1" , icon: "star" , std:1}, '')+ " " +Render.render('header_item', {_class: "core-hidden video-youtube-channel" , icon_color: "red" , icon_size: "32" , url: "https://www.youtube.com/channel/UCtgSGZQxaJXzUEk5UPGMADA" , data_blank: "1" , icon: "youtube" , std:1}, '')+ " " +Render.render('header_item', {_class: "video-youtube-list" , icon_color: "red" , icon_size: "32" , url: ":user/videos" , icon: "youtube" , std:1}, '')+ " " +Render.render('header_item', {icon_color: "#ffd257" , icon_size: "32" , url: ":user/apps" , icon: "apps" , std:1}, '')+ " " +Render.render('header_item', {acl:!Client.is_demo, icon_color: "#48c78e" , icon_size: "32" , url: ":file" , icon: "guild" , data_file:getLinkDocument(), std:1}, '')+ '')+ '')+ '','#ap650721cf8985e')})();

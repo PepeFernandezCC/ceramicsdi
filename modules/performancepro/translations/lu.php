@@ -1,0 +1,141 @@
+<?php
+/**
+ * This file is part of the performancepro package.
+ *
+ * @author Mathias Reker
+ * @copyright Mathias Reker
+ * @license Commercial Software License
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
+
+global $_MODULE;
+$_MODULE = [];
+$_MODULE['<{performancepro}prestashop>performancepro_5243b23883df046b705bbf22ac1c5c9e'] = 'Dieses Modul steigert die Gesamtleistung Ihrer Website.';
+$_MODULE['<{performancepro}prestashop>performancepro_8711dbcb9166dca544544b027d7edb83'] = 'Es ist ein Fehler aufgetreten.';
+$_MODULE['<{performancepro}prestashop>performancepro_c9d7530d643169711ccbecb5c8a00568'] = 'Abgebrochen.';
+$_MODULE['<{performancepro}prestashop>performancepro_e94f1e641d683543af6f76c6ced34e8a'] = 'In die Zwischenablage kopiert.';
+$_MODULE['<{performancepro}prestashop>performancepro_60e2016ddc5fc624739607e22b531cda'] = 'Gut gemacht!';
+$_MODULE['<{performancepro}prestashop>adminperformanceprocontroller_9a7e58ee13cb727cb7c4acc68f4cafe5'] = 'Einstellungen gespeichert.';
+$_MODULE['<{performancepro}prestashop>cron_341afe04dec3236b897867ddfb0fc06d'] = 'Unerlaubter Aufruf.';
+$_MODULE['<{performancepro}prestashop>cron_c700f014842565b5a4d94c472c22825f'] = 'Konfiguration wurde in der Demoversion deaktiviert.';
+$_MODULE['<{performancepro}prestashop>cron_5b704762ff5d5fd66e5fb8a1944ce95e'] = 'Dieser Befehl existiert nicht.';
+$_MODULE['<{performancepro}prestashop>cron_bae3c00ff2d34dd05c0dce088b2ba7b1'] = 'Bild-Cache geleert.';
+$_MODULE['<{performancepro}prestashop>cron_07bc83a8bd99683b6a72b495c43331e7'] = 'HTTP-Cache geleert.';
+$_MODULE['<{performancepro}prestashop>cron_a093e15a32c891cb432ff59daf910c38'] = 'Thema-Cache geleert.';
+$_MODULE['<{performancepro}prestashop>cron_c36fb10c479abe0ea78b01b3504e49fa'] = 'XML-Cache geleert.';
+$_MODULE['<{performancepro}prestashop>cron_58f727beafec5ea05fb64f5afda5ca5f'] = 'OP-Cache geleert.';
+$_MODULE['<{performancepro}prestashop>cron_4c10c5af8a868ab5d7a52b87e59610f9'] = 'Die Einstellungen wurden aktualisiert.';
+$_MODULE['<{performancepro}prestashop>installer_a967db4d261b101c2a3f019800037aa0'] = 'Dieses Modul erfordert PHP %s oder höher.';
+$_MODULE['<{performancepro}prestashop>cacheform_6be7a69da64013e2bb0f83fb5d534f9a'] = 'Seiten-Cache';
+$_MODULE['<{performancepro}prestashop>cacheform_00d23a76e43b46dae9ec7aa9dcbebb32'] = 'Aktiviert';
+$_MODULE['<{performancepro}prestashop>cacheform_b9f5c797ebbf55adccdd8539a65a0241'] = 'Deaktiviert';
+$_MODULE['<{performancepro}prestashop>cacheform_54a3e4188cd2177b55e469a7bb8ab097'] = 'Browser-Cache';
+$_MODULE['<{performancepro}prestashop>cacheform_43340e6cc4e88197d57f8d6d5ea50a46'] = 'Mehr lesen';
+$_MODULE['<{performancepro}prestashop>cacheform_c9cc8cce247e49bae79f15173ce97354'] = 'Speichern';
+$_MODULE['<{performancepro}prestashop>dashboardform_b2d37ae1cedf42ff874289b721860af2'] = 'Protokolle';
+$_MODULE['<{performancepro}prestashop>dashboardform_e307db07b3975fef922a80d07455ee5e'] = 'Datenbank';
+$_MODULE['<{performancepro}prestashop>dashboardform_c33e404a441c6ba9648f88af3c68a1ca'] = 'Statistiken';
+$_MODULE['<{performancepro}prestashop>dashboardform_fff0d600f8a0b5e19e88bfb821dd1157'] = 'Bilder';
+$_MODULE['<{performancepro}prestashop>dashboardform_8625e1de7be14c39b1d14dc03d822497'] = 'Werkzeuge';
+$_MODULE['<{performancepro}prestashop>dashboardform_2938c7f7e560ed972f8a4f68e80ff834'] = 'Übersicht';
+$_MODULE['<{performancepro}prestashop>dashboardform_b78a3223503896721cca1303f776159b'] = 'Titel';
+$_MODULE['<{performancepro}prestashop>dashboardform_004bf6c9a40003140292e97330236c53'] = 'Aktion';
+$_MODULE['<{performancepro}prestashop>dashboardform_729a51874fe901b092899e9e8b31c97a'] = 'Sind Sie sicher?';
+$_MODULE['<{performancepro}prestashop>dashboardform_6e8d89cffed8f9ff3ec5c801c4534a42'] = 'Bild-Cache löschen';
+$_MODULE['<{performancepro}prestashop>dashboardform_a74b44f6e4ad4c97b7c72d60889952e7'] = 'HTTP-Cache löschen';
+$_MODULE['<{performancepro}prestashop>dashboardform_f0f4423dc920820e30bcd9b52702c8a1'] = 'Medien-Cache (CSS/JS) löschen';
+$_MODULE['<{performancepro}prestashop>dashboardform_b55949956d8fdb6f4a1ea3c1c474548f'] = 'XML-Cache löschen';
+$_MODULE['<{performancepro}prestashop>dashboardform_3d7c35e368fc56ebfa0eb6cf3c84304d'] = 'Abfrage-Cache zurücksetzen';
+$_MODULE['<{performancepro}prestashop>dashboardform_f67c4a40428c8a8d338aef1a65c4bcb4'] = 'Abfrage-Cache löschen';
+$_MODULE['<{performancepro}prestashop>dashboardform_0ef61c76b8c0b20c097c3ff121341258'] = 'OP-Cache löschen';
+$_MODULE['<{performancepro}prestashop>dashboardform_2e9b0aaef50950a5ac251adf294c39ed'] = 'APC-Cache löschen';
+$_MODULE['<{performancepro}prestashop>dashboardform_058270cb4a780f66894ff7d1c3055cb5'] = 'Tabelle reparieren';
+$_MODULE['<{performancepro}prestashop>dashboardform_d3719fcb32f78a3a839e2e0a1494c2ec'] = 'Suchstatistiken löschen';
+$_MODULE['<{performancepro}prestashop>dashboardform_79af495c59d1e6ccb1965f713a842c53'] = 'Verbindungsstatistiken löschen';
+$_MODULE['<{performancepro}prestashop>dashboardform_dce1ad032da805e2946b13cad9dc90ff'] = 'Nicht verwendete Bilder löschen';
+$_MODULE['<{performancepro}prestashop>dashboardform_53a50c40fa1f09ddf6e62a309720bc61'] = 'Beschädigte Bilder löschen';
+$_MODULE['<{performancepro}prestashop>dashboardform_6282cd62088802c8426af29f0fc1579c'] = 'Verlassene Warenkörbe löschen';
+$_MODULE['<{performancepro}prestashop>databaseanalyticsform_729a51874fe901b092899e9e8b31c97a'] = 'Sind Sie sicher?';
+$_MODULE['<{performancepro}prestashop>databaseanalyticsform_79bd3eb67fe2b216f552cb9da33c6e4d'] = 'Aktuelle Einstellungen';
+$_MODULE['<{performancepro}prestashop>databaseanalyticsform_c65ddce3c65e864dcd4a5e3efc91388c'] = 'Empfohlene Einstellung';
+$_MODULE['<{performancepro}prestashop>databaseanalyticsform_004bf6c9a40003140292e97330236c53'] = 'Aktion';
+$_MODULE['<{performancepro}prestashop>databaseanalyticsform_9f09dbec13b06bace520c0cfe8747ab2'] = 'Datenbank-Analyse';
+$_MODULE['<{performancepro}prestashop>databaseanalyticsform_43340e6cc4e88197d57f8d6d5ea50a46'] = 'Mehr lesen';
+$_MODULE['<{performancepro}prestashop>helpform_c79e11eb0fa98851b7aa3ddf9b0c8c08'] = 'Testbestellung erstellen';
+$_MODULE['<{performancepro}prestashop>helpform_62e21bd4ae86a0607251d394c2a790fa'] = 'Entwickler kontaktieren';
+$_MODULE['<{performancepro}prestashop>helpform_3767717063be0c229639cdd6162295b0'] = 'Haben Sie Fragen, Probleme oder Wünsche?';
+$_MODULE['<{performancepro}prestashop>helpform_adad4b4b64126128cd84bd930faab92f'] = 'Modulentwickler kontaktieren';
+$_MODULE['<{performancepro}prestashop>helpform_6a26f548831e6a8c26bfbbd9f6ec61e0'] = 'Hilfe';
+$_MODULE['<{performancepro}prestashop>htmloptimizationform_9913748ba2d1fc1f3adec6f507e37cc6'] = 'Leerzeichen um Schlagwörter entfernen.';
+$_MODULE['<{performancepro}prestashop>htmloptimizationform_369d4418ba91b6cd8b0b33b240447769'] = 'HTML-Optimierung';
+$_MODULE['<{performancepro}prestashop>htmloptimizationform_66d79713301ba238d8893ff7d93888de'] = 'W3C-Validierer';
+$_MODULE['<{performancepro}prestashop>htmloptimizationform_00d23a76e43b46dae9ec7aa9dcbebb32'] = 'Aktiviert';
+$_MODULE['<{performancepro}prestashop>htmloptimizationform_b9f5c797ebbf55adccdd8539a65a0241'] = 'Deaktiviert';
+$_MODULE['<{performancepro}prestashop>htmloptimizationform_43340e6cc4e88197d57f8d6d5ea50a46'] = 'Mehr lesen';
+$_MODULE['<{performancepro}prestashop>htmloptimizationform_af0656b3aa802bac7b9dd1a82a6975db'] = 'Fehlende Bildgrösse hinzufügen';
+$_MODULE['<{performancepro}prestashop>htmloptimizationform_c9cc8cce247e49bae79f15173ce97354'] = 'Speichern';
+$_MODULE['<{performancepro}prestashop>htmloptimizationform_9dd4c90189a7c4787f55fdde49b27a94'] = 'Bildoptimierung';
+$_MODULE['<{performancepro}prestashop>htmloptimizationform_43340e6cc4e88197d57f8d6d5ea50a46'] = 'Mehr lesen';
+$_MODULE['<{performancepro}prestashop>htmloptimizationform_00d23a76e43b46dae9ec7aa9dcbebb32'] = 'Aktiviert';
+$_MODULE['<{performancepro}prestashop>htmloptimizationform_b9f5c797ebbf55adccdd8539a65a0241'] = 'Deaktiviert';
+$_MODULE['<{performancepro}prestashop>htmloptimizationform_c9cc8cce247e49bae79f15173ce97354'] = 'Speichern';
+$_MODULE['<{performancepro}prestashop>lazyloadingform_548b01996f7e38592ac895430316f9fe'] = 'Langsames Laden';
+$_MODULE['<{performancepro}prestashop>lazyloadingform_43340e6cc4e88197d57f8d6d5ea50a46'] = 'Mehr lesen';
+$_MODULE['<{performancepro}prestashop>lazyloadingform_00d23a76e43b46dae9ec7aa9dcbebb32'] = 'Aktiviert';
+$_MODULE['<{performancepro}prestashop>lazyloadingform_b9f5c797ebbf55adccdd8539a65a0241'] = 'Deaktiviert';
+$_MODULE['<{performancepro}prestashop>lazyloadingform_0ed93c8ca0b2e933ab6b6305709d5aae'] = 'Fusszeile langsam laden.';
+$_MODULE['<{performancepro}prestashop>lazyloadingform_c9cc8cce247e49bae79f15173ce97354'] = 'Speichern';
+$_MODULE['<{performancepro}prestashop>lazyloadingform_f045c4d830a7004c50777c5d46f2a71a'] = 'Modulname anzeigen';
+$_MODULE['<{performancepro}prestashop>lazyloadingform_604cf9c8425b3d20dbcae2f1c4bc575a'] = 'Technischer Modulname';
+$_MODULE['<{performancepro}prestashop>lazyloadingform_6f6cb72d544962fa333e2e34ce64f719'] = 'Grösse';
+$_MODULE['<{performancepro}prestashop>lazyloadingform_00d23a76e43b46dae9ec7aa9dcbebb32'] = 'Aktiviert';
+$_MODULE['<{performancepro}prestashop>lazyloadingform_b9f5c797ebbf55adccdd8539a65a0241'] = 'Deaktiviert';
+$_MODULE['<{performancepro}prestashop>lazyloadingform_e858446a67b7ce3c25e2ca9cc39960e5'] = 'Seitenoptimierung';
+$_MODULE['<{performancepro}prestashop>lazyloadingform_43340e6cc4e88197d57f8d6d5ea50a46'] = 'Mehr lesen';
+$_MODULE['<{performancepro}prestashop>lazyloadingform_00d23a76e43b46dae9ec7aa9dcbebb32'] = 'Aktiviert';
+$_MODULE['<{performancepro}prestashop>lazyloadingform_b9f5c797ebbf55adccdd8539a65a0241'] = 'Deaktiviert';
+$_MODULE['<{performancepro}prestashop>lazyloadingform_e56b6e5c785f4cbadcd4d4e4799a9ceb'] = 'Noopener hinzufügen';
+$_MODULE['<{performancepro}prestashop>lazyloadingform_c9cc8cce247e49bae79f15173ce97354'] = 'Speichern';
+$_MODULE['<{performancepro}prestashop>profilerform_1a226c2f1347809a185b8567ba1fc5a7'] = 'Profilierung';
+$_MODULE['<{performancepro}prestashop>profilerform_00d23a76e43b46dae9ec7aa9dcbebb32'] = 'Aktiviert';
+$_MODULE['<{performancepro}prestashop>profilerform_b9f5c797ebbf55adccdd8539a65a0241'] = 'Deaktiviert';
+$_MODULE['<{performancepro}prestashop>profilerform_c9cc8cce247e49bae79f15173ce97354'] = 'Speichern';
+$_MODULE['<{performancepro}prestashop>resourceloadingform_404b1bdd44c0f8d9258bf5d11715756c'] = 'Laden der Ressourcen';
+$_MODULE['<{performancepro}prestashop>resourceloadingform_5d8fcaa84ee5698a57dfdcc6e29cd473'] = 'Links zu Web-Schriften';
+$_MODULE['<{performancepro}prestashop>resourceloadingform_43340e6cc4e88197d57f8d6d5ea50a46'] = 'Mehr lesen';
+$_MODULE['<{performancepro}prestashop>resourceloadingform_00d23a76e43b46dae9ec7aa9dcbebb32'] = 'Aktiviert';
+$_MODULE['<{performancepro}prestashop>resourceloadingform_b9f5c797ebbf55adccdd8539a65a0241'] = 'Deaktiviert';
+$_MODULE['<{performancepro}prestashop>resourceloadingform_729a51874fe901b092899e9e8b31c97a'] = 'Sind Sie sicher?';
+$_MODULE['<{performancepro}prestashop>resourceloadingform_c9cc8cce247e49bae79f15173ce97354'] = 'Speichern';
+$_MODULE['<{performancepro}prestashop>resourceloadingform_79bd3eb67fe2b216f552cb9da33c6e4d'] = 'Aktuelle Einstellungen';
+$_MODULE['<{performancepro}prestashop>resourceloadingform_c65ddce3c65e864dcd4a5e3efc91388c'] = 'Empfohlene Einstellung';
+$_MODULE['<{performancepro}prestashop>resourceloadingform_cf1346365761df05267a92f84b7a1d86'] = 'Verbesserungsfähig';
+$_MODULE['<{performancepro}prestashop>resourceloadingform_60e2016ddc5fc624739607e22b531cda'] = 'Gut gemacht!';
+$_MODULE['<{performancepro}prestashop>resourceloadingform_f6ff6a8388c658a91673409a060df88f'] = 'Serveranalyse';
+$_MODULE['<{performancepro}prestashop>resourceloadingform_88183b946cc5f0e8c96b2e66e1c74a7e'] = 'Unbekannt';
+$_MODULE['<{performancepro}prestashop>resourceloadingform_76e52a69e1f0df80141e6e17ed6fba04'] = 'Version von PrestaShop (%s). Es wird empfohlen, den Shop auf die neueste Version von PrestaShop zu aktualisieren, da neue Versionen Leistungsverbesserungen und Sicherheitskorrekturen beinhalten.';
+$_MODULE['<{performancepro}prestashop>resourceloadingform_1992c1865cdb2b4b6cb3e42a140d19ec'] = 'Aktualisieren Sie PrestaShop auf die neueste Version (%s).';
+$_MODULE['<{performancepro}prestashop>resourceloadingform_1e5eb732c39682812450af860cf3fc19'] = 'PHP-Version (%s). Es wird empfohlen, auf die neueste PHP-Version zu aktualisieren, da neue PHP Fehlerbehebungen, Leistungsverbesserungen und Sicherheitsbehebungen enthält.';
+$_MODULE['<{performancepro}prestashop>resourceloadingform_4c94be4c4d338ddd3f76d149eb511170'] = 'Aktualisieren Sie PHP auf die neueste Version (%s).';
+$_MODULE['<{performancepro}prestashop>resourceloadingform_729a51874fe901b092899e9e8b31c97a'] = 'Sind Sie sicher?';
+$_MODULE['<{performancepro}prestashop>resourceloadingform_546bd32cc86be2be96f58c2405c09314'] = 'Smart Cache für CSS.';
+$_MODULE['<{performancepro}prestashop>resourceloadingform_8347cca15155337191169f6c0ad67207'] = 'Smart Cache für JavaScript.';
+$_MODULE['<{performancepro}prestashop>resourceloadingform_08a059a618fba394dc42b668d6f40502'] = 'Apache-Optimierung. Hierdurch werden Direktiven zu Ihrer .htaccess-Datei hinzugefügt, wodurch Caching und Komprimierung verbessert werden.';
+$_MODULE['<{performancepro}prestashop>resourceloadingform_bd1674669de08cf28b66896eeaf91f7f'] = 'Systemanalyse';
+$_MODULE['<{performancepro}prestashop>resourceloadingform_60e2016ddc5fc624739607e22b531cda'] = 'Gut gemacht!';
+$_MODULE['<{performancepro}prestashop>resourceloadingform_cf1346365761df05267a92f84b7a1d86'] = 'Verbesserungsfähig';
+$_MODULE['<{performancepro}prestashop>resourceloadingform_060bf2d587991d8f090a1309b285291c'] = 'Prüfen';
+$_MODULE['<{performancepro}prestashop>resourceloadingform_e97f83da993b37dede963042be24ea76'] = 'Wie beheben';
+$_MODULE['<{performancepro}prestashop>toolsconfigurationform_5c8c5b7728e6c04da4c6242c008bfa5e'] = 'Tool-Konfiguration';
+$_MODULE['<{performancepro}prestashop>toolsconfigurationform_6bcde6286f8d1b76063ee52104a240cf'] = 'Verlassene Warenkörbe';
+$_MODULE['<{performancepro}prestashop>toolsconfigurationform_52b4bdf984f683b00a8acfb9d669a5a5'] = 'Abgelaufene Warenkorbregeln';
+$_MODULE['<{performancepro}prestashop>toolsconfigurationform_a83c8741743953d4f9f17b37f7f9c32b'] = 'Suchstatistiken';
+$_MODULE['<{performancepro}prestashop>toolsconfigurationform_0d9397794d2c87537349cf396b2e3fa2'] = 'Verbindungsstatistiken';
+$_MODULE['<{performancepro}prestashop>toolsconfigurationform_5594dcf2bf9a36b5591e4215cde3159f'] = 'Seite nicht gefunden Statistiken';
+$_MODULE['<{performancepro}prestashop>toolsconfigurationform_b2d37ae1cedf42ff874289b721860af2'] = 'Protokolle';
+$_MODULE['<{performancepro}prestashop>toolsconfigurationform_2e7384c420833b4760136bb9d8be502b'] = 'E-Mail-Statistiken';
+$_MODULE['<{performancepro}prestashop>toolsconfigurationform_c9cc8cce247e49bae79f15173ce97354'] = 'Speichern';

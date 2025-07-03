@@ -1,0 +1,9 @@
+.mi-ico {
+    height: 16px;  /*height of icon */
+    width:  16px;  /*width of icon */
+    background: url(../img/logos/correos_logo_black.svg) no-repeat 0px 0px;
+}
+
+#packageWeightReturn_1.error, #packageAmountReturn_1.error  {
+    border: 1px solid red !important;
+}

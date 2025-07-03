@@ -1,0 +1,17 @@
+ 
+
+{shop_url}
+
+Hello {firstname} {lastname},
+
+Your order {order_name} has been canceled
+
+Your order with reference {order_name} from {shop_name} has been canceled by our Customer Service department.
+
+Go to your customer account to learn more about it.
+
+Please go to your customer account for more information or contact us through the [Contact form]({https://ceramicconnection.com/en/order-history}) section on our shop.
+
+[{shop_name}]({shop_url})
+
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)

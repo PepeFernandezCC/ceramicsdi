@@ -1,0 +1,23 @@
+ 
+
+{shop_url}
+
+Hola {firstname} {lastname},
+
+¡Su pedido {order_name} de {shop_name} ha sido entregado! 
+
+Su pedido ha sido entregado en:
+
+Dirección de envío﻿:
+
+{delivery_block_html}
+
+Si tiene alguna consulta, puede contactar con nuestro departamento de Atención al cliente a través del formulario de contacto.
+
+Recuerde que puede descargar su factura desde nuestra tienda, diríjase a la sección [Historial y detalles de mis pedidos]({history_url}) de su cuenta de cliente.
+
+Si tiene una cuenta de invitado, puede seguir su pedido desde la sección: [Seguimiento de pedido]({guest_tracking_url}) de nuestra tienda.
+
+[{shop_name}]({shop_url})
+
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)

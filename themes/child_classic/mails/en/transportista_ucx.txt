@@ -1,0 +1,24 @@
+ 
+
+{shop_url}
+
+Hello {firstname} {lastname},
+
+Order {order_name} - Carrier Information
+
+The carrier for the delivery of your order with reference {order_name} from {shop_name} is UCX. As soon as the merchandise leaves our facilities, you will receive an email with the tracking number.
+
+It is important to consider the following:
+
+1) The material is delivered palletized.
+2) Construction materials are generally quite heavy, and if it is a large format, handling the boxes can be costly.
+3) The order is delivered curbside; if the pallet jack cannot access your door, it will be unloaded as close as possible.
+4) It is highly recommended to contact UCX via mobile number 616281914 (WhatsApp only) to arrange the delivery time. The carrier will do its best to facilitate the delivery process. Please plan your availability to receive the material, either by yourself or the relevant construction professionals, to avoid unsuccessful delivery attempts.
+
+To download your invoice from our store, go to the [Order History and Details]({history_url}) section of your customer account.
+
+If you have a guest account, you can track your order from the [Tracking order]({guest_tracking_url}) section of our store.
+
+[{shop_name}]({shop_url})
+
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)

@@ -1,0 +1,44 @@
+{
+  "name": "nenes25/eicaptcha",
+  "description": "PrestaShop Captcha Module",
+  "homepage": "https://github.com/nenes25/eicaptcha",
+  "license": "AFL-3.0",
+  "authors": [
+    {
+      "name": "Hhennes",
+      "email": "contact@h-hennes.fr"
+    },
+    {
+      "name": "drzraf",
+      "email": "raphael.droz@gmail.com"
+    }
+
+  ],
+  "require": {
+    "php": ">=5.6",
+    "google/recaptcha": "~1.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "Eicaptcha\\Module\\": "src/"
+    }
+  },
+  "config": {
+    "preferred-install": "dist",
+    "prepend-autoloader": false
+  },
+  "type": "prestashop-module",
+  "require-dev": {
+    "prestashop/php-dev-tools": "^4.1"
+  },
+  "scripts": {
+    "phpstan" : [
+      "_PS_ROOT_DIR_=./../ php ~/.config/composer/vendor/bin/phpstan analyze -c ./tests/phpstan/phpstan.neon ./ --debug"
+    ],
+    "cs-fixer": [
+      "php7.2 vendor/bin/php-cs-fixer fix --config tests/php/.php-cs-fixer.dist.php"
+    ]
+  }
+
+
+}

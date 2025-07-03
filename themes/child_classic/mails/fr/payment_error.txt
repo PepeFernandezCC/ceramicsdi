@@ -1,0 +1,19 @@
+ 
+
+{shop_url}
+
+Bonjour {firstname} {lastname},
+
+Erreur de paiement de votre commande {order_name}
+
+Une erreur s'est produit lors du paiement de votre commande avec numéro de référence {order_name} depuis {shop_name}. Veuillez contacter notre Service clientèle dans le plus brefs délais.
+
+Veuillez noter que la livraison sera effectuée dès réception du paiement.
+
+Pour suivre votre commande et télécharger votre facture sur notre site, veuillez vous rendre dans la section [Historique et détails de mes commandes]({history_url}) de votre compte client.
+
+Si vous avez un compte invité, vous pouvez suivre votre commande via la section [Suivi de commande]({guest_tracking_url}) sur notre site web.
+
+[{shop_name}]({shop_url})
+
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)

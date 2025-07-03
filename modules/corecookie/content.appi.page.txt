@@ -1,0 +1,69 @@
+<h1><span style="color: #000000;font-size: 28px;margin-bottom:24px;font-weight: 500;">APPI Compliance</span></h1>
+
+<div style="line-height:2;"><span style="font-size:16px;"><span style="color:#000000;">The app used for assuring the GDPR/CCPA/APPI/PIPEDA compliance of this site, collects your IP and the email address in order to process the data. For more check</span>&nbsp;</span>
+<a href="{privacy_link}" target="_blank" rel="noreferrer noopener"><u><span style="color:rgb(18,18,18);font-size:14px;font-weight:500;">Privacy Policy &amp; Terms of Service</span></u></a></div>
+
+<div><br>
+</div>
+
+<h2 style="margin-bottom:20px;font-weight: normal;"><span style="color:#000000;font-size:24px;">Data Rectification</span></h2>
+
+<p><span style="font-size:16px;color:#000000;">You can use the link below to update your account data if it is not accurate.</span></p>
+
+<p style="margin-bottom:24px;"><span style="font-size:16px;color:#000000;">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<span style="font-size:14px;"><u>
+<a target="_blank" href='{identity_link}'><span style="color:rgb(53,53,53);">Edit your account information</span></a>
+</u></span><br>
+</p>
+
+<h2 style="margin-bottom:20px;font-weight: normal;"><span style="color:#000000;font-size:24px;">Data Portability</span></h2>
+
+<p><span style="color:#000000;font-size:16px;">You can use the links below to download all the data we store and use for a better experience in our store.</span></p>
+
+<p><span style="color:#000000;font-size:16px;">&nbsp;&nbsp;&nbsp;&nbsp;<u>
+<a target="_blank" href='{appi_request}'><span style="color:rgb(53,53,53);font-size:14px;">APPI requests</span></a>
+</u></span><br>
+</p>
+
+<p><span style="font-size:14px;">
+<a target="_blank" href='{appi_personal_information}'><span style="color:rgb(53,53,53);">&nbsp;&nbsp;&nbsp;&nbsp;<u>Personal information</u></span></a>
+<br>
+</span></p>
+
+<p style="margin-bottom:24px;"><span style="font-size:14px;">
+<a target="_blank" href='{order_link}'>
+<span style="color:rgb(53,53,53);">&nbsp;&nbsp;&nbsp;&nbsp;<u>Orders</u></span>
+</a>
+</span><br>
+</p>
+
+<h2 style="margin-bottom:20px;font-weight: normal;"><span style="color:#000000;font-size:24px;">Access to Personal Data</span></h2>
+
+<p><span style="color:#000000;font-size:16px;">You can use the link below to request a report which will contain all personal information that we store for you.</span></p>
+
+<p style="margin-bottom:24px;"><span style="color:#000000;font-size:16px;">&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="font-size:14px;">
+<a target="_blank" href='{appi_request_report}'><span style="color:rgb(53,53,53);"><u>Request a report</u></span></a></span><br>
+</p>
+
+<h2 style="margin-bottom:20px;font-weight: normal;"><span style="color:#000000;font-size:24px;">Do not Sell My Personal Information to Third Party</span>
+</h2>
+
+<p><span style="color:#000000;font-size:16px;">You can submit a request to let us know that you do not agree for your personal information to be collected or sold to a third party.</span></p>
+
+<p style="margin-bottom:24px;"><span style="color:#000000;font-size:16px;">&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="font-size:14px;">
+<a target="_blank" href='{appi_do_not_sell}'>
+<span style="color:rgb(53,53,53);"><u>Do not sell my personal information</u></span>
+</a>
+</span><br>
+</p>
+
+<h2 style="margin-bottom:20px;font-weight: normal;"><span style="color:#000000;font-size:24px;">Right to be Forgotten</span></h2>
+
+<p><span style="color:#000000;font-size:16px;">Use this option if you want to remove your personal and other data from our store. Keep in mind that&nbsp;<strong style='font-weight: 500;'>this process will delete your account, so you will no longer be able to access or use it anymore</strong>.</span></p>
+
+<p><span style="color:#000000;font-size:16px;">&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="font-size:14px;">
+<a target="_blank" href='{appi_deletion_request}'>
+<span style="color:rgb(53,53,53);"><u>Request personal data deletion</u></span>
+</a>
+</span><br>
+</p>

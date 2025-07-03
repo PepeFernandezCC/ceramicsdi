@@ -1,0 +1,12 @@
+[{shop_url}]
+
+Hello {firstname} {lastname},
+
+Your VAT Number has been denied at {shop_name}.
+
+Please feel free to use another one!
+
+Thank you for your patience!
+
+VAT Number: {vatnr}
+

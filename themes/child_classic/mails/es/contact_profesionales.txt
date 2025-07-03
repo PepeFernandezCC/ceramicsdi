@@ -1,0 +1,38 @@
+ 
+
+{shop_url}
+
+Mensaje de un cliente de {shop_name}
+
+Asunto: {contact_name}
+
+Tipo de actividad:
+{customActivityType}
+
+Dirección de correo electrónico del cliente: {email}
+
+Razón social/Nombre y apellidos: {customName}
+
+CIF/NIF: {customCif}
+
+Dirección: {customAddress}
+
+Intracomunitario: {customIntraCommunitary}
+
+Código Postal: {customPostalCode}
+
+Ciudad: {customCity}
+
+Provincia: {customProvince}
+
+Teléfono: {customPhone}
+
+Nombre persona de contacto: {customContactPersonName}
+
+Página web comercial: {customCommercialWeb}
+
+Suscripción a información y ofertas: {customNewsletter}
+
+[{shop_name}]({shop_url})
+
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)

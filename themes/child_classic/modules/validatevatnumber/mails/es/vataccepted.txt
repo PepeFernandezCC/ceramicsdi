@@ -1,0 +1,12 @@
+[{shop_url}]
+
+Hello {firstname} {lastname},
+
+Your VAT Number has been validated at {shop_name}.
+
+Thank you for your patience!
+
+VAT Number: {vatnr}
+
+
+

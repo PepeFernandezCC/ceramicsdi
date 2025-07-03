@@ -1,0 +1,18 @@
+ 
+
+{shop_url}
+
+Hola {firstname} {lastname},
+
+Su pedido {order_name} está siendo procesado
+
+Su pedido con número de referencia {order_name} de {shop_name} está siendo preparado en estos momentos.
+Recuerde que las cancelaciones o modificaciones de los pedidos serán admitidas siempre y cuando el pedido no haya sido recogido por la empresa de transporte.
+
+Puede consultar su pedido y descargar su factura desde nuestra tienda, diríjase a la sección [Historial y detalles de mis pedidos]({history_url}) de su cuenta de cliente.
+
+Si tiene una cuenta de invitado, puede seguir su pedido desde la sección: [Seguimiento de pedido]({guest_tracking_url}) de nuestra tienda.
+
+[{shop_name}]({shop_url})
+
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)

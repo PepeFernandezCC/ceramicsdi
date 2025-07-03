@@ -1,0 +1,29 @@
+ 
+
+{shop_url}
+
+Olá {firstname} {lastname},
+
+Obrigado por fazer compras na {shop_name}!
+
+Encomenda nº {order_name} - A aguardar pagamento por cheque
+
+A sua encomenda com a referência {order_name} foi colocada com sucesso. Pode contar com a sua expedição assim que o pagamento seja recebido.
+
+Método de pagamento: Cheque
+
+Escolheu pagar por cheque. Aqui está a informação que necessita para proceder ao pagamento por cheque:
+
+Quantia:  {total_paid}
+
+Pagar à ordem de:  {check_name}
+
+Por favor, envie o seu cheque para:  {check_address_html}
+
+Siga a sua encomenda e transfira a sua fatura na nossa loja, vá para a secção [Histórico de encomendas e detalhes]({history_url}) da sua conta de cliente.
+
+Se tem uma conta de convidado, pode seguir a sua encomenda na secção [Rastreio de Visitantes]({guest_tracking_url}) na nossa loja.
+
+[{shop_name}]({shop_url})
+
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)

@@ -1,0 +1,24 @@
+ 
+
+{shop_url}
+
+Hola {firstname} {lastname},
+
+Pedido {order_name} - Información sobre el transportista
+
+El transportista para la entrega de su pedido con la referencia {order_name} de {shop_name} es DB SCHENKER. En cuanto la mercancía salga de nuestras instalaciones recibirá un correo con el número de seguimiento.
+
+Es importante que tenga en cuenta las siguientes consideraciones:
+
+1) El material se entrega paletizado.
+2) Generalmente los materiales de construcción suelen ser bastante pesados y si es un formato grande la manipulación de las cajas puede ser costosa.
+3) El pedido se entrega a pie de calle, si la transpaleta no puede acceder hasta su puerta se descargará en el punto más cercano posible.
+4) Normalmente los transportistas facilitan un rango horario para la entrega, pero no una hora exacta. Haga una previsión de disponibilidad para recibir el material ya sea usted mismo o los profesionales de la construcción pertinentes para evitar que la entrega sea fallida.
+
+Puede descargar su factura desde nuestra tienda, diríjase a la sección [Historial y detalles de mis pedidos]({history_url}) de su cuenta de cliente.
+
+Si tiene una cuenta de invitado, puede seguir su pedido desde la sección: [Seguimiento de pedido]({guest_tracking_url}) de nuestra tienda.
+
+[{shop_name}]({shop_url})
+
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)

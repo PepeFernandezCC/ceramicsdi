@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>performancepro</name>
+    <displayName><![CDATA[Performance Pro]]></displayName>
+    <version><![CDATA[2.6.0]]></version>
+    <description><![CDATA[Este m&oacute;dulo aumenta el rendimiento general de su sitio.]]></description>
+    <author><![CDATA[Mathias R.]]></author>
+    <tab><![CDATA[front_office_features]]></tab>
+    <is_configurable>1</is_configurable>
+    <need_instance>0</need_instance>
+	<limited_countries></limited_countries>
+</module>

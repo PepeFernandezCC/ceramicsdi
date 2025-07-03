@@ -1,0 +1,9 @@
+
+                                                                 Hi Admin!
+                                                                You have the following message from the client:
+                                                                - Customer email: {customer_email}
+                                                                - Full name: {customer_first_name} {customer_last_name}
+                                                                - Request type: {meta_type_request}
+                                                                - Content: {customer_message}
+                                                                Please visit the store admin page to check.
+                {shop_name}. {shop_address}
