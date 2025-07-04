@@ -21,7 +21,9 @@
 
 {if isset($menus) && $menus}
     <ul class="mm_menus_ul {if isset($mm_config.ETS_MM_CLICK_TEXT_SHOW_SUB) && $mm_config.ETS_MM_CLICK_TEXT_SHOW_SUB} clicktext_show_submenu{/if} {if isset($mm_config.ETS_MM_SHOW_ICON_VERTICAL)&& !$mm_config.ETS_MM_SHOW_ICON_VERTICAL} hide_icon_vertical{/if}">
-        <li class="close_menu">
+
+        {foreach from=$menus item='menu'}
+                <li class="close_menu">
             <div class="pull-left">
                 <span class="mm_menus_back">
                     <i class="icon-bar"></i>
@@ -35,7 +37,6 @@
                 {l s='Back' mod='ets_megamenu'}
             </div>
         </li>
-        {foreach from=$menus item='menu'}
             <li class="mm_menus_li{if $menu.enabled_vertical} mm_menus_li_tab{if $menu.menu_ver_hidden_border} mm_no_border{/if}{if $menu.menu_ver_alway_show} menu_ver_alway_show_sub{/if}{/if}{if $menu.custom_class} {$menu.custom_class|escape:'html':'UTF-8'}{/if}{if $menu.sub_menu_type} mm_sub_align_{strtolower($menu.sub_menu_type)|escape:'html':'UTF-8'}{/if}{if $menu.columns} mm_has_sub{/if}{if $menu.display_tabs_in_full_width && $menu.enabled_vertical} display_tabs_in_full_width{/if}{if isset($mm_config.ETS_MM_DISPLAY_SUBMENU_BY_CLICK) && $mm_config.ETS_MM_DISPLAY_SUBMENU_BY_CLICK } click_open_submenu{else} hover {/if}"
                 {if $menu.enabled_vertical}style="width: {if $menu.menu_item_width}{$menu.menu_item_width|escape:'html':'UTF-8'}{else}{*230px*}auto;{/if}"{/if}>
                 <a class="ets_mm_url" {if isset($menu.menu_open_new_tab) && $menu.menu_open_new_tab == 1} target="_blank"{/if}

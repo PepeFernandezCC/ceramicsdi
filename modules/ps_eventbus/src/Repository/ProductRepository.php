@@ -1,315 +1,386 @@
 <?php
+/**
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/OSL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://devdocs.prestashop.com/ for more information.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ */
 
 namespace PrestaShop\Module\PsEventbus\Repository;
 
-class ProductRepository
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
+class ProductRepository extends AbstractRepository implements RepositoryInterface
 {
-    /**
-     * @var \Context
-     */
-    private $context;
-    /**
-     * @var \Db
-     */
-    private $db;
+    const TABLE_NAME = 'product';
 
-    public function __construct(\Db $db, \Context $context)
+    /**
+     * @param string $langIso
+     * @param bool $withSelecParameters
+     *
+     * @return void
+     *
+     * @throws \PrestaShopException
+     */
+    public function generateFullQuery($langIso, $withSelecParameters)
     {
-        $this->db = $db;
-        $this->context = $context;
+        $shopIdGroup = (int) parent::getShopContext()->id_shop_group;
+        $langId = (int) \Language::getIdByIso($langIso);
 
-        if (!$this->context->employee instanceof \Employee) {
-            if (($employees = \Employee::getEmployees()) !== false) {
-                $this->context->employee = new \Employee($employees[0]['id_employee']);
+        // WTF IS THAT ?
+        if (!parent::getContext()->employee instanceof \Employee) {
+            $employees = \Employee::getEmployees();
+
+            if ($employees) {
+                parent::getContext()->employee = new \Employee($employees[0]['id_employee']);
+            }
+        }
+
+        $this->generateMinimalQuery(self::TABLE_NAME, 'p');
+
+        $this->query
+            ->innerJoin('product_shop', 'ps', 'ps.id_product = p.id_product AND ps.id_shop = ' . parent::getShopContext()->id)
+            ->innerJoin('product_lang', 'pl', 'pl.id_product = ps.id_product AND pl.id_shop = ps.id_shop AND pl.id_lang = ' . $langId)
+            ->leftJoin('product_attribute_shop', 'pas', 'pas.id_product = p.id_product AND pas.id_shop = ps.id_shop')
+            ->leftJoin('product_attribute', 'pa', 'pas.id_product_attribute = pa.id_product_attribute')
+            ->leftJoin('category_lang', 'cl', 'ps.id_category_default = cl.id_category AND ps.id_shop = cl.id_shop AND cl.id_lang = ' . $langId)
+            ->leftJoin('manufacturer', 'm', 'p.id_manufacturer = m.id_manufacturer')
+        ;
+
+        if (parent::getShopContext()->getGroup()->share_stock) {
+            $this->query->leftJoin(
+                'stock_available',
+                'sa',
+                'sa.id_product = p.id_product AND sa.id_product_attribute = IFNULL(pas.id_product_attribute, 0) AND sa.id_shop_group = ' . $shopIdGroup)
+            ;
+        } else {
+            $this->query->leftJoin(
+                'stock_available',
+                'sa',
+                'sa.id_product = p.id_product AND sa.id_product_attribute = IFNULL(pas.id_product_attribute, 0) AND sa.id_shop = ps.id_shop')
+            ;
+        }
+
+        if ($withSelecParameters) {
+            $this->query
+                ->select('p.id_product')
+                ->select('p.id_manufacturer')
+                ->select('p.id_supplier')
+                ->select('pas.id_product_attribute as id_attribute')
+                ->select('pas.default_on as is_default_attribute')
+                ->select('pl.name')
+                ->select('pl.description')
+                ->select('pl.description_short')
+                ->select('pl.link_rewrite')
+                ->select('cl.name as default_category')
+                ->select('ps.id_category_default')
+                ->select('IFNULL(NULLIF(pa.reference, ""), p.reference) as reference')
+                ->select('IFNULL(NULLIF(pa.upc, ""), p.upc) as upc')
+                ->select('IFNULL(NULLIF(pa.ean13, ""), p.ean13) as ean')
+                ->select('ps.condition')
+                ->select('ps.visibility')
+                ->select('ps.active')
+                ->select('sa.quantity')
+                ->select('m.name as manufacturer')
+                ->select('(p.weight + IFNULL(pas.weight, 0)) as weight')
+                ->select('(ps.price + IFNULL(pas.price, 0)) as price_tax_excl')
+                ->select('p.date_add as created_at')
+                ->select('p.date_upd as updated_at')
+                ->select('p.available_for_order')
+                ->select('p.available_date')
+                ->select('p.cache_is_pack as is_bundle')
+                ->select('p.is_virtual')
+                ->select('p.unity')
+                ->select('p.unit_price_ratio')
+                ->select('p.width')
+                ->select('p.height')
+                ->select('p.depth')
+                ->select('p.additional_shipping_cost')
+                ->select("CONCAT(p.id_product, '-', IFNULL(pas.id_product_attribute, 0), '-', '" . pSQL($langIso) . "') AS unique_product_id")
+                ->select("CONCAT(p.id_product, '-', IFNULL(pas.id_product_attribute, 0)) AS id_product_attribute")
+                ->select("'" . pSQL($langIso) . "' as iso_code")
+            ;
+
+            if (defined('_PS_VERSION_') && version_compare(_PS_VERSION_, '1.7', '>=')) {
+                $this->query->select('IFNULL(NULLIF(pa.isbn, ""), p.isbn) as isbn');
+            }
+
+            // https://github.com/PrestaShop/PrestaShop/commit/10268af8db4163dc2a02edb8da93d02f37f814d8#diff-e94a594ba740485c7a4882b333984d3932a2f99c0d6d0005620745087cce7a10R260
+            if (defined('_PS_VERSION_') && version_compare(_PS_VERSION_, '1.7.3.0', '>=')) {
+                $this->query
+                    ->select('p.additional_delivery_times')
+                    ->select('pl.delivery_in_stock')
+                    ->select('pl.delivery_out_stock')
+                ;
+            }
+
+            // https://github.com/PrestaShop/PrestaShop/commit/75fcc335a85c4e3acb2444ef9584590a59fc2d62#diff-e98d435095567c145b49744715fd575eaab7050328c211b33aa9a37158421ff4R1615
+            if (defined('_PS_VERSION_') && version_compare(_PS_VERSION_, '1.7.7.0', '>=')) {
+                $this->query->select('p.mpn');
             }
         }
     }
 
     /**
-     * @param \Shop $shop
-     * @param int $langId
+     * @param int $offset
+     * @param int $limit
+     * @param string $langIso
      *
-     * @return \DbQuery
+     * @return array<mixed>
+     *
+     * @throws \PrestaShopException
+     * @throws \PrestaShopDatabaseException
      */
-    private function getBaseQuery(\Shop $shop, $langId)
+    public function retrieveContentsForFull($offset, $limit, $langIso)
     {
-        $query = new \DbQuery();
+        $this->generateFullQuery($langIso, true);
 
-        $query->from('product', 'p')
-            ->innerJoin('product_shop', 'ps', 'ps.id_product = p.id_product AND ps.id_shop = ' . (int) $shop->id)
-            ->innerJoin('product_lang', 'pl', 'pl.id_product = ps.id_product AND pl.id_shop = ps.id_shop AND pl.id_lang = ' . (int) $langId)
-            ->leftJoin('product_attribute_shop', 'pas', 'pas.id_product = p.id_product AND pas.id_shop = ps.id_shop')
-            ->leftJoin('product_attribute', 'pa', 'pas.id_product_attribute = pa.id_product_attribute')
-            ->leftJoin('category_lang', 'cl', 'ps.id_category_default = cl.id_category AND ps.id_shop = cl.id_shop AND cl.id_lang = ' . (int) $langId)
-            ->leftJoin('manufacturer', 'm', 'p.id_manufacturer = m.id_manufacturer');
+        $this->query->limit((int) $limit, (int) $offset);
 
-        if ($shop->getGroup()->share_stock) {
-            $query->leftJoin('stock_available', 'sa', 'sa.id_product = p.id_product AND
-             sa.id_product_attribute = IFNULL(pas.id_product_attribute, 0) AND sa.id_shop_group = ' . (int) $shop->id_shop_group);
-        } else {
-            $query->leftJoin('stock_available', 'sa', 'sa.id_product = p.id_product AND
-             sa.id_product_attribute = IFNULL(pas.id_product_attribute, 0) AND sa.id_shop = ps.id_shop');
-        }
+        return $this->runQuery();
+    }
 
-        return $query;
+    /**
+     * @param int $limit
+     * @param array<mixed> $contentIds
+     * @param string $langIso
+     *
+     * @return array<mixed>
+     *
+     * @throws \PrestaShopException
+     * @throws \PrestaShopDatabaseException
+     */
+    public function retrieveContentsForIncremental($limit, $contentIds, $langIso)
+    {
+        $this->generateFullQuery($langIso, true);
+
+        $this->query
+            ->where("CONCAT(p.id_product, '-', IFNULL(pas.id_product_attribute, 0)) IN('" . implode("','", array_map('strval', $contentIds ?: [-1])) . "')")
+            ->limit($limit)
+        ;
+
+        return $this->runQuery();
     }
 
     /**
      * @param int $offset
      * @param int $limit
-     * @param int $langId
-     *
-     * @return array
-     *
-     * @throws \PrestaShopDatabaseException
-     */
-    public function getProducts($offset, $limit, $langId)
-    {
-        $query = $this->getBaseQuery($this->context->shop, $langId);
-
-        $this->addSelectParameters($query);
-
-        $query->limit($limit, $offset);
-
-        $result = $this->db->executeS($query);
-
-        return is_array($result) ? $result : [];
-    }
-
-    /**
-     * @param int $offset
-     * @param int $langId
+     * @param string $langIso
      *
      * @return int
      *
+     * @throws \PrestaShopException
      * @throws \PrestaShopDatabaseException
      */
-    public function getRemainingProductsCount($offset, $langId)
+    public function countFullSyncContentLeft($offset, $limit, $langIso)
     {
-        $products = $this->getProducts($offset, 1, $langId);
+        $this->generateFullQuery($langIso, false);
 
-        if (!is_array($products) || empty($products)) {
-            return 0;
-        }
+        $this->query->select('(COUNT(*) - ' . (int) $offset . ') as count');
 
-        return count($products);
+        $result = $this->runQuery(true);
+
+        return !empty($result[0]['count']) ? $result[0]['count'] : 0;
     }
 
     /**
-     * @param array $attributeIds
-     * @param int $langId
+     * @param array<mixed> $attributeIds
+     * @param string $langIso
      *
-     * @return array
+     * @return array<mixed>
      *
      * @throws \PrestaShopDatabaseException
      */
-    public function getProductAttributeValues(array $attributeIds, $langId)
+    public function getProductAttributeValues($attributeIds, $langIso)
     {
-        if (!$attributeIds) {
-            return [];
-        }
-        $query = new \DbQuery();
+        $langId = (int) \Language::getIdByIso($langIso);
 
-        $query->select('pas.id_product_attribute, agl.name as name, al.name as value')
-            ->from('product_attribute_shop', 'pas')
+        $this->generateMinimalQuery('product_attribute_shop', 'pas');
+
+        $this->query
             ->leftJoin('product_attribute_combination', 'pac', 'pac.id_product_attribute = pas.id_product_attribute')
             ->leftJoin('attribute', 'a', 'a.id_attribute = pac.id_attribute')
-            ->leftJoin('attribute_group_lang', 'agl', 'agl.id_attribute_group = a.id_attribute_group AND agl.id_lang = ' . (int) $langId)
+            ->leftJoin('attribute_group_lang', 'agl', 'agl.id_attribute_group = a.id_attribute_group AND agl.id_lang = ' . $langId)
             ->leftJoin('attribute_lang', 'al', 'al.id_attribute = pac.id_attribute AND al.id_lang = agl.id_lang')
-            ->where('pas.id_product_attribute IN (' . implode(',', array_map('intval', $attributeIds)) . ') AND pas.id_shop = ' . (int) $this->context->shop->id);
+            ->where("pas.id_product_attribute IN ('" . implode("','", array_map('intval', $attributeIds)) . "') AND pas.id_shop = " . parent::getShopContext()->id)
+        ;
 
-        $attributes = $this->db->executeS($query);
+        $this->query
+            ->select('pas.id_product_attribute, agl.name as name, al.name as value')
+            ->select('agl.name as name')
+            ->select('al.name as value')
+        ;
 
-        if (is_array($attributes)) {
-            $resultArray = [];
+        $attributes = $this->runQuery(true);
 
-            foreach ($attributes as $attribute) {
-                $resultArray[$attribute['id_product_attribute']][$attribute['name']] = $attribute['value'];
-            }
+        $resultArray = [];
 
-            return $resultArray;
+        foreach ($attributes as $attribute) {
+            $resultArray[$attribute['id_product_attribute']][$attribute['name']] = $attribute['value'];
         }
 
-        return [];
+        return $resultArray;
     }
 
     /**
-     * @param array $productIds
-     * @param int $langId
+     * @param array<mixed> $productIds
+     * @param string $langIso
      *
-     * @return array
+     * @return array<mixed>
      *
      * @throws \PrestaShopDatabaseException
      */
-    public function getProductFeatures(array $productIds, $langId)
+    public function getProductFeatures($productIds, $langIso)
     {
-        if (!$productIds) {
-            return [];
-        }
+        $langId = (int) \Language::getIdByIso($langIso);
 
-        $query = new \DbQuery();
+        $this->generateMinimalQuery('feature_product', 'fp');
 
-        $query->select('fp.id_product, fl.name, fvl.value')
-            ->from('feature_product', 'fp')
-            ->leftJoin('feature_lang', 'fl', 'fl.id_feature = fp.id_feature AND fl.id_lang = ' . (int) $langId)
+        $this->query
+            ->leftJoin('feature_lang', 'fl', 'fl.id_feature = fp.id_feature AND fl.id_lang = ' . $langId)
             ->leftJoin('feature_value_lang', 'fvl', 'fvl.id_feature_value = fp.id_feature_value AND fvl.id_lang = fl.id_lang')
-            ->where('fp.id_product IN (' . implode(',', array_map('intval', $productIds)) . ')');
+            ->where("fp.id_product IN ('" . implode("','", array_map('intval', $productIds)) . "')")
+        ;
 
-        $features = $this->db->executeS($query);
+        $this->query
+            ->select('fp.id_product')
+            ->select('fl.name')
+            ->select('fvl.value')
+        ;
 
-        if (is_array($features)) {
-            $resultArray = [];
+        $features = $this->runQuery(true);
 
-            foreach ($features as $feature) {
-                $resultArray[$feature['id_product']][$feature['name']] = $feature['value'];
-            }
+        $resultArray = [];
 
-            return $resultArray;
+        foreach ($features as $feature) {
+            $resultArray[$feature['id_product']][$feature['name']] = $feature['value'];
         }
 
-        return [];
+        return $resultArray;
     }
 
     /**
-     * @param array $productIds
+     * @param array<mixed> $productIds
      *
-     * @return array
+     * @return array<mixed>
      *
      * @throws \PrestaShopDatabaseException
      */
-    public function getProductImages(array $productIds)
+    public function getProductImages($productIds)
     {
-        if (!$productIds) {
-            return [];
-        }
+        $this->generateMinimalQuery('image_shop', 'imgs');
 
-        $query = new \DbQuery();
+        $this->query
+            ->where('imgs.id_shop = ' . parent::getShopContext()->id . " AND imgs.id_product IN ('" . implode("','", array_map('intval', $productIds)) . "')");
 
-        $query->select('imgs.id_product, imgs.id_image, IFNULL(imgs.cover, 0) as cover')
-            ->from('image_shop', 'imgs')
-            ->where('imgs.id_shop = ' . (int) $this->context->shop->id . ' AND imgs.id_product IN (' . implode(',', array_map('intval', $productIds)) . ')');
+        $this->query
+            ->select('imgs.id_product, imgs.id_image, IFNULL(imgs.cover, 0) as cover')
+            ->select('imgs.id_image')
+            ->select('IFNULL(imgs.cover, 0) as cover')
+        ;
 
-        $result = $this->db->executeS($query);
-
-        return is_array($result) ? $result : [];
+        return $this->runQuery(true);
     }
 
     /**
-     * @param array $attributeIds
+     * @param array<mixed> $attributeIds
      *
-     * @return array
+     * @return array<mixed>
      *
      * @throws \PrestaShopDatabaseException
      */
-    public function getAttributeImages(array $attributeIds)
+    public function getAttributeImages($attributeIds)
     {
-        if (!$attributeIds) {
-            return [];
-        }
-        $query = new \DbQuery();
+        $this->generateMinimalQuery('product_attribute_image', 'pai');
 
-        $query->select('id_product_attribute, id_image')
-            ->from('product_attribute_image', 'pai')
-            ->where('pai.id_product_attribute IN (' . implode(',', array_map('intval', $attributeIds)) . ')');
+        $this->query
+            ->where("pai.id_product_attribute IN ('" . implode("','", array_map('intval', $attributeIds)) . "')")
+        ;
 
-        $result = $this->db->executeS($query);
+        $this->query
+            ->select('id_product_attribute, id_image')
+            ->select('id_image')
+        ;
 
-        return is_array($result) ? $result : [];
+        return $this->runQuery(true);
     }
 
     /**
      * @param int $productId
-     * @param int $attributeId
      *
-     * @return float
-     */
-    public function getPriceTaxExcluded($productId, $attributeId)
-    {
-        return \Product::getPriceStatic($productId, false, $attributeId, 6, null, false, false);
-    }
-
-    /**
-     * @param int $productId
-     * @param int $attributeId
+     * @return array<mixed>
      *
-     * @return float
-     */
-    public function getPriceTaxIncluded($productId, $attributeId)
-    {
-        return \Product::getPriceStatic($productId, true, $attributeId, 6, null, false, false);
-    }
-
-    /**
-     * @param int $productId
-     * @param int $attributeId
-     *
-     * @return float
-     */
-    public function getSalePriceTaxExcluded($productId, $attributeId)
-    {
-        return \Product::getPriceStatic($productId, false, $attributeId, 6);
-    }
-
-    /**
-     * @param int $productId
-     * @param int $attributeId
-     *
-     * @return float
-     */
-    public function getSalePriceTaxIncluded($productId, $attributeId)
-    {
-        return \Product::getPriceStatic($productId, true, $attributeId, 6);
-    }
-
-    /**
-     * @param int $limit
-     * @param int $langId
-     * @param array $productIds
-     *
-     * @return array
-     *
+     * @throws \PrestaShopException
      * @throws \PrestaShopDatabaseException
      */
-    public function getProductsIncremental($limit, $langId, $productIds)
+    public function getProductPriceAndDeclinations($productId)
     {
-        $query = $this->getBaseQuery($this->context->shop, $langId);
+        $this->generateMinimalQuery(self::TABLE_NAME, 'p');
 
-        $this->addSelectParameters($query);
+        $this->query->where('p.`id_product` = ' . (int) $productId);
 
-        $query->where('p.id_product IN(' . implode(',', array_map('intval', $productIds)) . ')')
-            ->limit($limit);
+        $this->query->innerJoin(
+            'product_shop', 'ps', '(ps.id_product=p.id_product AND ps.id_shop = ' . (int) parent::getShopContext()->id . ')');
 
-        $result = $this->db->executeS($query);
+        $this->query
+            ->select('ps.price')
+            ->select('ps.ecotax')
+        ;
 
-        return is_array($result) ? $result : [];
+        if (\Combination::isFeatureActive()) {
+            $this->query->leftJoin(
+                'product_attribute_shop', 'pas', '(pas.id_product = p.id_product AND pas.id_shop = ' . (int) parent::getShopContext()->id . ')');
+
+            $this->query
+                ->select('IFNULL(pas.id_product_attribute,0) id_product_attribute')
+                ->select('pas.`price` AS attribute_price')
+                ->select('pas.default_on')
+            ;
+        } else {
+            $this->query->select('0 as id_product_attribute');
+        }
+
+        return $this->runQuery(true);
     }
 
     /**
-     * @param \DbQuery $query
+     * @param int $productId
      *
-     * @return void
+     * @return array<mixed>
      */
-    private function addSelectParameters(\DbQuery $query)
+    public function getUniqueProductIdsFromProductId($productId)
     {
-        $query->select('p.id_product, IFNULL(pas.id_product_attribute, 0) as id_attribute, pas.default_on as is_default_attribute,
-            pl.name, pl.description, pl.description_short, pl.link_rewrite, cl.name as default_category,
-            ps.id_category_default, IFNULL(NULLIF(pa.reference, ""), p.reference) as reference, IFNULL(NULLIF(pa.upc, ""), p.upc) as upc,
-            IFNULL(NULLIF(pa.ean13, ""), p.ean13) as ean, ps.condition, ps.visibility, ps.active, sa.quantity, m.name as manufacturer,
-            (p.weight + IFNULL(pas.weight, 0)) as weight, (ps.price + IFNULL(pas.price, 0)) as price_tax_excl,
-            p.date_add as created_at, p.date_upd as updated_at,
-            p.available_for_order, p.available_date, p.cache_is_pack as is_bundle, p.is_virtual,
-            p.unity, p.unit_price_ratio
-            ');
+        $this->generateMinimalQuery(self::TABLE_NAME, 'p');
 
-        if (property_exists(new \Product(), 'mpn')) {
-            $query->select('p.mpn');
-        }
+        $this->query
+            ->innerJoin('product_shop', 'ps', 'ps.id_product = p.id_product AND ps.id_shop = ' . parent::getShopContext()->id)
+            ->leftJoin('product_attribute_shop', 'pas', 'pas.id_product = p.id_product AND pas.id_shop = ps.id_shop')
+        ;
 
-        $query->select('p.width, p.height, p.depth, p.additional_delivery_times, p.additional_shipping_cost');
-        $query->select('pl.delivery_in_stock, pl.delivery_out_stock');
+        $this->query->select("CONCAT(p.id_product, '-', COALESCE(pas.id_product_attribute, 0)) AS id_product_attribute");
 
-        if (version_compare(_PS_VERSION_, '1.7', '>=')) {
-            $query->select('IFNULL(NULLIF(pa.isbn, ""), p.isbn) as isbn');
-        }
+        $this->query->where("p.id_product = '" . $productId . "'");
+
+        return $this->runQuery(true);
     }
 }

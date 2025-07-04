@@ -5,79 +5,142 @@
  *
  * NOTICE OF LICENSE
  *
- * This source file is subject to the Academic Free License version 3.0
+ * This source file is subject to the Open Software License (OSL 3.0)
  * that is bundled with this package in the file LICENSE.md.
  * It is also available through the world-wide-web at this URL:
- * https://opensource.org/licenses/AFL-3.0
+ * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
  * to license@prestashop.com so we can send you a copy immediately.
  *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://devdocs.prestashop.com/ for more information.
+ *
  * @author    PrestaShop SA and Contributors <contact@prestashop.com>
  * @copyright Since 2007 PrestaShop SA and Contributors
- * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
+ * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
 
 namespace PrestaShop\Module\PsEventbus\Handler\ErrorHandler;
 
-use PrestaShop\PsAccountsInstaller\Installer\Facade\PsAccounts;
+use PrestaShop\Module\PsEventbus\Service\CommonService;
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 /**
  * Handle Error.
  */
-class ErrorHandler implements ErrorHandlerInterface
+class ErrorHandler
 {
     /**
      * @var ?\Raven_Client
      */
     protected $client;
 
-    public function __construct(\Module $module, PsAccounts $accountsService, string $sentryDsn, string $sentryEnv)
+    /**
+     * @param string $sentryDsn
+     * @param string $sentryEnv
+     *
+     * @return void
+     */
+    public function __construct($sentryDsn, $sentryEnv)
     {
-        $psAccounts = \Module::getInstanceByName('ps_accounts');
         try {
+            /** @var false|\ModuleCore $accountsModule */
+            $accountsModule = \Module::getInstanceByName('ps_accounts');
+
+            /** @var \ModuleCore $eventbusModule */
+            $eventbusModule = \Module::getInstanceByName('ps_eventbus');
+
+            $shopUuid = false;
+            $psAccountVersion = false;
+
+            if ($accountsModule != false) {
+                /** @var mixed $accountService */
+                $accountService = $accountsModule->getService('PrestaShop\Module\PsAccounts\Service\PsAccountsService');
+
+                $shopUuid = $accountService->getShopUuid();
+                $psAccountVersion = $accountsModule->version;
+            }
+
             $this->client = new \Raven_Client(
                 $sentryDsn,
                 [
                     'level' => 'warning',
                     'tags' => [
-                        'shop_id' => $accountsService->getPsAccountsService()->getShopUuid(),
-                        'ps_eventbus_version' => $module->version,
-                        'ps_accounts_version' => $psAccounts ? $psAccounts->version : false,
+                        'shop_id' => $shopUuid,
+                        'ps_eventbus_version' => $eventbusModule->version,
+                        'ps_accounts_version' => $psAccountVersion,
                         'php_version' => phpversion(),
                         'prestashop_version' => _PS_VERSION_,
-                        'ps_eventbus_is_enabled' => \Module::isEnabled($module->name),
-                        'ps_eventbus_is_installed' => \Module::isInstalled($module->name),
+                        'ps_eventbus_is_enabled' => \Module::isEnabled((string) $eventbusModule->name),
+                        'ps_eventbus_is_installed' => \Module::isInstalled((string) $eventbusModule->name),
                         'env' => $sentryEnv,
                     ],
                 ]
             );
             /** @var string $configurationPsShopEmail */
             $configurationPsShopEmail = \Configuration::get('PS_SHOP_EMAIL');
-            $this->client->set_user_data($accountsService->getPsAccountsService()->getShopUuid(), $configurationPsShopEmail);
+            $this->client->set_user_data(
+                $shopUuid,
+                $configurationPsShopEmail
+            );
         } catch (\Exception $e) {
         }
     }
 
     /**
-     * @param \Exception $error
-     * @param mixed $code
-     * @param bool|null $throw
-     * @param array|null $data
+     * @param mixed $exception
+     * @param mixed $silent
      *
      * @return void
      *
-     * @throws \Exception
+     * @@throws Exception
      */
-    public function handle($error, $code = null, $throw = true, $data = null)
+    public function handle($exception, $silent = null)
     {
+        $logsEnabled = false;
+        $verboseEnabled = false;
+
         if (!$this->client) {
             return;
         }
-        $this->client->captureException($error, $data);
-        if (is_int($code) && true === $throw) {
-            http_response_code($code);
-            throw $error;
+
+        if (defined('PS_EVENTBUS_LOGS_ENABLED')) {
+            $logsEnabled = PS_EVENTBUS_LOGS_ENABLED;
+        }
+
+        if (defined('PS_EVENTBUS_VERBOSE_ENABLED')) {
+            $verboseEnabled = PS_EVENTBUS_VERBOSE_ENABLED;
+        }
+
+        if ($logsEnabled) {
+            \PrestaShopLogger::addLog(
+                $exception->getMessage() . ' : ' . $exception->getFile() . ':' . $exception->getLine() . ' | ' . $exception->getTraceAsString(),
+                3,
+                $exception->getCode() > 0 ? $exception->getCode() : 500,
+                'Module',
+                \Module::getModuleIdByName('ps_eventbus'),
+                true
+            );
+        }
+
+        // if debug mode enabled and verbose set to true, print error in front office
+        if (_PS_MODE_DEV_ && $verboseEnabled) {
+            throw $exception;
+        } else {
+            $this->client->captureException($exception);
+
+            if ($silent) {
+                return;
+            }
+
+            CommonService::exitWithExceptionMessage($exception);
         }
     }
 

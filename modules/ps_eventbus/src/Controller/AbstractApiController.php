@@ -2,7 +2,6 @@
 
 namespace PrestaShop\Module\PsEventbus\Controller;
 
-use PrestaShop\AccountsAuth\Service\PsAccountsService;
 use PrestaShop\Module\PsEventbus\Config\Config;
 use PrestaShop\Module\PsEventbus\Exception\EnvVarException;
 use PrestaShop\Module\PsEventbus\Exception\FirebaseException;
@@ -14,10 +13,10 @@ use PrestaShop\Module\PsEventbus\Repository\IncrementalSyncRepository;
 use PrestaShop\Module\PsEventbus\Repository\LanguageRepository;
 use PrestaShop\Module\PsEventbus\Service\ApiAuthorizationService;
 use PrestaShop\Module\PsEventbus\Service\ProxyService;
+use PrestaShop\Module\PsEventbus\Service\PsAccountsAdapterService;
 use PrestaShop\Module\PsEventbus\Service\SynchronizationService;
-use PrestaShop\PsAccountsInstaller\Installer\Exception\ModuleNotInstalledException;
-use PrestaShop\PsAccountsInstaller\Installer\Exception\ModuleVersionException;
-use PrestaShop\PsAccountsInstaller\Installer\Facade\PsAccounts;
+
+const MYSQL_DATE_FORMAT = 'Y-m-d H:i:s';
 
 abstract class AbstractApiController extends \ModuleFrontController
 {
@@ -50,9 +49,9 @@ abstract class AbstractApiController extends \ModuleFrontController
      */
     private $languageRepository;
     /**
-     * @var PsAccountsService
+     * @var PsAccountsAdapterService
      */
-    private $psAccountsService;
+    private $psAccountsAdapterService;
     /**
      * @var IncrementalSyncRepository
      */
@@ -85,11 +84,11 @@ abstract class AbstractApiController extends \ModuleFrontController
 
         $this->errorHandler = $this->module->getService(ErrorHandler::class);
         try {
-            $this->psAccountsService = $this->module->getService(PsAccounts::class)->getPsAccountsService();
+            $this->psAccountsAdapterService = $this->module->getService(PsAccountsAdapterService::class);
             $this->proxyService = $this->module->getService(ProxyService::class);
             $this->authorizationService = $this->module->getService(ApiAuthorizationService::class);
             $this->synchronizationService = $this->module->getService(SynchronizationService::class);
-        } catch (ModuleVersionException $exception) {
+        } catch (\Exception $exception) {
             $this->errorHandler->handle($exception);
             $this->exitWithExceptionMessage($exception);
         }
@@ -139,7 +138,7 @@ abstract class AbstractApiController extends \ModuleFrontController
         }
 
         try {
-            $token = $this->psAccountsService->getOrRefreshToken();
+            $token = $this->psAccountsAdapterService->getOrRefreshToken();
         } catch (\Exception $exception) {
             throw new FirebaseException($exception->getMessage());
         }
@@ -156,6 +155,9 @@ abstract class AbstractApiController extends \ModuleFrontController
      */
     protected function handleDataSync(PaginatedApiDataProviderInterface $dataProvider)
     {
+        /** @var bool $debug */
+        $debug = \Tools::getValue('debug') == 1;
+
         /** @var string $jobId */
         $jobId = \Tools::getValue('job_id');
         /** @var string $langIso */
@@ -170,13 +172,28 @@ abstract class AbstractApiController extends \ModuleFrontController
         /** @var bool $initFullSync */
         $initFullSync = \Tools::getValue('full', 0) == 1;
 
-        $dateNow = (new \DateTime())->format(\DateTime::ATOM);
+        /** @var \PrestaShop\Module\PsEventbus\Repository\ConfigurationRepository $configurationRepository */
+        $configurationRepository = $this->module->getService(\PrestaShop\Module\PsEventbus\Repository\ConfigurationRepository::class);
+        $timezone = (string) $configurationRepository->get('PS_TIMEZONE');
+
+        $dateNow = (new \DateTime('now', new \DateTimeZone($timezone)))->format(MYSQL_DATE_FORMAT);
         $offset = 0;
         $incrementalSync = false;
         $response = [];
 
         try {
             $typeSync = $this->eventbusSyncRepository->findTypeSync($this->type, $langIso);
+
+            if ($debug) {
+                $response = $dataProvider->getQueryForDebug($offset, $limit, $langIso);
+
+                return array_merge(
+                    [
+                        'object_type' => $this->type,
+                    ],
+                    $response
+                );
+            }
 
             if ($typeSync !== false && is_array($typeSync)) {
                 $offset = (int) $typeSync['offset'];
@@ -192,6 +209,8 @@ abstract class AbstractApiController extends \ModuleFrontController
                         false,
                         $langIso
                     );
+
+                    $this->incrementalSyncRepository->removeIncrementaSyncObjectByType($this->type);
                 }
             } else {
                 $this->eventbusSyncRepository->insertTypeSync($this->type, $offset, $dateNow, $langIso);
@@ -289,10 +308,6 @@ abstract class AbstractApiController extends \ModuleFrontController
             $code = Config::REFRESH_TOKEN_ERROR_CODE;
         } elseif ($exception instanceof QueryParamsException) {
             $code = Config::INVALID_URL_QUERY;
-        } elseif ($exception instanceof ModuleVersionException) {
-            $code = Config::INVALID_PS_ACCOUNTS_VERSION;
-        } elseif ($exception instanceof ModuleNotInstalledException) {
-            $code = Config::PS_ACCOUNTS_NOT_INSTALLED;
         }
 
         $response = [

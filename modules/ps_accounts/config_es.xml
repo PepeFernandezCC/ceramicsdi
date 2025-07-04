@@ -2,8 +2,8 @@
 <module>
     <name>ps_accounts</name>
     <displayName><![CDATA[PrestaShop Account]]></displayName>
-    <version><![CDATA[5.4.6]]></version>
-    <description><![CDATA[Vincula tu tienda a tu cuenta PrestaShop para activar y gestionar tus suscripciones en tu back office. No desinstales este m&oacute;dulo si tienes una suscripci&oacute;n vigente.]]></description>
+    <version><![CDATA[7.2.0]]></version>
+    <description><![CDATA[Vincule su tienda a su cuenta PrestaShop para activar y gestionar sus suscripciones en su back office. No desinstale este m&oacute;dulo si tiene una suscripci&oacute;n en vigor.]]></description>
     <author><![CDATA[PrestaShop]]></author>
     <tab><![CDATA[administration]]></tab>
 	<confirmUninstall><![CDATA[Esta acción impedirá inmediatamente que tus servicios PrestaShop y los servicios de la Comunidad funcionen, ya que utilizan el módulo PrestaShop Account para la autenticación.]]></confirmUninstall>

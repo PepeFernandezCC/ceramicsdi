@@ -30,11 +30,11 @@ class CustomerDataProvider implements PaginatedApiDataProviderInterface
      *
      * @return array
      *
-     * @throws \PrestaShopDatabaseException
+     * @@throws \PrestaShopDatabaseException
      */
     public function getFormattedData($offset, $limit, $langIso)
     {
-        $customers = $this->customerRepository->getCustomers($offset, $limit, $langIso);
+        $customers = $this->customerRepository->getCustomers($offset, $limit);
 
         if (!is_array($customers)) {
             return [];
@@ -59,7 +59,7 @@ class CustomerDataProvider implements PaginatedApiDataProviderInterface
      */
     public function getRemainingObjectsCount($offset, $langIso)
     {
-        return (int) $this->customerRepository->getRemainingCustomersCount($offset, $langIso);
+        return (int) $this->customerRepository->getRemainingCustomersCount($offset);
     }
 
     /**
@@ -69,11 +69,11 @@ class CustomerDataProvider implements PaginatedApiDataProviderInterface
      *
      * @return array
      *
-     * @throws \PrestaShopDatabaseException
+     * @@throws \PrestaShopDatabaseException
      */
     public function getFormattedDataIncremental($limit, $langIso, $objectIds)
     {
-        $customers = $this->customerRepository->getCustomersIncremental($limit, $langIso, $objectIds);
+        $customers = $this->customerRepository->getCustomersIncremental($limit, $objectIds);
 
         if (!is_array($customers)) {
             return [];
@@ -88,5 +88,19 @@ class CustomerDataProvider implements PaginatedApiDataProviderInterface
                 'properties' => $customer,
             ];
         }, $customers);
+    }
+
+    /**
+     * @param int $offset
+     * @param int $limit
+     * @param string $langIso
+     *
+     * @return array
+     *
+     * @@throws \PrestaShopDatabaseException
+     */
+    public function getQueryForDebug($offset, $limit, $langIso)
+    {
+        return $this->customerRepository->getQueryForDebug($offset, $limit);
     }
 }

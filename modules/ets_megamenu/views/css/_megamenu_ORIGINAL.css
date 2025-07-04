@@ -870,7 +870,7 @@ li.has-sub > .ets_mm_categories {
 .ets_mm_block > .h4 {
     border-bottom: 1px solid #e7e7e7;
     color: #444444;
-    font-size: 14px;
+    font-size: 14px !important;
     font-weight: bold;
     line-height: 110%;
     margin-bottom: 10px;

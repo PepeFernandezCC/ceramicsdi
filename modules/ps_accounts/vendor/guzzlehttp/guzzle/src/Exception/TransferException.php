@@ -1,4 +1,7 @@
 <?php
-namespace GuzzleHttp\Exception;
 
-class TransferException extends \RuntimeException {}
+namespace PrestaShop\Module\PsAccounts\Vendor\GuzzleHttp\Exception;
+
+class TransferException extends \RuntimeException implements GuzzleException
+{
+}

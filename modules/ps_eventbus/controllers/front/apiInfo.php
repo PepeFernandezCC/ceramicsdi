@@ -12,7 +12,7 @@ class ps_EventbusApiInfoModuleFrontController extends AbstractApiController
     /**
      * @return void
      *
-     * @throws PrestaShopException
+     * @throws\PrestaShopException
      */
     public function postProcess()
     {
@@ -27,8 +27,11 @@ class ps_EventbusApiInfoModuleFrontController extends AbstractApiController
         $langIso = Tools::getValue('lang_iso', '');
         $serverInfo = $serverInformationRepository->getServerInformation($langIso);
 
+        /** @var bool $initFullSync */
+        $initFullSync = \Tools::getValue('full', 0) == 1;
+
         try {
-            $response = $this->proxyService->upload($jobId, $serverInfo, $this->startTime);
+            $response = $this->proxyService->upload($jobId, $serverInfo, $this->startTime, $initFullSync);
         } catch (EnvVarException|Exception $exception) {
             $this->exitWithExceptionMessage($exception);
         }
@@ -36,8 +39,11 @@ class ps_EventbusApiInfoModuleFrontController extends AbstractApiController
         $this->exitWithResponse(
             array_merge(
                 [
-                    'remaining_objects' => 0,
-                    'total_objects' => 1,
+                  'remaining_objects' => 0,
+                  'total_objects' => 1,
+                  'job_id' => $jobId,
+                  'object_type' => $this->type,
+                  'syncType' => 'full',
                 ],
                 $response
             )

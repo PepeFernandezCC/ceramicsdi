@@ -1,7 +1,6 @@
 <?php
-namespace GuzzleHttp\Cookie;
 
-use GuzzleHttp\Utils;
+namespace PrestaShop\Module\PsAccounts\Vendor\GuzzleHttp\Cookie;
 
 /**
  * Persists non-session cookies using a JSON formatted file
@@ -10,23 +9,26 @@ class FileCookieJar extends CookieJar
 {
     /** @var string filename */
     private $filename;
-
+    /** @var bool Control whether to persist session cookies or not. */
+    private $storeSessionCookies;
     /**
      * Create a new FileCookieJar object
      *
-     * @param string $cookieFile File to store the cookie data
+     * @param string $cookieFile        File to store the cookie data
+     * @param bool $storeSessionCookies Set to true to store session cookies
+     *                                  in the cookie jar.
      *
      * @throws \RuntimeException if the file cannot be found or created
      */
-    public function __construct($cookieFile)
+    public function __construct($cookieFile, $storeSessionCookies = \false)
     {
+        parent::__construct();
         $this->filename = $cookieFile;
-
-        if (file_exists($cookieFile)) {
+        $this->storeSessionCookies = $storeSessionCookies;
+        if (\file_exists($cookieFile)) {
             $this->load($cookieFile);
         }
     }
-
     /**
      * Saves the file when shutting down
      */
@@ -34,7 +36,6 @@ class FileCookieJar extends CookieJar
     {
         $this->save($this->filename);
     }
-
     /**
      * Saves the cookies to a file.
      *
@@ -45,18 +46,16 @@ class FileCookieJar extends CookieJar
     {
         $json = [];
         foreach ($this as $cookie) {
-            if ($cookie->getExpires() && !$cookie->getDiscard()) {
+            /** @var SetCookie $cookie */
+            if (CookieJar::shouldPersist($cookie, $this->storeSessionCookies)) {
                 $json[] = $cookie->toArray();
             }
         }
-
-        if (false === file_put_contents($filename, json_encode($json), LOCK_EX)) {
-            // @codeCoverageIgnoreStart
+        $jsonStr = \PrestaShop\Module\PsAccounts\Vendor\GuzzleHttp\json_encode($json);
+        if (\false === \file_put_contents($filename, $jsonStr, \LOCK_EX)) {
             throw new \RuntimeException("Unable to save file {$filename}");
-            // @codeCoverageIgnoreEnd
         }
     }
-
     /**
      * Load cookies from a JSON formatted file.
      *
@@ -67,19 +66,18 @@ class FileCookieJar extends CookieJar
      */
     public function load($filename)
     {
-        $json = file_get_contents($filename);
-        if (false === $json) {
-            // @codeCoverageIgnoreStart
+        $json = \file_get_contents($filename);
+        if (\false === $json) {
             throw new \RuntimeException("Unable to load file {$filename}");
-            // @codeCoverageIgnoreEnd
+        } elseif ($json === '') {
+            return;
         }
-
-        $data = Utils::jsonDecode($json, true);
-        if (is_array($data)) {
-            foreach (Utils::jsonDecode($json, true) as $cookie) {
+        $data = \PrestaShop\Module\PsAccounts\Vendor\GuzzleHttp\json_decode($json, \true);
+        if (\is_array($data)) {
+            foreach (\json_decode($json, \true) as $cookie) {
                 $this->setCookie(new SetCookie($cookie));
             }
-        } elseif (strlen($data)) {
+        } elseif (\strlen($data)) {
             throw new \RuntimeException("Invalid cookie file: {$filename}");
         }
     }

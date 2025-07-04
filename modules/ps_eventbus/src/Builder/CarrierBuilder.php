@@ -60,8 +60,8 @@ class CarrierBuilder
      *
      * @return array
      *
-     * @throws \PrestaShopDatabaseException
-     * @throws \PrestaShopException
+     * @@throws \PrestaShopDatabaseException
+     * @@throws \PrestaShopException
      */
     public function buildCarriers(array $carriers, int $langId, \Currency $currency, $weightUnit)
     {
@@ -70,8 +70,7 @@ class CarrierBuilder
             $eventBusCarriers[] = $this->buildCarrier(
                 new \Carrier($carrier['id_carrier'], $langId),
                 $currency->iso_code,
-                $weightUnit,
-                $carrier['update_date']
+                $weightUnit
             );
         }
 
@@ -90,14 +89,13 @@ class CarrierBuilder
      * @param \Carrier $carrier
      * @param string $currencyIsoCode
      * @param string $weightUnit
-     * @param string $updateDate
      *
      * @return EventBusCarrier
      *
-     * @throws \PrestaShopDatabaseException
-     * @throws \PrestaShopException
+     * @@throws \PrestaShopDatabaseException
+     * @@throws \PrestaShopException
      */
-    public function buildCarrier(\Carrier $carrier, $currencyIsoCode, $weightUnit, $updateDate)
+    public function buildCarrier(\Carrier $carrier, $currencyIsoCode, $weightUnit)
     {
         $eventBusCarrier = new EventBusCarrier();
         $freeShippingStartsAtPrice = (float) $this->configurationRepository->get('PS_SHIPPING_FREE_PRICE');
@@ -128,8 +126,7 @@ class CarrierBuilder
             ->setGrade($carrier->grade)
             ->setDelay($carrier->delay)
             ->setCurrency($currencyIsoCode)
-            ->setWeightUnit($weightUnit)
-            ->setUpdateAt($updateDate);
+            ->setWeightUnit($weightUnit);
 
         $deliveryPriceByRanges = $this->carrierRepository->getDeliveryPriceByRange($carrier);
 
@@ -172,7 +169,7 @@ class CarrierBuilder
      *
      * @return false|CarrierDetail
      *
-     * @throws \PrestaShopDatabaseException
+     * @@throws \PrestaShopDatabaseException
      */
     private function buildCarrierDetails(\Carrier $carrier, $range, array $zone)
     {
@@ -209,7 +206,7 @@ class CarrierBuilder
      *
      * @return CarrierTax|null
      *
-     * @throws \PrestaShopDatabaseException
+     * @@throws \PrestaShopDatabaseException
      */
     private function buildCarrierTaxes(\Carrier $carrier, $zoneId, $rangeId)
     {

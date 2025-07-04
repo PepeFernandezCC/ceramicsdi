@@ -18,104 +18,52 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
 
-use Lcobucci\JWT\Parser;
-use PrestaShop\Module\PsAccounts\Controller\AbstractShopRestController;
-use PrestaShop\Module\PsAccounts\Repository\ConfigurationRepository;
-use PrestaShop\Module\PsAccounts\Repository\ShopTokenRepository;
-use PrestaShop\Module\PsAccounts\Repository\UserTokenRepository;
-use PrestaShop\Module\PsAccounts\Service\PsAccountsService;
-use PrestaShop\Module\PsAccounts\Service\ShopLinkAccountService;
+use PrestaShop\Module\PsAccounts\Account\Command\LinkShopCommand;
+use PrestaShop\Module\PsAccounts\Account\Command\UnlinkShopCommand;
+use PrestaShop\Module\PsAccounts\Account\Dto\LinkShop;
+use PrestaShop\Module\PsAccounts\Account\Exception\RefreshTokenException;
+use PrestaShop\Module\PsAccounts\Cqrs\CommandBus;
+use PrestaShop\Module\PsAccounts\Http\Controller\AbstractShopRestController;
+use PrestaShop\Module\PsAccounts\Http\Request\UpdateShopLinkAccountRequest;
 
 class ps_AccountsApiV1ShopLinkAccountModuleFrontController extends AbstractShopRestController
 {
     /**
-     * @var ConfigurationRepository
+     * @var CommandBus
      */
-    private $configuration;
+    private $commandBus;
 
     /**
-     * @var Parser
-     */
-    private $jwtParser;
-
-    /**
-     * @var UserTokenRepository
-     */
-    private $userTokenRepository;
-
-    /**
-     * @var ShopTokenRepository
-     */
-    private $shopTokenRepository;
-
-    /**
-     * @var ShopLinkAccountService
-     */
-    private $shopLinkAccountService;
-
-    /**
-     * @var PsAccountsService
-     */
-    private $psAccountsService;
-
-    /**
-     * ps_AccountsApiV1ShopAccountModuleFrontController constructor.
-     *
      * @throws Exception
      */
     public function __construct()
     {
         parent::__construct();
 
-        $this->configuration = $this->module->getService(ConfigurationRepository::class);
-        $this->userTokenRepository = $this->module->getService(UserTokenRepository::class);
-        $this->shopTokenRepository = $this->module->getService(ShopTokenRepository::class);
-        $this->shopLinkAccountService = $this->module->getService(ShopLinkAccountService::class);
-        $this->psAccountsService = $this->module->getService(PsAccountsService::class);
-
-        $this->jwtParser = new Parser();
+        $this->commandBus = $this->module->getService(CommandBus::class);
+        //$this->commandBus = $this->module->getContainer()->get('prestashop.command_bus');
     }
 
     /**
-     * Expected Payload keys :
-     *  - shop_token
-     *  - shop_refresh_token
-     *  - user_token
-     *  - user_refresh_token
-     *  - employee_id
-     *
      * @param Shop $shop
-     * @param array $payload
+     * @param UpdateShopLinkAccountRequest $request
      *
-     * @return array|void
+     * @return array
      *
+     * @throws RefreshTokenException
      * @throws Exception
      */
-    public function update($shop, array $payload)
+    public function update(Shop $shop, UpdateShopLinkAccountRequest $request)
     {
-        list($shopRefreshToken, $userRefreshToken, $shopToken, $userToken, $employeeId) = [
-            $payload['shop_refresh_token'],
-            $payload['user_refresh_token'],
-            $payload['shop_token'],
-            $payload['user_token'],
-            // FIXME : temporary fix
-            (array_key_exists('employee_id', $payload) ? $payload['employee_id'] : ''),
-        ];
-
-        $verifyTokens = $this->module->getParameter('ps_accounts.verify_account_tokens');
-        if ($verifyTokens) {
-            $shopToken = $this->shopTokenRepository->verifyToken($shopToken, $shopRefreshToken);
-            $userToken = $this->userTokenRepository->verifyToken($userToken, $userRefreshToken);
-        }
-
-        $this->shopTokenRepository->updateCredentials($shopToken, $shopRefreshToken);
-        $this->userTokenRepository->updateCredentials($userToken, $userRefreshToken);
-        $this->configuration->updateEmployeeId($employeeId);
-
-        Hook::exec(Ps_accounts::HOOK_ACTION_SHOP_ACCOUNT_LINK_AFTER, [
-            'shopUuid' => $this->psAccountsService->getShopUuid(),
-            'shopId' => $shop->id,
-        ]);
+        $this->commandBus->handle(new LinkShopCommand(
+            new LinkShop([
+                'shopId' => $request->shop_id,
+                'uid' => $request->uid,
+                'ownerUid' => $request->owner_uid,
+                'ownerEmail' => $request->owner_email,
+                'employeeId' => $request->employee_id,
+            ])
+        ));
 
         return [
             'success' => true,
@@ -127,18 +75,14 @@ class ps_AccountsApiV1ShopLinkAccountModuleFrontController extends AbstractShopR
      * @param Shop $shop
      * @param array $payload
      *
-     * @return array|void
+     * @return array
+     *
+     * @throws PrestaShopException
+     * @throws Exception
      */
-    public function delete($shop, array $payload)
+    public function delete(Shop $shop, array $payload)
     {
-        $hookData = [
-            'shopUuid' => $this->psAccountsService->getShopUuid(),
-            'shopId' => $shop->id,
-        ];
-
-        $this->shopLinkAccountService->resetLinkAccount();
-
-        Hook::exec(Ps_accounts::HOOK_ACTION_SHOP_ACCOUNT_UNLINK_AFTER, $hookData);
+        $this->commandBus->handle(new UnlinkShopCommand($shop->id));
 
         return [
             'success' => true,

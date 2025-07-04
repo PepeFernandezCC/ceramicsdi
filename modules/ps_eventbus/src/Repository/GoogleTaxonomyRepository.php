@@ -9,9 +9,9 @@ class GoogleTaxonomyRepository
      */
     private $db;
 
-    public function __construct(\Db $db)
+    public function __construct()
     {
-        $this->db = $db;
+        $this->db = \Db::getInstance();
     }
 
     /**
@@ -61,5 +61,29 @@ class GoogleTaxonomyRepository
         $query->select('(COUNT(cm.id_category) - ' . (int) $offset . ') as count');
 
         return (int) $this->db->getValue($query);
+    }
+
+    /**
+     * @param int $offset
+     * @param int $limit
+     * @param int $shopId
+     *
+     * @return array
+     *
+     * @throws \PrestaShopDatabaseException
+     */
+    public function getQueryForDebug($offset, $limit, $shopId)
+    {
+        $query = $this->getBaseQuery($shopId);
+
+        $query->select('cm.id_category, cm.google_category_id')
+            ->limit($limit, $offset);
+
+        $queryStringified = preg_replace('/\s+/', ' ', $query->build());
+
+        return array_merge(
+            (array) $query,
+            ['queryStringified' => $queryStringified]
+        );
     }
 }

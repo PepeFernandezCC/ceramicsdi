@@ -452,9 +452,14 @@ span.ets_abancart_close_form:before {
 }
 .ets_abancart_bar_overload {
     position: relative;
+    z-index: 9999;
+    margin: 0 auto;
+    margin-bottom: -57px;
     padding-left: 30px;
-    max-width: 100%;
+    max-width: 60%;
     padding-right: 30px;
+    margin-top: 6px;
+    font-weight: 600;
 }
 .page-my-account a#shopping-cart-link {
     width: 100%;
@@ -1100,6 +1105,9 @@ span.ets_abancart_shot_code_content.count_down_clock {
 @media (max-width: 991px){
     .ets_abancart_bar_overload {
         height: auto!important;
+        margin-bottom: -52px;
+        max-width: 100%;
+        margin-top: 0px;
     }
 }
 @media (max-width: 767px){

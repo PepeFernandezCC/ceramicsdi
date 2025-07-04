@@ -2,11 +2,10 @@
 
 namespace PrestaShop\Module\PsEventbus\Repository;
 
-use PrestaShop\AccountsAuth\Service\PsAccountsService;
 use PrestaShop\Module\PsAccounts\Api\Client\AccountsClient;
 use PrestaShop\Module\PsEventbus\Config\Config;
 use PrestaShop\Module\PsEventbus\Handler\ErrorHandler\ErrorHandlerInterface;
-use PrestaShop\PsAccountsInstaller\Installer\Facade\PsAccounts;
+use PrestaShop\Module\PsEventbus\Service\PsAccountsAdapterService;
 
 class ServerInformationRepository
 {
@@ -35,17 +34,13 @@ class ServerInformationRepository
      */
     private $shopRepository;
     /**
-     * @var PsAccountsService
+     * @var PsAccountsAdapterService
      */
-    private $psAccountsService;
+    private $psAccountsAdapterService;
     /**
      * @var array
      */
     private $configuration;
-    /**
-     * @var string
-     */
-    private $createdAt;
     /**
      * @var ErrorHandlerInterface
      */
@@ -53,12 +48,11 @@ class ServerInformationRepository
 
     public function __construct(
         \Context $context,
-        \Db $db,
+        PsAccountsAdapterService $psAccountsAdapterService,
         CurrencyRepository $currencyRepository,
         LanguageRepository $languageRepository,
         ConfigurationRepository $configurationRepository,
         ShopRepository $shopRepository,
-        PsAccounts $psAccounts,
         ErrorHandlerInterface $errorHandler,
         array $configuration
     ) {
@@ -67,10 +61,9 @@ class ServerInformationRepository
         $this->configurationRepository = $configurationRepository;
         $this->shopRepository = $shopRepository;
         $this->context = $context;
-        $this->db = $db;
-        $this->psAccountsService = $psAccounts->getPsAccountsService();
+        $this->db = \Db::getInstance();
+        $this->psAccountsAdapterService = $psAccountsAdapterService;
         $this->configuration = $configuration;
-        $this->createdAt = $this->shopRepository->getCreatedAt();
         $this->errorHandler = $errorHandler;
     }
 
@@ -84,17 +77,18 @@ class ServerInformationRepository
     public function getServerInformation($langIso = '')
     {
         $langId = !empty($langIso) ? (int) \Language::getIdByIso($langIso) : null;
-        $timezone = (string) $this->configurationRepository->get('PS_TIMEZONE');
-        $createdAt = (new \DateTime($this->createdAt, new \DateTimeZone($timezone)))->format('Y-m-d\TH:i:sO');
-        $folderCreatedAt = null;
 
         /* This file is created on installation and never modified.
         As php doesn't allow to retrieve the creation date of a file or folder,
         we use the modification date of this file to get the installation date of the shop */
         $filename = './img/admin/enabled.gif';
-
+        $folderCreatedAt = null;
         if (file_exists($filename)) {
-            $folderCreatedAt = (new \DateTime(date('Y-m-d H:i:s', (int) filectime($filename)), new \DateTimeZone('Europe/Paris')))->format('Y-m-d\TH:i:sO');
+            $folderCreatedAt = date('Y-m-d H:i:s', (int) filectime($filename));
+        }
+
+        if ($this->context->link === null) {
+            throw new \PrestaShopException('No link context');
         }
 
         return [
@@ -102,7 +96,7 @@ class ServerInformationRepository
                 'id' => '1',
                 'collection' => Config::COLLECTION_SHOPS,
                 'properties' => [
-                    'created_at' => $createdAt,
+                    'created_at' => $this->shopRepository->getCreatedAt(),
                     'folder_created_at' => $folderCreatedAt,
                     'cms_version' => _PS_VERSION_,
                     'url_is_simplified' => $this->configurationRepository->get('PS_REWRITING_SETTINGS') == '1',
@@ -115,7 +109,7 @@ class ServerInformationRepository
                     'distance_unit' => $this->configurationRepository->get('PS_BASE_DISTANCE_UNIT'),
                     'volume_unit' => $this->configurationRepository->get('PS_VOLUME_UNIT'),
                     'dimension_unit' => $this->configurationRepository->get('PS_DIMENSION_UNIT'),
-                    'timezone' => $timezone,
+                    'timezone' => $this->configurationRepository->get('PS_TIMEZONE'),
                     'is_order_return_enabled' => $this->configurationRepository->get('PS_ORDER_RETURN') == '1',
                     'order_return_nb_days' => (int) $this->configurationRepository->get('PS_ORDER_RETURN_NB_DAYS'),
                     'php_version' => phpversion(),
@@ -139,7 +133,7 @@ class ServerInformationRepository
         $allTablesInstalled = true;
 
         try {
-            $token = $this->psAccountsService->getOrRefreshToken();
+            $token = $this->psAccountsAdapterService->getOrRefreshToken();
 
             if (!$token) {
                 $tokenIsSet = false;
@@ -188,6 +182,7 @@ class ServerInformationRepository
             'env' => [
                 'EVENT_BUS_PROXY_API_URL' => isset($this->configuration['EVENT_BUS_PROXY_API_URL']) ? $this->configuration['EVENT_BUS_PROXY_API_URL'] : null,
                 'EVENT_BUS_SYNC_API_URL' => isset($this->configuration['EVENT_BUS_SYNC_API_URL']) ? $this->configuration['EVENT_BUS_SYNC_API_URL'] : null,
+                'EVENT_BUS_LIVE_SYNC_API_URL' => isset($this->configuration['EVENT_BUS_LIVE_SYNC_API_URL']) ? $this->configuration['EVENT_BUS_LIVE_SYNC_API_URL'] : null,
             ],
         ];
     }

@@ -36,6 +36,9 @@ use Tools;
 
 class SearchProvider implements FacetsRendererInterface, ProductSearchProviderInterface
 {
+
+    const FEATURE_COLOR = '46';
+
     /**
      * @var Ps_Facetedsearch
      */
@@ -349,7 +352,18 @@ class SearchProvider implements FacetsRendererInterface, ProductSearchProviderIn
 
         $displayedFacets = [];
         $activeFilters = [];
+        
         foreach ($facetsVar as $idx => $facet) {
+
+            if(isset($facet['properties']['id_feature']) && 
+            $facet['properties']['id_feature'] == SELF::FEATURE_COLOR) {
+
+            usort($facet['filters'], function($a, $b) {
+                return $a['value'] <=> $b['value'];
+            });
+            
+        }
+
             // Remove undisplayed facets
             if (!empty($facet['displayed'])) {
                 $displayedFacets[] = $facet;
@@ -362,7 +376,7 @@ class SearchProvider implements FacetsRendererInterface, ProductSearchProviderIn
                 }
             }
         }
-
+        
         return [
             $activeFilters,
             $displayedFacets,

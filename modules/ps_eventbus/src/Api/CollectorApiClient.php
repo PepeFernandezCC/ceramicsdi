@@ -3,9 +3,12 @@
 namespace PrestaShop\Module\PsEventbus\Api;
 
 use GuzzleHttp\Psr7\Request;
+use PrestaShop\Module\PsEventbus\Api\Post\MultipartBody;
+use PrestaShop\Module\PsEventbus\Api\Post\PostFileApi;
+use PrestaShop\Module\PsEventbus\Config\Config;
+use PrestaShop\Module\PsEventbus\Service\PsAccountsAdapterService;
 use Prestashop\ModuleLibGuzzleAdapter\ClientFactory;
 use Prestashop\ModuleLibGuzzleAdapter\Interfaces\HttpClientInterface;
-use PrestaShop\PsAccountsInstaller\Installer\Facade\PsAccounts;
 
 class CollectorApiClient
 {
@@ -27,19 +30,33 @@ class CollectorApiClient
     private $jwt;
 
     /**
-     * @param PsAccounts $psAccounts
+     * <<<<<<< HEAD
+     * =======
+     *
+     * >>>>>>> 7357fb2f5f39bff81f9a01000304c714dad82fe9
+     * Default maximum execution time in seconds
+     *
+     * @see https://www.php.net/manual/en/info.configuration.php#ini.max-execution-time
+     *
+     * @var int
+     */
+    private static $DEFAULT_MAX_EXECUTION_TIME = 30;
+
+    /**
      * @param string $collectorApiUrl
      * @param \Ps_eventbus $module
+     * @param PsAccountsAdapterService $psAccountsAdapterService
      */
-    public function __construct($psAccounts, $collectorApiUrl, $module)
+    public function __construct(string $collectorApiUrl, \Ps_eventbus $module, PsAccountsAdapterService $psAccountsAdapterService)
     {
         $this->module = $module;
-        $this->jwt = $psAccounts->getPsAccountsService()->getOrRefreshToken();
+        $this->jwt = $psAccountsAdapterService->getOrRefreshToken();
         $this->collectorApiUrl = $collectorApiUrl;
     }
 
     /**
-     * @see https://docs.guzzlephp.org/en/stable/quickstart.html-
+     * @see https://docs.guzzlephp.org/en/stable/quickstart.html
+     * @see https://docs.guzzlephp.org/en/stable/request-options.html#read-timeout
      *
      * @param int $startTime @optional start time in seconds since epoch
      *
@@ -49,8 +66,9 @@ class CollectorApiClient
     {
         return (new ClientFactory())->getClient([
             'allow_redirects' => true,
-            'connect_timeout' => 3,
+            'connect_timeout' => 10,
             'http_errors' => false,
+            'read_timeout' => 30,
             'timeout' => $this->getRemainingTime($startTime),
         ]);
     }
@@ -68,33 +86,34 @@ class CollectorApiClient
     public function upload(string $jobId, string $data, int $startTime, bool $fullSyncRequested = false)
     {
         $url = $this->collectorApiUrl . '/upload/' . $jobId;
-        $payload = 'lines=' . urlencode($data);
+
         // Prepare request
-        $request = new Request(
-            'POST',
-            $url,
-            [
-                'Accept' => 'application/json',
-                'Authorization' => 'Bearer ' . $this->jwt,
-                'Content-Length' => strlen($payload),
-                'Content-Type' => 'application/x-www-form-urlencoded',
-                'Full-Sync-Requested' => $fullSyncRequested ? '1' : '0',
-                'User-Agent' => 'ps-eventbus/' . $this->module->version,
-            ],
-            $payload
+        $file = new PostFileApi('file', $data, 'file');
+        $contentSize = $file->getContent()->getSize();
+        $multipartBody = new MultipartBody([], [$file], Config::COLLECTOR_MULTIPART_BOUNDARY);
+
+        $response = $this->getClient($startTime)->sendRequest(
+            new Request(
+                'POST',
+                $url,
+                [
+                    'Accept' => 'application/json',
+                    'Authorization' => 'Bearer ' . $this->jwt,
+                    'Content-Length' => $contentSize ? (string) $contentSize : '0',
+                    'Content-Type' => 'multipart/form-data; boundary=' . Config::COLLECTOR_MULTIPART_BOUNDARY,
+                    'Full-Sync-Requested' => $fullSyncRequested ? '1' : '0',
+                    'User-Agent' => 'ps-eventbus/' . $this->module->version,
+                ],
+                $multipartBody->getContents()
+            )
         );
 
-        // Send request and parse response
-        $rawResponse = $this->getClient($startTime)->sendRequest($request);
-        $jsonResponse = json_decode($rawResponse->getBody()->getContents(), true);
-        $response = [
-            'status' => substr((string) $rawResponse->getStatusCode(), 0, 1) === '2',
-            'httpCode' => $rawResponse->getStatusCode(),
-            'body' => $jsonResponse,
+        return [
+            'status' => substr((string) $response->getStatusCode(), 0, 1) === '2',
+            'httpCode' => $response->getStatusCode(),
+            'body' => json_decode($response->getBody()->getContents(), true),
             'upload_url' => $url,
         ];
-
-        return $response;
     }
 
     /**
@@ -109,32 +128,32 @@ class CollectorApiClient
     public function uploadDelete(string $jobId, string $data, int $startTime)
     {
         $url = $this->collectorApiUrl . '/delete/' . $jobId;
-        $payload = 'lines=' . urlencode($data);
         // Prepare request
-        $request = new Request(
-            'POST',
-            $url,
-            [
-                'Accept' => 'application/json',
-                'Authorization' => 'Bearer ' . $this->jwt,
-                'Content-Length' => strlen($payload),
-                'Content-Type' => 'application/x-www-form-urlencoded',
-                'User-Agent' => 'ps-eventbus/' . $this->module->version,
-            ],
-            $payload
+        $file = new PostFileApi('file', $data, 'file');
+        $contentSize = $file->getContent()->getSize();
+        $multipartBody = new MultipartBody([], [$file], Config::COLLECTOR_MULTIPART_BOUNDARY);
+
+        $response = $this->getClient($startTime)->sendRequest(
+            new Request(
+                'POST',
+                $url,
+                [
+                    'Accept' => 'application/json',
+                    'Authorization' => 'Bearer ' . $this->jwt,
+                    'Content-Length' => $contentSize ? (string) $contentSize : '0',
+                    'Content-Type' => 'multipart/form-data; boundary=' . Config::COLLECTOR_MULTIPART_BOUNDARY,
+                    'User-Agent' => 'ps-eventbus/' . $this->module->version,
+                ],
+                $multipartBody->getContents()
+            )
         );
 
-        // Send request and parse response
-        $rawResponse = $this->getClient($startTime)->sendRequest($request);
-        $jsonResponse = json_decode($rawResponse->getBody()->getContents(), true);
-        $response = [
-            'status' => substr((string) $rawResponse->getStatusCode(), 0, 1) === '2',
-            'httpCode' => $rawResponse->getStatusCode(),
-            'body' => $jsonResponse,
+        return [
+            'status' => substr((string) $response->getStatusCode(), 0, 1) === '2',
+            'httpCode' => $response->getStatusCode(),
+            'body' => json_decode($response->getBody()->getContents(), true),
             'upload_url' => $url,
         ];
-
-        return $response;
     }
 
     /**
@@ -147,6 +166,15 @@ class CollectorApiClient
      */
     private function getRemainingTime(int $startTime = null)
     {
+        /**
+         * Negative remaining time means an immediate timeout (0 means infinity)
+         *
+         * @see https://docs.guzzlephp.org/en/stable/request-options.html?highlight=timeout#timeout
+         */
+        $maxExecutionTime = (int) ini_get('max_execution_time');
+        if ($maxExecutionTime <= 0) {
+            return CollectorApiClient::$DEFAULT_MAX_EXECUTION_TIME;
+        }
         /*
          * An extra 1.5s to be arbitrary substracted
          * to keep time for the JSON parsing and state propagation in MySQL
@@ -157,17 +185,14 @@ class CollectorApiClient
          * Default to maximum timeout
          */
         if (is_null($startTime)) {
-            return (int) ini_get('max_execution_time') - $extraOpsTime;
+            return $maxExecutionTime - $extraOpsTime;
         }
 
-        $remainingTime = (int) ini_get('max_execution_time') - $extraOpsTime - (time() - $startTime);
+        $remainingTime = $maxExecutionTime - $extraOpsTime - (time() - $startTime);
 
-        /*
-         * Negative remaining time means an immediate timeout (0 means infinity)
-         * @see https://docs.guzzlephp.org/en/stable/request-options.html?highlight=timeout#timeout
-         */
+        // A protection that might never be used, but who knows
         if ($remainingTime <= 0) {
-            return 0.1;
+            return CollectorApiClient::$DEFAULT_MAX_EXECUTION_TIME;
         }
 
         return $remainingTime;

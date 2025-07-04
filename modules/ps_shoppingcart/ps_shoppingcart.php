@@ -139,12 +139,20 @@ class Ps_Shoppingcart extends Module implements WidgetInterface
             }
         }
 
+        $isByPiece = false;
+        foreach ($product['features'] as $feature) {
+            if ($feature['id_feature'] === '30') {//característica pieza/m2
+                $isByPiece = true;
+            }
+        }
+
+
         $this->smarty->assign([
+            'isByPiece' => $isByPiece,
             'product' => $product,
             'cart' => $data,
             'cart_url' => $this->getCartSummaryURL(),
         ]);
-
         return $this->fetch('module:ps_shoppingcart/modal.tpl');
     }
 

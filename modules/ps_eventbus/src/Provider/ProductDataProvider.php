@@ -18,6 +18,10 @@ class ProductDataProvider implements PaginatedApiDataProviderInterface
      */
     private $productDecorator;
     /**
+     * @var ProductSupplierDataProvider
+     */
+    private $productSupplierDataProvider;
+    /**
      * @var LanguageRepository
      */
     private $languageRepository;
@@ -25,10 +29,12 @@ class ProductDataProvider implements PaginatedApiDataProviderInterface
     public function __construct(
         ProductRepository $productRepository,
         ProductDecorator $productDecorator,
+        ProductSupplierDataProvider $productSupplierDataProvider,
         LanguageRepository $languageRepository
     ) {
         $this->productRepository = $productRepository;
         $this->productDecorator = $productDecorator;
+        $this->productSupplierDataProvider = $productSupplierDataProvider;
         $this->languageRepository = $languageRepository;
     }
 
@@ -39,7 +45,7 @@ class ProductDataProvider implements PaginatedApiDataProviderInterface
      *
      * @return array
      *
-     * @throws \PrestaShopDatabaseException
+     * @@throws \PrestaShopDatabaseException
      */
     public function getFormattedData($offset, $limit, $langIso)
     {
@@ -55,6 +61,8 @@ class ProductDataProvider implements PaginatedApiDataProviderInterface
 
         $bundles = $this->productDecorator->getBundles($products);
 
+        $productSuppliers = $this->productSupplierDataProvider->getFormattedData($offset, $limit, $langIso);
+
         $products = array_map(function ($product) {
             return [
                 'id' => $product['unique_product_id'],
@@ -63,7 +71,7 @@ class ProductDataProvider implements PaginatedApiDataProviderInterface
             ];
         }, $products);
 
-        return array_merge($products, $bundles);
+        return array_merge($products, $bundles, $productSuppliers);
     }
 
     /**
@@ -72,7 +80,7 @@ class ProductDataProvider implements PaginatedApiDataProviderInterface
      *
      * @return int
      *
-     * @throws \PrestaShopDatabaseException
+     * @@throws \PrestaShopDatabaseException
      */
     public function getRemainingObjectsCount($offset, $langIso)
     {
@@ -88,7 +96,7 @@ class ProductDataProvider implements PaginatedApiDataProviderInterface
      *
      * @return array
      *
-     * @throws \PrestaShopDatabaseException
+     * @@throws \PrestaShopDatabaseException
      */
     public function getFormattedDataIncremental($limit, $langIso, $objectIds)
     {
@@ -102,7 +110,9 @@ class ProductDataProvider implements PaginatedApiDataProviderInterface
             return [];
         }
 
-        $orderDetails = $this->productDecorator->getBundles($products);
+        $bundles = $this->productDecorator->getBundles($products);
+
+        $productSuppliers = $this->productSupplierDataProvider->getFormattedDataIncremental($limit, $langIso, $objectIds);
 
         $products = array_map(function ($product) {
             return [
@@ -112,6 +122,22 @@ class ProductDataProvider implements PaginatedApiDataProviderInterface
             ];
         }, $products);
 
-        return array_merge($products, $orderDetails);
+        return array_merge($products, $bundles, $productSuppliers);
+    }
+
+    /**
+     * @param int $offset
+     * @param int $limit
+     * @param string $langIso
+     *
+     * @return array
+     *
+     * @@throws \PrestaShopDatabaseException
+     */
+    public function getQueryForDebug($offset, $limit, $langIso)
+    {
+        $langId = $this->languageRepository->getLanguageIdByIsoCode($langIso);
+
+        return $this->productRepository->getQueryForDebug($offset, $limit, $langId);
     }
 }

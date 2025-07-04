@@ -30,7 +30,7 @@ class StoreDataProvider implements PaginatedApiDataProviderInterface
      *
      * @return array
      *
-     * @throws \PrestaShopDatabaseException
+     * @@throws \PrestaShopDatabaseException
      */
     public function getFormattedData($offset, $limit, $langIso)
     {
@@ -69,7 +69,7 @@ class StoreDataProvider implements PaginatedApiDataProviderInterface
      *
      * @return array
      *
-     * @throws \PrestaShopDatabaseException
+     * @@throws \PrestaShopDatabaseException
      */
     public function getFormattedDataIncremental($limit, $langIso, $objectIds)
     {
@@ -88,5 +88,19 @@ class StoreDataProvider implements PaginatedApiDataProviderInterface
                 'properties' => $store,
             ];
         }, $stores);
+    }
+
+    /**
+     * @param int $offset
+     * @param int $limit
+     * @param string $langIso
+     *
+     * @return array
+     *
+     * @@throws \PrestaShopDatabaseException
+     */
+    public function getQueryForDebug($offset, $limit, $langIso)
+    {
+        return $this->storeRepository->getQueryForDebug($offset, $limit, $langIso);
     }
 }

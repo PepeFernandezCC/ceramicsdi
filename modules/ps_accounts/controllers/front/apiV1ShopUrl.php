@@ -18,7 +18,7 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
 
-use PrestaShop\Module\PsAccounts\Controller\AbstractShopRestController;
+use PrestaShop\Module\PsAccounts\Http\Controller\AbstractShopRestController;
 use PrestaShop\Module\PsAccounts\Provider\ShopProvider;
 use PrestaShop\Module\PsAccounts\Repository\ConfigurationRepository;
 
@@ -55,15 +55,15 @@ class ps_AccountsApiV1ShopUrlModuleFrontController extends AbstractShopRestContr
      *
      * @throws Exception
      */
-    public function show($shop, array $payload)
+    public function show(Shop $shop, array $payload)
     {
-        $shopData = $this->shopProvider->formatShopData((array) \Shop::getShop($shop->id));
+        $shopDto = $this->shopProvider->formatShopData((array) \Shop::getShop($shop->id), '', false);
 
         return [
-            'domain' => $shopData['domain'],
-            'domain_ssl' => $shopData['domainSsl'],
-            'physical_uri' => $shopData['physicalUri'],
-            'virtual_uri' => $shopData['virtualUri'],
+            'domain' => $shopDto->domain,
+            'domain_ssl' => $shopDto->domainSsl,
+            'physical_uri' => $shopDto->physicalUri,
+            'virtual_uri' => $shopDto->virtualUri,
             'ssl_activated' => $this->configuration->sslEnabled(),
         ];
     }

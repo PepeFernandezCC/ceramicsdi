@@ -18,10 +18,21 @@ class EventbusSyncRepository
      */
     private $context;
 
-    public function __construct(\Db $db, \Context $context)
+    /**
+     * @var int
+     */
+    private $shopId;
+
+    public function __construct(\Context $context)
     {
-        $this->db = $db;
+        $this->db = \Db::getInstance();
         $this->context = $context;
+
+        if ($this->context->shop === null) {
+            throw new \PrestaShopException('No shop context');
+        }
+
+        $this->shopId = (int) $this->context->shop->id;
     }
 
     /**
@@ -39,7 +50,7 @@ class EventbusSyncRepository
         $result = $this->db->insert(
             self::TYPE_SYNC_TABLE_NAME,
             [
-                'id_shop' => (int) $this->context->shop->id,
+                'id_shop' => $this->shopId,
                 'type' => pSQL((string) $type),
                 'offset' => (int) $offset,
                 'last_sync_date' => pSQL((string) $lastSyncDate),
@@ -101,7 +112,7 @@ class EventbusSyncRepository
             ->from(self::TYPE_SYNC_TABLE_NAME)
             ->where('type = "' . pSQL($type) . '"')
             ->where('lang_iso = "' . pSQL((string) $langIso) . '"')
-            ->where('id_shop = ' . (int) $this->context->shop->id);
+            ->where('id_shop = ' . $this->shopId);
 
         return $this->db->getRow($query);
     }
@@ -126,7 +137,26 @@ class EventbusSyncRepository
             ],
             'type = "' . pSQL($type) . '"
             AND lang_iso = "' . pSQL((string) $langIso) . '"
-            AND id_shop = ' . (int) $this->context->shop->id
+            AND id_shop = ' . $this->shopId
         );
+    }
+
+    /**
+     * @param string $type
+     * @param string $langIso
+     *
+     * @return bool
+     */
+    public function isFullSyncDoneForThisTypeSync($type, $langIso = null)
+    {
+        $query = new \DbQuery();
+
+        $query->select('full_sync_finished')
+            ->from(self::TYPE_SYNC_TABLE_NAME)
+            ->where('type = "' . pSQL($type) . '"')
+            ->where('lang_iso = "' . pSQL((string) $langIso) . '"')
+            ->where('id_shop = ' . $this->shopId);
+
+        return (bool) $this->db->getValue($query);
     }
 }

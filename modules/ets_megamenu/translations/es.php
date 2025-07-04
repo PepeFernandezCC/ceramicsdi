@@ -427,6 +427,7 @@ $_MODULE['<{ets_megamenu}prestashop>product-list_ca2bf12169883f4982d8fe34b7e3c61
 $_MODULE['<{ets_megamenu}prestashop>product-list_69d08bd5f8cf4e228930935c3f13e42f'] = 'En stock';
 $_MODULE['<{ets_megamenu}prestashop>product-list_b55197a49e8c4cd8c314bc2aa39d6feb'] = 'Agotado';
 $_MODULE['<{ets_megamenu}prestashop>product-list_cb3c718c905f00adbb6735f55bfb38ef'] = 'Producto disponible con diferentes opciones';
+$_MODULE['<{ets_megamenu}prestashop>product-list_cb3c718c905f00adbb6735f55bfb38eg'] = 'Sólo disponible en formato de muestra';
 $_MODULE['<{ets_megamenu}prestashop>product-list_216adaf4e98dc62ec3abeab51b9fc57f'] = 'Por favor seleccione por lo menos un producto';
 $_MODULE['<{ets_megamenu}prestashop>product-list_90723749917a82bf3ff8a73247d32ffb'] = 'No puede agregar más de %d producto(s) a la comparación de productos';
 $_MODULE['<{ets_megamenu}prestashop>product-list_8a48e3d7293fc9e2f774581231418412'] = 'No hay producto disponible';

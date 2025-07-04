@@ -54,7 +54,7 @@ class Contactform extends Module implements WidgetInterface
         $this->name = 'contactform';
         $this->author = 'PrestaShop';
         $this->tab = 'front_office_features';
-        $this->version = '4.4.1';
+        $this->version = '4.4.3';
         $this->bootstrap = true;
 
         parent::__construct();
@@ -251,7 +251,13 @@ class Contactform extends Module implements WidgetInterface
         $notifications = [];
 
         if (Tools::isSubmit('submitMessage')) {
-            $this->sendMessage();
+            $formType = Tools::getValue('profform');
+            
+            if ($formType == 0) {
+                $this->sendMessage();
+            }else{
+                $this->sendProfMessage();
+            }
 
             $notifications = [];
             if (!empty($this->context->controller->errors)) {
@@ -331,7 +337,7 @@ class Contactform extends Module implements WidgetInterface
             $contacts[$one_contact['id_contact']] = $one_contact;
         }
 
-        if (isset($this->customer_thread['id_contact'])) {
+        if (!empty($this->customer_thread['id_contact'])) {
             return [
                 $contacts[$this->customer_thread['id_contact']],
             ];
@@ -406,8 +412,6 @@ class Contactform extends Module implements WidgetInterface
                 [],
                 'Shop.Notifications.Error'
             );
-
-            return;
         }
         if (empty($message)) {
             $this->context->controller->errors[] = $this->trans(
@@ -415,8 +419,6 @@ class Contactform extends Module implements WidgetInterface
                 [],
                 'Shop.Notifications.Error'
             );
-
-            return;
         }
         if (!Validate::isCleanHtml($message)) {
             $this->context->controller->errors[] = $this->trans(
@@ -424,8 +426,6 @@ class Contactform extends Module implements WidgetInterface
                 [],
                 'Shop.Notifications.Error'
             );
-
-            return;
         }
 
         $id_contact = (int) Tools::getValue('id_contact');
@@ -437,8 +437,6 @@ class Contactform extends Module implements WidgetInterface
                 [],
                 'Modules.Contactform.Shop'
             );
-
-            return;
         }
 
         if (!empty($file_attachment['name']) && $file_attachment['error'] != 0) {
@@ -447,8 +445,6 @@ class Contactform extends Module implements WidgetInterface
                 [],
                 'Modules.Contactform.Shop'
             );
-
-            return;
         }
         if (!empty($file_attachment['name']) &&
                   !in_array(Tools::strtolower(Tools::substr($file_attachment['name'], -4)), $extension) &&
@@ -459,9 +455,8 @@ class Contactform extends Module implements WidgetInterface
                 [],
                 'Modules.Contactform.Shop'
             );
-
-            return;
         }
+        
         if ($url !== ''
             || empty($serverToken)
             || $clientToken !== $serverToken
@@ -473,10 +468,12 @@ class Contactform extends Module implements WidgetInterface
                 'Modules.Contactform.Shop'
             );
             $this->createNewToken();
-
+        }
+        
+        if (!empty($this->context->controller->errors)) {
             return;
         }
-
+        
         $customer = $this->context->customer;
 
         if (!$customer->id) {
@@ -567,17 +564,28 @@ class Contactform extends Module implements WidgetInterface
             && empty($mailAlreadySend)
             && ($sendConfirmationEmail || $sendNotificationEmail)
         ) {
+            $message = version_compare(_PS_VERSION_, '8.0.0', '>=') ? stripslashes($message) : Tools::stripslashes($message);
+            $message = empty($message) ? ' - ' : $message;
             $var_list = [
                 '{firstname}' => '',
                 '{lastname}' => '',
                 '{order_name}' => '-',
                 '{attached_file}' => '-',
-                '{message}' => Tools::nl2br(Tools::htmlentitiesUTF8(Tools::stripslashes($message))),
+                '{message}' => Tools::nl2br(Tools::htmlentitiesUTF8($message)),
                 '{email}' => $from,
                 '{product_name}' => '',
             ];
+            $var_list['{country}'] = $this->getCountry(Tools::getValue('country'));
+            $var_list['{occupation}'] = Tools::getValue('occupation');
+            $var_list['{city}'] = Tools::getValue('city');
+            
+            $var_list['{contact_name}'] = $this->getSubject(Tools::getValue('id_contact'));
+
+            
+
 
             if (isset($customer->id)) {
+
                 $var_list['{firstname}'] = $customer->firstname;
                 $var_list['{lastname}'] = $customer->lastname;
             }
@@ -672,6 +680,113 @@ class Contactform extends Module implements WidgetInterface
                 'Modules.Contactform.Shop'
             );
         }
+    }
+
+    public function sendProfMessage()
+    {
+
+        if (!($from = trim(Tools::getValue('from'))) || !Validate::isEmail($from)) {
+            $this->context->controller->errors[] = $this->trans(
+                'Invalid email address.',
+                [],
+                'Shop.Notifications.Error'
+            );
+        }
+
+        $id_contact = (int) Tools::getValue('id_contact');
+        $contact = new Contact($id_contact, $this->context->language->id);
+
+        if (!$id_contact || !(Validate::isLoadedObject($contact))) {
+            $this->context->controller->errors[] = $this->trans(
+                'Please select a subject from the list provided. ',
+                [],
+                'Modules.Contactform.Shop'
+            );
+        }
+
+        
+        $customer = $this->context->customer;
+
+        if (!$customer->id) {
+            $customer->getByEmail($from);
+        }
+
+
+        $sendNotificationEmail = Configuration::get(self::SEND_NOTIFICATION_EMAIL);
+
+        if (!count($this->context->controller->errors)
+            && empty($mailAlreadySend)
+            && ($sendNotificationEmail)
+        ) {
+            
+            $var_list['{company}'] = Tools::getValue('name');
+            $var_list['{cif}'] = Tools::getValue('cif');
+            $var_list['{contact_person_name}'] = Tools::getValue('contact_person_name');
+            $var_list['{email}'] = $from;
+            $var_list['{commercial_web}'] = Tools::getValue('commercial_web');
+            $var_list['{phone}'] = Tools::getValue('phone');
+            $var_list['{province}'] = Tools::getValue('province');
+            $var_list['{city}'] = Tools::getValue('city');
+            $var_list['{postal_code}'] = Tools::getValue('postal_code');
+            $var_list['{address}'] = Tools::getValue('address');
+            $var_list['{contact_name}'] = 1;
+
+            if (isset($customer->id)) {
+
+                $var_list['{firstname}'] = $customer->firstname;
+                $var_list['{lastname}'] = $customer->lastname;
+            }
+
+
+
+            if ($sendNotificationEmail) {
+                if (empty($contact->email) || !Mail::Send(
+                    $this->context->language->id,
+                    'profcontact',
+                    $this->trans('Message from contact form', [], 'Emails.Subject') . ' [no_sync]',
+                    $var_list,
+                    $contact->email,
+                    $contact->name,
+                    null,
+                    null,
+                    null,
+                    null,
+                    _PS_MAIL_DIR_,
+                    false,
+                    null,
+                    null,
+                    $from
+                )) {
+                    $this->context->controller->errors[] = $this->trans(
+                        'An error occurred while sending the message.',
+                        [],
+                        'Modules.Contactform.Shop'
+                    );
+                }
+            }
+
+        }
+
+        if (!count($this->context->controller->errors)) {
+            $this->context->controller->success[] = $this->trans(
+                'Your message has been successfully sent to our team.',
+                [],
+                'Modules.Contactform.Shop'
+            );
+        }
+    }
+
+    public function getSubject($idSubject) {
+
+        $sql = 'SELECT `name` FROM `ps_contact_lang` WHERE `id_contact` = '.$idSubject.' AND `id_lang` = 1';
+        return Db::getInstance()->getValue($sql);
+
+    }
+
+    public function getCountry($idCountry) {
+        
+        $sql = 'SELECT `name` FROM `ps_country_lang` WHERE `id_country` = '.$idCountry.' AND `id_lang` = 1';
+        return Db::getInstance()->getValue($sql);
     }
 
     /**

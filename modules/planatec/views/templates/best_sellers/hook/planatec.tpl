@@ -1,52 +1,3 @@
-{*
-
-<section id="best-seller">
-
-    <h2>{l s='Best sellers' mod='planatec'}</h2>
-
-    <div class="best-seller-products container-fluid">
-
-        <div class="row">
-
-            {assign var="count" value="0"}
-
-            {foreach from=$bestSellerProducts item="product"}
-
-                <a href="{$product.url}" content="{$product.url}">
-
-                    <div class="col-xs-1 best-seller-product">
-
-                        {$product.name}
-
-                    </div>
-
-                </a>
-
-                {assign var="count" value="{$count + 1}"}
-
-            {/foreach}
-
-
-
-            {if $count < 12}
-
-                {for $i=$count+1 to 12}
-
-                    <div class="col-xs-1 best-seller-product"></div>
-
-                {/for}
-
-            {/if}
-
-        </div>
-
-    </div>
-
-</section>
-
-*}
-
-
 
 <section id="categories-list">
 
@@ -55,6 +6,7 @@
 
 
     {assign var="categories" value=Category::getSimpleCategoriesWithParentInfos($language.id)}
+    {assign var="categoriesAreaArray" value=[12, 13, 14, 16, 38, 37]}
 
     <div class="container-fluid">
 
@@ -63,46 +15,27 @@
 
             {foreach from=$categories item="category"}
 
-                {if $category['name'] == 'INICIO'
-                    || $category['name'] == 'ACCUEIL'
-                    || $category['name'] == 'HOME'
-                    || $category['name'] == 'INÍCIO'}
+                {if in_array($category['id_category'], $categoriesAreaArray)}
 
-                    {assign var="parentCategory" value=Category::getCategoryInformation([$category['id_parent']], $language.id)}
+                    {assign var="infoCategory" value=Category::getCategoryInformation([$category['id_category']], $language.id)}
 
                     <div class="categories-col">
 
                         <div class="category-item">
 
-                            <a href="{$link->getCategoryLink($category['id_parent'])|escape:'html':'UTF-8'}">
+                            <a href="{$link->getCategoryLink($category['id_category'])|escape:'html':'UTF-8'}">
 
-                                <img src="{$link->getCatImageLink($parentCategory[$category['id_parent']]['link_rewrite'], $category['id_parent'])}" loading="lazy">
+                                <img src="{$link->getCatImageLink($infoCategory[$category['id_category']]['link_rewrite'], $category['id_category'])}" loading="lazy" alt="items category: {$infoCategory[$category['id_category']]['name']}">
 
                                 <div class="category-list-title">
 
-                                    <h3>{$parentCategory[$category['id_parent']]['name']}</h3>
+                                    <h3>{$infoCategory[$category['id_category']]['name']}</h3>
 
                                 </div>
 
                             </a>
 
                         </div>
-
-                        {*<div class="category-item">
-
-                            <a href="{$link->getCategoryLink(3)|escape:'html':'UTF-8'}?q=Tipo+de+estancia-{$category['name']}">
-
-                                <img src="{$link->getCatImageLink($category['link_rewrite'], $category['id_category'])}" loading="lazy">
-
-                                <div class="category-list-title">
-
-                                    <h4>{$category['name']}</h4>
-
-                                </div>
-
-                            </a>
-
-                        </div>*}
 
                     </div>
 
@@ -289,7 +222,7 @@
 
                             <div class="material-img">
 
-                                <img src="{$link->getCatImageLink($parentMaterialCategory[$materialCategory['id_parent']]['link_rewrite'], $materialCategory['id_parent'])}" loading="lazy">
+                                <img src="{$link->getCatImageLink($parentMaterialCategory[$materialCategory['id_parent']]['link_rewrite'], $materialCategory['id_parent'])}" alt="items material: {$parentMaterialCategory[$materialCategory['id_parent']]['name']}" loading="lazy">
 
                             </div>
 
@@ -351,7 +284,7 @@
 
                                     <div class="material-img">
 
-                                        <img src="{$link->getCatImageLink($parentMaterialCategory[$materialCategory['id_parent']]['link_rewrite'], $materialCategory['id_parent'])}" loading="lazy">
+                                        <img src="{$link->getCatImageLink($parentMaterialCategory[$materialCategory['id_parent']]['link_rewrite'], $materialCategory['id_parent'])}" alt="items material: {$parentMaterialCategory[$materialCategory['id_parent']]['name']}" loading="lazy">
 
                                     </div>
 
@@ -415,7 +348,7 @@
 
                                         <div class="material-img">
 
-                                            <img src="{$link->getCatImageLink($materialCategory['link_rewrite'], $materialCategory['id_category'])}" loading="lazy">
+                                            <img src="{$link->getCatImageLink($materialCategory['link_rewrite'], $materialCategory['id_category'])}" loading="lazy" alt="items material: {$materialCategory['name']}">
 
                                         </div>
 

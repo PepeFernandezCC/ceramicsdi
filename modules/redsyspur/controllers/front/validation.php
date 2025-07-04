@@ -223,7 +223,33 @@ class RedsyspurValidationModuleFrontController extends ModuleFrontController  {
                     $carrito_valido = false;
                 }
 
-                $totalCarrito = $cart->getOrderTotal(true, Cart::BOTH);
+                /*
+                  * PLANATEC
+                  *
+                  * Se coloca aquí el código debido a que no es capaz de ejecutarlo en las carpetas de override
+                  *
+                  * En todos los casos, parece ser que el módulo de Redsys obtiene el total del carrito con
+                  * impuestos incluidos, obviando el hecho de que para determinados clientes estamos eliminando
+                  * la opción de impuestos (clientes con VAT autorizado). Esto provoca que el pedido, o bien no
+                  * siga su curso, o bien siga su curso pero PrestaShop registre un precio pagado distinto al
+                  * que realmente se ha pagado.
+                  *
+                  * Por esa razón, el siguiente código obtiene al cliente del carrito actual, busca entre sus
+                  * grupos si es del grupo con ID 6 (grupo Intracomunitarios) y, de ser así, obtiene el total
+                  * del carrito sin impuestos, lo que hace que la orden sea correcta y el pedido siga su curso
+                  * de manera correcta.
+                  */                        
+                    $withTaxes = true;
+                    foreach ($customer->getGroups() as $group) {
+                        if ($group === 6) {
+                            $withTaxes = false;
+                        }
+                    }
+                    
+                    $totalCarrito = $cart->getOrderTotal($withTaxes, Cart::BOTH);
+                /* END PLANATEC */
+
+                // PLANATEC - $totalCarrito = $cart->getOrderTotal(true, Cart::BOTH);
                 $estadoFinal = Configuration::get("REDSYS_ESTADO_PEDIDO");
 
                 switch((int)Configuration::get('REDSYS_COMPROBACION_TOTAL_NOTIF')) {

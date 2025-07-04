@@ -11,6 +11,8 @@ class ps_EventbusApiThemesModuleFrontController extends AbstractApiController
 
     /**
      * @return void
+     *
+     * @throws\PrestaShopException
      */
     public function postProcess()
     {
@@ -25,8 +27,11 @@ class ps_EventbusApiThemesModuleFrontController extends AbstractApiController
         /** @var array $themeInfo */
         $themeInfo = $themeRepository->getThemes();
 
+        /** @var bool $initFullSync */
+        $initFullSync = \Tools::getValue('full', 0) == 1;
+
         try {
-            $response = $this->proxyService->upload($jobId, $themeInfo, $this->startTime);
+            $response = $this->proxyService->upload($jobId, $themeInfo, $this->startTime, $initFullSync);
         } catch (EnvVarException|Exception $exception) {
             $this->exitWithExceptionMessage($exception);
         }
@@ -34,8 +39,11 @@ class ps_EventbusApiThemesModuleFrontController extends AbstractApiController
         $this->exitWithResponse(
             array_merge(
                 [
-                    'remaining_objects' => 0,
-                    'total_objects' => count($themeInfo),
+                  'remaining_objects' => 0,
+                  'total_objects' => count($themeInfo),
+                  'job_id' => $jobId,
+                  'object_type' => $this->type,
+                  'syncType' => 'full',
                 ],
                 $response
             )

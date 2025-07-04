@@ -40,15 +40,20 @@ class ModuleDataProvider implements PaginatedApiDataProviderInterface
         }
 
         return array_map(function ($module) {
-            $moduleId = (string) $module['module_id'];
+            $module['module_id'] = (string) $module['module_id'];
             $module['active'] = $module['active'] == '1';
-            $module['created_at'] = $module['created_at'] ?: $this->createdAt;
-            $module['updated_at'] = $module['updated_at'] ?: $this->createdAt;
+            if (version_compare(_PS_VERSION_, '1.7', '>=')) {
+                $module['created_at'] = $module['created_at'] ?: $this->createdAt;
+                $module['updated_at'] = $module['updated_at'] ?: $this->createdAt;
+            } else {
+                $module['created_at'] = $this->createdAt;
+                $module['updated_at'] = $this->createdAt;
+            }
 
             return [
-                'id' => $moduleId,
-                'collection' => Config::COLLECTION_MODULES,
-                'properties' => $module,
+              'id' => $module['module_id'],
+              'collection' => Config::COLLECTION_MODULES,
+              'properties' => $module,
             ];
         }, $modules);
     }
@@ -67,5 +72,19 @@ class ModuleDataProvider implements PaginatedApiDataProviderInterface
     public function getFormattedDataIncremental($limit, $langIso, $objectIds)
     {
         return [];
+    }
+
+    /**
+     * @param int $offset
+     * @param int $limit
+     * @param string $langIso
+     *
+     * @return array
+     *
+     * @@throws \PrestaShopDatabaseException
+     */
+    public function getQueryForDebug($offset, $limit, $langIso)
+    {
+        return $this->moduleRepository->getQueryForDebug($offset, $limit);
     }
 }

@@ -36,6 +36,11 @@ class OrderDataProvider implements PaginatedApiDataProviderInterface
      */
     private $orderCartRuleRepository;
 
+    /**
+     * @var int
+     */
+    private $shopId;
+
     public function __construct(
         \Context $context,
         OrderRepository $orderRepository,
@@ -50,6 +55,12 @@ class OrderDataProvider implements PaginatedApiDataProviderInterface
         $this->orderDetailsRepository = $orderDetailsRepository;
         $this->orderHistoryRepository = $orderHistoryRepository;
         $this->orderCartRuleRepository = $orderCartRuleRepository;
+
+        if ($this->context->shop === null) {
+            throw new \PrestaShopException('No shop context');
+        }
+
+        $this->shopId = (int) $this->context->shop->id;
     }
 
     /**
@@ -59,13 +70,11 @@ class OrderDataProvider implements PaginatedApiDataProviderInterface
      *
      * @return array
      *
-     * @throws \PrestaShopDatabaseException
+     * @@throws \PrestaShopDatabaseException
      */
     public function getFormattedData($offset, $limit, $langIso)
     {
-        /** @var int $shopId */
-        $shopId = $this->context->shop->id;
-        $orders = $this->orderRepository->getOrders($offset, $limit, $shopId);
+        $orders = $this->orderRepository->getOrders($offset, $limit, $this->shopId);
 
         if (empty($orders)) {
             return [];
@@ -74,7 +83,7 @@ class OrderDataProvider implements PaginatedApiDataProviderInterface
         $langId = (int) \Language::getIdByIso($langIso);
         $this->castOrderValues($orders, $langId);
 
-        $orderDetails = $this->getOrderDetails($orders, $shopId);
+        $orderDetails = $this->getOrderDetails($orders);
         $orderStatuses = $this->getOrderStatuses($orders, $langId);
         $orderCartRules = $this->getOrderCartRules($orders);
 
@@ -97,10 +106,7 @@ class OrderDataProvider implements PaginatedApiDataProviderInterface
      */
     public function getRemainingObjectsCount($offset, $langIso)
     {
-        /** @var int $shopId */
-        $shopId = $this->context->shop->id;
-
-        return (int) $this->orderRepository->getRemainingOrderCount($offset, $shopId);
+        return (int) $this->orderRepository->getRemainingOrderCount($offset, $this->shopId);
     }
 
     /**
@@ -109,20 +115,18 @@ class OrderDataProvider implements PaginatedApiDataProviderInterface
      *
      * @return array
      *
-     * @throws \PrestaShopDatabaseException
+     * @@throws \PrestaShopDatabaseException
      */
     public function getFormattedDataIncremental($limit, $langIso, $objectIds)
     {
-        /** @var int $shopId */
-        $shopId = $this->context->shop->id;
         $langId = (int) \Language::getIdByIso($langIso);
-        $orders = $this->orderRepository->getOrdersIncremental($limit, $shopId, $objectIds);
+        $orders = $this->orderRepository->getOrdersIncremental($limit, $this->shopId, $objectIds);
 
         if (!is_array($orders) || empty($orders)) {
             return [];
         }
 
-        $orderDetails = $this->getOrderDetails($orders, $shopId);
+        $orderDetails = $this->getOrderDetails($orders);
         $orderStatuses = $this->getOrderStatuses($orders, $langId);
         $orderCartRules = $this->getOrderCartRules($orders);
 
@@ -140,14 +144,27 @@ class OrderDataProvider implements PaginatedApiDataProviderInterface
     }
 
     /**
-     * @param array $orders
-     * @param int $shopId
+     * @param int $offset
+     * @param int $limit
+     * @param string $langIso
      *
      * @return array
      *
-     * @throws \PrestaShopDatabaseException
+     * @@throws \PrestaShopDatabaseException
      */
-    private function getOrderDetails(array $orders, $shopId)
+    public function getQueryForDebug($offset, $limit, $langIso)
+    {
+        return $this->orderRepository->getQueryForDebug($offset, $limit, $this->shopId);
+    }
+
+    /**
+     * @param array $orders
+     *
+     * @return array
+     *
+     * @@throws \PrestaShopDatabaseException
+     */
+    private function getOrderDetails(array $orders)
     {
         if (empty($orders)) {
             return [];
@@ -155,7 +172,7 @@ class OrderDataProvider implements PaginatedApiDataProviderInterface
 
         $orderIds = $this->arrayFormatter->formatValueArray($orders, 'id_order');
 
-        $orderDetails = $this->orderDetailsRepository->getOrderDetails($orderIds, $shopId);
+        $orderDetails = $this->orderDetailsRepository->getOrderDetails($orderIds, $this->shopId);
 
         if (!is_array($orderDetails) || empty($orderDetails)) {
             return [];
@@ -180,7 +197,7 @@ class OrderDataProvider implements PaginatedApiDataProviderInterface
      *
      * @return array|array[]
      *
-     * @throws \PrestaShopDatabaseException
+     * @@throws \PrestaShopDatabaseException
      */
     private function getOrderStatuses(array $orders, $langId)
     {
@@ -205,7 +222,7 @@ class OrderDataProvider implements PaginatedApiDataProviderInterface
      *
      * @return array|array[]
      *
-     * @throws \PrestaShopDatabaseException
+     * @@throws \PrestaShopDatabaseException
      */
     private function getOrderCartRules(array $orders)
     {
@@ -231,7 +248,7 @@ class OrderDataProvider implements PaginatedApiDataProviderInterface
      *
      * @return void
      *
-     * @throws \PrestaShopDatabaseException
+     * @@throws \PrestaShopDatabaseException
      */
     private function castOrderValues(array &$orders, int $langId)
     {
@@ -261,7 +278,7 @@ class OrderDataProvider implements PaginatedApiDataProviderInterface
      *
      * @return bool
      *
-     * @throws \PrestaShopDatabaseException
+     * @@throws \PrestaShopDatabaseException
      */
     private function castIsPaidValue(array $orders, array $order, int $langId)
     {
@@ -313,8 +330,7 @@ class OrderDataProvider implements PaginatedApiDataProviderInterface
             $castedOrderStatus['id_order_history'] = (int) $orderStatus['id_order_history'];
             $castedOrderStatus['name'] = (string) $orderStatus['name'];
             $castedOrderStatus['template'] = (string) $orderStatus['template'];
-            $date = new \DateTime($orderStatus['date_add']);
-            $castedOrderStatus['date_add'] = $date->format(\DateTime::W3C);
+            $castedOrderStatus['date_add'] = $orderStatus['date_add'];
             $castedOrderStatus['is_validated'] = (bool) $orderStatus['logable'];
             $castedOrderStatus['is_delivered'] = (bool) $orderStatus['delivery'];
             $castedOrderStatus['is_shipped'] = (bool) $orderStatus['shipped'];

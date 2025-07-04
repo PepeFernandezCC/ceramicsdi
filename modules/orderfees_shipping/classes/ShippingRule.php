@@ -1184,6 +1184,509 @@ class ShippingRule extends ObjectModel
         return true;
     }
 
+    public function checkCustom($cart)
+    {
+        $context = Context::getContext();
+        $currency = Currency::getCurrencyInstance((int)$cart->id_currency);
+        
+        // Main
+        if (!$this->active
+            || ($this->date_from && strtotime($this->date_from) > time())
+            || ($this->date_to && strtotime($this->date_to) < time())
+            || ($this->id_customer && $cart->id_customer != $this->id_customer)
+            || (($this->time_from && date('H:i:s') < $this->time_from)
+            || ($this->time_to && date('H:i:s') > $this->time_to))
+        ) {
+            return false;
+        }
+        
+        $results = Hook::exec('actionShippingRuleCheck', array(
+            'object' => &$this,
+            'context' => &$context,
+            'cart' => &$cart
+        ), null, true);
+
+        if (is_array($results)) {
+            foreach ($results as $result) {
+                if ($result !== null && !$result) {
+                    return false;
+                }
+            }
+        }
+        
+        // Minimum amount
+        if ((int)$this->minimum_amount) {
+            $minimum_amount = $this->minimum_amount;
+            
+            if ($this->minimum_amount_currency != $currency->id) {
+                $minimum_amount = Tools::convertPriceFull(
+                    $minimum_amount,
+                    new Currency($this->minimum_amount_currency),
+                    $currency
+                );
+            }
+            
+            $cart_total = 0;
+            
+            if ($this->minimum_amount_restriction == self::PRODUCTS) {
+                foreach ($this->getProducts() as $product) {
+                    $cart_total += Tools::ps_round(
+                        $product[$this->minimum_amount_tax ? 'total_wt' : 'total'],
+                        (int) $currency->decimals * _PS_PRICE_COMPUTE_PRECISION_
+                    );
+                }
+            } else {
+                $cart_total = $cart->getOrderTotal($this->minimum_amount_tax, Cart::BOTH_WITHOUT_SHIPPING);
+                
+                if (version_compare(_PS_VERSION_, '1.7.6.0', '<')) {
+                    $cart_total -= $cart->getOrderTotal($this->minimum_amount_tax, Cart::ONLY_DISCOUNTS);
+                }
+            }
+
+            if ($cart_total < $minimum_amount) {
+                return false;
+            }
+        }
+
+        // Maximum amount
+        if ((int)$this->maximum_amount) {
+            $maximum_amount = $this->maximum_amount;
+            
+            if ($this->maximum_amount_currency != $currency->id) {
+                $maximum_amount = Tools::convertPriceFull(
+                    $maximum_amount,
+                    new Currency($this->maximum_amount_currency),
+                    $currency
+                );
+            }
+            
+            $cart_total = 0;
+            
+            if ($this->maximum_amount_restriction == self::PRODUCTS) {
+                foreach ($this->getProducts() as $product) {
+                    $cart_total += Tools::ps_round(
+                        $product[$this->maximum_amount_tax ? 'total_wt' : 'total'],
+                        (int) $currency->decimals * _PS_PRICE_COMPUTE_PRECISION_
+                    );
+                }
+            } else {
+                $cart_total = $cart->getOrderTotal($this->maximum_amount_tax, Cart::BOTH_WITHOUT_SHIPPING);
+                
+                if (version_compare(_PS_VERSION_, '1.7.6.0', '<')) {
+                    $cart_total -= $cart->getOrderTotal($this->maximum_amount_tax, Cart::ONLY_DISCOUNTS);
+                }
+            }
+
+            if ($cart_total >= $maximum_amount) {
+                return false;
+            }
+        }
+        
+        // City restriction
+        if ($this->city_restriction) {
+            if (!$cart->id_address_delivery) {
+                return false;
+            }
+            
+            if (Module::isEnabled('cityselect') && !count($this->getCityRuleGroups())) {
+                $id_of_shipping_rule = (int) Db::getInstance()->getValue(
+                    'SELECT src.id_of_shipping_rule
+                        FROM ' . _DB_PREFIX_ . 'of_shipping_rule_city src
+                        WHERE src.id_of_shipping_rule = ' . (int) $this->id . '
+                            AND src.name = (
+                                SELECT a.city
+                                FROM ' . _DB_PREFIX_ . 'address a
+                                WHERE a.id_address = ' . (int) $cart->id_address_delivery . '
+                                LIMIT 1
+                            )'
+                );
+
+                if (!$id_of_shipping_rule) {
+                    return false;
+                }
+            } else {
+                $address = Db::getInstance()->getRow(
+                    'SELECT a.id_country, a.city
+                        FROM '._DB_PREFIX_.'address a
+                        WHERE a.id_address = ' . (int)$cart->id_address_delivery
+                );
+
+                $id_country = $address['id_country'];
+                $city = $this->formatCity($address['city']);
+
+                $city_rule_groups = $this->getCityRuleGroups();
+
+                foreach (array_keys($city_rule_groups) as $id_city_rule_group) {
+                    $city_rules = $this->getCityRules($id_city_rule_group);
+
+                    foreach ($city_rules as $city_rule) {
+                        if ($city_rule['type'] != '' && $city_rule['type'] != $id_country) {
+                            continue;
+                        }
+
+                        $values = array_map(array($this, 'formatCity'), explode(',', $city_rule['value']));
+
+                        if (in_array($city, $values)) {
+                            continue 2;
+                        }
+                    }
+
+                    return false;
+                }
+            }
+        }
+
+        // Zipcode restriction
+        if ($this->zipcode_restriction) {
+            $id_country = 0;
+            $postcode = '';
+
+            if ($cart->id_address_delivery) {
+                $address = Db::getInstance()->getRow(
+                    'SELECT a.id_country, a.postcode
+                        FROM '._DB_PREFIX_.'address a
+                        WHERE a.id_address = ' . (int)$cart->id_address_delivery
+                );
+
+                $id_country = $address['id_country'];
+                $postcode = $address['postcode'];
+            } elseif (isset($context->customer->postcode)) {
+                $id_country = $context->customer->geoloc_id_country;
+                $postcode = $context->customer->postcode;
+            }
+
+            $postcode = preg_replace('/([\s-]+)/', '', Tools::strtolower($postcode));
+
+            if (!$postcode) {
+                return false;
+            }
+
+            $zipcode_rule_groups = $this->getZipcodeRuleGroups();
+
+            foreach (array_keys($zipcode_rule_groups) as $id_zipcode_rule_group) {
+                $zipcode_rules = $this->getZipcodeRules($id_zipcode_rule_group);
+
+                foreach ($zipcode_rules as $zipcode_rule) {
+                    if ($zipcode_rule['type'] != '' && $zipcode_rule['type'] != $id_country) {
+                        continue;
+                    }
+
+                    $operator = $zipcode_rule['operator'];
+                    $values = explode(',', preg_replace('/([\s-]+|,+$)/', '', Tools::strtolower($zipcode_rule['value'])));
+
+                    if ($operator == '!=') {
+                        if (!in_array($postcode, $values)) {
+                            continue 2;
+                        }
+                    }
+
+                    foreach ($values as $value) {
+                        if ($operator == 'begin') {
+                            if (strpos($postcode, $value) === 0) {
+                                continue 3;
+                            }
+                        } elseif ($operator == 'end') {
+                            if (strrpos($postcode, $value) + Tools::strlen($value) === Tools::strlen($postcode)) {
+                                continue 3;
+                            }
+                        } else {
+                            $cmp = ($postcode > $value ? 1 : ($postcode === $value ? 0 : - 1));
+
+                            if ($operator == '=' && $cmp == 0) {
+                                continue 3;
+                            } elseif ($operator == '>' && $cmp > 0) {
+                                continue 3;
+                            } elseif ($operator == '<' && $cmp < 0) {
+                                continue 3;
+                            } elseif ($operator == '>=' && $cmp >= 0) {
+                                continue 3;
+                            } elseif ($operator == '<=' && $cmp <= 0) {
+                                continue 3;
+                            }
+                        }
+                    }
+                }
+
+                return false;
+            }
+        }
+
+        // Dimension restriction
+        if ($this->dimension_restriction) {
+            $dimensions_available = array('width', 'height', 'depth', 'weight', 'volume');
+            $dimensions_products = array(
+                'product' => array(),
+                'product_quantity' => array(),
+                'all' => array()
+            );
+
+            $products = $this->getProducts();
+
+            foreach ($products as $product) {
+                foreach ($dimensions_available as $dim) {
+                    if (isset($product[$dim])) {
+                        $dimensions_products['product'][$dim][] = $product[$dim];
+                        $dimensions_products['product_quantity'][$dim][] = $product[$dim] * $product['cart_quantity'];
+
+                        if (!isset($dimensions_products['all'][$dim])) {
+                            $dimensions_products['all'][$dim][0] = 0;
+                        }
+
+                        $dimensions_products['all'][$dim][0] += ($product[$dim] * $product['cart_quantity']);
+                    }
+                }
+
+                // Volume
+                $volume = $product['height'] * $product['width'] * $product['depth'];
+
+                $dimensions_products['product']['volume'][] = $volume;
+                $dimensions_products['product_quantity']['volume'][] = $volume * $product['cart_quantity'];
+
+                if (!isset($dimensions_products['all']['volume'])) {
+                    $dimensions_products['all']['volume'][0] = 0;
+                }
+
+                $dimensions_products['all']['volume'][0] += ($volume * $product['cart_quantity']);
+                
+                // Combined (L + W + H)
+                $combined = $product['height'] + $product['width'] + $product['depth'];
+
+                $dimensions_products['product']['combined'][] = $combined;
+                $dimensions_products['product_quantity']['combined'][] = $combined * $product['cart_quantity'];
+
+                if (!isset($dimensions_products['all']['combined'])) {
+                    $dimensions_products['all']['combined'][0] = 0;
+                }
+
+                $dimensions_products['all']['combined'][0] += ($combined * $product['cart_quantity']);
+                
+                // Combined (L + 2W + 2H)
+                $combined_girth = (2 * $product['height']) + (2 * $product['width']) + $product['depth'];
+
+                $dimensions_products['product']['combined_girth'][] = $combined_girth;
+                $dimensions_products['product_quantity']['combined_girth'][] = $combined_girth * $product['cart_quantity'];
+
+                if (!isset($dimensions_products['all']['combined_girth'])) {
+                    $dimensions_products['all']['combined_girth'][0] = 0;
+                }
+
+                $dimensions_products['all']['combined_girth'][0] += ($combined_girth * $product['cart_quantity']);
+            }
+
+            if (!empty($dimensions_products['product'])) {
+                $dimension_rule_groups = $this->getDimensionRuleGroups();
+
+                foreach ($dimension_rule_groups as $id_dimension_rule_group => $dimension_rule_group) {
+                    $base = $dimension_rule_group['base'];
+                    $dimension_rules = $this->getDimensionRules($id_dimension_rule_group);
+
+                    foreach ($dimension_rules as $dimension_rule) {
+                        $type = $dimension_rule['type'];
+                        $operator = $dimension_rule['operator'];
+                        $values = explode(',', preg_replace('/(\s+)/', '', Tools::strtolower($dimension_rule['value'])));
+
+                        foreach ($values as $value) {
+                            $dimensions = $dimensions_products[$base][$type];
+                            $count_matching = 0;
+
+                            foreach ($dimensions as $dimension) {
+                                $cmp = ($dimension > $value ? 1 : ($dimension == $value ? 0 : - 1));
+
+                                if ($operator == '=' && $cmp == 0) {
+                                    $count_matching++;
+                                } elseif ($operator == '>' && $cmp > 0) {
+                                    $count_matching++;
+                                } elseif ($operator == '<' && $cmp < 0) {
+                                    $count_matching++;
+                                } elseif ($operator == '>=' && $cmp >= 0) {
+                                    $count_matching++;
+                                } elseif ($operator == '<=' && $cmp <= 0) {
+                                    $count_matching++;
+                                } elseif ($operator == '!=' && $cmp != 0) {
+                                    $count_matching++;
+                                }
+                            }
+                            
+                            if ($this->type & self::APPLY_IF_ALL) {
+                                if ($count_matching == count($dimensions)) {
+                                    continue 3;
+                                }
+                            } elseif ($count_matching > 0) {
+                                continue 3;
+                            }
+                        }
+                    }
+
+                    return false;
+                }
+            }
+        }
+
+        // Product
+        if (!$this->restrictionsProducts()) {
+            return false;
+        }
+
+        // Group
+        if ($this->group_restriction) {
+            $id_of_shipping_rule = (int) Db::getInstance()->getValue(
+                'SELECT srg.id_of_shipping_rule
+                    FROM ' . _DB_PREFIX_ . 'of_shipping_rule_group srg
+                    WHERE srg.id_of_shipping_rule = ' . (int) $this->id . '
+                        AND srg.id_group ' . (
+                            $cart->id_customer ? 'IN (
+                                SELECT cg.id_group
+                                FROM ' . _DB_PREFIX_ . 'customer_group cg
+                                WHERE cg.id_customer = ' . (int) $cart->id_customer . '
+                            )' : '= ' . (int) Configuration::get('PS_UNIDENTIFIED_GROUP')
+                        )
+            );
+            
+            if (!$id_of_shipping_rule) {
+                return false;
+            }
+        }
+
+        // Country
+        if ($this->country_restriction) {
+            if (!$cart->id_address_delivery) {
+                if (empty($context->country->id)) {
+                    return false;
+                }
+                
+                $id_of_shipping_rule = (int) Db::getInstance()->getValue(
+                    'SELECT src.id_of_shipping_rule
+                        FROM ' . _DB_PREFIX_ . 'of_shipping_rule_country src
+                        WHERE src.id_of_shipping_rule = ' . (int) $this->id . '
+                            AND src.id_country = ' . (int)$context->country->id
+                );
+            } else {
+                $id_of_shipping_rule = (int) Db::getInstance()->getValue(
+                    'SELECT src.id_of_shipping_rule
+                        FROM ' . _DB_PREFIX_ . 'of_shipping_rule_country src
+                        WHERE src.id_of_shipping_rule = ' . (int) $this->id . '
+                            AND src.id_country = (
+                                SELECT a.id_country
+                                FROM ' . _DB_PREFIX_ . 'address a
+                                WHERE a.id_address = ' . (int) $cart->id_address_delivery . '
+                                LIMIT 1
+                            )'
+                );
+            }
+            
+            if (!$id_of_shipping_rule) {
+                return false;
+            }
+        }
+        
+        // Zone
+        if ($this->zone_restriction) {
+            if (!$cart->id_address_delivery) {
+                if (empty($context->country->id_zone)) {
+                    return false;
+                }
+                
+                $id_of_shipping_rule = (int) Db::getInstance()->getValue(
+                    'SELECT srz.id_of_shipping_rule
+                        FROM ' . _DB_PREFIX_ . 'of_shipping_rule_zone srz
+                        WHERE srz.id_of_shipping_rule = ' . (int) $this->id . '
+                            AND srz.id_zone = ' . (int)$context->country->id_zone
+                );
+            } else {
+                $id_of_shipping_rule = (int) Db::getInstance()->getValue(
+                    'SELECT srz.id_of_shipping_rule
+                        FROM ' . _DB_PREFIX_ . 'of_shipping_rule_zone srz
+                        INNER JOIN ' . _DB_PREFIX_ . 'address a
+                                    ON a.id_address = ' . (int) $cart->id_address_delivery . '
+                                AND srz.id_of_shipping_rule = ' . (int) $this->id . '
+                        LEFT JOIN ' . _DB_PREFIX_ . 'country c
+                            ON c.id_country = a.id_country
+                                AND c.id_zone = srz.id_zone
+                        LEFT JOIN ' . _DB_PREFIX_ . 'state s
+                            ON s.id_state = a.id_state
+                                AND s.id_zone = srz.id_zone
+                        WHERE c.id_zone IS NOT NULL OR s.id_zone IS NOT NULL'
+                );
+            }
+            
+            if (!$id_of_shipping_rule) {
+                return false;
+            }
+        }
+        
+        // State
+        if ($this->state_restriction) {
+            if (!$cart->id_address_delivery) {
+                return false;
+            }
+            
+            $id_of_shipping_rule = (int) Db::getInstance()->getValue(
+                'SELECT srs.id_of_shipping_rule
+                    FROM ' . _DB_PREFIX_ . 'of_shipping_rule_state srs
+                    WHERE srs.id_of_shipping_rule = ' . (int) $this->id . '
+                        AND srs.id_state = (
+                            SELECT a.id_state
+                            FROM ' . _DB_PREFIX_ . 'address a
+                            WHERE a.id_address = ' . (int) $cart->id_address_delivery . '
+                            LIMIT 1
+                        )'
+            );
+            
+            if (!$id_of_shipping_rule) {
+                return false;
+            }
+        }
+
+        // Shop
+        if ($this->shop_restriction && $cart->id_shop && Shop::isFeatureActive()) {
+            $id_of_shipping_rule = (int) Db::getInstance()->getValue(
+                'SELECT srs.id_of_shipping_rule
+                    FROM ' . _DB_PREFIX_ . 'of_shipping_rule_shop srs
+                    WHERE srs.id_of_shipping_rule = ' . (int) $this->id . '
+                        AND srs.id_shop = ' . (int) $cart->id_shop
+            );
+            
+            if (!$id_of_shipping_rule) {
+                return false;
+            }
+        }
+        
+        // Title
+        if ($this->gender_restriction) {
+            $id_of_shipping_rule = (int) Db::getInstance()->getValue(
+                'SELECT srg.id_of_shipping_rule
+                    FROM ' . _DB_PREFIX_ . 'of_shipping_rule_gender srg
+                    WHERE srg.id_of_shipping_rule = ' . (int) $this->id . '
+                        AND srg.id_gender = (
+                            SELECT c.id_gender
+                            FROM ' . _DB_PREFIX_ . 'customer c
+                            WHERE c.id_customer = ' . (int) $cart->id_customer . '
+                            LIMIT 1
+                        )'
+            );
+            
+            if (!$id_of_shipping_rule) {
+                return false;
+            }
+        }
+        
+        // Nb Suppliers
+        if ($this->nb_supplier_max) {
+            $nb_suppliers = (int) Db::getInstance()->getValue(
+                'SELECT COUNT(DISTINCT ps.id_supplier)
+                    FROM ' . _DB_PREFIX_ . 'cart_product cp
+                    INNER JOIN ' . _DB_PREFIX_ . 'product_supplier ps 
+                        ON cp.id_cart = ' . (int)$cart->id . ' AND ps.id_product = cp.id_product'
+            );
+            
+            if ($nb_suppliers < $this->nb_supplier_min || $nb_suppliers > $this->nb_supplier_max) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+
     public function value($params)
     {
         $cart = $this->cart;

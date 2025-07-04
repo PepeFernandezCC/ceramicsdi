@@ -31,11 +31,11 @@ class CurrencyDataProvider implements PaginatedApiDataProviderInterface
      *
      * @return array
      *
-     * @throws \PrestaShopDatabaseException
+     * @@throws \PrestaShopDatabaseException
      */
     public function getFormattedData($offset, $limit, $langIso)
     {
-        $currencies = $this->currencyRepository->getCurrencies($offset, $limit, $langIso);
+        $currencies = $this->currencyRepository->getCurrencies($offset, $limit);
 
         if (!is_array($currencies)) {
             return [];
@@ -59,7 +59,7 @@ class CurrencyDataProvider implements PaginatedApiDataProviderInterface
      */
     public function getRemainingObjectsCount($offset, $langIso)
     {
-        return (int) $this->currencyRepository->getRemainingCurrenciesCount($offset, $langIso);
+        return (int) $this->currencyRepository->getRemainingCurrenciesCount($offset);
     }
 
     /**
@@ -69,11 +69,11 @@ class CurrencyDataProvider implements PaginatedApiDataProviderInterface
      *
      * @return array
      *
-     * @throws \PrestaShopDatabaseException
+     * @@throws \PrestaShopDatabaseException
      */
     public function getFormattedDataIncremental($limit, $langIso, $objectIds)
     {
-        $currencies = $this->currencyRepository->getCurrenciesIncremental($limit, $langIso, $objectIds);
+        $currencies = $this->currencyRepository->getCurrenciesIncremental($limit, $objectIds);
 
         if (!is_array($currencies)) {
             return [];
@@ -87,5 +87,19 @@ class CurrencyDataProvider implements PaginatedApiDataProviderInterface
                 'properties' => $currency,
             ];
         }, $currencies);
+    }
+
+    /**
+     * @param int $offset
+     * @param int $limit
+     * @param string $langIso
+     *
+     * @return array
+     *
+     * @@throws \PrestaShopDatabaseException
+     */
+    public function getQueryForDebug($offset, $limit, $langIso)
+    {
+        return $this->currencyRepository->getQueryForDebug($offset, $limit);
     }
 }

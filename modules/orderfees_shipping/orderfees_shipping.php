@@ -103,6 +103,10 @@ class OrderFees_Shipping extends MotionSeedModule
     
     public function hookActionCartGetPackageShippingCost(&$params)
     {
+        
+        $custom = isset($params['custom']) ? true : false;
+
+        
         if (self::$disable_calculation) {
             return;
         }
@@ -163,10 +167,15 @@ class OrderFees_Shipping extends MotionSeedModule
             }
             
             $shipping_rule = ShippingRule::factory($item['id_of_shipping_rule'], $object);
-            
+
             self::$disable_calculation = true;
             
-            $shipping_rule_checked = $shipping_rule->check();
+            if($custom){
+                $shipping_rule_checked = $shipping_rule->checkCustom($object);
+            }else{
+                $shipping_rule_checked = $shipping_rule->check();
+            }
+            
             
             self::$disable_calculation = false;
                 
@@ -180,7 +189,7 @@ class OrderFees_Shipping extends MotionSeedModule
                 if ($shipping_rule->carrier_restriction && ($shipping_rule->type & ShippingRule::IS_CARRIER)) {
                     $params['total'] = false;
                     $params['return'] = true;
-                    
+                   
                     return;
                 }
                 
@@ -194,6 +203,7 @@ class OrderFees_Shipping extends MotionSeedModule
 
                 foreach ($other_items as $other_item) {
                     if ($shipping_rule->id == $other_item['id_of_shipping_rule']) {
+                    
                         continue;
                     }
 
@@ -216,12 +226,13 @@ class OrderFees_Shipping extends MotionSeedModule
             }
 
             if ($shipping_rule->type == ShippingRule::IS_NONE && !$shipping_rule->package_restriction) {
+              
                 continue;
             }
             
             if ($shipping_rule->type == ShippingRule::IS_WEIGHT) {
                 self::$weight_rules[] = $shipping_rule;
-                
+           
                 continue;
             }
 
@@ -324,6 +335,7 @@ class OrderFees_Shipping extends MotionSeedModule
             
             $params['total'] += $total;
         }
+
     }
     
     public function hookActionCartGetTotalWeight(&$params)

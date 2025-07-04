@@ -3,9 +3,10 @@
     <name>mbeshipping</name>
     <displayName><![CDATA[eShip for PrestaShop]]></displayName>
     <version><![CDATA[2.0.8]]></version>
-    <description><![CDATA[eShip for PrestaShop crea automáticamente los envíos de los productos vendidos a través de su comercio electrónico, permitiéndole centrarse en los asuntos estrictamente relacionados con su negocio]]></description>
+    <description><![CDATA[eShip for Prestashop crea autom&aacute;ticamente los env&iacute;os de los productos vendidos a trav&eacute;s de su comercio electr&oacute;nico, permiti&eacute;ndole centrarse en los asuntos estrictamente relacionados con su negocio]]></description>
     <author><![CDATA[MBE Worldwide S.p.A.]]></author>
     <tab><![CDATA[shipping_logistics]]></tab>
     <is_configurable>1</is_configurable>
     <need_instance>1</need_instance>
+	<limited_countries></limited_countries>
 </module>

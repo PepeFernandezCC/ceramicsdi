@@ -1,38 +1,67 @@
 <?php
+/**
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/OSL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://devdocs.prestashop.com/ for more information.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ */
 
 namespace PrestaShop\Module\PsEventbus\Repository;
 
-class WishlistRepository
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
+class WishlistRepository extends AbstractRepository implements RepositoryInterface
 {
-    /**
-     * @var \Db
-     */
-    private $db;
+    const TABLE_NAME = 'wishlist';
 
     /**
-     * @var \Context
-     */
-    private $context;
-
-    public function __construct(\Db $db, \Context $context)
-    {
-        $this->db = $db;
-        $this->context = $context;
-    }
-
-    /**
-     * @param int $shopId
      * @param string $langIso
+     * @param bool $withSelecParameters
      *
-     * @return \DbQuery
+     * @return void
+     *
+     * @throws \PrestaShopException
      */
-    public function getBaseQuery($shopId, $langIso)
+    public function generateFullQuery($langIso, $withSelecParameters)
     {
-        $query = new \DbQuery();
-        $query->from('wishlist', 'w')
-            ->where('w.id_shop = ' . (int) $shopId);
+        $this->generateMinimalQuery(self::TABLE_NAME, 'w');
 
-        return $query;
+        $this->query->where('w.id_shop = ' . parent::getShopContext()->id);
+
+        if ($withSelecParameters) {
+            $this->query
+                ->select('w.id_wishlist')
+                ->select('w.id_customer')
+                ->select('w.id_shop')
+                ->select('w.id_shop_group')
+                ->select('w.token')
+                ->select('w.name')
+                ->select('w.counter')
+                ->select('w.date_add AS created_at')
+                ->select('w.date_upd as updated_at')
+                ->select('w.default')
+            ;
+        }
     }
 
     /**
@@ -40,70 +69,60 @@ class WishlistRepository
      * @param int $limit
      * @param string $langIso
      *
-     * @return array|bool|\mysqli_result|\PDOStatement|resource|null
+     * @return array<mixed>
      *
+     * @throws \PrestaShopException
      * @throws \PrestaShopDatabaseException
      */
-    public function getWishlists($offset, $limit, $langIso)
+    public function retrieveContentsForFull($offset, $limit, $langIso)
     {
-        /** @var int $shopId */
-        $shopId = $this->context->shop->id;
-        $query = $this->getBaseQuery($shopId, $langIso);
+        $this->generateFullQuery($langIso, true);
 
-        $this->addSelectParameters($query);
+        $this->query->limit((int) $limit, (int) $offset);
 
-        $query->limit($limit, $offset);
+        return $this->runQuery();
+    }
 
-        return $this->db->executeS($query);
+    /**
+     * @param int $limit
+     * @param array<mixed> $contentIds
+     * @param string $langIso
+     *
+     * @return array<mixed>
+     *
+     * @throws \PrestaShopException
+     * @throws \PrestaShopDatabaseException
+     */
+    public function retrieveContentsForIncremental($limit, $contentIds, $langIso)
+    {
+        $this->generateFullQuery($langIso, true);
+
+        $this->query
+            ->where("w.id_wishlist IN('" . implode("','", array_map('intval', $contentIds ?: [-1])) . "')")
+            ->limit($limit)
+        ;
+
+        return $this->runQuery();
     }
 
     /**
      * @param int $offset
+     * @param int $limit
      * @param string $langIso
      *
      * @return int
-     */
-    public function getRemainingWishlistsCount($offset, $langIso)
-    {
-        /** @var int $shopId */
-        $shopId = $this->context->shop->id;
-        $query = $this->getBaseQuery($shopId, $langIso)
-            ->select('(COUNT(w.id_wishlist) - ' . (int) $offset . ') as count');
-
-        return (int) $this->db->getValue($query);
-    }
-
-    /**
-     * @param int $limit
-     * @param string $langIso
-     * @param array $wishlistIds
      *
-     * @return array|bool|\mysqli_result|\PDOStatement|resource|null
-     *
+     * @throws \PrestaShopException
      * @throws \PrestaShopDatabaseException
      */
-    public function getWishlistsIncremental($limit, $langIso, $wishlistIds)
+    public function countFullSyncContentLeft($offset, $limit, $langIso)
     {
-        /** @var int $shopId */
-        $shopId = $this->context->shop->id;
-        $query = $this->getBaseQuery($shopId, $langIso);
+        $this->generateFullQuery($langIso, false);
 
-        $this->addSelectParameters($query);
+        $this->query->select('(COUNT(*) - ' . (int) $offset . ') as count');
 
-        $query->where('w.id_wishlist IN(' . implode(',', array_map('intval', $wishlistIds)) . ')')
-            ->limit($limit);
+        $result = $this->runQuery(true);
 
-        return $this->db->executeS($query);
-    }
-
-    /**
-     * @param \DbQuery $query
-     *
-     * @return void
-     */
-    private function addSelectParameters(\DbQuery $query)
-    {
-        $query->select('w.id_wishlist, w.id_customer, w.id_shop, w.id_shop_group, w.token, w.name, w.counter,
-      w.date_add AS created_at, w.date_upd as updated_at, w.default');
+        return !empty($result[0]['count']) ? $result[0]['count'] : 0;
     }
 }

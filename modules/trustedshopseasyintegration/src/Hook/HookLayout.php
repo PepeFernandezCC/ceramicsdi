@@ -73,6 +73,7 @@ class HookLayout extends AbstractHook
         'displayTop',
         'displayNav1',
         'displayFooter',
+        'displayFooterBefore',
         'displayTrustbadge',
     ];
 
@@ -257,6 +258,19 @@ class HookLayout extends AbstractHook
 
         return $widgetModels;
     }
+
+    
+    public function displayFooterBefore($params)
+    {
+        $widgetModels = $this->getWidgetModels(WidgetLocation::FOOTER);
+
+        if (empty($widgetModels)) {
+            return '';
+        }
+
+        return $widgetModels;
+    }
+
 
     public function displayTrustbadge()
     {

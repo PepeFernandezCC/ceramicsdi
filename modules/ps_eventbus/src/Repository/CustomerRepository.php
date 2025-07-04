@@ -1,38 +1,68 @@
 <?php
+/**
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/OSL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://devdocs.prestashop.com/ for more information.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ */
 
 namespace PrestaShop\Module\PsEventbus\Repository;
 
-class CustomerRepository
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
+class CustomerRepository extends AbstractRepository implements RepositoryInterface
 {
-    /**
-     * @var \Db
-     */
-    private $db;
+    const TABLE_NAME = 'customer';
 
     /**
-     * @var \Context
-     */
-    private $context;
-
-    public function __construct(\Db $db, \Context $context)
-    {
-        $this->db = $db;
-        $this->context = $context;
-    }
-
-    /**
-     * @param int $shopId
      * @param string $langIso
+     * @param bool $withSelecParameters
      *
-     * @return \DbQuery
+     * @return void
+     *
+     * @throws \PrestaShopException
      */
-    public function getBaseQuery($shopId, $langIso)
+    public function generateFullQuery($langIso, $withSelecParameters)
     {
-        $query = new \DbQuery();
-        $query->from('customer', 'c')
-            ->where('c.id_shop = ' . (int) $shopId);
+        $this->generateMinimalQuery(self::TABLE_NAME, 'c');
 
-        return $query;
+        $this->query->where('c.id_shop = ' . parent::getShopContext()->id);
+
+        if ($withSelecParameters) {
+            $this->query
+            ->select('c.id_customer')
+                ->select('c.id_lang')
+                ->select('c.email')
+                ->select('c.newsletter')
+                ->select('c.newsletter_date_add')
+                ->select('c.optin')
+                ->select('c.active')
+                ->select('c.is_guest')
+                ->select('c.deleted')
+                ->select('c.date_add as created_at')
+                ->select('c.date_upd as updated_at')
+            ;
+        }
     }
 
     /**
@@ -40,70 +70,60 @@ class CustomerRepository
      * @param int $limit
      * @param string $langIso
      *
-     * @return array|bool|\mysqli_result|\PDOStatement|resource|null
+     * @return array<mixed>
      *
+     * @throws \PrestaShopException
      * @throws \PrestaShopDatabaseException
      */
-    public function getCustomers($offset, $limit, $langIso)
+    public function retrieveContentsForFull($offset, $limit, $langIso)
     {
-        /** @var int $shopId */
-        $shopId = $this->context->shop->id;
-        $query = $this->getBaseQuery($shopId, $langIso);
+        $this->generateFullQuery($langIso, true);
 
-        $this->addSelectParameters($query);
+        $this->query->limit((int) $limit, (int) $offset);
 
-        $query->limit($limit, $offset);
+        return $this->runQuery();
+    }
 
-        return $this->db->executeS($query);
+    /**
+     * @param int $limit
+     * @param array<mixed> $contentIds
+     * @param string $langIso
+     *
+     * @return array<mixed>
+     *
+     * @throws \PrestaShopException
+     * @throws \PrestaShopDatabaseException
+     */
+    public function retrieveContentsForIncremental($limit, $contentIds, $langIso)
+    {
+        $this->generateFullQuery($langIso, true);
+
+        $this->query
+            ->where("c.id_customer IN('" . implode("','", array_map('intval', $contentIds ?: [-1])) . "')")
+            ->limit($limit)
+        ;
+
+        return $this->runQuery();
     }
 
     /**
      * @param int $offset
+     * @param int $limit
      * @param string $langIso
      *
      * @return int
-     */
-    public function getRemainingCustomersCount($offset, $langIso)
-    {
-        /** @var int $shopId */
-        $shopId = $this->context->shop->id;
-        $query = $this->getBaseQuery($shopId, $langIso)
-            ->select('(COUNT(c.id_customer) - ' . (int) $offset . ') as count');
-
-        return (int) $this->db->getValue($query);
-    }
-
-    /**
-     * @param int $limit
-     * @param string $langIso
-     * @param array $customerIds
      *
-     * @return array|bool|\mysqli_result|\PDOStatement|resource|null
-     *
+     * @throws \PrestaShopException
      * @throws \PrestaShopDatabaseException
      */
-    public function getCustomersIncremental($limit, $langIso, $customerIds)
+    public function countFullSyncContentLeft($offset, $limit, $langIso)
     {
-        /** @var int $shopId */
-        $shopId = $this->context->shop->id;
-        $query = $this->getBaseQuery($shopId, $langIso);
+        $this->generateFullQuery($langIso, false);
 
-        $this->addSelectParameters($query);
+        $this->query->select('(COUNT(*) - ' . (int) $offset . ') as count');
 
-        $query->where('c.id_customer IN(' . implode(',', array_map('intval', $customerIds)) . ')')
-            ->limit($limit);
+        $result = $this->runQuery(true);
 
-        return $this->db->executeS($query);
-    }
-
-    /**
-     * @param \DbQuery $query
-     *
-     * @return void
-     */
-    private function addSelectParameters(\DbQuery $query)
-    {
-        $query->select('c.id_customer, c.id_lang, c.email, c.newsletter, c.newsletter_date_add,
-         c.optin, c.active, c.is_guest, c.deleted, c.date_add as created_at, c.date_upd as updated_at');
+        return !empty($result[0]['count']) ? $result[0]['count'] : 0;
     }
 }

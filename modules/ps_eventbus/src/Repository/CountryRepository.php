@@ -19,9 +19,9 @@ class CountryRepository
      */
     private $countryIsoCodeCache = [];
 
-    public function __construct(\Db $db, \Context $context)
+    public function __construct(\Context $context)
     {
-        $this->db = $db;
+        $this->db = \Db::getInstance();
         $this->context = $context;
     }
 
@@ -30,6 +30,14 @@ class CountryRepository
      */
     private function getBaseQuery()
     {
+        if ($this->context->shop == null) {
+            throw new \PrestaShopException('No shop context');
+        }
+
+        if ($this->context->language == null) {
+            throw new \PrestaShopException('No language context');
+        }
+
         $query = new \DbQuery();
 
         $query->from('country', 'c')

@@ -1,67 +1,138 @@
 <?php
+/**
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/OSL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://devdocs.prestashop.com/ for more information.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ */
 
 namespace PrestaShop\Module\PsEventbus\Repository;
 
-class ModuleRepository
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
+class ModuleRepository extends AbstractRepository implements RepositoryInterface
 {
-    public const MODULE_TABLE = 'module';
-    public const MODULE_TABLE_HISTORY = 'module_history';
-    public const MODULE_SHOP = 'module_shop';
+    const TABLE_NAME = 'module';
 
     /**
-     * @var \Db
+     * @param string $langIso
+     * @param bool $withSelecParameters
+     *
+     * @return void
+     *
+     * @throws \PrestaShopException
      */
-    private $db;
-
-    public function __construct(\Db $db)
+    public function generateFullQuery($langIso, $withSelecParameters)
     {
-        $this->db = $db;
-    }
+        $this->generateMinimalQuery(self::TABLE_NAME, 'm');
 
-    /**
-     * @return \DbQuery
-     */
-    public function getBaseQuery()
-    {
-        return (new \DbQuery())
-          ->from(self::MODULE_TABLE, 'm')
-          ->leftJoin(self::MODULE_TABLE_HISTORY, 'h', 'm.id_module = h.id_module')
-          ->leftJoin(self::MODULE_SHOP, 'm_shop', 'm.id_module = m_shop.id_module');
+        $this->query->leftJoin('module_shop', 'm_shop', 'm.id_module = m_shop.id_module');
+
+        if (defined('_PS_VERSION_') && version_compare(_PS_VERSION_, '1.7', '>=')) {
+            $this->query->leftJoin('module_history', 'h', 'm.id_module = h.id_module');
+        }
+
+        if ($withSelecParameters) {
+            /*
+            * The `active` field of the "ps_module" table has been deprecated,
+            * this is why we use the "ps_module_shop" table to check if a module is active or not
+            */
+
+            $this->query
+                ->select('m.id_module as module_id')
+                ->select('name')
+                ->select('version as module_version')
+                ->select('IF(m_shop.enable_device, 1, 0) as active')
+            ;
+
+            if (defined('_PS_VERSION_') && version_compare(_PS_VERSION_, '1.7', '>=')) {
+                $this->query
+                    ->select('date_add as created_at')
+                    ->select('date_upd as updated_at')
+                ;
+            }
+        }
     }
 
     /**
      * @param int $offset
      * @param int $limit
+     * @param string $langIso
      *
-     * @return array|bool|false|\mysqli_result|\PDOStatement|resource|null
+     * @return array<mixed>
      *
+     * @throws \PrestaShopException
      * @throws \PrestaShopDatabaseException
      */
-    public function getModules($offset, $limit)
+    public function retrieveContentsForFull($offset, $limit, $langIso)
     {
-        $query = $this->getBaseQuery();
+        $this->generateFullQuery($langIso, true);
 
-        /*
-         * The `active` field of the "ps_module" table has been deprecated, this is why we use the "ps_module_shop" table
-         * to check if a module is active or not
-        */
-        $query->select('m.id_module as module_id, name, version as module_version, IF(m_shop.enable_device, 1, 0) as active, date_add as created_at, date_upd as updated_at')
-            ->limit($limit, $offset);
+        $this->query->limit((int) $limit, (int) $offset);
 
-        return $this->db->executeS($query);
+        return $this->runQuery();
+    }
+
+    /**
+     * @param int $limit
+     * @param array<mixed> $contentIds
+     * @param string $langIso
+     *
+     * @return array<mixed>
+     *
+     * @throws \PrestaShopException
+     * @throws \PrestaShopDatabaseException
+     */
+    public function retrieveContentsForIncremental($limit, $contentIds, $langIso)
+    {
+        $this->generateFullQuery($langIso, true);
+
+        $this->query
+            ->where("m.id_module IN('" . implode("','", array_map('intval', $contentIds ?: [-1])) . "')")
+            ->limit($limit)
+        ;
+
+        return $this->runQuery();
     }
 
     /**
      * @param int $offset
+     * @param int $limit
+     * @param string $langIso
      *
      * @return int
+     *
+     * @throws \PrestaShopException
+     * @throws \PrestaShopDatabaseException
      */
-    public function getRemainingModules($offset)
+    public function countFullSyncContentLeft($offset, $limit, $langIso)
     {
-        $query = $this->getBaseQuery();
+        $this->generateFullQuery($langIso, false);
 
-        $query->select('(COUNT(m.id_module) - ' . (int) $offset . ') as count');
+        $this->query->select('(COUNT(*) - ' . (int) $offset . ') as count');
 
-        return (int) $this->db->getValue($query);
+        $result = $this->runQuery(true);
+
+        return !empty($result[0]['count']) ? $result[0]['count'] : 0;
     }
 }

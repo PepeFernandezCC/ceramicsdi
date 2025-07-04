@@ -55,8 +55,11 @@
 
 <div id="redsysForm" {if $smarty.const._PS_VERSION_
 	< 1.7}style="display: none;"{/if}>
-	<div class="col-md-12">
-		<div id="insite-form-container" class="form-container">
+	<div>
+		<div id="redsys-warning-checks">
+			{l s='redsys checkout warning' d='Shop.Theme.Checkout'}
+		</div>
+		<div id="insite-form-container" class="form-container card-payment-box" style="text-align:center">
 		</div>
 
 		{if $smarty.const._PS_VERSION >= 1.7}
@@ -221,28 +224,26 @@
 				$.getScript("{$this_path|escape:'htmlall'}/views/templates/front/js/jquery-ui.min.js");
 				$('head').append( $('<link rel="stylesheet" type="text/css" />').attr('href', '{$this_path|escape:'htmlall'}/views/templates/front/css/\jquery-ui.min.css') );
 			}
-			$("#redsys-hosted-pay-button").css("height","auto");
-			$("#redsys-hosted-pay-button").css("min-height","250px");
 			{if $allow_ref!=true}
 				$("#checkboxGuardar").hide();
 			{/if}
 			{if $smarty.const._PS_VERSION_ >= 1.7}
 				if($("#conditions-to-approve input[type=checkbox]").size()>0 && !$("#conditions-to-approve input[type=checkbox]")[0].checked){
-					$("#redsys-hosted-pay-button").hide();
+					$("#divImgAceptar").hide();
 					$("#redsys-error-tarjeta-nueva").show();
 					$("#checkboxGuardar").hide();
 					
 					const conditions_to_approve = $("#conditions-to-approve input[type=checkbox]")[0];
 					conditions_to_approve.addEventListener('click', function(){
 						if (conditions_to_approve.checked) {
-							$("#redsys-hosted-pay-button").show();
+							$("#divImgAceptar").show();
 							$("#redsys-error-tarjeta-nueva").hide();
 							{if $allow_ref == true}
 								$("#checkboxGuardar").show();
 							{/if}
 						}
 						else {
-							$("#redsys-hosted-pay-button").hide();
+							$("#divImgAceptar").hide();
 							$("#redsys-error-tarjeta-nueva").show();
 							$("#checkboxGuardar").hide();
 						}

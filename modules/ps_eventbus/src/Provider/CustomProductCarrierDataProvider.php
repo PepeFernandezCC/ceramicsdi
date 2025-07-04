@@ -25,7 +25,7 @@ class CustomProductCarrierDataProvider implements PaginatedApiDataProviderInterf
      *
      * @return array
      *
-     * @throws \PrestaShopDatabaseException
+     * @@throws \PrestaShopDatabaseException
      */
     public function getFormattedData($offset, $limit, $langIso)
     {
@@ -67,5 +67,19 @@ class CustomProductCarrierDataProvider implements PaginatedApiDataProviderInterf
     public function getRemainingObjectsCount($offset, $langIso)
     {
         return (int) $this->productCarrierRepository->getRemainingProductCarriersCount($offset);
+    }
+
+    /**
+     * @param int $offset
+     * @param int $limit
+     * @param string $langIso
+     *
+     * @return array
+     *
+     * @@throws \PrestaShopDatabaseException
+     */
+    public function getQueryForDebug($offset, $limit, $langIso)
+    {
+        return $this->productCarrierRepository->getQueryForDebug($offset, $limit);
     }
 }

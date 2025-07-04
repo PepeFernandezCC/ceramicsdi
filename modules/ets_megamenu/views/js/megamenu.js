@@ -63,9 +63,9 @@ $(function() {
                     $('#header').css({'marginBottom':oldHeaderMarginBottom+'px'});
             } 
         };
-        sticky_navigation();
+        //sticky_navigation();
         $(window).scroll(function() {
-             sticky_navigation();
+             //sticky_navigation();
         });
         if($(window).width() < 768 && !$('body').hasClass('disable-sticky'))
                     $('body').addClass('disable-sticky');

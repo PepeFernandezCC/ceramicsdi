@@ -2,8 +2,8 @@
 <module>
     <name>gsitemap</name>
     <displayName><![CDATA[Google sitemap]]></displayName>
-    <version><![CDATA[4.2.1]]></version>
-    <description><![CDATA[Generate your Google sitemap file with this module, and keep it up-to-date.]]></description>
+    <version><![CDATA[4.4.0]]></version>
+    <description><![CDATA[Generate your Google sitemap file and keep it up to date with this module.]]></description>
     <author><![CDATA[PrestaShop]]></author>
     <tab><![CDATA[checkout]]></tab>
 	<confirmUninstall><![CDATA[¿Estás seguro que quieres desinstalar este módulo?]]></confirmUninstall>

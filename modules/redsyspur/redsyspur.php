@@ -1925,6 +1925,10 @@ class Redsyspur extends PaymentModule {
 		$order = new Order($id_order);
 		$result = false;
 
+		if ($metodo == 'Autorizada') {
+			$metodo = 'Redsys - Tarjeta';
+		}
+
 		if ($update) {
 
 			$result = Db::getInstance(_PS_USE_SQL_SLAVE_)->execute(

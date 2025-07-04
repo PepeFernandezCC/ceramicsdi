@@ -16,10 +16,10 @@ class ThemeRepository
      */
     private $db;
 
-    public function __construct(\Context $context, \Db $db)
+    public function __construct(\Context $context)
     {
         $this->context = $context;
-        $this->db = $db;
+        $this->db = \Db::getInstance();
     }
 
     /**
@@ -28,6 +28,10 @@ class ThemeRepository
     public function getThemes()
     {
         if (version_compare(_PS_VERSION_, '1.7', '>')) {
+            if ($this->context->shop === null) {
+                throw new \PrestaShopException('No shop context');
+            }
+
             $themeRepository = (new ThemeManagerBuilder($this->context, $this->db))
                 ->buildRepository($this->context->shop);
 
@@ -48,11 +52,11 @@ class ThemeRepository
             }, array_keys($themes), $themes);
         } else {
             /* @phpstan-ignore-next-line */
-            $themes = \Theme::getAvailable(false);
+            $themes = Theme::getAvailable(false);
 
             return array_map(function ($theme) {
                 /* @phpstan-ignore-next-line */
-                $themeObj = \Theme::getByDirectory($theme);
+                $themeObj = Theme::getByDirectory($theme);
 
                 $themeData = [
                     'id' => md5($theme),
@@ -61,9 +65,9 @@ class ThemeRepository
                 ];
 
                 /* @phpstan-ignore-next-line */
-                if ($themeObj instanceof \Theme) {
+                if ($themeObj instanceof Theme) {
                     /* @phpstan-ignore-next-line */
-                    $themeInfo = \Theme::getThemeInfo($themeObj->id);
+                    $themeInfo = Theme::getThemeInfo($themeObj->id);
 
                     $themeData['properties'] = [
                         'theme_id' => md5($theme),
