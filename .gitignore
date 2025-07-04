@@ -9,6 +9,7 @@ download/*
 /img/*
 /log/*
 /upload/*
+/_backup_moudles/*
 /vendor/*
 !/vendor/.htaccess
 docs/phpdoc-sf/
