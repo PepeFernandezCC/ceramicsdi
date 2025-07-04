@@ -51,6 +51,6 @@
     </div>
 
     <div class="payment-method-banner">
-        <img loading="lazy" src="/themes/child_classic/assets/img/web/payment_methods.webp" alt="pay methods"/>
+        <img loading="lazy" data-src="/themes/child_classic/assets/img/web/payment_methods.webp" alt="pay methods"/>
      </div>
 </div>

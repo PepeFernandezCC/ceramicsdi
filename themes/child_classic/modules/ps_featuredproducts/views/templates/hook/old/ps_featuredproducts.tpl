@@ -111,19 +111,19 @@
         <div class="col-xs-6 col-sm-6 col-lg-3">
             <div class="mw-link">
                 <a href="{$blanco_url}">
-                    <img src="/themes/child_classic/assets/img/web/COLOR_BLANCO.webp" loading="lazy" style="width:100%" alt="products by color: {l s='White' d='Shop.Theme.Global'}"/>
+                    <img data-src="/themes/child_classic/assets/img/web/COLOR_BLANCO.webp" loading="lazy" style="width:100%" alt="products by color: {l s='White' d='Shop.Theme.Global'}"/>
                     <span style="padding-top:5px">{l s='White' d='Shop.Theme.Global'}</span>
                 </a>
             </div>
             <div class="mw-link">
                 <a href="{$gris_url}">
-                    <img src="/themes/child_classic/assets/img/web/COLOR_GRIS.webp" loading="lazy" style="width:100%" alt="products by color: {l s='Grey' d='Shop.Theme.Global'}"/>
+                    <img data-src="/themes/child_classic/assets/img/web/COLOR_GRIS.webp" loading="lazy" style="width:100%" alt="products by color: {l s='Grey' d='Shop.Theme.Global'}"/>
                     <span style="padding-top:5px">{l s='Grey' d='Shop.Theme.Global'}</span>
                 </a>
             </div>
             <div class="mw-link">
                 <a href="{$beige_url}">
-                    <img src="/themes/child_classic/assets/img/web/COLOR_BEIGE.webp" loading="lazy" style="width:100%" alt="products by color: {l s='Beige' d='Shop.Theme.Global'}"/>
+                    <img data-src="/themes/child_classic/assets/img/web/COLOR_BEIGE.webp" loading="lazy" style="width:100%" alt="products by color: {l s='Beige' d='Shop.Theme.Global'}"/>
                     <span style="padding-top:5px">{l s='Beige' d='Shop.Theme.Global'}</span>
                 </a>
             </div>
@@ -131,19 +131,19 @@
         <div class="col-xs-6 col-sm-6 col-lg-3">
             <div class="mw-link">
                 <a href="{$amarillo_url}">
-                    <img src="/themes/child_classic/assets/img/web/COLOR_AMARILLO.webp" loading="lazy" style="width:100%" alt="products by color: {l s='Yellow' d='Shop.Theme.Global'}"/>
+                    <img data-src="/themes/child_classic/assets/img/web/COLOR_AMARILLO.webp" loading="lazy" style="width:100%" alt="products by color: {l s='Yellow' d='Shop.Theme.Global'}"/>
                     <span style="padding-top:5px">{l s='Yellow' d='Shop.Theme.Global'}</span>
                 </a>
             </div>
             <div class="mw-link">
                 <a href="{$rojo_url}">
-                    <img src="/themes/child_classic/assets/img/web/COLOR_ROJO.webp" loading="lazy" style="width:100%" alt="products by color: {l s='Red' d='Shop.Theme.Global'}"/>
+                    <img data-src="/themes/child_classic/assets/img/web/COLOR_ROJO.webp" loading="lazy" style="width:100%" alt="products by color: {l s='Red' d='Shop.Theme.Global'}"/>
                     <span style="padding-top:5px">{l s='Red' d='Shop.Theme.Global'}</span>
                 </a>
             </div>
             <div class="mw-link">
                 <a href="{$verdeClaro_url}">
-                    <img src="/themes/child_classic/assets/img/web/COLOR_VERDE_CLARO.webp" loading="lazy" style="width:100%" alt="products by color: {l s='Light Green' d='Shop.Theme.Global'}"/>
+                    <img data-src="/themes/child_classic/assets/img/web/COLOR_VERDE_CLARO.webp" loading="lazy" style="width:100%" alt="products by color: {l s='Light Green' d='Shop.Theme.Global'}"/>
                     <span style="padding-top:5px">{l s='Light Green' d='Shop.Theme.Global'}</span>
                 </a>
             </div>
@@ -151,19 +151,19 @@
         <div class="col-xs-6 col-sm-6 col-lg-3">
             <div class="mw-link">
                 <a href="{$verde_url}">
-                    <img src="/themes/child_classic/assets/img/web/COLOR_VERDE.webp" loading="lazy" style="width:100%" alt="products by color: {l s='Green' d='Shop.Theme.Global'}"/>
+                    <img data-src="/themes/child_classic/assets/img/web/COLOR_VERDE.webp" loading="lazy" style="width:100%" alt="products by color: {l s='Green' d='Shop.Theme.Global'}"/>
                     <span style="padding-top:5px">{l s='Green' d='Shop.Theme.Global'}</span>
                 </a>
             </div>
             <div class="mw-link">
                 <a href="{$marron_url}">
-                    <img src="/themes/child_classic/assets/img/web/COLOR_MARRON.webp" loading="lazy" style="width:100%" alt="products by color: {l s='Brown' d='Shop.Theme.Global'}"/>
+                    <img data-src="/themes/child_classic/assets/img/web/COLOR_MARRON.webp" loading="lazy" style="width:100%" alt="products by color: {l s='Brown' d='Shop.Theme.Global'}"/>
                     <span style="padding-top:5px">{l s='Brown' d='Shop.Theme.Global'}</span>
                 </a>
             </div>
             <div class="mw-link">
                 <a href="{$azul_url}">
-                    <img src="/themes/child_classic/assets/img/web/COLOR_AZUL.webp" loading="lazy" style="width:100%" alt="products by color: {l s='Blue' d='Shop.Theme.Global'}"/>
+                    <img data-src="/themes/child_classic/assets/img/web/COLOR_AZUL.webp" loading="lazy" style="width:100%" alt="products by color: {l s='Blue' d='Shop.Theme.Global'}"/>
                     <span style="padding-top:5px">{l s='Blue' d='Shop.Theme.Global'}</span>
                 </a>
             </div>
@@ -171,19 +171,19 @@
         <div class="col-xs-6 col-sm-6 col-lg-3">
             <div class="mw-link">
                 <a href="{$antracita_url}">
-                    <img src="/themes/child_classic/assets/img/web/COLOR_ANTRACITA.webp" loading="lazy" style="width:100%" alt="products by color: {l s='Antraciet' d='Shop.Theme.Global'}"/>
+                    <img data-src="/themes/child_classic/assets/img/web/COLOR_ANTRACITA.webp" loading="lazy" style="width:100%" alt="products by color: {l s='Antraciet' d='Shop.Theme.Global'}"/>
                     <span style="padding-top:5px">{l s='Antraciet' d='Shop.Theme.Global'}</span>
                 </a>
             </div>
             <div class="mw-link">
                 <a href="{$negro_url}">
-                    <img src="/themes/child_classic/assets/img/web/COLOR_NEGRO.webp" loading="lazy" style="width:100%" alt="products by color: {l s='Black' d='Shop.Theme.Global'}"/>
+                    <img data-src="/themes/child_classic/assets/img/web/COLOR_NEGRO.webp" loading="lazy" style="width:100%" alt="products by color: {l s='Black' d='Shop.Theme.Global'}"/>
                     <span style="padding-top:5px">{l s='Black' d='Shop.Theme.Global'}</span>
                 </a>
             </div>
             <div class="mw-link">
                 <a href="{$multicolor_url}">
-                    <img src="/themes/child_classic/assets/img/web/COLOR_MULTICOLOR.webp" loading="lazy" style="width:100%" alt="products by color: {l s='Multicolor' d='Shop.Theme.Global'}"/>
+                    <img data-src="/themes/child_classic/assets/img/web/COLOR_MULTICOLOR.webp" loading="lazy" style="width:100%" alt="products by color: {l s='Multicolor' d='Shop.Theme.Global'}"/>
                     <span style="padding-top:5px">{l s='Multicolor' d='Shop.Theme.Global'}</span>
                 </a>
             </div>

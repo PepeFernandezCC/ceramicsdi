@@ -63,7 +63,7 @@
             <div class="col-md-3 col-xs-12 first-column">
 
                 <div>{$cmsFooterColumn1 nofilter}</div>
-                <div><img src="/themes/child_classic/assets/img/web/Ecommerce-Awards-Espana-Logo.webp" style="width:auto;padding-top:90px" alt="banner ecommerce awards"/></div>
+                <div><img data-src="/themes/child_classic/assets/img/web/Ecommerce-Awards-Espana-Logo.webp" style="width:auto;padding-top:90px" alt="banner ecommerce awards"/></div>
 
             </div>
 
@@ -87,27 +87,27 @@
 
                     {if $language.id == 1}
                         <a href="{$urls.base_url}es/contenido/condiciones-trusted-shops">
-                            <img loading="lazy" src="/themes/child_classic/assets/img/web/trusted_shop_banner_es.webp" alt="banner trusted shop"/>
+                            <img loading="lazy" data-src="/themes/child_classic/assets/img/web/trusted_shop_banner_es.webp" alt="banner trusted shop"/>
                         </a>
                     {elseif $language.id == 2}
                         <a loading="lazy" href="{$urls.base_url}fr/contenido/conditions-trusted-shops">
-                            <img src="/themes/child_classic/assets/img/web/trusted_shop_banner_fr.webp" alt="banner trusted shop"/>
+                            <img data-src="/themes/child_classic/assets/img/web/trusted_shop_banner_fr.webp" alt="banner trusted shop"/>
                         </a>
                     {elseif $language.id == 3}
                         <a loading="lazy" href="{$urls.base_url}en/contenido/conditions-trusted-shops">
-                            <img src="/themes/child_classic/assets/img/web/trusted_shop_banner_en.webp" alt="banner trusted shop"/>
+                            <img data-src="/themes/child_classic/assets/img/web/trusted_shop_banner_en.webp" alt="banner trusted shop"/>
                         </a>
                     {elseif $language.id == 4}
                         <a loading="lazy" href="{$urls.base_url}de/contenido/bedingungen-trusted-shops">
-                            <img src="/themes/child_classic/assets/img/web/trusted_shop_banner_de.webp" alt="banner trusted shop"/>
+                            <img data-src="/themes/child_classic/assets/img/web/trusted_shop_banner_de.webp" alt="banner trusted shop"/>
                         </a>
                     {elseif $language.id == 5}
                         <a loading="lazy" href="{$urls.base_url}pt/contenido/condicoes-trusted-shops">
-                            <img src="/themes/child_classic/assets/img/web/trusted_shop_banner_pt.webp" alt="banner trusted shop"/>
+                            <img data-src="/themes/child_classic/assets/img/web/trusted_shop_banner_pt.webp" alt="banner trusted shop"/>
                         </a>
                     {elseif $language.id == 6}
                         <a loading="lazy" href="{$urls.base_url}nl/contenido/voorwaarden-trusted-shops">
-                            <img src="/themes/child_classic/assets/img/web/trusted_shop_banner_nl.webp" alt="banner trusted shop"/>
+                            <img data-src="/themes/child_classic/assets/img/web/trusted_shop_banner_nl.webp" alt="banner trusted shop"/>
                         </a>
                     {/if}
 

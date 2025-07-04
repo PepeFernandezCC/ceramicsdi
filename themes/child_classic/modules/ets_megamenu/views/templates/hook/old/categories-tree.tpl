@@ -25,7 +25,7 @@
                 <a class="ets_mm_url" href="{$link->getCategoryLink($category.id_category|intval)}">    
                     <div class="ets_mm_thumbnail">
                         {if $link->getMenuThumbnailImages($category.id_category)}
-                            <img src="{$link->getMenuThumbnailImages($category.id_category)}" 
+                            <img data-src="{$link->getMenuThumbnailImages($category.id_category)}" 
                             class="menu-image {if $categoryFilter eq 'ets_category_other_material'}ets_mm_thumbnail_other_materials{elseif $categoryFilter eq 'ets_category_installation'}ets_mm_thumbnail_installation{else}ets_mm_thumbnail_size{/if}"
                             loading="lazy" 
                             alt = "artículos de color: {$category.name|escape:'html':'UTF-8'}"

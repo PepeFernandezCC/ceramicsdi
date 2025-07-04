@@ -27,10 +27,6 @@ $( document ).ready( function () {
         });
     }); 
 
-    //var shareButtons = document.querySelectorAll('[data-share-button]');
-    //var shareMenus = document.querySelectorAll('[data-share-menu]');
-    //var copyButtons = document.querySelectorAll('[data-share-id]');
-
     document.querySelectorAll('[data-share-button]').forEach(function(button, index) {  
         button.addEventListener('click', function(event) {
       
@@ -70,16 +66,6 @@ $( document ).ready( function () {
         });
     });
 
-    function copyToClipboard(text) {
-        var decodedText = decodeURIComponent(text);
-        var textField = document.createElement('textarea');
-        textField.innerText = decodedText;
-        document.body.appendChild(textField);
-        textField.select();
-        document.execCommand('copy');
-        textField.remove();
-        alert('Enlace copiado al portapapeles');
-    }
     
     function convertSlugToTitle(slug) {
         // Eliminar la extensión .html
@@ -158,8 +144,9 @@ $( document ).ready( function () {
         let color = document.getElementById('bread-crumps-container').dataset.color;
         let location = document.getElementById('bread-crumps-container').dataset.location;
 
-        let breadCrumpsHtml = '';
+        let breadCrumpsHtml = ''; 
         
+    
         //textos base
         if (pathSegments[0] == 'fr') {
             homeText = 'carrelage';
@@ -186,34 +173,47 @@ $( document ).ready( function () {
         }
 
         let currentPath = baseUrl;
+        let ignore = false;
 
         pathSegments.forEach((segment, index) => {
+
+            //DETERMINA CUANDO IGNORA UNA MIGA EN CATEGORÍAS
+            ignore = false;
             
+            if (index == 2) {
+                ignore = true;
+            }
+            if (pathSegments.length >= 5 && index == 1){
+                ignore = true;
+            }
             
-            if(index != 0 ){
+            if(index != 0 ){// si es distinto a en/es/fr/de/nl/pt
 
                 if (index != 1) {
+                    //Si index es distinto de (azulejos, otros materiales, etc...) quita negrita
                     bold = '';
                 }
+
                 // Actualizar la ruta actual
                 currentPath += '/' + segment ;
 
                 if (index === pathSegments.length - 1) {
                     // Último segmento, solo texto
-                    if(document.getElementById('aspecto-link')) {
-                        let aspectoLinkDiv = document.getElementById('aspecto-link');
-                        let linkElement = aspectoLinkDiv.querySelector('a');
-                        let linkHref = linkElement.getAttribute('href');
-                        let linkText = linkElement.innerHTML;
-
-                        breadCrumpsHtml += '<a href="' + linkHref + '" data-index="'+ index +'" '+ bold +'>' + tileText + ' ' + linkText + '</a> > ';
-
-                    }else{
+                    if(!document.getElementById('aspecto-link')) { //breadcrum en categoria
 
                         if (color != 'none') {
                             path = getColorPath(baseUrl, color, pathSegments[0]);
                             breadCrumpsHtml += '<a href="' + path.url +'" data-index="'+ index +'" '+ bold +'>' + path.name + '</a> > ';
                         }
+
+                    }else{ //breadcrum en producto
+
+                        let aspectoLinkDiv = document.getElementById('aspecto-link');
+                        let linkElement = aspectoLinkDiv.querySelector('a');
+                        let linkHref = linkElement.getAttribute('href');
+                        let linkText = linkElement.innerHTML;
+                        
+                        breadCrumpsHtml += '<a href="' + linkHref + '" data-index="'+ index +'" '+ bold +'>' + tileText + ' ' + linkText + '</a> > ';
                         
                     }
 
@@ -221,15 +221,16 @@ $( document ).ready( function () {
 
                 } else {
                     // Segmetos intermedios, añadir enlace
-                    if (location == 'category') {
 
-                        if ((color == 'none' || color == '') && index != 2) {      
+                    if (location == 'category') { //breadcrum en categoria
+
+                        //if ((color == 'none' || color == '') && index != 2) {  
+                        if (!ignore) {    
                             breadCrumpsHtml += ' <a href="' + currentPath +'" '+ bold +' data-index="'+ index +'">' + convertSlugToTitle(segment) + '</a> > ';  
                         }
 
-                    }else{
-                        
-                        //link de la categoría 
+                    }else{ //breadcrum en producto
+                         
                         let categoryLinkDiv = document.getElementById('category-link');
                         let categoryQuerySelector = categoryLinkDiv.querySelector('a');
                         let categoryLink = categoryQuerySelector.getAttribute('href');
@@ -250,7 +251,8 @@ $( document ).ready( function () {
             }
         });
 
-        // Insertar las migas de pan en el div
+        // Insertar las migas de pan en el div 
+    
         document.getElementById('bread-crumps-container').innerHTML = breadCrumpsHtml;
     }
 
@@ -260,7 +262,7 @@ $( document ).ready( function () {
             var videoContainer = document.getElementById('videoContainer');
             
             // Asegúrate de que el video no se inserte más de una vez
-            if (videoContainer.innerHTML.trim() === '') {
+            if (videoContainer.innerHTML.trim() === '') { 
                 videoContainer.innerHTML = `
                     <video autoplay loop muted width="100%" src="/themes/child_classic/assets/video/waste-animation.mp4">
                         Tu navegador no soporta la etiqueta de video.
@@ -271,60 +273,33 @@ $( document ).ready( function () {
     
     }
 
-    if(document.getElementById('productVideo')) {
+    if ( document.getElementById("insite-form-container")) {
+            //Pasarela de pago
+        const checkbox = document.getElementById("conditions_to_approve[terms-and-conditions]");
+        const redsysWarning = document.getElementById("redsys-warning-checks");
+        const insiteFormContainer = document.getElementById("insite-form-container");
 
-        // Selecciona el elemento de video
-        var videoElement = document.getElementById('productVideo');
-        var videoElementMobile = document.getElementById('productVideoMobile');
+        // Función para manejar el cambio de visibilidad
+        function toggleVisibilityRedsysBox() {
+            if (checkbox.checked) {
+                insiteFormContainer.style.display = "block";
+                redsysWarning.style.display = "none";
+            } else {
+                insiteFormContainer.style.display = "none";
+                redsysWarning.style.display = "block";
+            }
+        }
+        
+        // Inicializa el estado correcto al cargar la página
+        if (checkbox) {
+            
+            // Escucha el cambio en el checkbox
+            checkbox.addEventListener("change", toggleVisibilityRedsysBox);
 
-        var videoProductRoute = videoElement.getAttribute('data-url');
-    
-        // Retrasa la asignación del src del video en 3 segundos
-        setTimeout(function() {
-            videoElement.src = videoProductRoute;
-            videoElementMobile.src = videoProductRoute;
-    
-            // Intenta iniciar la reproducción
-            videoElement.play().then(() => {
-                console.log('video is running...');
-            }).catch(error => {
-                console.warn('Error with video product:', error);
-            });
-
-            // Intenta iniciar la reproducción del movil
-            videoElementMobile.play().then(() => {
-                console.log('video is running...');
-            }).catch(error => {
-                console.warn('Error with video product:', error);
-            });
-
-        }, 1500); 
-    }
-
-    //Pasarela de pago
-    const checkbox = document.getElementById("conditions_to_approve[terms-and-conditions]");
-    const redsysWarning = document.getElementById("redsys-warning-checks");
-    const insiteFormContainer = document.getElementById("insite-form-container");
-
-    // Función para manejar el cambio de visibilidad
-    function toggleVisibilityRedsysBox() {
-        if (checkbox.checked) {
-            insiteFormContainer.style.display = "block";
-            redsysWarning.style.display = "none";
-        } else {
-            insiteFormContainer.style.display = "none";
-            redsysWarning.style.display = "block";
+            toggleVisibilityRedsysBox();
         }
     }
-
-    // Inicializa el estado correcto al cargar la página
-    if (checkbox) {
-        
-        // Escucha el cambio en el checkbox
-        checkbox.addEventListener("change", toggleVisibilityRedsysBox);
-
-        toggleVisibilityRedsysBox();
-    }
+  
     
     //LOADING LAZY IMAGENES MENU
     const openMenuButton = document.querySelector('#openMenuButton'); // El botón que abre el menú
@@ -363,7 +338,7 @@ $( document ).ready( function () {
   
     // Observar cambios en las clases del div #menu-ceramic
     observer.observe(menuContainer, { attributes: true, attributeFilter: ['class'] });
-  
+   
     // LOADING LAZY IMAGENES NORMALES
     const lazyLoadRegularImages = () => {
       const lazyImages = document.querySelectorAll('img[data-src]:not(.menu-image)'); // Excluye imágenes del menú
@@ -595,4 +570,6 @@ prestashop.on( 'updatedAddressForm', function(){
     }
 
  });
+
+
 

@@ -77,7 +77,7 @@
         <div class="row">
             <div class="contact-assist-card col-md-6">
                 <div>
-                    <img class="contact-flag" loading="lazy" src="/themes/child_classic/assets/img/web/spain.png" alt="spain flag"/>
+                    <img class="contact-flag" loading="lazy" data-src="/themes/child_classic/assets/img/web/spain.png" alt="spain flag"/>
                     <span class="span-country">ES</span>
                 </div>
                 <div class="contact-email">
@@ -99,7 +99,7 @@
             </div>
             <div class="contact-assist-card col-md-6">
                 <div>
-                    <img class="contact-flag" loading="lazy" src="/themes/child_classic/assets/img/web/france.png" alt="france flag"/>
+                    <img class="contact-flag" loading="lazy" data-src="/themes/child_classic/assets/img/web/france.png" alt="france flag"/>
                     <span class="span-country">FR</span>
                 </div>
                 <div class="contact-email">
@@ -123,7 +123,7 @@
         <div class="row">
             <div class="contact-assist-card col-md-6">
                 <div>
-                    <img class="contact-flag" loading="lazy" src="/themes/child_classic/assets/img/web/united-kingdom.png" alt="united kingdom flag"/>
+                    <img class="contact-flag" loading="lazy" data-src="/themes/child_classic/assets/img/web/united-kingdom.png" alt="united kingdom flag"/>
                     <span class="span-country">EN</span>
                 </div>
                 <div class="contact-email">
@@ -145,7 +145,7 @@
             </div>
             <div class="contact-assist-card col-md-6">
                 <div >
-                    <img class="contact-flag" loading="lazy" src="/themes/child_classic/assets/img/web/germany.png" alt="germany flag"/>
+                    <img class="contact-flag" loading="lazy" data-src="/themes/child_classic/assets/img/web/germany.png" alt="germany flag"/>
                     <span class="span-country">DE</span>
                 </div>
                 <div class="contact-email">

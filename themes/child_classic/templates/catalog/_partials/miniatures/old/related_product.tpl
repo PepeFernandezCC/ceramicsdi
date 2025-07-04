@@ -82,7 +82,7 @@
                                         <span class="thumbnail product-thumbnail">
                                         <img
                                                 {if 1|array_key_exists:$product.images}class="main-image"{/if}
-                                                src="{$product.cover.bySize.home_default.url}"
+                                                data-src="{$product.cover.bySize.home_default.url}"
                                                 alt="{if !empty($product.cover.legend)}{$product.cover.legend}{else}{$product.name|truncate:30:'...'}{/if}"
                                                 loading="lazy"
                                                 data-full-size-image-url="{$product.cover.large.url}"
@@ -94,7 +94,7 @@
                                     {else}
                                         <span class="thumbnail product-thumbnail">
                                         <img
-                                                src="{$urls.no_picture_image.bySize.home_default.url}"
+                                                data-src="{$urls.no_picture_image.bySize.home_default.url}"
                                                 loading="lazy"
                                                 width="{$urls.no_picture_image.bySize.home_default.width}"
                                                 height="{$urls.no_picture_image.bySize.home_default.height}"
