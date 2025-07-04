@@ -1,4 +1,0 @@
-Hallo {author_name}
-{replier} hat gerade auf einen Kommentar zu {post_title} geantwortet und wurde automatisch genehmigt
-{comment_reply}
-Antwort anzeigen

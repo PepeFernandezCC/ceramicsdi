@@ -1,3 +1,0 @@
-Post na blogu: {post_title}
-Opinia: {feedback}
-Post na blogu jest pomocny dla klienta: {polls_helpful}

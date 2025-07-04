@@ -1,3 +1,0 @@
-Hallo {customer_name},
-Je bericht {post_title} is succesvol ingediend bij {shop_name} en is goedgekeurd
-Review bericht

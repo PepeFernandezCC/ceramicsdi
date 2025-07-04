@@ -1,4 +1,0 @@
-Hallo {author_name}
-{replier} heeft zojuist gereageerd op een opmerking op {post_title} en wacht op uw goedkeuring
-{comment_reply}
-Bekijk antwoord

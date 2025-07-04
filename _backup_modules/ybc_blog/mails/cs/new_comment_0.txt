@@ -1,3 +1,0 @@
-Ahoj {author_name}
-Na {post_title} byl zveřejněn nový komentář a čeká na vaše schválení
-Zobrazit komentář

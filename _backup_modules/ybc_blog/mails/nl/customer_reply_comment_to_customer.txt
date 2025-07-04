@@ -1,5 +1,0 @@
-Hallo {customer_name},
-{commented_customer_name} heeft zojuist gereageerd op je reactie op {post_title}
-{comment_reply}
-Bekijk antwoord
-

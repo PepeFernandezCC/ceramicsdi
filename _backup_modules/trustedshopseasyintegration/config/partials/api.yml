@@ -1,4 +1,0 @@
-services:
-  TrustedshopsAddon\API\Logger\ApiLogger:
-    public: true
-    class: TrustedshopsAddon\API\Logger\ApiLogger

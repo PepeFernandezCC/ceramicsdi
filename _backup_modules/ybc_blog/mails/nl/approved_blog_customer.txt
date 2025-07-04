@@ -1,3 +1,0 @@
-Hallo {customer_name}
-Gefeliciteerd! Je bericht {post_title} is goedgekeurd.
-Bekijk bericht

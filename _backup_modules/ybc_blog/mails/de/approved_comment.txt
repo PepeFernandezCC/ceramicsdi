@@ -1,4 +1,0 @@
-Hallo {customer_name},
-Ihr Kommentar zu {post_title} wurde genehmigt.
-Beitrag ansehen
-

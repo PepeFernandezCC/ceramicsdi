@@ -1,4 +1,0 @@
-Hallo {reporter}
-Je hebt reacties op {post_title} gerapporteerd als misbruikt.
-{comment}
-Bedankt voor je bijdrage aan onze website

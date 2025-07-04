@@ -1,4 +1,0 @@
-Er is een nieuw bericht ingediend bij {shop_name} en wacht op uw goedkeuring
-Auteur: {customer_name}
-Titel van bericht: {post_title}
-Bekijk bericht

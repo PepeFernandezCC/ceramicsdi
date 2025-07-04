@@ -1,3 +1,0 @@
-Cześć {author_name}
-Nowy komentarz został opublikowany na {post_title} i czeka na Twoją akceptację
-Zobacz komentarz
