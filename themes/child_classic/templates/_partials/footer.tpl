@@ -63,7 +63,7 @@
             <div class="col-md-3 col-xs-12 first-column">
 
                 <div>{$cmsFooterColumn1 nofilter}</div>
-                <div><img src="/themes/child_classic/assets/img/web/Ecommerce-Awards-Espana-Logo.webp" style="width:auto;padding-top:90px" alt="banner ecommerce awards"/></div>
+                <div><img src="/themes/child_classic/assets/img/web/Ecommerce-Awards-Espana-Logo.webp" class="logo-adwards" alt="banner ecommerce awards"/></div>
 
             </div>
 

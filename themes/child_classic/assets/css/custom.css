@@ -6225,3 +6225,20 @@ span.at-contact {
     color: #555454;
     text-align: left;
 }
+
+.logo-adwards {
+  width:auto;
+  padding-top:90px;
+}
+
+.mw-img-color {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .logo-adwards {
+    width: 130px !important;
+    padding-top: 10px;
+    padding-bottom: 15px;
+  }
+}
