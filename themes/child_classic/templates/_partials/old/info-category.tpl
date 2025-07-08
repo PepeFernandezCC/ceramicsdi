@@ -48,10 +48,18 @@
  
 
                 <div class="col-xl-12 col-xs-12">
+                    {*
+                        <div class="category-description hidden-md-down">
+                            {$category.description nofilter}
+                        </div>
+                    *}
 
-                    <div class="category-description hidden-md-down">
+                    <div class="category-description">
                         {$category.description nofilter}
                     </div>
+
+                    <span class="read-more-btn" type="button">{l s='Read more' d='Shop.Theme.Catalog'}</span>
+                    <span class="read-less-btn" type="button" style="display: none;">{l s='Read less' d='Shop.Theme.Catalog'}</span>
 
                     <div class="subcategories">
                         <h2 class="product-list-h2" style="text-transform:uppercase">{l s='list of' d='Shop.Theme.Catalog'}  {$normalized_title|replace:"| ceramic connection":""}</h2>

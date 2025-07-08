@@ -6263,13 +6263,14 @@ span.at-contact {
 
   .read-more-btn,
   .read-less-btn {
-    display: inline-block;
-    margin-top: 10px;
-    text-decoration: underline;
-    text-underline-offset: 2px;
-    color: rgb(0, 0, 0);
-    border: none;
-    cursor: pointer;
+        display: inline-block;
+        margin-top: 5px;
+        font-size: 13px;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+        color: rgb(0, 0, 0);
+        border: none;
+        cursor: pointer;
   }
 
   .category-description.expanded p {

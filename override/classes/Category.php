@@ -50,6 +50,22 @@ class Category extends CategoryCore {
         return (int) $result;
           
     }
+
+    public static function getFatherCategory($idCategory, $idLang) {
+        
+        $sql = '
+        SELECT c.`id_category`, cl.`name`, c.id_parent, cl.`meta_title` 
+        FROM `' . _DB_PREFIX_ . 'category` c JOIN `' . _DB_PREFIX_ . 'category_lang` cl 
+        WHERE cl.`id_category` = c.`id_category` 
+        AND cl.`id_lang` = ' . (int) $idLang . '
+        AND c.id_category = '. (int) $idCategory ;
+        
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+
+        return $result[0];
+
+    }
+
     public static function getCategoryMinPriceById($idCategory) {
 
         $query = '

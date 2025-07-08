@@ -300,7 +300,7 @@ $( document ).ready( function () {
         }
     }
   
-    
+    /*
     //LOADING LAZY IMAGENES MENU
     const openMenuButton = document.querySelector('#openMenuButton'); // El botón que abre el menú
     const menuContainer = document.querySelector('#menu-ceramic'); // El contenedor del submenú
@@ -319,7 +319,8 @@ $( document ).ready( function () {
         img.removeAttribute('data-src'); 
       });
     };
-  
+    
+
     // Detectar clic en el botón de apertura del menú
     openMenuButton.addEventListener('click', () => {
       loadMenuImages(); // Cargar las imágenes cuando se hace clic en el botón del menú
@@ -358,6 +359,7 @@ $( document ).ready( function () {
   
     // Inicializa el IntersectionObserver para las imágenes fuera del menú
     lazyLoadRegularImages();
+    */
       
 });
 
