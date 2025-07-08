@@ -5,7 +5,7 @@ class Category extends CategoryCore {
     public static function getSubCategoriesArray($idCategory, $idLang) {
         
         $sql = '
-        SELECT c.`id_category`, cl.`name`, c.id_parent 
+        SELECT c.`id_category`, cl.`name`, c.id_parent, cl.`meta_title` 
         FROM `' . _DB_PREFIX_ . 'category` c JOIN `' . _DB_PREFIX_ . 'category_lang` cl 
         WHERE cl.`id_category` = c.`id_category` 
         AND cl.`id_lang` = ' . (int) $idLang . ' 
@@ -22,7 +22,7 @@ class Category extends CategoryCore {
     public static function getPopularCategoriesArray($idLang) {
         
         $sql = '
-        SELECT c.`id_category`, cl.`name`, c.id_parent 
+        SELECT c.`id_category`, cl.`name`, c.id_parent, cl.`meta_title`
         FROM `' . _DB_PREFIX_ . 'category` c JOIN `' . _DB_PREFIX_ . 'category_lang` cl 
         WHERE cl.`id_category` = c.`id_category` 
         AND cl.`id_lang` = ' . (int) $idLang . ' 

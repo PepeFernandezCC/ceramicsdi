@@ -1952,8 +1952,6 @@ $( document ).ready( function () {
 
    
 
-
-
    let customCarousel = function(divItemsName) {
 
       let carousel = document.getElementById(divItemsName);
@@ -2029,6 +2027,27 @@ $( document ).ready( function () {
        });
 
    }
+
+
+   /* BOTÓN LEER MÁS */
+    const btnmore = document.querySelector('.read-more-btn');
+    const btnless = document.querySelector('.read-less-btn');
+    const container = document.querySelector('.category-description');
+
+    if (btnmore && container) {
+      btnmore.addEventListener('click', function () {
+        container.classList.add('expanded');
+        btnmore.style.display = 'none';
+        btnless.style.display = 'inline-block';
+      });
+
+      btnless.addEventListener('click', function () {
+        container.classList.remove('expanded');
+        btnless.style.display = 'none';
+        btnmore.style.display = 'inline-block';
+      });
+    }
+
 
 
 

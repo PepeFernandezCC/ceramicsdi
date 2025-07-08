@@ -6242,3 +6242,42 @@ span.at-contact {
     padding-bottom: 15px;
   }
 }
+
+/* Ocultar el botón en pantallas grandes */
+.read-more-btn,
+.read-less-btn {
+  display: none;
+}
+
+/* Solo en móviles (menos de 768px por ejemplo) */
+@media (max-width: 767px) {
+  .category-description p {
+    padding-top: 5px;
+    max-height: 3.5em; /* ~3 líneas aprox */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+  }
+
+  .read-more-btn,
+  .read-less-btn {
+    display: inline-block;
+    margin-top: 10px;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    color: rgb(0, 0, 0);
+    border: none;
+    cursor: pointer;
+  }
+
+  .category-description.expanded p {
+    max-height: none;
+    -webkit-line-clamp: unset;
+  }
+
+  .category-description.expanded .read-more-btn {
+    display: none;
+  }
+}
