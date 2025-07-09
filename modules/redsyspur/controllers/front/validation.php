@@ -124,7 +124,8 @@ class RedsyspurValidationModuleFrontController extends ModuleFrontController  {
             $metodoOrder = "N/A";
 
             if ($respuesta < 101)
-                $metodoOrder = "Autorizada " . $id_trans;    
+                //$metodoOrder = "Autorizada " . $id_trans;    
+                $metodoOrder = $metodo . " " . $id_trans;
             else if ($respuesta >= 101)
                 $metodoOrder = "Denegada " . $respuesta;
 

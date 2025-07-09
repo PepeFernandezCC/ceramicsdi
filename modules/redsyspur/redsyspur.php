@@ -1925,7 +1925,7 @@ class Redsyspur extends PaymentModule {
 		$order = new Order($id_order);
 		$result = false;
 
-		if ($metodo == 'Autorizada') {
+		if ($metodo == 'Autorizada ') {
 			$metodo = 'Redsys - Tarjeta';
 		}
 
