@@ -52,7 +52,8 @@
     {assign var="clean_url" value=$clean_url|regex_replace:"/\/[0-9]+/" : ""}  {* Eliminación de números al final *}
 {/if}
 
-<link rel="canonical" href="{$urls.current_url}">
+{*<link rel="canonical" href="{$urls.current_url}">*}
+<link rel="canonical" href="{$clean_url}">
 
     {block name='head_hreflang'}
         {foreach from=$urls.alternative_langs item=pageUrl key=code}
