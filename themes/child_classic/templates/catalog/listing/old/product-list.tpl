@@ -150,22 +150,23 @@
 
                         <h2 style="color: black;">{l s='Other tile categories' d='Shop.Theme.Catalog'}</h2>
 
+                        {assign var="categoriesAppend" value=[]}
+
                         <div class="row mx-auto my-auto justify-content-center" style="padding-top: 40px">
 
                             <div class="fixBrothers">
 
                                 {foreach from=$categories item=cat}
 
-                                    {assign var="showCategory" value=Category::getCategoryInfoArray([$cat.id_category], $language.id)}
+                                    {assign var="showCategory" value=Category::getCategoryInformation([$cat.id_category], $language.id)}
 
                                     {if !empty($showCategory)}
 
-                                        {if ($cat.id_category != $category.id)}
+                                        {if !in_array($cat.id_category, $categoriesAppend)}
 
                                             {if !in_array($showCategory[$cat.id_category]['name'], $notShowArray)}
 
                                                 {assign var="imageCat" value=$link->getCatImageLink($showCategory[$cat.id_category]['link_rewrite'], $cat.id_category)}
-                                                {assign var="normalized_title" value=$showCategory[$cat.id_category]['meta_title']|replace:" | Ceramic Connection":""}  
 
                                                 <div class="brotherCategory">
                                                     <a href="{$link->getCategoryLink($cat.id_category)|escape:'html':'UTF-8'}">
@@ -174,18 +175,20 @@
                                                             <img 
                                                                 src="{$imageCat}" 
                                                                 loading="lazy" 
-                                                                alt="items material: {$normalized_title}" 
-                                                                data-show-category-name="{$normalized_title}"
+                                                                alt="items material: {$showCategory[$cat.id_category]['name']}" 
+                                                                data-show-category-name="{$showCategory[$cat.id_category]['name']}"
                                                                 onerror="this.onerror=null; this.src='/themes/child_classic/assets/img/web/default.webp';"
                                                             >
                                                         </div>
 
                                                         <div class="material-title">
-                                                            <h3 class="text-sm-center capitalize">{$normalized_title}</h3>
+                                                            <h3 class="text-sm-center capitalize">{$showCategory[$cat.id_category]['name']}</h3>
                                                         </div>
                                                         
                                                     </a>
                                                 </div>
+
+                                                {append var="categoriesAppend" value=$cat.id_category}
 
                                             {/if}
 
@@ -210,18 +213,19 @@
 
                         <h2 style="color: black;">{l s='Other tile categories' d='Shop.Theme.Catalog'}</h2>
 
+                        {assign var="categoriesAppend" value=[]}
+
                         <div id="recipeCarousel" class="row mx-auto my-auto justify-content-center">
 
                             <div class="owl-carousel">
 
                                 {foreach from=$categories item=cat}
 
-                                    {assign var="showCategory" value=Category::getCategoryInfoArray([$cat.id_category], $language.id)}
-                                    {assign var="normalized_title" value=$showCategory[$cat.id_category]['meta_title']|replace:" | Ceramic Connection":""} 
+                                    {assign var="showCategory" value=Category::getCategoryInformation([$cat.id_category], $language.id)}
 
                                     {if !empty($showCategory)}
 
-                                        {if ($cat.id_category != $category.id)}
+                                        {if !in_array($cat.id_category, $categoriesAppend)}
 
                                             {if !in_array($showCategory[$cat.id_category]['name'], $notShowArray)}
 
@@ -230,18 +234,20 @@
                                                     <a href="{$link->getCategoryLink($cat.id_category)|escape:'html':'UTF-8'}">
 
                                                         <div class="material-img">
-                                                            <img src="{$imageCat}" loading="lazy" alt="items material: {$normalized_title}"
+                                                            <img src="{$imageCat}" loading="lazy" alt="items material: {$showCategory[$cat.id_category]['name']}"
                                                             onerror="this.onerror=null; this.src='/themes/child_classic/assets/img/web/default.webp';"
-                                                            data-show-category-name="{$normalized_title}">
+                                                            data-show-category-name="{$showCategory[$cat.id_category]['name']}">
                                                         </div>
 
                                                         <div class="material-title">
 
-                                                            <h3 class="text-sm-center capitalize">{$normalized_title}</h3>
+                                                            <h3 class="text-sm-center capitalize">{$showCategory[$cat.id_category]['name']}</h3>
 
                                                         </div>
 
                                                     </a>
+
+                                                    {append var="categoriesAppend" value=$cat.id_category}
 
                                             {/if}
 

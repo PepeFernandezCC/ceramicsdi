@@ -115,5 +115,33 @@ class Category extends CategoryCore {
         ];
 
     }
+
+
+    public static function getCategoryInfoArray($idsCategory, $idLang = null)
+    {
+        if ($idLang === null) {
+            $idLang = Context::getContext()->language->id;
+        }
+
+        if (!is_array($idsCategory) || !count($idsCategory)) {
+            return false;
+        }
+
+        $categories = [];
+        $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
+		SELECT c.`id_category`, cl.`name`, cl.`meta_title`, cl.`link_rewrite`, cl.`id_lang`
+		FROM `' . _DB_PREFIX_ . 'category` c
+		LEFT JOIN `' . _DB_PREFIX_ . 'category_lang` cl ON (c.`id_category` = cl.`id_category`' . Shop::addSqlRestrictionOnLang('cl') . ')
+		' . Shop::addSqlAssociation('category', 'c') . '
+		WHERE cl.`id_lang` = ' . (int) $idLang . '
+		AND c.`id_category` IN (' . implode(',', array_map('intval', $idsCategory)) . ')');
+
+        foreach ($results as $category) {
+            $categories[$category['id_category']] = $category;
+        }
+
+        return $categories;
+    }
+
     
 }
