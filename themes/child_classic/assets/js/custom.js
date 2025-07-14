@@ -1781,6 +1781,7 @@ $( document ).ready( function () {
                $fieldLastName.find('input').prop('required', false);
                $fieldLastName.find('input').val('');
             }
+
          } );
 
          intracomunitaryCheck.on( 'change', function () {
@@ -1812,6 +1813,77 @@ $( document ).ready( function () {
             }, 200);
         }
 
+         function comprobarCPPorProvincia(cp, provincia) {
+            console.log('cp: '+ cp);
+            console.log('provincia: ' + provincia);
+            const prefijosProvincias = {
+               "354": "01", //alava
+               "355": "02", //albacete
+               "356": "03", //alicante
+               "357": "04", //almeria
+               "359": "05", //avila
+               "360": "06", //badajoz
+               "405": "07", //menorca
+               "406": "07", //mayorca
+               "407": "07", //ibiza
+               "362": "08", //barcelona
+               "363": "09", //burgos
+               "364": "10", //caceres
+               "365": "11", //cadiz
+               "367": "12", //castellon
+               "368": "13", //ciudad real
+               "369": "14", //cordoba
+               "353": "15", //la coruña
+               "370": "16", //cuenca
+               "371": "17", //gerona
+               "372": "18", //granada
+               "373": "19", //guadalajara
+               "374": "20", //gipuzkua
+               "375": "21", //huelva
+               "376": "22", //huesca
+               "377": "23", //jaen
+               "380": "24", //leon
+               "381": "25", //lerida
+               "378": "26", //la rioja
+               "382": "27", //lugo
+               "383": "28", //madrid
+               "384": "29", //malaga
+               "385": "30", //murcia
+               "386": "31", //navarra
+               "387": "32", //orense
+               "358": "33", //asturias
+               "388": "34", //palencia
+               "389": "36", //pontevedra
+               "390": "37", //salamanca
+               "366": "39", //cantabria
+               "392": "40", //segovia
+               "393": "41", //sevilla
+               "394": "42", //soria
+               "395": "43", //tarragona
+               "396": "44", //teruel
+               "397": "45", //toledo
+               "398": "46", //valencia
+               "399": "47", //vayadolid
+               "400": "48", //vizcaya
+               "401": "49", //zamora
+               "402": "50", //zaragoza
+
+            };
+
+            // Normaliza entrada
+            const cpStr = String(cp).padStart(5, '0');
+            const prefijo = cpStr.substring(0, 2);
+
+            console.log('prefijo: ' + prefijo);
+
+            if (!prefijosProvincias[provincia]) {
+               console.log('la provincia no es válida');
+               return false;
+            }
+
+            return prefijosProvincias[provincia] === prefijo;
+         }
+
         function getValidations() {
             let validation = true;
 
@@ -1824,15 +1896,7 @@ $( document ).ready( function () {
                   document.getElementById("vat-required-error").style.display = "none";
                }
             }
-            /*
-            if($('#field-firstname').val() == ''){
-               console.log('error en nombre');
-               document.getElementById("firstname-required-error").style.display = "block";
-               validation = false;
-            }else{
-               document.getElementById("firstname-required-error").style.display = "none";
-            }
-            */
+
             if($('#field-city').val() == ''){
                console.log('error en city');
                document.getElementById("city-required-error").style.display = "block";
@@ -1852,9 +1916,28 @@ $( document ).ready( function () {
             if($('#field-postcode').val() == ''){
                console.log('error en postcode');
                document.getElementById("postcode-required-error").style.display = "block";
+               document.getElementById("postcode-matchmaking").style.display = "none";
                validation = false;
             }else{
-               document.getElementById("postcode-required-error").style.display = "none";
+               
+               if($('#field-id_country').val() == '6'){
+                  console.log('comprobando codigo postal con provincia...');
+                  if(!comprobarCPPorProvincia($('#field-postcode').val(),$('#field-id_state').val())){
+                     console.log('codigo postal no casa con la provincia');
+                     document.getElementById("postcode-required-error").style.display = "none";
+                     document.getElementById("postcode-matchmaking").style.display = "block";
+                     validation = false;
+                  }else{
+                     console.log('codigo postal correcto');
+                     document.getElementById("postcode-required-error").style.display = "none";
+                     document.getElementById("postcode-matchmaking").style.display = "none";
+                  }
+               }else{
+                  console.log('codigo postal fuera de españa');
+                  document.getElementById("postcode-required-error").style.display = "none";
+                  document.getElementById("postcode-matchmaking").style.display = "none";
+               }
+               
             }
 
             if($('#field-phone').val() == ''){
@@ -1873,23 +1956,20 @@ $( document ).ready( function () {
          // Escucha el evento submit
          if(document.getElementById("address-form")) {
             document.getElementById("confirmAddressButton").addEventListener("click", function(event) {
-               console.log('botón apretado...');
                var loader = document.getElementById("loader-overlay");
                if (getValidations() === true) {
-                  console.log('Validación Ok...');
+                
                   if ($('#field-id_country').val() != 6 && $( '#field-empresa' ).is(':checked')){
-                     console.log('Empresa internacional detectada...');
                      loader.style.display = "flex";
                      document.getElementById("confirmAddressButton").classList.add("disabled");
                      document.getElementById("cancel-address-form").style.display ="none";
                      event.preventDefault();
    
                      if ( intracomunitaryCheck.is(':checked')) { 
-                        console.log('Validando VAT');
+                  
                         if($fieldVatNumber.find('input').val() != '') {// vat no vacío
                            document.getElementById("vat-required-error").style.display = "none";// borra error
                            $('#field-dni').val($('#field-vat_number').val());// copia vat en dni
-                           //loader.style.display = "none";
                            document.getElementById("address-form").submit();
                         }else {
                            document.getElementById("vat-required-error").style.display = "block";//muestra error vat vacío
@@ -1898,7 +1978,7 @@ $( document ).ready( function () {
                      }else{
                         if ($('#field-dni').val() != '') { // CIF/DNI NO VACÍO
                            event.preventDefault();
-                           console.log('Validando CIF');
+                        
                            $.ajax({ // comprueba si el vat es válido
                               url: '/ajax/checkVatNumber.php', 
                               method: 'POST', 
@@ -1926,6 +2006,7 @@ $( document ).ready( function () {
                      }
                   }
                } else{
+                  event.preventDefault();
                   console.log('Fallo validaciones...');
                   resetButtonState();
                }
@@ -2063,6 +2144,8 @@ $( document ).ready( function () {
       document.head.appendChild(trustedWidgetScript);
    }, 3000); // Ajusta el tiempo de retraso según lo que prefieras
    });
+
+
 
 
 
