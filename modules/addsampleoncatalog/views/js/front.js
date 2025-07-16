@@ -284,7 +284,7 @@ $( document ).ready( function () {
             // Asegúrate de que el video no se inserte más de una vez
             if (videoContainer.innerHTML.trim() === '') { 
                 videoContainer.innerHTML = `
-                    <video autoplay loop muted width="100%" src="/themes/child_classic/assets/video/waste-animation.mp4">
+                    <video autoplay loop muted playsinline width="100%" src="/themes/child_classic/assets/video/waste-animation.mp4">
                         Tu navegador no soporta la etiqueta de video.
                     </video>
                 `;

@@ -96,64 +96,11 @@
 
 {block name='content'}
 
-                    {assign var="productColor" value="none"}
-                    {assign var="validAspect" value=false}
-                    {assign var="conversionRate" value=1}
-                    {assign var="otherMaterialsArray" value=[81, 82, 88]}
-                    {assign var="isByPiece" value=false}
-                    {assign var="showDays" value=true}
-                    {foreach from=$product.features item='feature'}
-                        {if isset($feature.id_feature) && $feature.id_feature == $FEATURE_COLOR}
-                            {assign var="productColor" value=$feature.value}
-                        {/if}
-                    
-                        {if $feature.id_feature == 52 && in_array($feature.id_feature_value, [112067, 112063, 112066, 112061, 112068, 112062, 112060, 112064])} 
-                            {assign var="validAspect" value=true}
-                            {assign var="validAspectId" value=$feature.id_feature_value}
-                            {assign var="validAspectName" value=$feature.value}
-
-                        {/if}
-
-                        {if isset($feature.id_feature) && ($feature.id_feature == $FEATURE_M2_PIEZA_ID || $feature.id_feature == $FEATURE_M2_CAJA_ID)}
-                            {assign var="conversionRate" value=1}
-                            {assign var="productUnit" value="m²"}
-
-                            {if $feature.id_feature == $FEATURE_M2_PIEZA_ID}
-                                {assign var="productUnit" value={l s='pieces' d='Shop.Theme.Actions'}}
-                            {else}
-                                {assign var="conversionRate" value=$feature.value|replace:',':'.'|floatval}
-                            {/if}
-
-                            {assign var="result" value=$product.quantity * $conversionRate}
-
-                            {if $feature.id_feature == $FEATURE_M2_CAJA_ID}
-                                {assign var="result" value=$result|number_format:2:',':'.'}
-                            {/if}
-                        {/if}
-
-                        {if $feature.id_feature === $FEATURE_M2_PIEZA_ID}
-                            {assign var="isByPiece" value=true}
-                        {/if}
-
-                        {if $FEATURE_DIAS_PLAZO_ENTREGA_ID === $feature.id_feature}
-                            {if in_array($feature.id_feature_value, ['110413', '130590'])}
-                                {assign var="showDays" value=false}
-                            {/if}
-
-                            {assign var="dias_plazo" value="{$feature.value}"}
-
-                        {/if}
-
-                    {/foreach} 
-
     <section id="main">
 
         <meta content="{$product.url}">
 
-        <div class="row product-container js-product-container product-bc-container">
-
-            <div id="bread-crumps-container" class="bread-crumps margin-bc-product bc-product-position" data-color="{$productColor}" data-location="product" data-category="{$category->id}"></div>
-
+        <div class="row product-container js-product-container">
 
             <div class="col-md-6 col-xs-12" id="product-images-block">
 
@@ -193,16 +140,70 @@
 
                 <div class="custom-content">
 
-                    {if $validAspect}
-                        <div id="aspecto-link" style="display: none">
-                            <a href="{$link->getCategoryLinkByIdFeatureValue($validAspectId|intval)}">{$validAspectName}</a>
-                        </div>
-                    {/if}
+     
+                    {assign var="productColor" value="none"}
+                    {assign var="validAspect" value=false}
+                    {assign var="conversionRate" value=1}
+                    {assign var="otherMaterialsArray" value=[81, 82, 88]}
+                    {assign var="isByPiece" value=false}
+                    {assign var="showDays" value=true}
+                    {foreach from=$product.features item='feature'}
+                        {if isset($feature.id_feature) && $feature.id_feature == $FEATURE_COLOR}
+                            {assign var="productColor" value=$feature.value}
+                        {/if}
+                    
+                        {if $feature.id_feature == 52 && in_array($feature.id_feature_value, [112067, 112063, 112066, 112061, 112068, 112062, 112060, 112064])} 
+                            {assign var="validAspect" value=true}
+                            {assign var="validAspectId" value=$feature.id_feature_value}
+                            {assign var="validAspectName" value=$feature.value}
+
+                        {/if}
+
+                        {if $validAspect}
+                            <div id="aspecto-link" style="display: none">
+                                <a href="{$link->getCategoryLinkByIdFeatureValue($validAspectId|intval)}">{$validAspectName}</a>
+                            </div>
+                        {/if}
+
+                        {if isset($feature.id_feature) && ($feature.id_feature == $FEATURE_M2_PIEZA_ID || $feature.id_feature == $FEATURE_M2_CAJA_ID)}
+                            {assign var="conversionRate" value=1}
+                            {assign var="productUnit" value="m²"}
+
+                            {if $feature.id_feature == $FEATURE_M2_PIEZA_ID}
+                                {assign var="productUnit" value={l s='pieces' d='Shop.Theme.Actions'}}
+                            {else}
+                                {assign var="conversionRate" value=$feature.value|replace:',':'.'|floatval}
+                            {/if}
+
+                            {assign var="result" value=$product.quantity * $conversionRate}
+
+                            {if $feature.id_feature == $FEATURE_M2_CAJA_ID}
+                                {assign var="result" value=$result|number_format:2:',':'.'}
+                            {/if}
+                        {/if}
+
+                        {if $feature.id_feature === $FEATURE_M2_PIEZA_ID}
+                            {assign var="isByPiece" value=true}
+                        {/if}
+
+                        {if $FEATURE_DIAS_PLAZO_ENTREGA_ID === $feature.id_feature}
+                            {if in_array($feature.id_feature_value, ['110413', '130590'])}
+                                {assign var="showDays" value=false}
+                            {/if}
+
+                            {assign var="dias_plazo" value="{$feature.value}"}
+
+                        {/if}
+
+                    {/foreach} 
 
                     <div id="category-link" style="display: none">
                         <a href="{$link->getCategoryLink($category->id_category|intval)}">CATEGORY_LINK</a>
                     </div>
+
+                
                     
+                    <div id="bread-crumps-container" class="bread-crumps margin-bc-product" data-color="{$productColor}" data-location="product" data-category="{$category->id}"></div>
 
                     <div id="push-scroll-responsive-header">
 

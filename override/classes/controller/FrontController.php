@@ -57,6 +57,8 @@ class FrontController extends FrontControllerCore {
 	public const FEATURE_DESCRIPTION_DE		   = '66';
 	public const FEATURE_DESCRIPTION_PT		   = '67';
 	public const FEATURE_DESCRIPTION_NL		   = '68';
+	public const FEATURE_TOP_PRODUCT		   = '69';
+	public const FEATURE_EAN_COPY			   = '70';
 	public const FEATURE_MUESTRA_DE_PAGO_ID = '43'; // En la demo es el 31
 	public const FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2       = 'Por m2';
 	public const FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2_FR    = 'Par m2';
@@ -228,7 +230,9 @@ class FrontController extends FrontControllerCore {
 				self::FEATURE_DESCRIPTION_EN,
 				self::FEATURE_DESCRIPTION_DE,
 				self::FEATURE_DESCRIPTION_PT,
-				self::FEATURE_DESCRIPTION_NL
+				self::FEATURE_DESCRIPTION_NL,
+				self::FEATURE_EAN_COPY,
+				self::FEATURE_TOP_PRODUCT
 			]
 		);
 		$this->context->smarty->assign(
