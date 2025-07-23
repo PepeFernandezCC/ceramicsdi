@@ -3687,7 +3687,7 @@ body#checkout .custom-checkbox .psgdpr_consent_message span:nth-child(3) {
 .mobile-product-accessories .h5 {
   text-align: center;
   padding-bottom: 30px;
-  border-bottom: 1px solid black;
+  /*border-bottom: 1px solid black;*/
   margin-bottom: 0;
 }
 .mobile-product-accessories .custom-product-accessories .products .product {

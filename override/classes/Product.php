@@ -242,27 +242,61 @@ class Product extends ProductCore {
             $value = str_replace(',', '.', $result['reduction']);
             $reduction = 1 - (float) $value;
         }else{
-            return $price;
+            return [
+                'price' => $price,
+                'discount' => 0,
+                'discount_price' => $price
+            ];
         }
                 
-        return $price * $reduction; 
+        return [
+            'price' => $price,
+            'discount' => (float) $value * 100,
+            'discount_price' => $price * $reduction
+        ]; 
     }
 
-    public static function calculateCustomPrice($productId, $iva): array
+    public static function calculateCustomPrice($productId, $iva, $id_lang = 1): array
     {
         
         $product = new Product($productId);
         $price = (float) $product->price;
 
-        if ($iva) {
+        if ($iva && $id_lang == 1) {
             $price *= 1.21;
         }
        
+        if ($iva && $id_lang == 2) {
+            $price *= 1.20;
+        }
+
+        if ($iva && $id_lang == 3) {
+            $price *= 1.21;
+        }
+
+        if ($iva && $id_lang == 4) {
+            $price *= 1.19;
+        }
+
+        if ($iva && $id_lang == 5) {
+            $price *= 1.23;
+        }
+
+        if ($iva && $id_lang == 6) {
+            $price *= 1.21;
+        }
+
+        $discountPrice = self::getPriceWithDiscount($productId, $price);
+
         // Calcular precio
         if (self::getIfNormalSell($productId)) {
-            $price = self::getPriceWithDiscount($productId, $price);
+            
+            $price = $discountPrice['discount_price'];
+            
             return [
                 'price' => number_format($price, 2, ',', ''),
+                'original_price' => number_format($discountPrice['price'], 2, ',', ''),
+                'discount' => $discountPrice['discount'],
                 'tipologia' => ''
             ];
         } 
@@ -274,10 +308,13 @@ class Product extends ProductCore {
             $price = $price / $m2Caja;
         } 
 
-        $price = self::getPriceWithDiscount($productId, $price);
+        $price = $discountPrice['discount_price'];
+
             
         return [
             'price' => number_format($price, 2, ',', ''),
+            'original_price' => number_format($discountPrice['price'], 2, ',', ''),
+            'discount' => $discountPrice['discount'],
             'tipologia' => self::getTipologyString($pieceTypology)
         ];
         
