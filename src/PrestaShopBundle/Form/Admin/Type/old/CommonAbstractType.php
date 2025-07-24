@@ -34,7 +34,7 @@ use Symfony\Component\Form\AbstractType;
  */
 abstract class CommonAbstractType extends AbstractType
 {
-    public const PRESTASHOP_DECIMALS = 2;
+    public const PRESTASHOP_DECIMALS = 6;
 
     /**
      * Get the configuration adapter.

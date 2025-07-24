@@ -31,7 +31,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class CustomMoneyType extends AbstractTypeExtension
 {
-    public const PRESTASHOP_DECIMALS = 2;
+    public const PRESTASHOP_DECIMALS = 6;
 
     public function getExtendedType()
     {
