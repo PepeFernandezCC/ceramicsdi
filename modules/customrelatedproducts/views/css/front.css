@@ -71,9 +71,11 @@
         }
 
         .relateddata {
+            display: flex;
             padding-top:0;
             padding: 10px;
             text-align: left;
+            justify-content: space-between;
         }
 
         .relatedTitle {
@@ -90,6 +92,7 @@
 
         .relatedMaterial {
             display: flex;
+            flex-direction: column-reverse;
             
         }
         .sellPrice{
@@ -113,9 +116,9 @@
             vertical-align: middle;
             width: 60px;
             height: 31px;
-            top: 37px;
+            top: 65px;
             display: flex;
-            left: 362px;
+            right: 0;
             align-items: center;
             justify-content: center;
         }
@@ -129,14 +132,18 @@
                     text-overflow: ellipsis;    /* agrega "..." al final si se corta */
                     font-weight: 600;
                     font-size: 12px;
+                    margin-bottom: -3px;
                 }
 
             .relatedFormat {
                 font-size: 13px;
+                margin-bottom: -5px;
             }
 
             .relatedMaterial {
                 font-size: 10px;
+                flex-direction: row;
+                
             }
             .ccrelated-container {
                 grid-template-columns: repeat(3, 1fr);
@@ -144,6 +151,9 @@
 
             .relateddata {
                 padding: 7px;
+                display: block;
+                padding-top: 0px;
+                margin-top: -2px;
             }
 
             .cardproduct:nth-of-type(n+10) {

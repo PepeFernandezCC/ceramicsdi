@@ -304,6 +304,7 @@ class CustomRelatedProducts extends Module
             $sqlTop = '
                 SELECT DISTINCT fp.id_product FROM ' . _DB_PREFIX_ . 'feature_product fp
                 WHERE fp.id_feature = 69
+                AND fp.id_feature_value = 146347
                 AND fp.id_product != ' . (int)$idProduct . '
                 LIMIT ' . $remaining;
 

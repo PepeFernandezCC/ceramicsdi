@@ -16,17 +16,21 @@
                         </div>
                         {assign var='customPrice' value=Product::calculateCustomPrice($product.id, true, $idLang)}
                         <div class="relateddata">
-                            <div class="relatedTitle">
-                                {$product.name}
+                            <div class="crp-title-block">
+                                <div class="relatedTitle">
+                                    {$product.name}
+                                </div>
+                                <div class="relatedFormat">{$product.formato}</div>
                             </div>
-                            <div class="relatedFormat">{$product.formato}</div>
-                            <div class="relatedMaterial">
-                                {if $customPrice.discount > 0}
-                                    <div class="discountFlag">-{$customPrice.discount}%</div>
-                                    <div class="productPrice">{$customPrice.original_price} €{$customPrice.tipologia nofilter}</div>
-                                {/if}
+                            <div class="crp-title-price">
+                                <div class="relatedMaterial">
+                                    {if $customPrice.discount > 0}
+                                        <div class="discountFlag">-{$customPrice.discount}%</div>
+                                        <div class="productPrice">{$customPrice.original_price} €{$customPrice.tipologia nofilter}</div>
+                                    {/if}
 
-                                <div class="sellPrice">{$customPrice.price} €{$customPrice.tipologia nofilter}</div>
+                                    <div class="sellPrice">{$customPrice.price} €{$customPrice.tipologia nofilter}</div>
+                                </div>
                             </div>
                         </div>
                     </a>
