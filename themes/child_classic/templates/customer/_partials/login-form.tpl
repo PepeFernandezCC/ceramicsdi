@@ -62,4 +62,9 @@
         <div class="sign-message">{l s='Sign in to access the details and expedite your purchase.' d='Shop.Theme.Customeraccount'}</div>
 
     </form>
+
+    <div>
+        <div><h3>Inicia sesión Con Google</h3></div>
+        <div>{hook h='displayCustomerLoginFormAfter'}</div>
+    </div>
 {/block}
