@@ -16,7 +16,10 @@
 *}
 
 <div class="mx-auto google-signin-wrapper">
-            <div class="loginGoogleDesktop">
+    <p></p>
+    <div class="container">
+        <div class="row">
+            <div class="col">
                 <div class="g_id_signin"
                     data-type="standard"
                     data-shape="rectangular"
@@ -29,17 +32,7 @@
                     style="display: flex;justify-content: center; align-items: center;">
                 </div>
             </div>
-            <div class="loginGoogleMobile">
-                <div class="g_id_signin"
-                    data-type="standard"
-                    data-shape="rectangular"
-                    data-theme="filled_white"
-                    data-text="continue_with"
-                    data-size="large"
-                    data-width="280"
-                    data-logo_alignment="center"
-                    data-locale="{$datalocale}"
-                    style="display: flex;justify-content: center; align-items: center;">
-                </div>
-            </div>
+        </div>
     </div>
+    <p></p>
+</div>

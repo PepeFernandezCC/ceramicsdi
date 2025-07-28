@@ -6303,3 +6303,28 @@ span.at-contact {
     left: 52.75%;
   }
 }
+
+.no-account {
+    padding-top: 10px;
+}
+
+/* Oculta móvil por defecto */
+.loginGoogleMobile {
+  display: none !important;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+
+  .loginGoogleDesktop {
+    display: none !important;
+  }
+  .loginGoogleMobile {
+    display: block !important;
+    margin-left: 12%;
+  }
+
+  .loginGoogleMobile iframe {
+    width: 270px !important;
+  }
+}

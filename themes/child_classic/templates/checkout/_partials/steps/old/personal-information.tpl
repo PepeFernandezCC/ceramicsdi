@@ -1,10 +1,7 @@
 {extends file='checkout/_partials/steps/checkout-step.tpl'}
 
 {block name='step_content'}
-
-    {*
-        {hook h='displayPersonalInformationTop' customer=$customer}
-    *}
+    {hook h='displayPersonalInformationTop' customer=$customer}
 
     {if $customer.is_logged && !$customer.is_guest}
 
@@ -55,7 +52,7 @@
             {render file='checkout/_partials/login-form.tpl' ui=$login_form}
         </div>
         <div id="checkout-guest-form" class="col-md-6 col-xs-12 mobile-pb-0 mobile-pt-0">
-            {render file='checkout/_partials/customer-form.tpl' ui=$register_form guest_allowed=$guest_allowed step="registration" customer=$customer}
+            {render file='checkout/_partials/customer-form.tpl' ui=$register_form guest_allowed=$guest_allowed step="registration"}
         </div>
         <div id="nc-continue-button" style="display:none">
             {include file='checkout/_partials/planatec-checkout-bottom.tpl'}

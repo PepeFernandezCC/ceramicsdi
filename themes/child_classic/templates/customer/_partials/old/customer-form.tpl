@@ -46,16 +46,9 @@
                 {l s='Create new account' d='Shop.Theme.Customeraccount'}
             </div>
 
-            {*
-                <div class="button" id="planatec-buy-guest">
-                    {l s='Buy as a guest' d='Shop.ThemeCustomeraccount'} 
-                </div>
-            *}
-
-            <div class="google-login-button">
-                {hook h='displayPersonalInformationTop' customer=$customer}
+            <div class="button" id="planatec-buy-guest">
+                {l s='Buy as a guest' d='Shop.ThemeCustomeraccount'}
             </div>
-
         {/if}
 
         

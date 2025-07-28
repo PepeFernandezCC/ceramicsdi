@@ -1,3 +1,4 @@
+<?php
 /**
 * 2007-2023 PrestaShop
 *
@@ -21,39 +22,13 @@
 *  @copyright 2007-2023 PrestaShop SA
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  International Registered Trademark & Property of PrestaShop SA
-*
-* Don't forget to prefix your containers with your own identifier
-* to avoid any conflicts with others containers.
 */
-.google-signin-wrapper {
-  max-width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0.5em;
-}
+header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
 
-.google-signin-wrapper .g_id_signin {
-  width: 100% !important;
-}
+header('Cache-Control: no-store, no-cache, must-revalidate');
+header('Cache-Control: post-check=0, pre-check=0', false);
+header('Pragma: no-cache');
 
-/* Oculta móvil por defecto */
-.loginGoogleMobile {
-  display: none !important;
-}
-
-/* Mobile responsiveness */
-@media (max-width: 768px) {
-
-  .loginGoogleDesktop {
-    display: none !important;
-  }
-  .loginGoogleMobile {
-    display: block !important;
-    margin-left: 12%;
-  }
-
-  .loginGoogleMobile iframe {
-    width: 270px !important;
-  }
-}
+header('Location: ../');
+exit;

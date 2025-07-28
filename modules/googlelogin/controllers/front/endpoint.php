@@ -1,12 +1,12 @@
 <?php
 
 use PrestaShop\PrestaShop\Adapter\ServiceLocator;
-use Firebase\JWT\JWK;
-use Firebase\JWT\JWT;
+use PrestaShop\Module\PsAccounts\Vendor\Firebase\JWT\JWK;
+use PrestaShop\Module\PsAccounts\Vendor\Firebase\JWT\JWT;
 use Symfony\Component\HttpClient\HttpClient;
 
 
-include_once dirname(__FILE__) . '/../../vendor/autoload.php';
+//include_once dirname(__FILE__) . '/../../vendor/autoload.php';
 
 class GoogleloginEndpointModuleFrontController extends ModuleFrontController
 
