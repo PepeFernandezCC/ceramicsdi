@@ -23,10 +23,10 @@
                     data-theme="filled_white"
                     data-text="continue_with"
                     data-size="large"
-                    data-width="380"
+                    data-width="320"
                     data-logo_alignment="center"
-                    data-locale="{$datalocale}"
-                    style="display: flex;justify-content: center; align-items: center;">
+                    data-locale="{$datalocale}">
+                  
                 </div>
             </div>
             <div class="loginGoogleMobile">
@@ -36,10 +36,10 @@
                     data-theme="filled_white"
                     data-text="continue_with"
                     data-size="large"
-                    data-width="280"
+                    data-width="240"
                     data-logo_alignment="center"
                     data-locale="{$datalocale}"
-                    style="display: flex;justify-content: center; align-items: center;">
+                    >
                 </div>
             </div>
-    </div>
+</div>

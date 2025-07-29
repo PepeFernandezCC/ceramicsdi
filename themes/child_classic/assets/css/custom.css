@@ -6321,10 +6321,6 @@ span.at-contact {
   }
   .loginGoogleMobile {
     display: block !important;
-    margin-left: 12%;
   }
 
-  .loginGoogleMobile iframe {
-    width: 270px !important;
-  }
 }
