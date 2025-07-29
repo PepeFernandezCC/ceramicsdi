@@ -57,7 +57,7 @@
                                   </span>
                                     {l s='company' d='Shop.Theme.Checkout'}
                                 </label>
-                                <label class="radio-inline" for="field-particular"> 
+                                <label class="radio-inline" for="field-particular">
                                   <span class="custom-radio">
                                     <input
                                             name="treatment"
@@ -74,14 +74,12 @@
                             </div>
                         </div>
 
-                        {*
-                            <div class="form-group row" id="intracomunitary-identification">
-                                <div class="intracomunitary-check-class">
-                                    <input name="intracomunitary-checkbox" id="intracomunitary-checkbox" type ="checkbox" value="0">
-                                    <label for="intracomunitary-checkbox" style="margin: 0">{l s='I identify myself as an INTRA-COMMUNITY OPERATOR and I am exempt from taxes' d='Shop.Theme.Checkout'}.</label>
-                                </div>
+                        <div class="form-group row" id="intracomunitary-identification">
+                            <div class="intracomunitary-check-class">
+                                <input name="intracomunitary-checkbox" id="intracomunitary-checkbox" type ="checkbox" value="0">
+                                <label for="intracomunitary-checkbox" style="margin: 0">{l s='I identify myself as an INTRA-COMMUNITY OPERATOR and I am exempt from taxes' d='Shop.Theme.Checkout'}.</label>
                             </div>
-                        *}
+                        </div>
 
                         {* END PLANATEC *}
                         {foreach from=$formFields item="field"}

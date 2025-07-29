@@ -63,7 +63,8 @@ class Product extends ProductCore {
             'COLECCION_PICKET_25',
             'COLECCION_CRETA_13_BRILLO',
             'COLECCION_MAPEI_ULTRACOLOR',
-            'COLECCION_FUGABELLA_COLOR'
+            'COLECCION_FUGABELLA_COLOR',
+            'COLECCION_FIJI'
         ];
 
         if ($description == $reference || in_array($description, $collection_array)) {
