@@ -79,7 +79,7 @@
                         </div>
                         
                         <div>
-                            <input type="text" name="postalzip" id="postalzip" inputmode="numeric" value="" 
+                            <input type="number" name="postalzip" id="postalzip" inputmode="numeric" value="" 
                             class="input-group scc-postalcode-input" aria-label="Total" data-price="0" placeholder="{l s='Postal code' d='Shop.Forms.Labels'}">
                         </div>
                        

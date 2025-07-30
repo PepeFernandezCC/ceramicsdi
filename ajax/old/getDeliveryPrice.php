@@ -35,39 +35,35 @@ $cart = new Cart((int) $id_cart);
 
 //Obtener carrier local
 
-/*LOCAL*/
+/*SERVIDOR*/
+
+$correos = 235;
+$correos_internacional = 196;
+$camion = 199;
+$camion_internacional = 195;
+$seur = 229;
+$transa = 242;
+
 /*
 $correos = 167;
 $correos_internacional = 158;
 $camion = 168;
 $camion_internacional = 169;
 */
+
 /*SERVIDOR*/
-
-$correos = 235;
-$correos_internacional = 243;
-$camion = 199;
-$camion_internacional = 195;
-$seur = 229;
-
-
-/* EXCEPCIONES POR ZONA */
-$transaher = 242;
-$transaher_zones = ['65', '66', '67', '68'];
+/*
+$correos = 173;
+$correos_internacional = 172;
+$camion = 184;
+$camion_internacional = 182;
+*/
 
 $delivery_by_truck = Tools::getValue('weight') >= 13 ? true : false ;
 $id_carrier = $delivery_by_truck ? $camion_internacional : $correos_internacional;
 
-//calcular id_zone
-
-$id_zone = State::getIdZone((int)$id_state);
-
 if ($id_country == 6) {//Envío en españa
     $id_carrier = $delivery_by_truck ? $camion : $correos;
-}
-
-if (in_array($id_zone, $transaher_zones)) {
-    $id_carrier = $delivery_by_truck ? $transaher : $correos_internacional;
 }
 
 //falsear Carrito
@@ -77,6 +73,10 @@ $cart->id_address_invoice = '1';
 $cart->id_customer = '2';
 $cart->delivery_option = '{"1":"'.$id_carrier.'"}';
 
+
+//calcular id_zone
+
+$id_zone = State::getIdZone((int)$id_state);
 
 /* CONSTRUIR PARAMETROS */
 static $cache = [];
