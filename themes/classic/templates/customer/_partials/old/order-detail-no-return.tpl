@@ -110,7 +110,7 @@
         {/foreach}
         <tr class="text-xs-right line-{$order.totals.total.type}">
           <td colspan="3">{$order.totals.total.label}</td>
-          <td>{$order.totals.total_paid.value}</td>
+          <td>{$order.totals.total.value}</td>
         </tr>
       </tfoot>
     </table>
@@ -160,7 +160,6 @@
   </div>
   <div class="order-totals hidden-md-up box">
     {foreach $order.subtotals as $line}
-        
       {if $line.value}
         <div class="order-total row">
           <div class="col-xs-8"><strong>{$line.label}</strong></div>
@@ -170,7 +169,7 @@
     {/foreach}
     <div class="order-total row">
       <div class="col-xs-8"><strong>{$order.totals.total.label}</strong></div>
-      <div class="col-xs-4 text-xs-right">{$order.totals.total_paid.value}</div>
+      <div class="col-xs-4 text-xs-right">{$order.totals.total.value}</div>
     </div>
   </div>
 {/block}

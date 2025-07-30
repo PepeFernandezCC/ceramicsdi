@@ -26,7 +26,6 @@
   <form id="order-return-form" class="js-order-return-form" action="{$urls.pages.order_follow}" method="post">
 
     <div class="box hidden-sm-down">
-    
       <table id="order-products" class="table table-bordered return">
         <thead class="thead-default">
           <tr>
@@ -149,7 +148,7 @@
           {/foreach}
           <tr class="text-xs-right line-{$order.totals.total.type}">
             <td colspan="5">{$order.totals.total.label}</td>
-            <td colspan="2">{$order.totals.total_paid.value}</td>
+            <td colspan="2">{$order.totals.total.value}</td>
           </tr>
         </tfoot>
       </table>
@@ -228,7 +227,7 @@
       {/foreach}
       <div class="order-total row">
         <div class="col-xs-8"><strong>{$order.totals.total.label}</strong></div>
-        <div class="col-xs-4 text-xs-right">{$order.totals.total_paid.value}</div>
+        <div class="col-xs-4 text-xs-right">{$order.totals.total.value}</div>
       </div>
     </div>
 
