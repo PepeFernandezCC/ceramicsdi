@@ -40,8 +40,14 @@
                         {foreach $subCategories as $subCategory}
                             {if Category::categoryProductsCountById($subCategory.id_category) > 0}
                                 <li class="facet-label">
-                                    <a href="{$link->getCategoryLink($subCategory.id_category|intval)}" style="{if $category.id == $subCategory.id_category}font-weight:bold{/if}">{$subCategory.name}</a>
-                                    {*<span data-filter="{$link->getCategoryLink($subCategory.id_category|intval)}" class="js-ofuscado-enlace" style="{if $category.id == $subCategory.id_category}font-weight:bold{/if}">{$subCategory.name}</span>*}
+                                    {assign var="normalized_title" value=$subCategory.meta_title|lower}
+                                    <a href="{$link->getCategoryLink($subCategory.id_category|intval)}" style="{if $category.id == $subCategory.id_category}font-weight:bold{/if}">
+                                        {if $subCategory.meta_title == ''}
+                                            {$subCategory.name}
+                                        {else}
+                                            {$normalized_title|replace:"| ceramic connection":""|capitalize}
+                                        {/if}
+                                    </a> 
                                 </li>
                             {/if}
                         {/foreach}
