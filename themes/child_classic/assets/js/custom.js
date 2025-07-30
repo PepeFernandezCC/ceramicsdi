@@ -2079,6 +2079,11 @@ $( document ).ready( function () {
       initializeCustom();
    });
 
+
+   prestashop.on( 'updatedDeliveryForm', function(){
+      initializeCustom();
+   });
+
    prestashop.on( 'updateProductList', function () {
 
       initializeCustom();
