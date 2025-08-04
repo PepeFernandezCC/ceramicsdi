@@ -1980,10 +1980,11 @@ $( document ).ready( function () {
                            event.preventDefault();
                         
                            $.ajax({ // comprueba si el vat es válido
-                              url: '/ajax/checkVatNumber.php', 
+                              url: '/ajax/setVatNumber.php', 
                               method: 'POST', 
                               data: {
                                  vat_number: $('#field-dni').val(),
+                                 customer: document.getElementById("confirmAddressButton").getAttribute("data-customer"),
                               },
                               success: function(response) {                                 
                                  if (response.result) {
