@@ -365,14 +365,12 @@
                                                 </div>
                                             </div>
 
-                                            {*
-                                                <div class="row">
-                                                    <div class="col-md-12">
-                                                        <p style="color: black;" class="text-sm-right small">
-                                                            * {l s='Required fields' d='Shop.Forms.Help'}</p>
-                                                    </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <p style="color: black;" class="text-sm-right small">
+                                                        * {l s='Required fields' d='Shop.Forms.Help'}</p>
                                                 </div>
-                                            *}
+                                            </div>
 
                                             <div class="form-group row">
                                                 <div class="col-xs-12">
@@ -394,13 +392,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="form-group row">
-                                                <div id="captcha">
-                                                    {block name='hook_cms_captcha'}
-                                                        {hook h='displayEicaptchaVerification'}
-                                                    {/block}
-                                                </div>
-                                            </div>
+
                                             <div class="form-group row">
                                                 <div class="col-xs-12">
                                                     <a class="conditions-professionals"
@@ -410,6 +402,7 @@
                                                 </div>
                                             </div>
                                         </div>
+
                                     </section>
                                     <footer class="form-footer text-sm-left professional-form-box" style="padding-left: 0;">
                                         <div>
