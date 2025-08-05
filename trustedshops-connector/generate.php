@@ -27,11 +27,11 @@ const TOKEN_VALID_SECONDS = 24 * 60 * 60;
 // CREDENCIALES DE ACCESO A LA BASE DE DATOS DE PRESTASHOP.
 
 //const DB_HOST = 'localhost:3306';
-const DB_HOST = '82.223.111.230:3407';
+const DB_HOST = 'ceramicconnection_ps_db';
 
-const DB_USERNAME = 'ceramicconnection_external';
+const DB_USERNAME = 'ceramicconnection';
 
-const DB_PASSWORD = 'A9zVXK9n84RefYkWibf';
+const DB_PASSWORD = 'gX9MRd8c6R8qeW';
 
 const DB_DATABASE = 'ceramicconnection';
 

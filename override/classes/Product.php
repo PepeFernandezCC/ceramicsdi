@@ -222,8 +222,10 @@ class Product extends ProductCore {
         $result = $db->getRow($query);
 
         if ($result && isset($result['id_feature_value'])) {
-            if ($piece_tipology == (int)$result['id_feature_value'])
-            return true;
+            if ($piece_tipology == (int)$result['id_feature_value']) {
+                 return true;
+            }
+           
         }
                 
         return false; // Retorna false si no hay resultado
@@ -257,42 +259,51 @@ class Product extends ProductCore {
         ]; 
     }
 
+
+    private function getDefaultTaxByLang($id_lang, $price) {
+
+        if ($id_lang == 1) {
+            $price *= 1.21;
+        }
+       
+        if ($id_lang == 2) {
+            $price *= 1.20;
+        }
+
+        if ($id_lang == 3) {
+            $price *= 1.21;
+        }
+
+        if ($id_lang == 4) {
+            $price *= 1.19;
+        }
+
+        if ($id_lang == 5) {
+            $price *= 1.23;
+        }
+
+        if ($id_lang == 6) {
+            $price *= 1.21;
+        }
+
+        return $price;
+    }
+
     public static function calculateCustomPrice($productId, $iva, $id_lang = 1): array
     {
         
         $product = new Product($productId);
         $price = (float) $product->price;
 
-        if ($iva && $id_lang == 1) {
-            $price *= 1.21;
-        }
-       
-        if ($iva && $id_lang == 2) {
-            $price *= 1.20;
-        }
-
-        if ($iva && $id_lang == 3) {
-            $price *= 1.21;
-        }
-
-        if ($iva && $id_lang == 4) {
-            $price *= 1.19;
-        }
-
-        if ($iva && $id_lang == 5) {
-            $price *= 1.23;
-        }
-
-        if ($iva && $id_lang == 6) {
-            $price *= 1.21;
+        if ($iva) {
+            $price = self::getDefaultTaxByLang($id_lang, $price);
         }
 
         $discountPrice = self::getPriceWithDiscount($productId, $price);
+        $price = $discountPrice['discount_price'];
 
         // Calcular precio
         if (self::getIfNormalSell($productId)) {
-            
-            $price = $discountPrice['discount_price'];
             
             return [
                 'price' => number_format($price, 2, ',', ''),
@@ -308,9 +319,6 @@ class Product extends ProductCore {
             $m2Caja = self::getM2CajaValue($productId);
             $price = $price / $m2Caja;
         } 
-
-        $price = $discountPrice['discount_price'];
-
             
         return [
             'price' => number_format($price, 2, ',', ''),

@@ -958,64 +958,63 @@ $( document ).ready( function () {
 
           //JOINT CALCULATOR
    
+      if (document.getElementById('jointCalculatorProcess')){
+         
+         const largeTile = document.getElementById('large_tile');
+         const heightTile = document.getElementById('height_tile');
+         const espessorTile = document.getElementById('espessor_tile');
+         const largeJoint = document.getElementById('large_joint');
+         const m2Area = document.getElementById('m2_area');
+         const calculateButton = document.getElementById('jointCalculatorProcess');
 
-    if (document.getElementById('jointCalculatorProcess')){
-      
-      const largeTile = document.getElementById('large_tile');
-      const heightTile = document.getElementById('height_tile');
-      const espessorTile = document.getElementById('espessor_tile');
-      const largeJoint = document.getElementById('large_joint');
-      const m2Area = document.getElementById('m2_area');
-      const calculateButton = document.getElementById('jointCalculatorProcess');
+         function validateInputs() {
 
-      function validateInputs() {
-
-         if (
-           largeTile.value !== '' &&
-           heightTile.value !== '' &&
-           espessorTile.value !== '' &&
-           largeJoint.value !== '' &&
-           m2Area.value !== ''
-         ) {
-           calculateButton.disabled = false; // Habilitar el botón si todos tienen valores
-         } else {
-           calculateButton.disabled = true; // Deshabilitar el botón si alguno está vacío
+            if (
+            largeTile.value !== '' &&
+            heightTile.value !== '' &&
+            espessorTile.value !== '' &&
+            largeJoint.value !== '' &&
+            m2Area.value !== ''
+            ) {
+            calculateButton.disabled = false; // Habilitar el botón si todos tienen valores
+            } else {
+            calculateButton.disabled = true; // Deshabilitar el botón si alguno está vacío
+            }
          }
-       }
-     
-       // Deshabilitar el botón al cargar la página
-       calculateButton.disabled = true;
-     
-       // Añadimos el evento 'input' para cada campo para validar en tiempo real
-       [largeTile, heightTile, espessorTile, largeJoint, m2Area].forEach(input => {
-         input.addEventListener('input', validateInputs);
-       });
+      
+         // Deshabilitar el botón al cargar la página
+         calculateButton.disabled = true;
+      
+         // Añadimos el evento 'input' para cada campo para validar en tiempo real
+         [largeTile, heightTile, espessorTile, largeJoint, m2Area].forEach(input => {
+            input.addEventListener('input', validateInputs);
+         });
 
 
-      document.getElementById('jointCalculatorProcess').addEventListener('click', function() {
-          let density = 850; 
-          if (parseInt(document.getElementById('manufacturer').value) == 2) { //Si el producto es MAPEI
-              density = 750;
-          }
-          let kgs_sack = parseInt(document.getElementById('kgs_sack').value);
-          let large = (document.getElementById('large_tile').value)/1000;
-          let height = (document.getElementById('height_tile').value)/1000;
-          let espessor = (document.getElementById('espessor_tile').value)/1000;
-          let largeJoint = (document.getElementById('large_joint').value)/1000;
-          let area = parseInt(document.getElementById('m2_area').value);
-          let perimeter = 2 * (large + height);
-          let volume = perimeter * largeJoint * espessor;
-          let tileArea = 1/(large * height);
-          let total_volume = volume * tileArea * area;
-          let quantity = (total_volume * density) * 1.10;
-          let total_sacks = Math.ceil(quantity / kgs_sack);
+         document.getElementById('jointCalculatorProcess').addEventListener('click', function() {
+            let density = 850; 
+            if (parseInt(document.getElementById('manufacturer').value) == 2) { //Si el producto es MAPEI
+               density = 750;
+            }
+            let kgs_sack = parseInt(document.getElementById('kgs_sack').value);
+            let large = (document.getElementById('large_tile').value)/1000;
+            let height = (document.getElementById('height_tile').value)/1000;
+            let espessor = (document.getElementById('espessor_tile').value)/1000;
+            let largeJoint = (document.getElementById('large_joint').value)/1000;
+            let area = parseInt(document.getElementById('m2_area').value);
+            let perimeter = 2 * (large + height);
+            let volume = perimeter * largeJoint * espessor;
+            let tileArea = 1/(large * height);
+            let total_volume = volume * tileArea * area;
+            let quantity = (total_volume * density) * 1.10;
+            let total_sacks = Math.ceil(quantity / kgs_sack);
 
-          document.getElementById('quantity-input').value = parseInt(total_sacks);
-          document.getElementById('total_kgs').value = Math.ceil(quantity);
-          $eurosInput.val( ( parseInt(total_sacks) * price ).toFixed( 2 ) );
+            document.getElementById('quantity-input').value = parseInt(total_sacks);
+            document.getElementById('total_kgs').value = Math.ceil(quantity);
+            $eurosInput.val( ( parseInt(total_sacks) * price ).toFixed( 2 ) );
 
-      });
-  }
+         });
+      }
 
       // PRODUCTO POR PIEZA
 
@@ -1884,74 +1883,74 @@ $( document ).ready( function () {
             return prefijosProvincias[provincia] === prefijo;
          }
 
-        function getValidations() {
-            let validation = true;
+         function getValidations() {
+               let validation = true;
 
-            if ( intracomunitaryCheck.is(':checked')) { 
-               if($('#field-vat_number').val() == ''){
-                  console.log('error en vat');
-                  document.getElementById("vat-required-error").style.display = "block";
-                  validation = false;
-               }else{
-                  document.getElementById("vat-required-error").style.display = "none";
-               }
-            }
-
-            if($('#field-city').val() == ''){
-               console.log('error en city');
-               document.getElementById("city-required-error").style.display = "block";
-               validation = false;
-            }else{
-               document.getElementById("city-required-error").style.display = "none";
-            }
-
-            if($('#field-address1').val() == ''){
-               console.log('error en address');
-               document.getElementById("address-required-error").style.display = "block";
-               validation = false;
-            }else{
-               document.getElementById("address-required-error").style.display = "none";
-            }
-
-            if($('#field-postcode').val() == ''){
-               console.log('error en postcode');
-               document.getElementById("postcode-required-error").style.display = "block";
-               document.getElementById("postcode-matchmaking").style.display = "none";
-               validation = false;
-            }else{
-               
-               if($('#field-id_country').val() == '6'){
-                  console.log('comprobando codigo postal con provincia...');
-                  if(!comprobarCPPorProvincia($('#field-postcode').val(),$('#field-id_state').val())){
-                     console.log('codigo postal no casa con la provincia');
-                     document.getElementById("postcode-required-error").style.display = "none";
-                     document.getElementById("postcode-matchmaking").style.display = "block";
+               if ( intracomunitaryCheck.is(':checked')) { 
+                  if($('#field-vat_number').val() == ''){
+                     console.log('error en vat');
+                     document.getElementById("vat-required-error").style.display = "block";
                      validation = false;
                   }else{
-                     console.log('codigo postal correcto');
+                     document.getElementById("vat-required-error").style.display = "none";
+                  }
+               }
+
+               if($('#field-city').val() == ''){
+                  console.log('error en city');
+                  document.getElementById("city-required-error").style.display = "block";
+                  validation = false;
+               }else{
+                  document.getElementById("city-required-error").style.display = "none";
+               }
+
+               if($('#field-address1').val() == ''){
+                  console.log('error en address');
+                  document.getElementById("address-required-error").style.display = "block";
+                  validation = false;
+               }else{
+                  document.getElementById("address-required-error").style.display = "none";
+               }
+
+               if($('#field-postcode').val() == ''){
+                  console.log('error en postcode');
+                  document.getElementById("postcode-required-error").style.display = "block";
+                  document.getElementById("postcode-matchmaking").style.display = "none";
+                  validation = false;
+               }else{
+                  
+                  if($('#field-id_country').val() == '6'){
+                     console.log('comprobando codigo postal con provincia...');
+                     if(!comprobarCPPorProvincia($('#field-postcode').val(),$('#field-id_state').val())){
+                        console.log('codigo postal no casa con la provincia');
+                        document.getElementById("postcode-required-error").style.display = "none";
+                        document.getElementById("postcode-matchmaking").style.display = "block";
+                        validation = false;
+                     }else{
+                        console.log('codigo postal correcto');
+                        document.getElementById("postcode-required-error").style.display = "none";
+                        document.getElementById("postcode-matchmaking").style.display = "none";
+                     }
+                  }else{
+                     console.log('codigo postal fuera de españa');
                      document.getElementById("postcode-required-error").style.display = "none";
                      document.getElementById("postcode-matchmaking").style.display = "none";
                   }
-               }else{
-                  console.log('codigo postal fuera de españa');
-                  document.getElementById("postcode-required-error").style.display = "none";
-                  document.getElementById("postcode-matchmaking").style.display = "none";
+                  
                }
-               
-            }
 
-            if($('#field-phone').val() == ''){
-               console.log('error en phone');
-               document.getElementById("phone-required-error").style.display = "block";
-               validation = false;
-            }else{
-               document.getElementById("phone-required-error").style.display = "none";
-            }
+               if($('#field-phone').val() == ''){
+                  console.log('error en phone');
+                  document.getElementById("phone-required-error").style.display = "block";
+                  validation = false;
+               }else{
+                  document.getElementById("phone-required-error").style.display = "none";
+               }
 
-            console.log('las validaciones son: ' + validation);
+               console.log('las validaciones son: ' + validation);
 
-            return validation;
-        }
+               return validation;
+         }
 
          // Escucha el evento submit
          if(document.getElementById("address-form")) {
@@ -1980,10 +1979,11 @@ $( document ).ready( function () {
                            event.preventDefault();
                         
                            $.ajax({ // comprueba si el vat es válido
-                              url: '/ajax/checkVatNumber.php', 
+                              url: '/ajax/setVatNumber.php', 
                               method: 'POST', 
                               data: {
                                  vat_number: $('#field-dni').val(),
+                                 customer: document.getElementById("confirmAddressButton").getAttribute("data-customer"),
                               },
                               success: function(response) {                                 
                                  if (response.result) {
@@ -2029,6 +2029,32 @@ $( document ).ready( function () {
 
          });
 
+      //Banear correos spam
+
+      const blackList = ['test@example.com'];
+
+      const submitButton = document.getElementById('send-professional-button');
+
+      if (submitButton) {
+         const form = submitButton.closest('form');
+
+         if (form) {
+            form.addEventListener('submit', function (event) {
+               const emailInput = form.querySelector('input[name="from"]');
+               if (emailInput) {
+                     const email = emailInput.value.trim().toLowerCase();
+                     const domain = email.split('@')[1];
+
+                  // Comparación por email exacto o dominio
+                  if (blackList.includes(email) || domain === 'example.com') {
+                        event.preventDefault(); // Bloquea el envío del formulario
+                        window.location.href = '/'; // Redirige a la home
+                        return false; // Extra seguro
+                  }
+               }
+            });
+         }
+      }
    }
 
    

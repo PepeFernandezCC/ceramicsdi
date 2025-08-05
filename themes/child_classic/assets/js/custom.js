@@ -1979,9 +1979,11 @@ $( document ).ready( function () {
                            event.preventDefault();
                         
                            $.ajax({ // comprueba si el vat es válido
-                              url: '/ajax/setVatNumber.php', 
+                              //url: '/ajax/setVatNumber.php', 
+                              url: '/ajax/validateVatNumber.php',
                               method: 'POST', 
                               data: {
+                                 country: $('#field-id_country').val(),
                                  vat_number: $('#field-dni').val(),
                                  customer: document.getElementById("confirmAddressButton").getAttribute("data-customer"),
                               },
@@ -1991,6 +1993,7 @@ $( document ).ready( function () {
                                  } else {
                                     $fieldVatNumber.find('input').val('');
                                  }
+                                 console.log(response);
                                  //loader.style.display = "none";
                                  document.getElementById("address-form").submit(); //envía el formulario
                               },
