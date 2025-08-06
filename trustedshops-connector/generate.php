@@ -39,9 +39,9 @@ const DB_DATABASE = 'ceramicconnection';
 
 // CREDENCIALES DE AUTENTICACIÓN DE LA API DE TRUSTED SHOPS.
 
-const CLIENT_ID = '6d450b8cb83b__conector-planatec';
+const CLIENT_ID = '6d450b8cb83b__PrestaShop';
 
-const CLIENT_KEY = 'YBwks3F7pjwu0fPDWLe1vX9TtiS1VvBn';
+const CLIENT_KEY = 'acc-6d450b8c-b83b-4f0f-8f31-48e3848a6af8';
 
 const SYSTEM = 'planatec-connector';
 
@@ -167,39 +167,39 @@ function generateLink($token, $reference, $email, $channelId)
 
             '{
 
-  "type": "link_generation",
+                "type": "link_generation",
 
-  "questionnaireTemplate": {
+                "questionnaireTemplate": {
 
-    "id": "%s"
+                    "id": "%s"
 
-  },
+                },
 
-  "customer": {
+                "customer": {
 
-    "email": "%s"
+                    "email": "%s"
 
-  },
+                },
 
-  "channel": {
+                "channel": {
 
-    "id": "%s",
+                    "id": "%s",
 
-    "type": "etrusted"
+                    "type": "etrusted"
 
-  },
+                },
 
-  "transaction": {
+                "transaction": {
 
-    "reference": "%s"
+                    "reference": "%s"
 
-  },
+                },
 
-  "system": "%s",
+                "system": "%s",
 
-  "systemVersion": "%s"
+                "systemVersion": "%s"
 
-}',
+            }',
 
             QUESTIONNAIRE_ID,
 
@@ -662,21 +662,15 @@ try {
 
                 </div>
 
-
-
                 <dl>
 
                     <dt>Referencia de pedido:</dt>
 
                     <dd><?= $RESULT['reference'] ?></dd>
 
-
-
                     <dt>Email de cliente:</dt>
 
                     <dd><?= $RESULT['email'] ?></dd>
-
-
 
                     <dt>Enlace:</dt>
 
@@ -684,23 +678,15 @@ try {
 
                 </dl>
 
-
-
                 <h1 class="text-center mt-5 mb-4">GENERAR OTRO ENLACE</h1>
-
-
 
                 <?= $ERRORS_HTML ?>
 
             <?php endif; ?>
 
-
-
             <form method="POST" action="<?= $_SERVER['PHP_SELF'] ?>">
 
                 <input type="hidden" name="t" value="<?= $TOKEN ?>">
-
-
 
                 <div class="mb-3">
 
@@ -721,8 +707,6 @@ try {
     </div>
 
 </div>
-
-
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
 

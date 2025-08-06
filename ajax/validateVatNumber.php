@@ -6,6 +6,7 @@ header('Content-Type: application/json');
 
 //$vat_input = 'FR11849695879';
 //$customer_id = '7485';
+//
 
 $vat_input = Tools::getValue('vat_number');
 $customer_id = Tools::getValue('customer');
@@ -71,7 +72,7 @@ if ($httpCode === 200) {
     if ($xml && isset($xml->vies->valid)) {
         $isValid = (string)$xml->vies->valid;
         $err =  $isValid === 'true' ? "VAT válido" : "VAT NO válido";
-        $result = true;
+        $result = $isValid === 'true'? true : false;
     } else {
         $err = "No se pudo interpretar la respuesta XML.";
         $result = false;
