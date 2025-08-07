@@ -6324,26 +6324,3 @@ span.at-contact {
   }
 
 }
-
-#category-extra-content a {
-    text-decoration: underline;
-}
-
-/* Versión escritorio */
-.related-category-show-mobile {
-  display: none !important;
-}
-
-.related-category-show-desktop {
-  display: block !important;
-}
-
-/* versión movil */
-@media (max-width: 768px) {
-    .related-category-show-mobile {
-        display: block !important;
-    }
-    .related-category-show-desktop {
-        display: none !important;
-    }
-}

@@ -146,7 +146,7 @@
             {if $categories|@count <= 5}
                 <section id="carousel-materials" class="carousel-materials-category">
 
-                    <div class="container-fluid text-center px-0">
+                    <div class="container-fluid text-center px-0 related-category-show-desktop">
 
                         <h2 style="color: black;">{l s='Other tile categories' d='Shop.Theme.Catalog'}</h2>
 
@@ -202,8 +202,60 @@
 
                     </div>
 
+                    <div class="container-fluid text-center px-0 related-category-show-mobile">
+
+                        <h2 style="color: black;">{l s='Other tile categories' d='Shop.Theme.Catalog'}</h2>
+
+                        <div id="recipeCarousel" class="row mx-auto my-auto justify-content-center">
+
+                            <div class="owl-carousel">
+
+                                {foreach from=$categories item=cat}
+
+                                    {assign var="showCategory" value=Category::getCategoryInfoArray([$cat.id_category], $language.id)}
+                                    {assign var="normalized_title" value=$showCategory[$cat.id_category]['meta_title']|replace:" | Ceramic Connection":""} 
+
+                                    {if !empty($showCategory)}
+
+                                        {if ($cat.id_category != $category.id)}
+
+                                            {if !in_array($showCategory[$cat.id_category]['name'], $notShowArray)}
+
+                                                {assign var="imageCat" value=$link->getCatImageLink($showCategory[$cat.id_category]['link_rewrite'], $cat.id_category)}
+
+                                                    <a href="{$link->getCategoryLink($cat.id_category)|escape:'html':'UTF-8'}">
+
+                                                        <div class="material-img">
+                                                            <img src="{$imageCat}" loading="lazy" alt="items material: {$normalized_title}"
+                                                            onerror="this.onerror=null; this.src='/themes/child_classic/assets/img/web/default.webp';"
+                                                            data-show-category-name="{$normalized_title}">
+                                                        </div>
+
+                                                        <div class="material-title">
+
+                                                            <h3 class="text-sm-center capitalize">{$normalized_title}</h3>
+
+                                                        </div>
+
+                                                    </a>
+
+                                            {/if}
+
+                                        {/if}
+
+                                    {/if}
+
+                                {/foreach}
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
                 </section>
-            {else}
+            {/if}
+            {if $categories|@count > 5}
                 <section id="carousel-materials" class="mb-3 carousel-materials-category">
 
                     <div class="container-fluid text-center px-0">
