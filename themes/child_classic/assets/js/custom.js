@@ -1647,7 +1647,7 @@ $( document ).ready( function () {
 
       //CUSTOM LOAD COUNTRIES
       if (document.getElementById("field-id_country")) {
-         
+
             const countrySelector = document.getElementById("field-id_country");
             const deliverySearchButton = document.getElementById("calculateMyDeliveryButton");
             const provinceSelector = document.getElementById("field-id_state");
@@ -2043,7 +2043,7 @@ $( document ).ready( function () {
                               },
                               success: function(response) {                                 
                                  if (response.result) {
-                                    $fieldVatNumber.find('input').val($('#field-dni').val()); 
+                                    $fieldVatNumber.find('input').val(response.fullVat); 
                                  } else {
                                     $fieldVatNumber.find('input').val('');
                                  }

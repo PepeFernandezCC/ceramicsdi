@@ -11,6 +11,7 @@ header('Content-Type: application/json');
 $vat_input = Tools::getValue('vat_number');
 $customer_id = Tools::getValue('customer');
 $idCountry = Tools::getValue('country');
+$france = '8';
 
 $country = new Country($idCountry);
 
@@ -29,6 +30,27 @@ if($prefix == $country->iso_code) {
     $vatNumber = $vat_input;
 
 }else{
+    
+    /* CONTROLAR VAT FRANCÉS */
+    if ($idCountry == $france) {
+        if (strlen($vat_input) != 9 && strlen($vat_input) != 11) {
+            echo json_encode(['result' => false, 'userError' => 'Numero Vat no válido']);
+            exit;
+        }
+        if (strlen($vat_input) == 9) {
+            // Cálculo de la clave de control
+            $siren = intval($vat_input);
+            $clave = (12 + 3 * ($siren % 97)) % 97;
+
+            // Formato con dos dígitos (relleno con 0 si es necesario)
+            $clave_str = str_pad($clave, 2, '0', STR_PAD_LEFT);
+
+            // Devolver el VAT completo
+            $vat_input = $clave_str . $vat_input;
+        }
+
+    }
+    
     $vatNumber = $country->iso_code . $vat_input;
 
 }
@@ -58,7 +80,7 @@ $response = curl_exec($ch);
 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
 if (curl_errno($ch)) {
-    echo json_encode(['result' => true, 'userError' => curl_error($ch)]);
+    echo json_encode(['result' => true, 'userError' => curl_error($ch), 'fullVat' => $vatNumber]);
     curl_close($ch);
     exit;
 }
@@ -89,5 +111,5 @@ if ($result) {
 
 }
 
-echo json_encode(['result' => $result, 'userError' => $err]);
+echo json_encode(['result' => $result, 'userError' => $err, 'fullVat' => $vatNumber]);
 exit;
