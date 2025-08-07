@@ -1,4 +1,16 @@
 $( document ).ready( function () {
+   $('#profesionales .p-right form').on('submit', function(e) {
+        var captchaResponse = $('#g-recaptcha-response').val();
+        if (captchaResponse.length === 0) {
+            e.preventDefault();
+            
+            $('#captcha iframe').css('border', '2px solid red');
+            
+            $('html, body').animate({
+                scrollTop: $('#captcha').offset().top
+            }, 1000);
+        }
+   });
 
    let myGlobal = [];
    
@@ -1979,9 +1991,11 @@ $( document ).ready( function () {
                            event.preventDefault();
                         
                            $.ajax({ // comprueba si el vat es válido
-                              url: '/ajax/setVatNumber.php', 
+                              //url: '/ajax/setVatNumber.php', 
+                              url: '/ajax/validateVatNumber.php',
                               method: 'POST', 
                               data: {
+                                 country: $('#field-id_country').val(),
                                  vat_number: $('#field-dni').val(),
                                  customer: document.getElementById("confirmAddressButton").getAttribute("data-customer"),
                               },
@@ -1991,6 +2005,7 @@ $( document ).ready( function () {
                                  } else {
                                     $fieldVatNumber.find('input').val('');
                                  }
+                                 console.log(response);
                                  //loader.style.display = "none";
                                  document.getElementById("address-form").submit(); //envía el formulario
                               },
@@ -2029,33 +2044,28 @@ $( document ).ready( function () {
 
          });
 
-      //Banear correos spam
-
-      const blackList = ['test@example.com'];
-
-      const submitButton = document.getElementById('send-professional-button');
-
-      if (submitButton) {
-         const form = submitButton.closest('form');
-
-         if (form) {
-            form.addEventListener('submit', function (event) {
-               const emailInput = form.querySelector('input[name="from"]');
-               if (emailInput) {
-                     const email = emailInput.value.trim().toLowerCase();
-                     const domain = email.split('@')[1];
-
-                  // Comparación por email exacto o dominio
-                  if (blackList.includes(email) || domain === 'example.com') {
-                        event.preventDefault(); // Bloquea el envío del formulario
-                        window.location.href = '/'; // Redirige a la home
-                        return false; // Extra seguro
+         //Banear correos spam
+         const blackList = ['test@example.com'];
+         const submitButton = document.getElementById('send-professional-button');
+         if (submitButton) {
+            const form = submitButton.closest('form');
+            if (form) {
+               form.addEventListener('submit', function (event) {
+                  const emailInput = form.querySelector('input[name="from"]');
+                  if (emailInput) {
+                        const email = emailInput.value.trim().toLowerCase();
+                        const domain = email.split('@')[1];
+                     // Comparación por email exacto o dominio
+                     if (blackList.includes(email) || domain === 'example.com') {
+                           event.preventDefault(); // Bloquea el envío del formulario
+                           window.location.href = '/'; // Redirige a la home
+                           return false; // Extra seguro
+                     }
                   }
-               }
-            });
+               });
+            }
          }
       }
-   }
 
    
 

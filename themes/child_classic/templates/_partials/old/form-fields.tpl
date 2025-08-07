@@ -218,6 +218,9 @@
                         <span id="postcode-required-error" class="custom-empty-field-error">
                             {l s='Required fields' d='Shop.Forms.Help'}
                         </span>
+                        <span id="postcode-matchmaking" class="custom-empty-field-error">
+                            {l s='Codigo Postal no coincide con provincia' d='Shop.Forms.Help'}
+                        </span>
                     {/if}
                     {if $field.name == 'city'}
                         <span id="city-required-error" class="custom-empty-field-error">
