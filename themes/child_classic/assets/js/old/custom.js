@@ -1,16 +1,4 @@
 $( document ).ready( function () {
-   $('#profesionales .p-right form').on('submit', function(e) {
-        var captchaResponse = $('#g-recaptcha-response').val();
-        if (captchaResponse.length === 0) {
-            e.preventDefault();
-            
-            $('#captcha iframe').css('border', '2px solid red');
-            
-            $('html, body').animate({
-                scrollTop: $('#captcha').offset().top
-            }, 1000);
-        }
-   });
 
    let myGlobal = [];
    
@@ -1656,6 +1644,60 @@ $( document ).ready( function () {
 
       }
 
+
+      //CUSTOM LOAD COUNTRIES
+      if (document.getElementById("field-id_country")) {
+
+            const countrySelector = document.getElementById("field-id_country");
+            const deliverySearchButton = document.getElementById("calculateMyDeliveryButton");
+            const provinceSelector = document.getElementById("field-id_state");
+            const language = document.getElementById('language').value;
+            let provinceMessage = 'Select a state';
+
+            if(language == 1) {
+               provinceMessage = 'Selecciona una provincia';
+            }
+            if(language == 2) {
+               provinceMessage = 'Sélectionnez une province';
+            }
+            if(language == 4) {
+               provinceMessage = 'Wählen Sie eine Provinz';
+            }
+            if(language == 5) {
+               provinceMessage = 'Selecione uma província';
+            }
+            if(language == 6) {
+               provinceMessage = 'Selecteer een provincie';
+            }
+        
+            countrySelector.addEventListener("change", function () {
+                let countryId = this.value;
+
+        
+                // Limpia las opciones anteriores
+                provinceSelector.innerHTML = '<option value=""> ... </option>';
+        
+                // Realiza la llamada AJAX al nuevo endpoint
+                fetch(`/ajax/getProvinces.php?id_country=${countryId}`)
+                    .then((response) => response.json())
+                    .then((data) => {
+                        // Limpia el selector y agrega las nuevas provincias
+                        provinceSelector.innerHTML = "<option value=''>" + provinceMessage + "</option>";
+                        data.forEach((province) => {
+                            const option = document.createElement("option");
+                            option.value = province.id_state;
+                            option.textContent = province.name;
+                            provinceSelector.appendChild(option);
+                        });
+                    })
+                    .catch((error) => {
+                        console.error("Error cargando provincias:", error);
+                        provinceSelector.innerHTML = '<option value=""> - . Error . - </option>';
+                    });
+            });
+      }
+          
+
       //CHECKOUT VAT
 
       if (document.getElementById('delivery-address')) {
@@ -2001,7 +2043,7 @@ $( document ).ready( function () {
                               },
                               success: function(response) {                                 
                                  if (response.result) {
-                                    $fieldVatNumber.find('input').val($('#field-dni').val()); 
+                                    $fieldVatNumber.find('input').val(response.fullVat); 
                                  } else {
                                     $fieldVatNumber.find('input').val('');
                                  }
