@@ -531,7 +531,7 @@ class FrontControllerCore extends Controller
             'urls' => $this->getTemplateVarUrls(),
             'configuration' => $this->getTemplateVarConfiguration(),
             'field_required' => $this->context->customer->validateFieldsRequiredDatabase(),
-            'breadcrumb' => $this->getBreadcrumb(),
+            //'breadcrumb' => $this->getBreadcrumb(),
             'link' => $this->context->link,
             'time' => time(),
             'static_token' => Tools::getToken(false),
