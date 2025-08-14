@@ -2,7 +2,7 @@
 
 class Customer extends CustomerCore {
 
-    public static function assignCustomerGroup($idCustomer)
+    public static function assignIntracomunitaryGroup($idCustomer)
     {
 
         $customerGroups = customer::checkCustomerGroup($idCustomer);
@@ -23,6 +23,23 @@ class Customer extends CustomerCore {
 
         }
 
+    }
+
+    public static function removeIntracomunitaryGroup($idCustomer) {
+        $customerGroups = customer::checkCustomerGroup($idCustomer);
+
+        // Paso 1: Si existe el grupo 6, eliminarlo
+        if (in_array('6', $customerGroups['customer_groups'])) {
+            Db::getInstance()->delete('customer_group', 'id_customer = ' . (int)$idCustomer . ' AND id_group = 6');
+        }
+
+        // Paso 2: Decidir nuevo grupo por defecto
+        $newDefaultGroup = in_array('5', $customerGroups['customer_groups']) ? '5' : '3';
+
+        // Actualizar el grupo por defecto
+        Db::getInstance()->update('customer', [
+            'id_default_group' => $newDefaultGroup
+        ], 'id_customer = ' . (int)$idCustomer);
     }
 
     public static function checkCustomerGroup($idCustomer) {

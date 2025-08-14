@@ -2010,57 +2010,40 @@ $( document ).ready( function () {
          if(document.getElementById("address-form")) {
             document.getElementById("confirmAddressButton").addEventListener("click", function(event) {
                var loader = document.getElementById("loader-overlay");
-               if (getValidations() === true) {
-                
-                  if ($('#field-id_country').val() != 6 && $( '#field-empresa' ).is(':checked')){
+               if (getValidations() === true) {             
+                  if ($('#field-id_country').val() != 6 && $( '#field-company' ).val() != ''){
                      loader.style.display = "flex";
                      document.getElementById("confirmAddressButton").classList.add("disabled");
                      document.getElementById("cancel-address-form").style.display ="none";
-                     event.preventDefault();
-   
-                     if ( intracomunitaryCheck.is(':checked')) { 
-                  
-                        if($fieldVatNumber.find('input').val() != '') {// vat no vacío
-                           document.getElementById("vat-required-error").style.display = "none";// borra error
-                           $('#field-dni').val($('#field-vat_number').val());// copia vat en dni
-                           document.getElementById("address-form").submit();
-                        }else {
-                           document.getElementById("vat-required-error").style.display = "block";//muestra error vat vacío
-                           resetButtonState();
-                        }  
-                     }else{
-                        if ($('#field-dni').val() != '') { // CIF/DNI NO VACÍO
-                           event.preventDefault();
-                        
-                           $.ajax({ // comprueba si el vat es válido
-                              //url: '/ajax/setVatNumber.php', 
-                              url: '/ajax/validateVatNumber.php',
-                              method: 'POST', 
-                              data: {
-                                 country: $('#field-id_country').val(),
-                                 vat_number: $('#field-dni').val(),
-                                 customer: document.getElementById("confirmAddressButton").getAttribute("data-customer"),
-                              },
-                              success: function(response) {                                 
-                                 if (response.result) {
-                                    $fieldVatNumber.find('input').val(response.fullVat); 
-                                 } else {
-                                    $fieldVatNumber.find('input').val('');
-                                 }
-                                 console.log(response);
-                                 //loader.style.display = "none";
-                                 document.getElementById("address-form").submit(); //envía el formulario
-                              },
-                              error: function(err) {
-                                 console.error('Error en la solicitud AJAX:', err);
-                                 resetButtonState();
+                     event.preventDefault();    
+                     if ($('#field-dni').val() != '') { // CIF/DNI NO VACÍO
+                        event.preventDefault(); 
+                        $.ajax({ // comprueba si el vat es válido
+                           url: '/ajax/validateVatNumber.php',
+                           method: 'POST', 
+                           data: {
+                              country: $('#field-id_country').val(),
+                              vat_number: $('#field-dni').val(),
+                              customer: document.getElementById("confirmAddressButton").getAttribute("data-customer"),
+                           },
+                           success: function(response) {                                 
+                              if (response.result) {
+                                 $fieldVatNumber.find('input').val(response.fullVat); 
+                              } else {
+                                 $fieldVatNumber.find('input').val('');
                               }
+                              console.log(response);
+                              document.getElementById("address-form").submit(); //envía el formulario
+                           },
+                           error: function(err) {
+                              console.error('Error en la solicitud AJAX:', err);
+                              resetButtonState();
+                           }
                         });
-                        }else{ 
-                           document.getElementById("dni-error").style.display = "block";// error cif/dni vacío
-                           resetButtonState();
-                        }   
-                     }
+                     }else{ 
+                        document.getElementById("dni-error").style.display = "block";// error cif/dni vacío
+                        resetButtonState();
+                     }   
                   }
                } else{
                   event.preventDefault();
