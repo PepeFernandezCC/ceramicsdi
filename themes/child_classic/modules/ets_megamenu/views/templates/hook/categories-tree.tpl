@@ -5,7 +5,6 @@
 {assign var="otherMaterialsArray" value=[81, 82, 88]}
 {assign var="installationArray" value=[36, 94]}
 {if isset($categories) && $categories}
-
     <ul class="ets_mm_categories">
         {foreach from=$categories item='category'}
             {assign var="categoryFilter" value ="ets_category_normal"}
