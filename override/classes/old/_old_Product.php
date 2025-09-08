@@ -4,7 +4,7 @@ class Product extends ProductCore {
 
 
 
-    public function getImageByPosition($position, $id_product) {
+    public static function getImageByPosition($position, $id_product) {
 
         $id_image = Db::getInstance()->getValue(
             'SELECT `id_image`
@@ -47,7 +47,7 @@ class Product extends ProductCore {
         return self::$_frontFeaturesCache[$id_product . '-' . $id_lang];
     }
 
-    public function videoProductRoute($reference, $description) {
+    public static function videoProductRoute($reference, $description) {
 
         $description = strip_tags($description);
         
@@ -63,7 +63,8 @@ class Product extends ProductCore {
             'COLECCION_PICKET_25',
             'COLECCION_CRETA_13_BRILLO',
             'COLECCION_MAPEI_ULTRACOLOR',
-            'COLECCION_FUGABELLA_COLOR'
+            'COLECCION_FUGABELLA_COLOR',
+            'COLECCION_FIJI'
         ];
 
         if ($description == $reference || in_array($description, $collection_array)) {
@@ -90,7 +91,7 @@ class Product extends ProductCore {
         return false;
     }
 
-    public function getPriceWebIfExists($idProduct) {
+    public static function getPriceWebIfExists($idProduct) {
         $query = 'SELECT CAST(REPLACE(SUBSTRING_INDEX(value, " ", 1), ",", ".") AS DECIMAL(10, 2)) as priceWeb
                 FROM ' . _DB_PREFIX_ . 'feature_product pf
                 LEFT JOIN ' . _DB_PREFIX_ . 'feature_lang fl ON (fl.id_feature = pf.id_feature AND fl.id_lang = 1)
@@ -165,7 +166,7 @@ class Product extends ProductCore {
         return false; // Retorna false si no hay resultado
     }
 
-    private function getM2CajaValue($productId) {
+    private static function getM2CajaValue($productId) {
 
         $m2_caja_id = 17; // ID de la característica 'colección'
         $db = Db::getInstance();
@@ -191,7 +192,7 @@ class Product extends ProductCore {
 
     }
 
-    private function getTipologyString(bool $pieceTypology) {
+    private static function getTipologyString(bool $pieceTypology) {
 
         $tipologia = '/m<sup>2</sup>';
 
@@ -203,7 +204,7 @@ class Product extends ProductCore {
 
     }
 
-    private function getTipology(int $productId) {
+    private static function getTipology(int $productId) {
 
         $tipology = 16; // ID de la característica 'colección'
         $piece_tipology = 74;
@@ -221,15 +222,17 @@ class Product extends ProductCore {
         $result = $db->getRow($query);
 
         if ($result && isset($result['id_feature_value'])) {
-            if ($piece_tipology == (int)$result['id_feature_value'])
-            return true;
+            if ($piece_tipology == (int)$result['id_feature_value']) {
+                 return true;
+            }
+           
         }
                 
         return false; // Retorna false si no hay resultado
 
     }
 
-    private function getPriceWithDiscount($productId, $price) {
+    private static function getPriceWithDiscount($productId, $price) {
 
         $db = Db::getInstance();
 
@@ -242,27 +245,70 @@ class Product extends ProductCore {
             $value = str_replace(',', '.', $result['reduction']);
             $reduction = 1 - (float) $value;
         }else{
-            return $price;
+            return [
+                'price' => $price,
+                'discount' => 0,
+                'discount_price' => $price
+            ];
         }
                 
-        return $price * $reduction; 
+        return [
+            'price' => $price,
+            'discount' => (float) $value * 100,
+            'discount_price' => $price * $reduction
+        ]; 
     }
 
-    public static function calculateCustomPrice($productId, $iva): array
+
+    private function getDefaultTaxByLang($id_lang, $price) {
+
+        if ($id_lang == 1) {
+            $price *= 1.21;
+        }
+       
+        if ($id_lang == 2) {
+            $price *= 1.20;
+        }
+
+        if ($id_lang == 3) {
+            $price *= 1.21;
+        }
+
+        if ($id_lang == 4) {
+            $price *= 1.19;
+        }
+
+        if ($id_lang == 5) {
+            $price *= 1.23;
+        }
+
+        if ($id_lang == 6) {
+            $price *= 1.21;
+        }
+
+        return $price;
+    }
+
+    public static function calculateCustomPrice($productId, $iva, $id_lang = 1): array
     {
         
         $product = new Product($productId);
         $price = (float) $product->price;
 
         if ($iva) {
-            $price *= 1.21;
+            $price = self::getDefaultTaxByLang($id_lang, $price);
         }
-       
+
+        $discountPrice = self::getPriceWithDiscount($productId, $price);
+        $price = $discountPrice['discount_price'];
+
         // Calcular precio
         if (self::getIfNormalSell($productId)) {
-            $price = self::getPriceWithDiscount($productId, $price);
+            
             return [
                 'price' => number_format($price, 2, ',', ''),
+                'original_price' => number_format($discountPrice['price'], 2, ',', ''),
+                'discount' => $discountPrice['discount'],
                 'tipologia' => ''
             ];
         } 
@@ -273,17 +319,17 @@ class Product extends ProductCore {
             $m2Caja = self::getM2CajaValue($productId);
             $price = $price / $m2Caja;
         } 
-
-        $price = self::getPriceWithDiscount($productId, $price);
             
         return [
             'price' => number_format($price, 2, ',', ''),
+            'original_price' => number_format($discountPrice['price'], 2, ',', ''),
+            'discount' => $discountPrice['discount'],
             'tipologia' => self::getTipologyString($pieceTypology)
         ];
         
     }
 
-    private function getIfNormalSell(int $productId) {
+    private static function getIfNormalSell(int $productId) {
 
         $categoriasProducto = self::getProductCategories($productId);
         
@@ -300,7 +346,7 @@ class Product extends ProductCore {
     }
 
     //GET TAXONOMY STRING
-    public function getM2CajaOrFalse(int $productId) {
+    public static function getM2CajaOrFalse(int $productId) {
 
         // Calcular precio
         if (self::getIfNormalSell($productId)) {

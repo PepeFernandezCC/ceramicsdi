@@ -74,29 +74,26 @@
 
     {/if}
 
-    {assign var="esMuestra" value=(int)Product::isSample($product.id)}
+    {assign var="esMuestra" value=false}
 
-    {if $esMuestra}
-        
-         {assign var="sampleText" value="SAMPLE"}
+    {foreach from=$product.attributes key="attribute" item="value"}
 
-            {if $language.id == 1}
-                {assign var="sampleText" value="Muestra"}
-            {elseif $language.id == 2}
-                {assign var="sampleText" value="Échantillon"}
-            {elseif $language.id == 3}
-                {assign var="sampleText" value="Sample"}
-            {elseif $language.id == 4}
-                {assign var="sampleText" value="Muster"}
-            {elseif $language.id == 5}
-                {assign var="sampleText" value="Amostra"}
-            {elseif $language.id == 6}
-                {assign var="sampleText" value="Voorbeeld"}
-            {/if}
+        {if ($attribute == 'Muestra' and $value == 'Sí')
+            || ($attribute == 'Échantillon' and $value == 'Oui')
+            || ($attribute == 'Sample' and $value == 'Yes')
+            || ($attribute == 'Muster' and $value == 'Ja')
+            || ($attribute == 'Amostra' and $value == 'Sim')
+            || ($attribute == 'Voorbeeld' and $value == 'Ja')
+        }
 
-    {/if}
+            {$esMuestra = true}
+            {assign var="sampleText" value=$attribute}
 
-    
+        {/if}
+
+    {/foreach}
+
+
 
     <div class="product-line-grid-right {if $esMuestra}product-muestra{/if} product-line-actions {* PLANATEC col-sm-6 *} col-xs-12">
         
@@ -124,12 +121,8 @@
 
                     <div class="product-line-info">
 
-                        {if $esMuestra}
-                            <span class="label product-title" data-id_customization="{$product.id_customization|intval}">{$product.name}</span>
-                        {else}
-                            <a class="label product-title" href="{$product.url}" data-id_customization="{$product.id_customization|intval}">{$product.name}</a>
-                        {/if}
-                               
+                        <a class="label product-title" href="{$product.url}" data-id_customization="{$product.id_customization|intval}">{$product.name}</a>
+
                     </div>
 
 
@@ -361,12 +354,8 @@
 
                     <span class="product-price">
 
-                        {if $esMuestra}
-                            {$product.total}
-                        {else}
-                            {include file='catalog/_partials/product-calculate-price.tpl'} 
-                        {/if}
-                        
+                        {include file='catalog/_partials/product-calculate-price.tpl'}
+
                     </span>
 
                 </div>
@@ -479,12 +468,8 @@
 
                             <div class="product-line-info">
 
-                                {if $esMuestra}
-                                    <span class="label product-title" data-id_customization="{$product.id_customization|intval}">{$product.name}</span>
-                                {else}
-                                    <a class="label product-title" href="{$product.url}" data-id_customization="{$product.id_customization|intval}">{$product.name}</a>
-                                {/if}
-                               
+                                <a class="label product-title" href="{$product.url}" data-id_customization="{$product.id_customization|intval}">{$product.name}</a>
+
                             </div>
 
 
@@ -762,11 +747,7 @@
 
                             <span class="product-price">
 
-                                {if $esMuestra}
-                                    {$product.total}
-                                {else}
-                                   {include file='catalog/_partials/product-calculate-price.tpl'} 
-                                {/if}
+                                {include file='catalog/_partials/product-calculate-price.tpl'}
 
                             </span>
 

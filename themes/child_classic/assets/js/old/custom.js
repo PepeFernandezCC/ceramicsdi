@@ -1672,7 +1672,12 @@ $( document ).ready( function () {
         
             countrySelector.addEventListener("change", function () {
                 let countryId = this.value;
-
+                
+               if ($('#field-id_country').val() != 6 && $('input[name="treatment"]:checked').val() === 'particular') {
+                  $( '#field-dni' ).closest( '.form-group' ).css( 'display', 'none' );
+               }else{
+                  $( '#field-dni' ).closest( '.form-group' ).css( 'display', 'inherit' );
+               }
         
                 // Limpia las opciones anteriores
                 provinceSelector.innerHTML = '<option value=""> ... </option>';

@@ -680,6 +680,10 @@ a.black-link {
   background: black;
 }
 
+#blockcart-modal .product-name {
+    color: #000000 !important;
+}
+
 @media (min-width: 768px){ 
   #blockcart-modal .cart-content{
     padding-left:2rem;

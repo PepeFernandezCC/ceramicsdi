@@ -16,17 +16,15 @@ $product = new Product((int)$id_product);
 $elements = $cart->getSamplesNumberInCart();
 $idSample = $product->checkSampleVinculation($product->id);
 
-//comprobar si la muestra ya está en el carrito
-$status = $cart->checkProductInCart($idSample);
-
-if ($elements <= 7 && !$status) {
+if ($elements <= 7) {
     $canAddSample = true;
 }
 
 echo json_encode([
     'can_add_sample' => $canAddSample,
     'elements' =>  $elements,
-    'id_sample' => $idSample,
-    'status' => $status,
+    'id_sample' => $idSample
 ]);
 exit;
+
+

@@ -4,6 +4,27 @@ $( document ).ready( function () {
    
    let initializeCustom = function () {
 
+
+      /* scrip clonar imagenes borrar 
+
+      $('#imgcloner').on('click', function() {
+         $.ajax({
+            url: '/ajax/imagecloner.php', 
+            method: 'POST', 
+
+            success: function(response) {
+               
+               console.log(response.msg);
+            },
+            error: function(err) {
+               // Manejo de errores en caso de que algo falle en la solicitud
+               console.error('Error en la solicitud AJAX:', err);
+            }
+         });
+      });
+
+       fin script clonar imagenes*/
+
       let $body = $( 'body' );
 
       $('.hideThisCheck').css('display', 'none');
@@ -1120,41 +1141,49 @@ $( document ).ready( function () {
       $( '#add-wrapper' ).find( '.add-sample' ).find( '.add-to-cart-sample' ).on( 'click', function () {
 
          let cartId = document.getElementById('cartId').value;
+         let productId = $('#product_page_product_id').val();
+         let btn = $(this);
 
          $.ajax({
             url: '/ajax/checkSamplesInCart.php', 
             method: 'POST', 
             data: {
                id_cart: cartId,
+               id_product: productId
             },
             success: function(response) {
                
                // Si la respuesta es válida, puedes usar el resultado (por ejemplo, el costo de envío)
-               if (response.can_add_sample) {
+               if (response.can_add_sample && response.id_sample !== false) {
 
                   var quantityOriginalValue = $( '#quantity-input' ).val();
-           
-                  $( '#variants-wrapper' ).find( '.input-radio:input[value="6"]' ).removeAttr( 'checked' );
-      
-                  $( '#variants-wrapper' ).find( '.input-radio:input[value="5"]' ).attr( 'checked', 'checked' );
-      
+
+                  $('#product_page_product_id').val(response.id_sample);
+                  
                   $( '#quantity-input' ).val( 1 );
-      
-                  $( '#add-wrapper' ).find( '.add' ).find( '.add-to-cart' ).click();
-      
-                  $( '#variants-wrapper' ).find( '.input-radio' ).removeAttr( 'checked' );
+
+                  $( '#add-to-cart-submit' ).trigger('click');
       
                   $( '#quantity-input' ).val( quantityOriginalValue );
-      
-                  $( this ).attr( 'disabled', 'disabled' );
-      
+
+                  $('#product_page_product_id').val(productId);
+
+                  btn.attr( 'disabled', 'disabled' );
+
                   $('#sample-in-cart').show();
       
                }else{
       
-                  $( this ).attr( 'disabled', 'disabled' );
-      
-                  $('#max-samples-reached').show();
+                  btn.attr( 'disabled', 'disabled' );
+
+                  if(response.elements > 7 ) {
+                     $('#max-samples-reached').show();
+                  }
+                  
+                  if(response.status) {
+                     $('#sample-in-cart').show();
+                  }
+        
                }
             },
             error: function(err) {

@@ -155,26 +155,19 @@
 
                                 <p class="feature-medida">{$feature_medida}</p>
 
+                                    
+                                {* PLANATEC *}
 
-                                    {assign var="is_sample" value=(int)Product::isSample($product.id)}
+                                {foreach from=$product.attributes key="attribute" item="value"}
 
-                                    {if $is_sample}
-                                        
-                                        {assign var="attribute" value="SAMPLE"}
-
-                                            {if $language.id == 1}
-                                                {assign var="attribute" value="Muestra"}
-                                            {elseif $language.id == 2}
-                                                {assign var="attribute" value="Échantillon"}
-                                            {elseif $language.id == 3}
-                                                {assign var="attribute" value="Sample"}
-                                            {elseif $language.id == 4}
-                                                {assign var="attribute" value="Muster"}
-                                            {elseif $language.id == 5}
-                                                {assign var="attribute" value="Amostra"}
-                                            {elseif $language.id == 6}
-                                                {assign var="attribute" value="Voorbeeld"}
-                                            {/if}
+                                    {if ($attribute == 'Muestra' and $value == 'Sí')
+                                        || ($attribute == 'Échantillon' and $value == 'Oui')
+                                        || ($attribute == 'Sample' and $value == 'Yes')
+                                        || ($attribute == 'Muster' and $value == 'Ja')
+                                        || ($attribute == 'Amostra' and $value == 'Sim')
+                                        || ($attribute == 'Voorbeeld' and $value == 'Ja')
+                                    }
+                                        {assign var="is_sample" value=true}
 
                                         <div class="product-line-info {$attribute|lower}">
 
@@ -183,6 +176,10 @@
                                         </div>
 
                                     {/if}
+
+                                {/foreach}
+
+                                {* END PLANATEC *}
 
                             </div>
 

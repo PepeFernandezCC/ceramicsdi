@@ -2,11 +2,8 @@
 // Cargar PrestaShop
 //require(dirname(__FILE__).'/../config/config.inc.php');
 //require_once(dirname(__FILE__).'/../init.php');
-//include(dirname(__FILE__) . '/../config/config.inc.php');
-//include(dirname(__FILE__) . '/../init.php');
-require_once('../config/config.inc.php');
-require_once('../classes/Link.php');
-
+include(dirname(__FILE__) . '/../config/config.inc.php');
+include(dirname(__FILE__) . '/../init.php');
 
 
 // 🔹 MAPA de productos originales => productos muestra
@@ -651,7 +648,46 @@ foreach ($map as $idOriginal => $idMuestra) {
         continue;
     }
 
-    echo "Producto $idOriginal copiado. \n"; 
+    // Insertar nueva fila en ps_image para el producto “muestra”
+    Db::getInstance()->insert('image', [
+        'id_product' => (int)$idMuestra,
+        'position'   => 1,
+        'cover'      => 1,
+    ]);
+
+    $newIdImage = Db::getInstance()->Insert_ID();
+    echo "  Copiada imagen ".$img['id_image']." → nueva $newIdImage\n";
+
+    // Copiar registros en ps_image_shop
+    $shops = Db::getInstance()->executeS("
+        SELECT * FROM "._DB_PREFIX_."image_shop
+        WHERE id_image = ".(int)$img['id_image']."
+    ");
+
+    foreach ($shops as $shop) {
+        Db::getInstance()->insert('image_shop', [
+            'id_image'   => (int)$newIdImage,
+            'id_shop'    => '1',
+            'id_product' => (int)$idMuestra,  // <--- agregado
+            'cover'      => '1',
+        ]);
+    }
+
+    // Copiar físicamente la imagen
+    $originalImage = new Image((int)$img['id_image']);
+    $newImage      = new Image($newIdImage);
+
+    $origPath = _PS_PROD_IMG_DIR_ . $originalImage->getExistingImgPath();
+    $newPath  = _PS_PROD_IMG_DIR_ . $newImage->getExistingImgPath();
+
+    if (!is_dir(dirname($newPath))) {
+        mkdir(dirname($newPath), 0777, true);
+    }
+
+    foreach (glob($origPath.'*') as $file) {
+        $destFile = str_replace($origPath, $newPath, $file);
+        copy($file, $destFile);
+    }
 }
 
 

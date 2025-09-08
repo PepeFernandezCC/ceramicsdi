@@ -227,20 +227,28 @@ class Cart extends CartCore {
         if ($this->isVirtualCart()) {
             return 0;
         }
-        
+
         static $cache = [];
-        static $module = null;
+        $key = crc32(json_encode(func_get_args()));
         
-        if ($module === null) {
-            $module = Module::getInstanceByName('orderfees_shipping');
-        }
-        
-        $cache_key = crc32(json_encode(func_get_args()));
-        
-        if (!isset($cache[$cache_key])) {
+        if (!isset($cache[$key])) {
+            // 1) Coste base (neto o bruto según $use_tax)
+            $baseCost = parent::getPackageShippingCost(
+                $id_carrier,
+                $use_tax,
+                $default_country,
+                $product_list,
+                $id_zone,
+                $keepOrderPrices
+            );
+            
+            if ($baseCost === false) {
+                return $cache[$key] = false;
+            }
+
+            // 2) Ejecutar hook para fees adicionales
             $total = 0;
             $return = false;
-            $cache[$cache_key] = false;
             Hook::exec('actionCartGetPackageShippingCost', array(
                 'object' => &$this,
                 'id_carrier' => &$id_carrier,
@@ -252,24 +260,50 @@ class Cart extends CartCore {
                 'total' => &$total,
                 'return' => &$return
             ));
+            
             if ($return) {
-                $cache[$cache_key] = ($total !== false ? (float) Tools::ps_round((float) $total, 2) : false);
+                // Si el hook maneja todo, usar su resultado
+                $cache[$key] = Tools::ps_round((float)$total, 2);
             } else {
-                $shipping_cost = parent::getPackageShippingCost(
-                    $id_carrier,
-                    $use_tax,
-                    $default_country,
-                    $product_list,
-                    $id_zone,
-                    $keepOrderPrices
-                );
-                if ($shipping_cost !== false) {
-                    $cache[$cache_key] = $shipping_cost + (float) Tools::ps_round((float) $total, 2);
+                // 3) Definir fees NETOS del hook
+                $netFees = (float)$total;
+                
+                // 4) Si tenemos fees y piden bruto, calcular impuestos
+                if ($netFees > 0 && $use_tax) {
+                    // Obtener grupo de reglas de impuesto del transportista
+                    $carrierId = $id_carrier ?? (int)$this->id_carrier;
+                    $taxRulesGroupId = Carrier::getIdTaxRulesGroupByIdCarrier($carrierId, Context::getContext());
+                    
+                    // Obtener país de entrega correctamente
+                    if ($default_country) {
+                        $countryId = (int)$default_country->id;
+                    } else {
+                        // Usar el contexto actual para obtener el país
+                        $context = Context::getContext();
+                        if (isset($context->country) && $context->country->id) {
+                            $countryId = (int)$context->country->id;
+                        } else {
+                            // Fallback: usar país por defecto de la tienda
+                            $countryId = (int)Configuration::get('PS_COUNTRY_DEFAULT');
+                        }
+                    }
+                    
+                    $taxRates = TaxRulesGroup::getAssociatedTaxRatesByIdCountry($countryId);
+                    $rate = isset($taxRates[$taxRulesGroupId]) ? (float)$taxRates[$taxRulesGroupId] : 0.0;
+                    
+                    // Calcular fees con impuestos: bruto = neto * (1 + tasa/100)
+                    $fees = Tools::ps_round($netFees * (1 + $rate/100), 2);
+                } else {
+                    // Si piden neto o no hay fees, usar importe sin IVA
+                    $fees = $netFees;
                 }
+
+                // 5) Sumar base + fees y redondear
+                $cache[$key] = Tools::ps_round($baseCost + $fees, 2);
             }
         }
-        
-        return $cache[$cache_key];
+
+        return $cache[$key];
     }
 
 	public function getParentPackageShippingCost (
@@ -361,5 +395,22 @@ class Cart extends CartCore {
             $customizationId
         );
     }
+
+	public function getSamplesNumberInCart() {
+
+		$samples = 0;
+
+		$products_query = "SELECT `id_product_attribute`  FROM `ps_cart_product` WHERE `id_cart` = ". (int) $this->id ." ORDER BY `id_cart` DESC ";
+		$cartElements = Db::getInstance()->executeS($products_query);
+
+		foreach ($cartElements as $product) {
+			if (Product::isSample($product['id_product_attribute'])){
+				$samples++;
+			}
+		}
+
+		return $samples;
+
+	}
 	
 }

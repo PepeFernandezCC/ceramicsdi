@@ -366,7 +366,7 @@ class Product extends ProductCore {
     /**
      * Check if product attribute is sample 
      */
-    public static function isSample($productAttributeId) {
+    public static function isSampleCombination($productAttributeId) {
 
         if ((int)$productAttributeId != 0 ) {
 
@@ -383,5 +383,74 @@ class Product extends ProductCore {
 
         return false;
     }
+
+    /**
+     * Check if product is sample 
+     */
+    public static function isSample($productId) {
+
+        $featureSampleYes = '154747';
+
+        if ((int)$productId != 0 ) {
+
+            $sql = "SELECT `id_feature_value` FROM `ps_feature_product` WHERE `id_feature` = '72' && `id_product` = ". (int)$productId. "";
+            $result = Db::getInstance()->getValue($sql);
+           
+            if ($result != $featureSampleYes) {
+                
+                return false;
+            }else{
+              
+                return true;
+            }
+
+        }
+
+
+        return false;
+    }
+
+    public static function checkSampleVinculation($productId) {
+        $featureVinculation = '73';
+
+
+        try {
+            // 1. Buscar si existe un valor de característica vinculado al producto
+            $featureValueQuery = "
+                SELECT fvl.`id_feature_value`
+                FROM `ps_feature_value_lang` fvl
+                JOIN `ps_feature_value` fv ON fv.id_feature_value = fvl.id_feature_value
+                WHERE fvl.`id_lang` = '1'
+                AND fvl.`value` = '" . pSQL($productId) . "'
+                AND fv.`id_feature` = '" . pSQL($featureVinculation) . "'
+            ";
+
+            $idFeatureValue = Db::getInstance()->getValue($featureValueQuery);
+
+            if ($idFeatureValue === false || empty($idFeatureValue)) {
+                return false;
+            }
+
+            $getSampleIdQuery = "
+                SELECT `id_product`
+                FROM `ps_feature_product`
+                WHERE `id_feature_value` = '" . pSQL($idFeatureValue) . "'
+                AND `id_feature` = '" . pSQL($featureVinculation) . "'
+            ";
+
+            $idSample = Db::getInstance()->getValue($getSampleIdQuery);
+
+            if ($idSample === false || empty($idSample)) {
+                return false;
+            }
+
+            return $idSample;
+
+        } catch (Exception $e) {
+            error_log("Error en checkSampleVinculation: " . $e->getMessage());
+            return false;
+        }
+    }
+
 
 }

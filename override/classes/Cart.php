@@ -362,7 +362,7 @@ class Cart extends CartCore {
         );
     }
 
-	public function getSamplesNumberInCart() {
+	public function getSamplesNumberInCartCombination() {
 
 		$samples = 0;
 
@@ -370,12 +370,96 @@ class Cart extends CartCore {
 		$cartElements = Db::getInstance()->executeS($products_query);
 
 		foreach ($cartElements as $product) {
-			if (Product::isSample($product['id_product_attribute'])){
+			if (Product::isSampleCombination($product['id_product_attribute'])){
 				$samples++;
 			}
 		}
 
 		return $samples;
+
+	}
+
+	public function getSamplesNumberInCart() {
+
+		if (!$this->id) {
+    		return 0; // o false, según corresponda
+		}
+
+		$samples = 0;
+
+		$products_query = "SELECT `id_product`  FROM `ps_cart_product` WHERE `id_cart` = ". (int) $this->id ." ORDER BY `id_cart` DESC ";
+		$cartElements = Db::getInstance()->executeS($products_query);
+
+		foreach ($cartElements as $product) {
+			if (Product::isSample($product['id_product'])){
+				$samples++;
+			}
+		}
+
+		return $samples;
+
+	}
+
+	public static function getSamplesNumberInCartStatic($cartId) {
+
+		if (empty($cartId)) {
+			return 0;
+		}
+
+		$samples = 0;
+
+		$products_query = "SELECT `id_product`  FROM `ps_cart_product` WHERE `id_cart` = ". $cartId ." ORDER BY `id_cart` DESC ";
+		$cartElements = Db::getInstance()->executeS($products_query);
+
+		foreach ($cartElements as $product) {
+			if (Product::isSample($product['id_product'])){
+				$samples++;
+			}
+		}
+
+		return $samples;
+
+	}
+
+	public function checkProductInCart($productId) {
+
+		if (!$this->id) {
+    		return false; // o false, según corresponda
+		}
+
+		$products_query = "SELECT `id_product`  FROM `ps_cart_product` WHERE `id_cart` = ". (int) $this->id ." ORDER BY `id_cart` DESC ";
+		$products = Db::getInstance()->executeS($products_query);
+
+		foreach ($products as $product) {
+			if ($product['id_product'] == $productId) {
+				return true;
+			}
+		}
+
+		return false;
+
+	}
+
+	public function checkProductInCartStatic($cartId, $productId, $checkSampleOfProduct = false) {
+
+		if (empty($cartId)) {
+        	return false;
+    	}
+
+		if($checkSampleOfProduct) {
+			$productId = Product::checkSampleVinculation($productId);
+		}
+
+		$products_query = "SELECT `id_product`  FROM `ps_cart_product` WHERE `id_cart` = ". $cartId ." ORDER BY `id_cart` DESC ";
+		$products = Db::getInstance()->executeS($products_query);
+
+		foreach ($products as $product) {
+			if ($product['id_product'] == $productId) {
+				return true;
+			}
+		}
+
+		return false;
 
 	}
 	
