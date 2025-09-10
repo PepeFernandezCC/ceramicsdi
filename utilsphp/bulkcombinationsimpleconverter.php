@@ -50,7 +50,7 @@ foreach ($id_products as $id_product) {
         $first = reset($combinations);
 
         // Pasar stock al producto padre
-        //StockAvailable::setQuantity($id_product, 0, $first['quantity']);
+        StockAvailable::setQuantity($id_product, 0, $first['quantity']);
 
         // Copiar referencia y precio de la primera combinación
         /*

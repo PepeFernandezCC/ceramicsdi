@@ -41,7 +41,9 @@ const DB_DATABASE = 'ceramicconnection';
 
 const CLIENT_ID = '6d450b8cb83b__PrestaShop';
 
-const CLIENT_KEY = 'acc-6d450b8c-b83b-4f0f-8f31-48e3848a6af8';
+//const CLIENT_KEY = 'acc-6d450b8c-b83b-4f0f-8f31-48e3848a6af8';
+
+const CLIENT_KEY = 'uaE48sLLEZCBYBFOCGN8YxXEdzJAmlsM';
 
 const SYSTEM = 'planatec-connector';
 
@@ -134,8 +136,6 @@ function trustedShopsLogin()
     $result = curl_exec($ch);
 
     curl_close($ch);
-
-
 
     return json_decode($result)->access_token;
 
@@ -230,8 +230,6 @@ function generateLink($token, $reference, $email, $channelId)
     $result = curl_exec($ch);
 
     curl_close($ch);
-
-
 
     return json_decode($result)->link;
 
