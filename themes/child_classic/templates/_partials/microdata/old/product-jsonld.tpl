@@ -100,11 +100,10 @@
       "priceCurrency": "{$currency.iso_code}",
       "name": "{$product.name|strip_tags:false}",
       "price": "{$priceWeb}",
-      "url":"{$product.url|regex_replace:"/#.*/":""}",
+      "url": "{$product.url}",
       "priceValidUntil": "{($smarty.now + (int) (60*60*24*15))|date_format:"%Y-%m-%d"}",
       {if $product.images|count > 0}
         "image": {strip}[
-          {if !empty($product.cover)}"{$product.cover.bySize.home_default.url}",{/if}
           {foreach from=$product.images item=p_img name="p_img_list"}
             "{$p_img.large.url}"{if not $smarty.foreach.p_img_list.last},{/if}
           {/foreach}
