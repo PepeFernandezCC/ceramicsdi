@@ -5,6 +5,19 @@
             <div class="row">
 
                 <div class="col-xl-12 col-xs-12">
+                  {assign var="fatherCategory" value=Category::getFatherCategory($category.id_parent, $language.id)} 
+                                    
+                    {if $category.meta_title == ''}
+                        {assign var="normalized_title" value=$category.name}
+                    {else}
+                        {assign var="normalized_title" value=$category.meta_title|lower|replace:" | ceramic connection":""}        
+                    {/if}
+
+                    {if $fatherCategory.meta_title == ''}
+                        {assign var="normalized_father_title" value=$fatherCategory.name}
+                    {else}
+                        {assign var="normalized_father_title" value=$fatherCategory.meta_title|lower|replace:" | ceramic connection":""}        
+                    {/if}
 
                     <div>
                         {$condition = false}
@@ -16,28 +29,21 @@
                         {/if}
 
                         {if $condition}
-                            <div id="bread-crumps-container" class="bread-crumps" data-color="none" data-location="category" style="padding-bottom:15px"></div> 
+                               
+                            <div id="bread-crumps-container" class="bread-crumps" data-father="{$normalized_father_title}" data-title="{$normalized_title}" data-color="none" data-location="category" style="padding-bottom:15px"></div> 
                         {/if}
 
 
 
                     </div>
 
-                    {assign var="normalized_title" value=$category.meta_title|lower}
+                    
 
                     <div>
 
                         <h1 class="category-title" style="font-size: 16px;">
 
-                            {if $category.meta_title == ''}
-
-                                {$category.name}
-
-                            {else}
-                                    
-                                {$normalized_title|replace:"| ceramic connection":""}
-
-                            {/if}
+                            {$normalized_title}
 
                         </h1>
 

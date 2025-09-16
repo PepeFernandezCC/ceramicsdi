@@ -143,7 +143,9 @@ $( document ).ready( function () {
         // si color != '' o color != 'none' breadcrump de producto, sino, de categoría
         let color = document.getElementById('bread-crumps-container').dataset.color;
         let location = document.getElementById('bread-crumps-container').dataset.location;
-
+        let metatitle = document.getElementById('bread-crumps-container').dataset.title;
+        let fatherTitle = document.getElementById('bread-crumps-container').dataset.father;
+        
         let breadCrumpsHtml = ''; 
         
     
@@ -187,11 +189,14 @@ $( document ).ready( function () {
                 ignore = true;
             }
             
-            if(index != 0 ){// si es distinto a en/es/fr/de/nl/pt
+            if(index != 0 ){
 
                 if (index != 1) {
                     //Si index es distinto de (azulejos, otros materiales, etc...) quita negrita
                     bold = '';
+                }
+                if (pathSegments.length >= 5 && index == 3){
+                    bold = 'style="font-weight:bolder; color:black"';
                 }
 
                 // Actualizar la ruta actual
@@ -202,8 +207,10 @@ $( document ).ready( function () {
                     if(!document.getElementById('aspecto-link')) { //breadcrum en categoria
 
                         if (color != 'none') {
+
                             path = getColorPath(baseUrl, color, pathSegments[0]);
                             breadCrumpsHtml += '<a href="' + path.url +'" data-index="'+ index +'" '+ bold +'>' + path.name + '</a> > ';
+                  
                         }
 
                     }else{ //breadcrum en producto
@@ -217,16 +224,29 @@ $( document ).ready( function () {
                         
                     }
 
-                    breadCrumpsHtml += convertSlugToTitle(segment);
+                    if (location == 'category') {
+
+                        breadCrumpsHtml += metatitle;
+
+                    }else{
+
+                        breadCrumpsHtml += convertSlugToTitle(segment);
+
+                    }
+                    
 
                 } else {
                     // Segmetos intermedios, añadir enlace
 
                     if (location == 'category') { //breadcrum en categoria
 
-                        //if ((color == 'none' || color == '') && index != 2) {  
-                        if (!ignore) {    
-                            breadCrumpsHtml += ' <a href="' + currentPath +'" '+ bold +' data-index="'+ index +'">' + convertSlugToTitle(segment) + '</a> > ';  
+                        if (!ignore) {  
+                            if (bold != '' && index == 3) {
+                                breadCrumpsHtml += ' <a href="' + currentPath +'" '+ bold +' data-index="'+ index +'">' + fatherTitle + '</a> > ';
+                            }else{
+                                breadCrumpsHtml += ' <a href="' + currentPath +'" '+ bold +' data-index="'+ index +'">' + convertSlugToTitle(segment) + '</a> > '; 
+                            }  
+                             
                         }
 
                     }else{ //breadcrum en producto
@@ -264,7 +284,7 @@ $( document ).ready( function () {
             // Asegúrate de que el video no se inserte más de una vez
             if (videoContainer.innerHTML.trim() === '') { 
                 videoContainer.innerHTML = `
-                    <video autoplay loop muted width="100%" src="/themes/child_classic/assets/video/waste-animation.mp4">
+                    <video autoplay loop muted playsinline width="100%" src="/themes/child_classic/assets/video/waste-animation.mp4">
                         Tu navegador no soporta la etiqueta de video.
                     </video>
                 `;

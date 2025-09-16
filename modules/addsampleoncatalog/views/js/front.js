@@ -29,7 +29,6 @@ $( document ).ready( function () {
 
     document.querySelectorAll('[data-share-button]').forEach(function(button, index) {  
         button.addEventListener('click', function(event) {
-      
             event.stopPropagation();
             document.querySelectorAll('[data-share-menu]').forEach(function(menu, menuIndex) {
                 if (index === menuIndex) {
@@ -145,7 +144,7 @@ $( document ).ready( function () {
         let location = document.getElementById('bread-crumps-container').dataset.location;
         let metatitle = document.getElementById('bread-crumps-container').dataset.title;
         let fatherTitle = document.getElementById('bread-crumps-container').dataset.father;
-        
+        let fatherCategory = document.getElementById('bread-crumps-container').dataset.dadcategory;
         let breadCrumpsHtml = ''; 
         
     
@@ -182,10 +181,13 @@ $( document ).ready( function () {
             //DETERMINA CUANDO IGNORA UNA MIGA EN CATEGORÍAS
             ignore = false;
             
-            if (index == 2) {
+            if (fatherCategory != 88 && index == 2) {
                 ignore = true;
             }
             if (pathSegments.length >= 5 && index == 1){
+                ignore = true;
+            }
+            if (fatherCategory == 88 && index == 1) {
                 ignore = true;
             }
             
@@ -196,6 +198,9 @@ $( document ).ready( function () {
                     bold = '';
                 }
                 if (pathSegments.length >= 5 && index == 3){
+                    bold = 'style="font-weight:bolder; color:black"';
+                }
+                if (fatherCategory == 88 && index == 2){
                     bold = 'style="font-weight:bolder; color:black"';
                 }
 
@@ -214,7 +219,6 @@ $( document ).ready( function () {
                         }
 
                     }else{ //breadcrum en producto
-
                         let aspectoLinkDiv = document.getElementById('aspecto-link');
                         let linkElement = aspectoLinkDiv.querySelector('a');
                         let linkHref = linkElement.getAttribute('href');
@@ -249,7 +253,7 @@ $( document ).ready( function () {
                              
                         }
 
-                    }else{ //breadcrum en producto
+                    }else{ //breadcrum en producto 
                          
                         let categoryLinkDiv = document.getElementById('category-link');
                         let categoryQuerySelector = categoryLinkDiv.querySelector('a');
@@ -319,69 +323,9 @@ $( document ).ready( function () {
             toggleVisibilityRedsysBox();
         }
     }
-  
-    /*
-    //LOADING LAZY IMAGENES MENU
-    const openMenuButton = document.querySelector('#openMenuButton'); // El botón que abre el menú
-    const menuContainer = document.querySelector('#menu-ceramic'); // El contenedor del submenú
-  
-    const loadMenuImages = () => {
-      const allMenuImages = menuContainer.querySelectorAll('img[data-src]'); 
-      allMenuImages.forEach(img => {
-        img.src = img.dataset.src; 
-        img.removeAttribute('data-src');
-      });
-  
-      // Cargar también las imágenes con la clase .menu-image
-      const menuImageElements = document.querySelectorAll('.menu-image[data-src]'); // Buscar imágenes con la clase .menu-image
-      menuImageElements.forEach(img => {
-        img.src = img.dataset.src; 
-        img.removeAttribute('data-src'); 
-      });
-    };
-    
-
-    // Detectar clic en el botón de apertura del menú
-    openMenuButton.addEventListener('click', () => {
-      loadMenuImages(); // Cargar las imágenes cuando se hace clic en el botón del menú
-    });
-  
-    // Configuración del MutationObserver para detectar cuando el contenedor #menu-ceramic adquiere la clase `bg_submenu`
-    const observer = new MutationObserver(mutations => {
-      mutations.forEach(mutation => {
-        // Comprobar si el div #menu-ceramic ahora tiene la clase bg_submenu
-        if (mutation.target.classList.contains('bg_submenu')) {
-          loadMenuImages(); // Cargar todas las imágenes cuando el menú se haga visible
-          observer.disconnect(); // Detener el observador después de cargar las imágenes
-        }
-      });
-    });
-  
-    // Observar cambios en las clases del div #menu-ceramic
-    observer.observe(menuContainer, { attributes: true, attributeFilter: ['class'] });
-   
-    // LOADING LAZY IMAGENES NORMALES
-    const lazyLoadRegularImages = () => {
-      const lazyImages = document.querySelectorAll('img[data-src]:not(.menu-image)'); // Excluye imágenes del menú
-      const ioObserver = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const img = entry.target;
-            img.src = img.dataset.src;
-            img.removeAttribute('data-src');
-            observer.unobserve(img);
-          }
-        });
-      });
-  
-      lazyImages.forEach(img => ioObserver.observe(img));
-    };
-  
-    // Inicializa el IntersectionObserver para las imágenes fuera del menú
-    lazyLoadRegularImages();
-    */
       
 });
+
 
 // Escuchar el evento 'updateFacets' de Prestashop para actualizar la meta tag de robots
 prestashop.on('updateFacets', function() {
