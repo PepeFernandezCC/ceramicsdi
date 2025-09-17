@@ -85,7 +85,7 @@ class OrderInvoice extends OrderInvoiceCore
     
         return $breakdown;
     }
-
+/*
     public static function checkInvoiceDate(int $orderId) {
 
         $invoice = OrderInvoice::getInvoiceByOrderId($orderId);
@@ -95,6 +95,17 @@ class OrderInvoice extends OrderInvoiceCore
         }
         
     }
+*/
+    public static function checkInvoiceDate(int $orderId) {
+
+        $invoice = OrderInvoice::getInvoiceByOrderId($orderId);
+
+        if (is_object($invoice) && Validate::isLoadedObject($invoice)) {
+            OrderInvoice::updateInvoiceDate($invoice);
+        }
+        
+    }
+
 
     public static function updateInvoiceDate($invoice) {
 
