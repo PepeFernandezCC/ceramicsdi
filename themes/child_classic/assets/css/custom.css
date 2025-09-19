@@ -201,7 +201,7 @@ body #header {
   #header .header-nav .container > .row .mobile .logo,
   #header .header-nav .container-fluid > .row .mobile .logo {
     max-height: inherit;
-    max-width: 220px;
+    max-width: 200px;
   }
 }
 #header .header-nav .container > .row .mobile .clearfix,
