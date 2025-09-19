@@ -168,7 +168,19 @@ class Link extends LinkCore
 			7343 => 34, //ducha
 			7344 => 16, //exterior
 			7346 => 38, //interior
-			7347 => 37 //piscina
+			7347 => 37, //piscina
+			111962 => 41, //blanco
+			111963 => 43, //gris
+			111964 => 42, //beige
+			111965 => 78, //marrón
+			111966 => 84, //amarillo
+			111967 => 85, //rojo
+			111968 => 83, //verde claro
+			111969 => 79, //verde
+			111970 => 77, //azul
+			111971 => 47, //antracita
+			111972 => 44, //negro
+			111973 => 86 //multicolor
 		];
 		
 		    // Buscar el id_category en el array utilizando el id_feature_value como clave

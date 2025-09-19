@@ -812,7 +812,7 @@ class AdminModelAdapter extends \PrestaShopBundle\Model\AdminModelAdapter
                     $supplier->id_supplier
                 );
                 $dataSuppliersCombinations['supplier_combination_' . $supplier->id_supplier][] = [
-                    'label' => $combination['attribute_designation'],
+                    'label' => $product->name,
                     'supplier_reference' => isset($productSupplierData['product_supplier_reference'])
                         ? $productSupplierData['product_supplier_reference']
                         : '',

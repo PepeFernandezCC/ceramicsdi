@@ -21,6 +21,91 @@ use PrestaShop\PrestaShop\Core\Domain\Category\ValueObject\MenuThumbnailId;
 class Link extends LinkCore
 {
 
+
+	protected $typeCategoryMap = [
+		'CUADRADO' => [
+			41 => 107, //BlancoCuadrado
+			43 => 109, //GrisCuadrado	
+			42 => 111, //BeigeCuadrado	
+			79 => 113, //VerdeCuadrado		
+			83 => 115, //VerdeClaroCuadrado			
+			84 => 117, //AmarilloCuadrado			
+			77 => 119, //AzulCuadrado			
+			78 => 121, //MarronCuadrado			
+			85 => 123, //RojoCuadrado			
+			47 => 125, //AntracitaCuadrado			
+			44 => 127, //NegroCuadrado			
+			86 => 129 //MulticolorCuadrado
+		],
+		'MOSAICO' => [
+			41 => 152, //BlancoMosaico
+			43 => 153, //GrisMosaico	
+			42 => 154, //BeigeMosaico	
+			79 => 159, //VerdeMosaico		
+			83 => 158, //VerdeClaroMosaico			
+			84 => 156, //AmarilloMosaico			
+			77 => 160, //AzulMosaico			
+			78 => 155, //MarronMosaico		
+			85 => 157, //RojoMosaico			
+			47 => 161, //AntracitaMosaico			
+			44 => 162, //NegroMosaico			
+			86 => 163 //MulticolorMosaico
+		],
+		'BLANCO' => [
+			12 => 131, //CocinaBlanco	
+			16 => 144 //ExteriorBlanco
+		],
+		'GRIS' => [
+			12 => 132, //CocinaGris	
+			13 => 140, //BanoGris
+			16 => 143, //ExteriorGris			
+			38 => 148 //InteriorGris
+		],
+		'BEIGE' => [
+			12 => 133, //CocinaBeige			
+			13 => 138 //BanoBeige
+		],
+		'MARRON' => [
+			13 => 136, //BañoMarron	
+			16 => 145, //ExteriorMarron			
+			38 => 149 //InteriorMarron
+		],
+		'AMARILLO' => [
+			12 => 139 //CocinaAmarillo
+		],
+		'VERDE' => [
+			12 => 135, //CocinaVerde	
+			13 => 137, //BanoVerde
+			37 => 146 //PiscinaVerde			
+		],
+		'AZUL' => [
+			12 => 134, //CocinaVerde	
+			13 => 141, //BanoVerde
+			37 => 147 //PiscinaVerde
+		],
+		'NEGRO' => [
+			13 => 142 //CocinaNegro	
+		],
+		'MATE' => [
+			12 => 150, //CocinaMate
+			13 => 151 //BanoMate
+		],
+		'RECTANGULAR' => [
+			41 => 108, //BlancoRectangular
+			43 => 110, //GrisRectangular
+			42 => 112, //BeigeRectangular
+			79 => 114, //VerdeRectangular
+			83 => 116, //VerdeClaroRectangular
+			84 => 118, //AmarilloRectangular
+			77 => 120, //AzulRectangular
+			78 => 122, //MarronRectangular
+			85 => 124, //RojoRectangular
+			47 => 126, //AntracitaRectangular
+			44 => 128, //NegroRectangular
+			86 => 130 //MulticolorRectangular
+		]
+
+	];
  	/**
      * @return string|bool
      */
@@ -29,16 +114,88 @@ class Link extends LinkCore
 
         foreach (MenuThumbnailId::ALLOWED_ID_VALUES as $id) {
             $thumbnailPath = _PS_CAT_IMG_DIR_ . $categoryId . '-' . $id . '_thumb.jpg';
+			$optimizedPath = _PS_IMG_DIR_ . 'tmp/category_' . $categoryId . '-' . $id .  '_thumb.webp';
 
             if (file_exists($thumbnailPath)) {
 				
-              return '/img/tmp/category_' . $categoryId . '-' . $id . '_thumb.jpg';
+				if(file_exists($optimizedPath)) {
+					return '/img/tmp/category_' . $categoryId . '-' . $id . '_thumb.webp';
+				}
+				
+              	return '/img/tmp/category_' . $categoryId . '-' . $id . '_thumb.jpg';
 
             }
         }
 
         return false;
     }
+
+	public function getIdFeaturesArray($id_feature_values) {
+    
+		$id_feature_values = trim((string)$id_feature_values);
+		
+		if (strpos($id_feature_values, ',') !== false) {
+			$id_feature_Value_array = explode(', ', $id_feature_values);
+		} else {
+			$id_feature_Value_array = [$id_feature_values];
+		}
+
+		return $id_feature_Value_array;
+	}
+
+	public function getCategoryLinkByIdFeatureValue($id_feature_value){
+
+
+		$categoryFeatureArray = [
+			56 => 40, //mate
+			448 => 39, //brillo
+			7578 => 45, //pulido
+			112067 => 4, //piedra
+			112063 => 20, //madera
+			112066 => 27, //marmol
+			112061 => 18, //cemento
+			112068 => 25, //terrazo
+			112062 => 19, //hidraulico
+			112060 => 48, //barro
+			112064 => 30, //metro
+			14 => 103, //cuadrado
+			19 => 105, //rectangular
+			145 => 104, //picket
+			1843 => 32, //mosaico
+			7340 => 13, //baño
+			7341 => 12, //cocina
+			7342 => 14, //salon
+			7343 => 34, //ducha
+			7344 => 16, //exterior
+			7346 => 38, //interior
+			7347 => 37 //piscina
+		];
+		
+		    // Buscar el id_category en el array utilizando el id_feature_value como clave
+			if (isset($categoryFeatureArray[$id_feature_value])) {
+				$id_category = (int) $categoryFeatureArray[$id_feature_value];
+				return $this->getCategoryLink($id_category); 
+			} else {
+				return null; 
+			}
+	}
+
+	public function getSubCategoryLinkByCategoryId($id_category, $type){
+		if (isset($this->typeCategoryMap[$type])) {
+			$categoryArray = $this->typeCategoryMap[$type];
+			return $this->findCategory($categoryArray, $id_category);
+		}
+		return null;
+	}
+
+	private function findCategory($array, $id_category) {
+		if (isset($array[$id_category])) {
+			$searchCategory = (int) $array[$id_category];
+			return $this->getCategoryLink($searchCategory);
+		} else {
+			return null;
+		}
+	}
 
 	/*
     * module: prettyurls
@@ -47,6 +204,7 @@ class Link extends LinkCore
     */
     public function getCategoryLink($category, $alias = null, $id_lang = null, $selected_filters = null, $id_shop = null, $relative_protocol = false)
 	{
+	
 		if (!$id_lang) {
 			$id_lang = Context::getContext()->language->id;
 		}
@@ -758,7 +916,7 @@ class Link extends LinkCore
 				AND `id_lang` = '.(int)$id_lang.'
 				AND `id_shop` = '.(int)$id_shop);
 	}
-	
+
 	/*
     * module: prettyurls
     * date: 2023-05-08 11:52:06

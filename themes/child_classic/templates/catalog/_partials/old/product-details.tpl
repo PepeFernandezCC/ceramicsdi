@@ -28,7 +28,7 @@
             {hook h='actionProductOutOfStock' product=$product}
         </div>
     {/block}
-    {assign var="linkFeaturesArray" value=[3, 7, 26, 46, 52]}
+    {assign var="linkFeaturesArray" value=[3, 7, 26, 52]}
     {block name='product_features'}
         {if $product.grouped_features}
             <section class="product-features">
@@ -40,7 +40,7 @@
                                 {assign var="id_array" value=$link->getIdFeaturesArray($feature.id_feature_value)}
                                 {assign var="values" value=$feature.value|escape:'htmlall'|regex_replace:"/[\r\n]/" : ", "}
                                 {assign var="valueArray" value=", "|explode:$values}
-                                {assign var="validFeatureidArray" value=[56, 448, 7578, 112067, 112063, 112066, 112061, 112068, 112062, 112060, 112064, 14, 19, 145, 1843, 7340, 7341, 7342, 7343, 7344, 7346, 7347,111962,111963,111964,111965,111966,111967,111968,111969,111970,111971,111972,111973]}
+                                {assign var="validFeatureidArray" value=[56, 448, 7578, 112067, 112063, 112066, 112061, 112068, 112062, 112060, 112064, 14, 19, 145, 1843, 7340, 7341, 7342, 7343, 7344, 7346, 7347]}
                                 <span>
                                     {foreach from=$id_array item=id key=key}
                                         {if $key > 0}, {/if}
