@@ -107,7 +107,7 @@ if ($httpCode === 200) {
 
 if ($result) {
 
-    customer::assignCustomerGroup($customer_id);
+    customer::assignIntracomunitaryGroup($customer_id);
 
 }
 

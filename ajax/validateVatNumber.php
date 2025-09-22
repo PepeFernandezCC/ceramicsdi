@@ -6,12 +6,12 @@ header('Content-Type: application/json');
 
 //$vat_input = 'FR11849695879';
 //$customer_id = '7485';
-//
 
 $vat_input = Tools::getValue('vat_number');
 $customer_id = Tools::getValue('customer');
 $idCountry = Tools::getValue('country');
 $france = '8';
+$spain = '6';
 
 $country = new Country($idCountry);
 
@@ -25,6 +25,12 @@ if (!$vat_input || strlen($vat_input) < 3) {
 // Obtener prefijo y número
 $prefix = substr($vat_input, 0, 2);
 $number = substr($vat_input, 2);
+
+/* CONTROLAR VAT ESPAÑOL */
+if ($idCountry == $spain) {
+    echo json_encode(['result' => false, 'userError' => 'No aplica a España']);
+    exit;
+}
 
 if($prefix == $country->iso_code) {
     $vatNumber = $vat_input;
@@ -75,33 +81,63 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, [
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_TIMEOUT, 10);
 
-// Ejecutar solicitud
-$response = curl_exec($ch);
-$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+// Reintentos automáticos
+$maxAttempts = 5;
+$attempt = 0;
+$response = null;
+$httpCode = 0;
 
-if (curl_errno($ch)) {
-    echo json_encode(['result' => true, 'userError' => curl_error($ch), 'fullVat' => $vatNumber]);
-    curl_close($ch);
-    exit;
-}
+do {
+    $attempt++;
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+    if (curl_errno($ch)) {
+        echo json_encode(['result' => null, 'userError' => curl_error($ch), 'fullVat' => $vatNumber]);
+        curl_close($ch);
+        exit;
+    }
+
+    // Si es error de concurrencia (código 58 en la respuesta XML), reintentamos
+    if ($httpCode === 200 && strpos($response, '<code>58</code>') !== false) {
+        sleep($attempt * 2); // backoff exponencial
+        continue;
+    }
+
+    break;
+} while ($attempt < $maxAttempts);
 
 curl_close($ch);
 
+// Procesar respuesta
+$result = false;
+$err    = '';
+
 if ($httpCode === 200) {
-    // Parsear XML
     $xml = simplexml_load_string($response);
 
-    if ($xml && isset($xml->vies->valid)) {
-        $isValid = (string)$xml->vies->valid;
-        $err =  $isValid === 'true' ? "VAT válido" : "VAT NO válido";
-        $result = $isValid === 'true'? true : false;
+    if ($xml) {
+        if (isset($xml->error)) {
+            $errorCode = (string)$xml->error->code;
+            $errorMsg  = (string)$xml->error->description;
+
+            $err = "Error en VIES (código $errorCode): $errorMsg";
+            $result = false; // indeterminado
+        }
+        elseif (isset($xml->vies->valid)) {
+            $isValid = (string)$xml->vies->valid;
+            $result = $isValid === 'true';
+            $err = $result ? "VAT válido" : "VAT NO válido";
+        } else {
+            $err = "Error en la API desconocido.";
+            $result = false;
+        }
     } else {
-        $err = "No se pudo interpretar la respuesta XML.";
+        $err = "Respuesta XML mal formada.";
         $result = false;
     }
 } else {
-    //$err =  "Error HTTP $httpCode<br>Respuesta: $response";
-    $err = "Error en petición HTTP";
+    $err = "Error en petición HTTP ($httpCode)";
     $result = false;
 }
 
