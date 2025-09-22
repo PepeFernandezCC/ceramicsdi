@@ -82,10 +82,8 @@ curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_TIMEOUT, 10);
 
 // Reintentos automáticos
-$maxAttempts = 5;
+$maxAttempts = 3;
 $attempt = 0;
-$response = null;
-$httpCode = 0;
 
 do {
     $attempt++;
@@ -93,7 +91,7 @@ do {
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
     if (curl_errno($ch)) {
-        echo json_encode(['result' => null, 'userError' => curl_error($ch), 'fullVat' => $vatNumber]);
+        echo json_encode(['result' => false, 'userError' => curl_error($ch), 'fullVat' => $vatNumber]);
         curl_close($ch);
         exit;
     }
