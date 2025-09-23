@@ -540,38 +540,9 @@
 
                     <h2 class="h5 text-uppercase">{l s='Recommended combinations' d='Shop.Theme.Catalog'}</h2>
 
-                    {assign var="minSlides" value=10}
-                    {assign var="totalSlides" value=$accessories|count}
-
-                    {if $totalSlides < $minSlides}
-                        {assign var="iterations" value=($minSlides/$totalSlides)|ceil}
-                        {assign var="newAccessories" value=[]}
-
-                        {section name=repeat loop=$iterations}
-                            {foreach from=$accessories item="product_accessory"}
-                                {$newAccessories[] = $product_accessory}
-                            {/foreach}
-                        {/section}
-
-                        {assign var="accessories" value=$newAccessories|@array_slice:0:$minSlides}
-                    {/if}
-
                         <div class="custom-featured-products container-fluid">
-                                <div class="outside-wrapper">
-                                    <div class="inside-wrapper">
-                                        <div class="products{if !empty($cssClass)} {$cssClass}{/if} swiper custom-featured-swiper">
-                                            <div class="swiper-wrapper">
-                                                {foreach from=$accessories item="product_accessory" key="position" name="productIteration"}
-                                                    <div class="swiper-slide">
-                                                        {include file='catalog/_partials/miniatures/related_product.tpl' product=$product_accessory position=$position productIteration=$smarty.foreach.productIteration.iteration productClasses="col-xs-6 col-md-4 col-xl-2" isAccessory=true totalAccessories=$accessories|count}
-                                                    </div>
-                                                {/foreach}
-                                            </div>
-                                            <div class="swiper-button-prev"></div>
-                                            <div class="swiper-button-next"></div>
-                                        </div>
-                                    </div>
-                                </div>
+
+                             {hook h='displayRelatedProducts' product=$product}
 
                         </div>
 
