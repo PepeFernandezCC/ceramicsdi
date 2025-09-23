@@ -24,7 +24,7 @@
         {assign var="borderTop" value=false}
         {assign var="areaArray" value=[12, 13, 16, 37, 38]}
         {assign var="colorArray" value=[41, 42, 43, 47, 44, 77, 78, 79, 83, 84, 85, 86]} 
-        {assign var="terrazoArray" value=[88]} 
+        {assign var="typeArray" value=[88, 1740]} 
         {assign var="notShow" value=[91, 92, 93]}
         {assign var="subCategories" value=Category::getSubCategoriesArray($category.id, $language.id)} 
 
@@ -33,8 +33,8 @@
                 || in_array($category.id_parent, $areaArray)
                 || in_array($category.id, $colorArray) 
                 || in_array($category.id_parent, $colorArray)
-                || in_array($category.id, $terrazoArray)
-                || in_array($category.id_parent, $terrazoArray)}
+                || in_array($category.id, $typeArray)
+                || in_array($category.id_parent, $typeArray)}
                 <button class="accordion" data-label="subcategories" style="border-top: none">
                     {l s='Subcategories' d='Shop.Theme.Global'}
                 </button>

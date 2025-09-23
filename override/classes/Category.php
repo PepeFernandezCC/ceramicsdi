@@ -10,6 +10,7 @@ class Category extends CategoryCore {
         WHERE cl.`id_category` = c.`id_category` 
         AND cl.`id_lang` = ' . (int) $idLang . ' 
         AND c.id_parent = '. (int) $idCategory . ' 
+        AND c.active = 1
         GROUP BY c.id_category 
         ORDER BY c.`id_category`';
         

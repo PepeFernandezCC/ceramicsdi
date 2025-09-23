@@ -25,7 +25,7 @@
         {assign var="areaArray" value=[12, 13, 16, 37, 38]}
         {assign var="colorArray" value=[41, 42, 43, 47, 44, 77, 78, 79, 83, 84, 85, 86]} 
         {assign var="typeArray" value=[88, 1740]} 
-        {assign var="notShow" value=[91, 92, 93]}
+        {assign var="notShow" value=[9999]}
         {assign var="subCategories" value=Category::getSubCategoriesArray($category.id, $language.id)} 
 
         {if $subCategories|@count > 0}
