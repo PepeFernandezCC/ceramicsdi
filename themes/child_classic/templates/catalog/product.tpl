@@ -223,8 +223,11 @@
                                         <h1 class="h1 product-card-title">
 
                                             {block name='page_title'}
+
+                                                {assign var="product_mini_title_key" value=Product::getProductMinititleKey($product.id)}
+
                                                 <div style="text-transform: uppercase; font-size: 11px; color: gray; font-weight: 500; margin-bottom: 10px;">
-                                                    {if $category->id == 106}{$category->name}{/if} {$title_material}
+                                                    {l s={$product_mini_title_key} d='Shop.Theme.Catalog'}
                                                 </div>
                                               
                                                 <div>

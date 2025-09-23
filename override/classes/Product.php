@@ -107,6 +107,56 @@ class Product extends ProductCore {
         return $result !== false && $result !== null ? $result : false;
     }
 
+    public static function getProductMinititleKey($productId) {
+        // Map de categorías a nombres por defecto
+        $categoriesMap = [
+            106 => [ // Tile
+                'material' => [
+                    110508 => 'Porcelain Tile',   // Porcelanic
+                    110510 => 'Stoneware Tile'    // Gres
+                ],
+                'default' => 'Ceramic Tile'
+            ],
+            82  => 'Stone Tile',
+            88  => 'Terracotta Tile',
+            81  => 'Glass Tile',
+            36  => 'Tiling Tool',
+            94  => 'Joint Mortar'
+        ];
+
+        $productCategories = self::getProductCategories($productId);
+
+        foreach ($productCategories as $categoryId) {
+            if (isset($categoriesMap[$categoryId])) {
+                $categoryInfo = $categoriesMap[$categoryId];
+
+                // Si la categoría tiene mapeo de material
+                if (is_array($categoryInfo) && isset($categoryInfo['material'])) {
+                    $materialId = self::getMaterial($productId);
+                    return $categoryInfo['material'][$materialId] ?? $categoryInfo['default'];
+                }
+
+                // Categoría simple sin material
+                return $categoryInfo;
+            }
+        }
+
+        return '';
+    }
+
+    public static function getMaterial($productId) {
+        $feature = 45; // Material
+
+        $query = 'SELECT fv.id_feature_value 
+                    FROM ps_feature_value fv 
+                    JOIN ps_feature_product fp 
+                    ON fp.id_feature_value = fv.id_feature_value 
+                    WHERE fv.id_feature = ' . (int)$feature . ' AND fp.id_product = ' . (int)$productId;
+
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($query);
+    }
+
+
     /**
      * Obtener todos los productos agrupados por colección
      */
