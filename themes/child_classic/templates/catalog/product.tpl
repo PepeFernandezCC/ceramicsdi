@@ -187,11 +187,9 @@
 
             <div class="col-md-6 col-xs-12" id="product-content-block">
 
-                {include file='catalog/_partials/product-flags.tpl'}
-
-                {* PLANATEC *}
-
                 <div class="custom-content">
+
+                    {include file='catalog/_partials/product-flags.tpl'}
 
                     {if $validAspect}
                         <div id="aspecto-link" style="display: none">
@@ -216,9 +214,9 @@
 
                             {block name='page_header'}
 
-                                <div class="row d-flex product-head">
+                                <div class="row product-head">
 
-                                    <div class="col-xs-8">
+                                    <div class="col-xs-12">
 
                                         <h1 class="h1 product-card-title">
 
@@ -226,11 +224,19 @@
 
                                                 {assign var="product_mini_title_key" value=Product::getProductMinititleKey($product.id)}
 
-                                                <div style="text-transform: uppercase; font-size: 11px; color: gray; font-weight: 500; margin-bottom: 10px;">
-                                                    {l s={$product_mini_title_key} d='Shop.Theme.Catalog'}
+                                                <div class="product-type">
+                                                    <div style="padding-right:10px;">
+                                                        {l s={$product_mini_title_key} d='Shop.Theme.Catalog'}
+                                                    </div>
+
+                                                    {if isset($product.reference_to_display) && $product.reference_to_display neq ''}
+                                                        <div class="product-reference">
+                                                            <span>Ref: {$product.reference_to_display}</span>
+                                                        </div>
+                                                    {/if}
                                                 </div>
                                               
-                                                <div>
+                                                <div style="margin-bottom:10px">
                                                     {$product.name}
                                                 </div>
                                             {/block}
@@ -239,7 +245,7 @@
 
                                     </div>
 
-                                    <div class="col-xs-4">
+                                    <div class="col-xs-12">
 
                                         {block name='product_prices'}
 
@@ -253,23 +259,9 @@
 
                                 <div class="row" style="padding-top: 10px">
 
-                                    <div class="col-xs-8">
+                                    <div class="col-xs-12">
 
-                                        {if isset($product.reference_to_display) && $product.reference_to_display neq ''}
-
-                                            <div class="product-reference">
-
-                                                <span>Ref: {$product.reference_to_display}</span>
-
-                                            </div>
-
-                                        {/if}
-
-                                    </div>
-
-                                    <div class="col-xs-4">
-
-                                        <span class="tax-message" style="float: right;">
+                                        <span class="tax-message">
 
                                             {if $customer.id_default_group == 5}
 
@@ -333,6 +325,8 @@
                     </div>
                    
 
+
+
                     <div class="product-information">
 
                         {if $product.is_customizable && count($product.customizations.fields)}
@@ -348,123 +342,92 @@
                         {assign var="categoriasProducto" value=Product::getProductCategories($product.id)}
 
                         {if !($CATEGORY_INSTALACION_ID|in_array:$categoriasProducto) && !($CATEGORY_MANTENIMIENTO_ID|in_array:$categoriasProducto)}
+                                           
+                            <div class="product-traits-box">
 
-                            <div class="rowTitle" style="font-size: 15px">
-                                {l s='Product Details' d='Shop.Theme.Catalog'}:
-                            </div>
+                                <hr>
 
-                            <div class="product-traits">
-                            
-                                <div class="trait">
-                                    <span> {l s='Format' d='Shop.Theme.Catalog'}:</span>
-                                    <br />                  
-                                    {foreach from=$product.features item='feature'}
-                                        {if isset($feature.id_feature) && $feature.id_feature == $FEATURE_MEDIDA_ID}
-                                            <span style="font-weight: 600">{$feature.value}</span>
-                                        {/if}
-                                    {/foreach}
+                                <div class="rowTitle" style="font-size: 15px">
+                                    {l s='Product Details' d='Shop.Theme.Catalog'}:
                                 </div>
+
+                                <div class="product-traits">
                                 
-                                <div class="trait">
-                                    {foreach from=$product.features item='feature'}
-                                        {if isset($feature.id_feature) && $feature.id_feature == $FEATURE_ACABADO}
-                                            <span> {$feature.name}:</span>
-                                            <br />                  
-                                            <span style="font-weight: 600">{$feature.value}</span>
-                                        {/if}
-                                    {/foreach}
-                                </div>
-                                        
-                                <div class="trait">
-                                    <span>{l s='Material' d='Shop.Theme.Catalog'}:</span>
-                                    <br />
-                                    {if !in_array($product.id_category_default, $otherMaterialsArray)}
-                                        {foreach from=$product.features item='feature'} 
-                                            {if isset($feature.id_feature) && $feature.id_feature == $FEATURE_MATERIAL}
+                                    <div class="trait">
+                                        <span> {l s='Format' d='Shop.Theme.Catalog'}:</span>
+                                        <br />                  
+                                        {foreach from=$product.features item='feature'}
+                                            {if isset($feature.id_feature) && $feature.id_feature == $FEATURE_MEDIDA_ID}
                                                 <span style="font-weight: 600">{$feature.value}</span>
                                             {/if}
                                         {/foreach}
-                                    {else}
-                                        <span style="font-weight: 600">{$product.category_name}</span>
-                                    {/if}
-                                </div>
-                    
-                            </div>
-
-                            {block name='product_discounts'}
-
-                                {include file='catalog/_partials/product-discounts.tpl'}
-
-                            {/block}
-
-                            <div class="rowTitle" style="font-size: 15px">
-                                {l s='Price Calculator' d='Shop.Theme.Catalog'}:
-                            </div>
-
-                        {/if}
-
-                        <div class="product-actions js-product-actions" style="padding-top:15px">
-
-                            {block name='product_buy'}
-
-                                <form action="{$urls.pages.cart}" method="post" id="add-to-cart-or-refresh">
-
-                                    <input type="hidden" name="token" value="{$static_token}">
-
-                                    <input type="hidden" name="id_product" value="{$product.id}" id="product_page_product_id">
-
-                                    <input type="hidden" name="id_customization" value="{$product.id_customization}" id="product_customization_id" class="js-product-customization-id">
-
-                                    {block name='product_pack'}
-
-                                        {if $packItems}
-
-                                            <section class="product-pack">
-
-                                                <p class="h4">{l s='This pack contains' d='Shop.Theme.Catalog'}</p>
-
-                                                {foreach from=$packItems item="product_pack"}
-
-                                                    {block name='product_miniature'}
-
-                                                        {include file='catalog/_partials/miniatures/pack-product.tpl' product=$product_pack showPackProductsPrice=$product.show_price}
-
-                                                    {/block}
-
-                                                {/foreach}
-
-                                            </section>
-
+                                    </div>
+                                    
+                                    <div class="trait">
+                                        {foreach from=$product.features item='feature'}
+                                            {if isset($feature.id_feature) && $feature.id_feature == $FEATURE_ACABADO}
+                                                <span> {$feature.name}:</span>
+                                                <br />                  
+                                                <span style="font-weight: 600">{$feature.value}</span>
+                                            {/if}
+                                        {/foreach}
+                                    </div>
+                                            
+                                    <div class="trait">
+                                        <span>{l s='Material' d='Shop.Theme.Catalog'}:</span>
+                                        <br />
+                                        {if !in_array($product.id_category_default, $otherMaterialsArray)}
+                                            {foreach from=$product.features item='feature'} 
+                                                {if isset($feature.id_feature) && $feature.id_feature == $FEATURE_MATERIAL}
+                                                    <span style="font-weight: 600">{$feature.value}</span>
+                                                {/if}
+                                            {/foreach}
+                                        {else}
+                                            <span style="font-weight: 600">{$product.category_name}</span>
                                         {/if}
+                                    </div>
+                        
+                                </div>
 
-                                    {/block}
-
-
-
-                                    {block name='product_add_to_cart'}
-
-                                        {include file='catalog/_partials/product-add-to-cart.tpl'}
-
-                                    {/block}
-
-                                    {block name='product_additional_info'}
-
-                                        {include file='catalog/_partials/product-additional-info.tpl'}
-
-                                    {/block}
-
-                                    {block name='product_refresh'}{/block}
-
-                                </form>
-
-                            {/block}
-
-                        </div>
-
+                            </div>
+                        {/if}
 
                         {block name='product_tabs'}
 
+
                             <div class="product-accordion">
+
+                                <button class="accordion-button">
+
+                                     <h2 class="accordion-item-h2">{l s='Measures' d='Shop.Theme.Catalog'}</h2>
+
+                                </button>
+
+                                <div class="panel">
+
+                                    alto, ancho, espesor y peso
+
+                                </div>
+
+                                <button class="accordion-button">
+
+                                    {if $category->id_category == $CATEGORY_INSTALACION_Y_MONTAJE_ID}
+
+                                         <h2 class="accordion-item-h2">{l s='How to use' d='Shop.Theme.Catalog'}</h2>
+
+                                    {else}
+
+                                         <h2 class="accordion-item-h2">{l s='Use and maintenance' d='Shop.Theme.Catalog'}</h2>
+
+                                    {/if}
+
+                                </button>
+
+                                <div class="panel">
+
+                                    {$productUsoMantenimiento nofilter}
+
+                                </div>
 
                                 <button class="accordion-button">
 
@@ -501,40 +464,6 @@
 
                                 </div>
 
-                                <button class="accordion-button">
-
-                                    {if $category->id_category == $CATEGORY_INSTALACION_Y_MONTAJE_ID}
-
-                                         <h2 class="accordion-item-h2">{l s='How to use' d='Shop.Theme.Catalog'}</h2>
-
-                                    {else}
-
-                                         <h2 class="accordion-item-h2">{l s='Use and maintenance' d='Shop.Theme.Catalog'}</h2>
-
-                                    {/if}
-
-                                </button>
-
-                                <div class="panel">
-
-                                    {$productUsoMantenimiento nofilter}
-
-                                </div>
-
-
-
-                                <button class="accordion-button">
-
-                                     <h2 class="accordion-item-h2">{l s='Shipping and returns' d='Shop.Theme.Catalog'}</h2>
-
-                                </button>
-
-                                <div class="panel">
-
-                                    {$productEnviosDevoluciones nofilter}
-
-                                </div>
-
                             </div>
 
                         {/block}
@@ -543,7 +472,211 @@
 
                 </div>
 
+                <div class="newCalculatorBox">
+
+                    {if !($CATEGORY_INSTALACION_ID|in_array:$categoriasProducto) && !($CATEGORY_MANTENIMIENTO_ID|in_array:$categoriasProducto)}
+                        {block name='product_discounts'}
+
+                            {include file='catalog/_partials/product-discounts.tpl'}
+
+                        {/block}
+
+                        <div class="rowTitle" style="font-size: 15px">
+                            {l s='Price Calculator' d='Shop.Theme.Catalog'}:
+                        </div>
+
+                    {/if}
+
+                    <div class="product-actions js-product-actions" style="padding-top:15px">
+
+                        {block name='product_buy'}
+
+                            <form action="{$urls.pages.cart}" method="post" id="add-to-cart-or-refresh">
+
+                                <input type="hidden" name="token" value="{$static_token}">
+
+                                <input type="hidden" name="id_product" value="{$product.id}" id="product_page_product_id">
+
+                                <input type="hidden" name="id_customization" value="{$product.id_customization}" id="product_customization_id" class="js-product-customization-id">
+
+                                    {block name='product_pack'}
+
+                                        {if $packItems}
+
+                                            <section class="product-pack">
+
+                                                <p class="h4">{l s='This pack contains' d='Shop.Theme.Catalog'}</p>
+
+                                                {foreach from=$packItems item="product_pack"}
+
+                                                    {block name='product_miniature'}
+
+                                                            {include file='catalog/_partials/miniatures/pack-product.tpl' product=$product_pack showPackProductsPrice=$product.show_price}
+
+                                                        {/block}
+
+                                                    {/foreach}
+
+                                            </section>
+
+                                        {/if}
+
+                                    {/block}
+
+
+
+                                    {block name='product_add_to_cart'}
+
+                                        {include file='catalog/_partials/product-add-to-cart.tpl'}
+
+                                    {/block}
+
+                            </form>
+
+                        {/block}
+
+                    </div>
+
+
+
+                </div>
+
+                <div class="productExtraContent">
+                    {assign var="dias_plazo" value=""}
+                    {assign var="texto_muestra" value=""}
+                    {assign var="junta_recomendada" value="0"}
+                    {assign var="hasSample" value=true}
+                    {foreach from=$product.features item='feature'}
+
+                        {if $feature.id_feature === $FEATURE_M2_PIEZA_ID}
+
+                            {assign var="isByPiece" value=true}
+
+                        {/if}
+                        {if $feature.id_feature === $FEATURE_SAMPLE_AVAILABLE}
+
+                            {assign var="hasSample" value=false}
+                            {assign var="sampleTextWarning" value=$feature.value}
+
+                        {/if}
+
+                    {/foreach}
+                    {foreach from=$product.grouped_features item=feature}
+                        {if $FEATURE_JUNTA_RECOMENDADA_ID === $feature.id_feature}
+                            {assign var="junta_recomendada" value="{$feature.value}"}
+                        {elseif $FEATURE_DIAS_PLAZO_ENTREGA_ID === $feature.id_feature}
+                            {assign var="dias_plazo" value="{$feature.value}"}
+                        {elseif $FEATURE_TEXTO_MUESTRA_ID === $feature.id_feature}
+                            {assign var="texto_muestra" value="{$feature.value}"}
+                        {/if}
+                    {/foreach}
+
+                    {* PLANATEC *}
+                        <div id="transport-wrapper" class="row mx-auto" style="margin-top:25px;margin-bottom:10px">
+                            <div class="col-xl-12 col-xs-12">
+                                <div class="product-transport">
+                                    <div style="width: 100%;">
+                                        {if $dias_plazo !== '' or $texto_muestra !== ''}
+                                                        
+                                            {if $texto_muestra !== ''}
+                                                                
+                                                <div>
+                                                    <div style="text-transform: uppercase; font-weight: 500">
+                                                        <span style="color: #a3a3a3; font-size: large "><i class="fa-solid fa-circle-exclamation"></i></span> {l s='Samples' d='Shop.Theme.Catalog'}
+                                                    </div>
+                                                    <div>
+                                                        {if $hasSample}
+                                                            {$productTransportSamples|replace:'{texto_muestra}':$texto_muestra nofilter}
+                                                        {else}
+                                                            <p>{$sampleTextWarning}<p>
+                                                        {/if}
+                                                    </div>
+                                                </div>
+                                            {/if}
+                                            {if $dias_plazo !== ''}
+                                                <div>
+                                                    <div style="text-transform: uppercase; font-weight: 500">
+                                                        <span style="color: #a3a3a3; font-size: large"><i class="fa-solid fa-truck"></i></span> {l s='Transport' d='Shop.Theme.Catalog'}
+                                                    </div>
+                                                    <div>{$productTransport|replace:'{dias_plazo}':$dias_plazo nofilter}</div>
+                                                </div>
+                                            {/if}
+                                        {/if}
+                                        {if $product.attachments}
+                                            {foreach from=$product.attachments item=attachment}
+                                                {if ($attachment.name == 'PDF Técnico' && $language.id == 1)
+                                                    || ($attachment.name == 'PDF technique' && $language.id == 2)
+                                                    || ($attachment.name == 'Technical PDF' && $language.id == 3)
+                                                    || ($attachment.name == 'PDF Technical' && $language.id == 4)
+                                                    || ($attachment.name == 'PDF Tecnico' && $language.id == 5)
+                                                    || ($attachment.name == 'PDF-techniek' && $language.id == 6)
+                                                }
+                                                    <div id="product-attachment-pdf-tecnico">
+                                                        <div>
+                                                            <span style="color: #a3a3a3; font-size: large"><i class="fa-solid fa-file"></i></span>
+                                                            <a href="{url entity='attachment' params=['id_attachment' => $attachment.id_attachment]}"
+                                                                target="_blank"
+                                                                style="text-transform: uppercase;font-weight: 500;font-size: 14px !important;">
+                                                                    {l s='Download' d='Shop.Theme.Actions'} {l s='Technical PDF' d='Shop.Theme.Catalog'}
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                {/if}
+                                            {/foreach}
+                                        {/if}
+
+                                        {$junta_recomendada_nombre = Product::getProductName($junta_recomendada)}
+                                        {$imageCoverUrl= Product::getImageByPosition(1, $junta_recomendada)}
+                                        {$imageDustUrl= Product::getImageByPosition(2, $junta_recomendada)}
+                                        {assign var='hasCover' value=true}
+                                        {assign var='hasDust' value=true}
+                                        {if strpos($imageCoverUrl, 'no-hay-cover') !== false}
+                                            {assign var='hasCover' value=false}
+                                        {/if}
+
+                                        {if strpos($imageDustUrl, 'no-hay-cover') !== false}
+                                            {assign var='hasDust' value=false}
+                                        {/if}
+
+                                        {if !empty($junta_recomendada) && !empty($junta_recomendada_nombre)}
+                                            <div style="padding-top:25px">
+                                                <div id="recommended-board-wrapper" style="text-transform: uppercase; font-weight: 500">
+                                                    <span style="padding-right:10px">{l s='Recommended board' d='Shop.Theme.Catalog'}{l s=':' d='Shop.Theme.Catalog'}</span> 
+                                                    <a href="{Context::getContext()->link->getProductLink($junta_recomendada)}" style="font-size:.92rem;">
+                                                        {$junta_recomendada_nombre}
+                                                    </a>
+                                                </div>
+                                                <div class="mobile-text-center">
+                                                    <a href="{Context::getContext()->link->getProductLink($junta_recomendada)}">
+                                                        {if $hasCover}
+                                                            <img loading="lazy" src="{$imageCoverUrl}" style="max-width:155px" alt="{$junta_recomendada_nombre} - cover"/>
+                                                        {/if}
+                                                        {if $hasDust}
+                                                            <img loading="lazy" src="{$imageDustUrl}" style="max-width:155px" alt="{$junta_recomendada_nombre} - sample"/>
+                                                        {/if}
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        {/if}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    {* END PLANATEC *}
+
+                    {block name='product_additional_info'}
+
+                                        {include file='catalog/_partials/product-additional-info.tpl'}
+
+                    {/block}
+
+                    {block name='product_refresh'}{/block}
+                </div>
+
             </div>
+
+
 
         </div>
 

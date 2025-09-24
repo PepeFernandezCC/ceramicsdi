@@ -1139,6 +1139,16 @@ body:not(#category):not(#search) #wrapper #content-wrapper {
 .product-reference {
   color: #9d9d9c !important;
   font-weight: 500 !important;
+  font-size: 15px;
+}
+.product-type {
+  display:flex; 
+  align-items:flex-end; 
+  text-transform: uppercase; 
+  font-size: 11px; 
+  color: gray; 
+  font-weight: 500; 
+  margin-bottom: 10px;
 }
 
 @media (max-width: 767px) {
@@ -1290,8 +1300,20 @@ body:not(#category):not(#search) #wrapper #content-wrapper {
 }
 @media (max-width: 1200px) {
   #product .product-container #product-content-block {
+    padding: 0px;
+  }
+
+  #product .product-container #product-content-block .custom-content {
     padding: 18px;
   }
+  #product .product-container #product-content-block .newCalculatorBox {
+    padding: 18px;
+    background: #e5e6e5;
+  }
+  #product .product-container #product-content-block .productExtraContent {
+    padding: 18px;
+  }
+
 }
 @media (min-width: 768px) {
   #product .product-container #product-content-block {
@@ -1362,8 +1384,8 @@ body:not(#category):not(#search) #wrapper #content-wrapper {
 }
 #product .product-container #product-content-block .product-prices {
   margin-top: 0;
-  float: right;
 }
+
 #product .product-container #product-content-block .product-prices .regular-price {
   float: right;
 }
@@ -1520,7 +1542,7 @@ body:not(#category):not(#search) #wrapper #content-wrapper {
 label {
   color: black !important;
 }
-
+/*
 .product-accordion {
   border-bottom: 1px solid black;
 }
@@ -1567,6 +1589,94 @@ label {
   color: black;
   font-weight: 500;
 }
+*/
+.product-accordion {
+  border-bottom: 1px solid black;
+}
+
+.product-accordion button {
+  width: 100%;
+  cursor: pointer;
+  background-color: transparent;
+  border-top: 1px solid black;
+  border-bottom: none;
+  border-left: none;
+  border-right: none;
+  padding: 20px 0; /* aumenta altura */
+  text-transform: uppercase;
+  text-align: left;
+  color: black !important;
+
+  display: flex;
+  align-items: center;
+  gap: 10px; /* espacio entre icono y texto */
+  position: relative;
+  font-size: 1rem;
+}
+
+/* Contenedor del icono */
+.product-accordion button::before {
+  content: "";
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  position: relative;
+}
+
+.product-accordion button:focus {
+  outline: none;
+}
+
+/* Línea horizontal */
+.product-accordion button::before,
+.product-accordion button::after {
+  position: absolute;
+  top: 50%;
+  left: 8px;
+  width: 15px;
+  height: 1px;
+  background: black;
+  transform: translate(-50%, -50%);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  content: "";
+}
+
+/* Línea vertical del "+" */
+.product-accordion button::after {
+  height: 15px;
+  width: 1px;
+  background: black;
+  transform: translate(-50%, -50%) rotate(0deg);
+}
+
+/* Cuando está activo (abierto) */
+.product-accordion button.accordion-active::after {
+  opacity: 1;
+  transform: translate(-50%, -50%) rotate(90deg); /* hace desaparecer verticalmente */
+}
+
+.product-accordion .panel {
+  display: none;
+}
+
+.product-accordion .panel .product-quantities {
+  display: none;
+}
+
+.product-accordion .panel .product-features {
+  margin-top: 0;
+  margin-left: 0;
+}
+
+.product-accordion .panel .product-features p {
+  margin-bottom: 0.8rem;
+}
+
+.product-accordion .panel .product-features p .uppercase {
+  text-transform: uppercase;
+  color: black;
+  font-weight: 500;
+}
 
 .modal #product-description-short {
   display: none;
@@ -1598,6 +1708,9 @@ label {
   padding: 0;
 }
 @media (max-width: 767px) {
+  .product-accordion {
+    margin-top:20px;
+  }
   .cart-grid .cart-grid-body .cart-item:not(:first-child) {
     border-top: 1px solid black;
   }
@@ -4723,10 +4836,21 @@ label[for=field-vat_number] {
   align-items: center;
 }
 
+.queryCalculator {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.m2CajaInfo {
+  padding-top: 10px;
+  text-transform: uppercase;
+}
+
 .boxButton,
 .boxInput {
-  height: 40px; /* Ajusta esta altura según tus necesidades */
+  height: 65px; /* Ajusta esta altura según tus necesidades */
   font-size: 20px;
+  font-weight: 500;
   border: 1px solid #000000;
 }
 
@@ -4772,7 +4896,7 @@ label[for=field-vat_number] {
 }
 
 .max-widt-box {
-  max-width: 25%;
+  max-width: 50%;
 }
 
 /*  SWITCH CHECKBOX */
@@ -4834,6 +4958,8 @@ label[for=field-vat_number] {
   }
   .row-calculator {
     padding: 0;
+    max-width: 65%;
+    text-align: center;
   }
   .item-calculator {
     padding: 0;
@@ -6289,7 +6415,7 @@ span.at-contact {
   .bc-product-position {
     margin-top: 10px;
     margin-bottom: 0px;
-    margin-left: 15px;
+    margin-left: 40px;
   }
 }
 @media (min-width: 769px) {
@@ -6338,6 +6464,11 @@ span.at-contact {
 .related-category-show-desktop {
   display: block !important;
 }
+.product-traits-box{
+
+  margin-bottom:50px;
+
+}
 
 /* versión movil */
 @media (max-width: 768px) {
@@ -6346,5 +6477,11 @@ span.at-contact {
     }
     .related-category-show-desktop {
         display: none !important;
+    }
+
+    .product-traits-box{
+
+      display:none;
+
     }
 }

@@ -253,6 +253,7 @@ class SeurLabel
             $comments[] = 'ENTREGA: ' . SeurLib::getDeliveryDate();
             $comments[] = 'TIPO: ' . SeurLib::getShipmentType($id_order);
         } else {
+            $label_data['info_adicional'] = SeurLib::removeAccents($label_data['info_adicional']);
             $comments[] = $label_data['info_adicional']. (Configuration::get('SEUR2_PRODS_REFS_IN_COMMENTS')? SeurLabel::getProductsRefs($id_order) : "");
         }
         $data['comments'] = substr(implode('; ', $comments), 0, self::SHIPMENT_COMMENT_LENGTH);

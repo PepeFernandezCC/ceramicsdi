@@ -47,7 +47,7 @@ class Seur extends CarrierModule
     {
         $this->name = 'seur';
         $this->tab = 'shipping_logistics';
-        $this->version = '2.5.22';
+        $this->version = '2.5.23';
         $this->author = 'Seur';
         $this->need_instance = 0;
 
@@ -119,6 +119,9 @@ class Seur extends CarrierModule
 
         if (!$this->isRegisteredInHook('actionAdminControllerSetMedia'))
             $this->registerHook('actionAdminControllerSetMedia');
+
+        if (!$this->isRegisteredInHook('displayCarrierExtraContent'))
+            $this->registerHook('displayCarrierExtraContent');
     }
 
     /*************************************************************************************
@@ -147,6 +150,7 @@ class Seur extends CarrierModule
             || !$this->registerHook('displayOrderConfirmation')
             || !$this->registerHook('actionOrderEdited')
             || !$this->registerHook('actionAdminControllerSetMedia')
+            || !$this->registerHook('displayCarrierExtraContent')
         ) {
             $this->l('Hooks not registered');
             return false;
@@ -1247,92 +1251,92 @@ class Seur extends CarrierModule
      */
     protected function postProcessMerchant()
     {
-        Configuration::updateValue("SEUR2_MERCHANT_NIF_DNI", Tools::getValue("SEUR2_MERCHANT_NIF_DNI"));
-        Configuration::updateValue("SEUR2_MERCHANT_FIRSTNAME", Tools::getValue("SEUR2_MERCHANT_FIRSTNAME"));
-        Configuration::updateValue("SEUR2_MERCHANT_LASTNAME", Tools::getValue("SEUR2_MERCHANT_LASTNAME"));
-        Configuration::updateValue("SEUR2_MERCHANT_COMPANY", Tools::getValue("SEUR2_MERCHANT_COMPANY"));
-        Configuration::updateValue("SEUR2_MERCHANT_CLICKCOLLECT", Tools::getValue("SEUR2_MERCHANT_CLICKCOLLECT"));
+        Configuration::updateValue("SEUR2_MERCHANT_NIF_DNI", SeurLib::getValue("SEUR2_MERCHANT_NIF_DNI"));
+        Configuration::updateValue("SEUR2_MERCHANT_FIRSTNAME", SeurLib::getValue("SEUR2_MERCHANT_FIRSTNAME"));
+        Configuration::updateValue("SEUR2_MERCHANT_LASTNAME", SeurLib::getValue("SEUR2_MERCHANT_LASTNAME"));
+        Configuration::updateValue("SEUR2_MERCHANT_COMPANY", SeurLib::getValue("SEUR2_MERCHANT_COMPANY"));
+        Configuration::updateValue("SEUR2_MERCHANT_CLICKCOLLECT", SeurLib::getValue("SEUR2_MERCHANT_CLICKCOLLECT"));
 
-        Configuration::updateValue('SEUR2_API_CLIENT_ID', Tools::getValue("SEUR2_API_CLIENT_ID"));
-        Configuration::updateValue('SEUR2_API_CLIENT_SECRET', Tools::getValue("SEUR2_API_CLIENT_SECRET"));
-        Configuration::updateValue('SEUR2_API_USERNAME', Tools::getValue("SEUR2_API_USERNAME"));
-        Configuration::updateValue('SEUR2_API_PASSWORD', Tools::getValue("SEUR2_API_PASSWORD"));
+        Configuration::updateValue('SEUR2_API_CLIENT_ID', SeurLib::getValue("SEUR2_API_CLIENT_ID"));
+        Configuration::updateValue('SEUR2_API_CLIENT_SECRET', SeurLib::getValue("SEUR2_API_CLIENT_SECRET"));
+        Configuration::updateValue('SEUR2_API_USERNAME', SeurLib::getValue("SEUR2_API_USERNAME"));
+        Configuration::updateValue('SEUR2_API_PASSWORD', SeurLib::getValue("SEUR2_API_PASSWORD"));
 
-        Configuration::updateValue('SEUR2_R_EORI', Tools::getValue("SEUR2_R_EORI"));
-        Configuration::updateValue('SEUR2_D_EORI', Tools::getValue("SEUR2_D_EORI"));
-        Configuration::updateValue('SEUR2_TARIC', Tools::getValue("SEUR2_TARIC"));
+        Configuration::updateValue('SEUR2_R_EORI', SeurLib::getValue("SEUR2_R_EORI"));
+        Configuration::updateValue('SEUR2_D_EORI', SeurLib::getValue("SEUR2_D_EORI"));
+        Configuration::updateValue('SEUR2_TARIC', SeurLib::getValue("SEUR2_TARIC"));
 
 
-        $id_ccc = Tools::getValue("id_seur_ccc");
+        $id_ccc = SeurLib::getValue("id_seur_ccc");
 
         $seur_ccc = new SeurCCC($id_ccc);
 
-        if(Tools::getValue("ccc") == '' ||
-            Tools::getValue("cit") == '' ||
-            Tools::getValue("franchise") == '') {
+        if(SeurLib::getValue("ccc") == '' ||
+            SeurLib::getValue("cit") == '' ||
+            SeurLib::getValue("franchise") == '') {
             return false;
         }
 
-        $seur_ccc->ccc = Tools::getValue("ccc");
-        $seur_ccc->cit = Tools::getValue("cit");
-        $seur_ccc->franchise = Tools::getValue("franchise");
-        $seur_ccc->nombre_personalizado = Tools::getValue("nombre_personalizado").'';
-        $seur_ccc->phone = SeurLib::cleanPhone(Tools::getValue("phone"));
-        $seur_ccc->fax = Tools::getValue("fax");
-        $seur_ccc->email = Tools::getValue("email");
-        $seur_ccc->e_devoluciones = Tools::getValue("eDevoluciones");
-        $seur_ccc->url_devoluciones = Tools::getValue("urleDevoluciones");
-        $seur_ccc->click_connect = Tools::getValue("clickCollect");
+        $seur_ccc->ccc = SeurLib::getValue("ccc");
+        $seur_ccc->cit = SeurLib::getValue("cit");
+        $seur_ccc->franchise = SeurLib::getValue("franchise");
+        $seur_ccc->nombre_personalizado = SeurLib::getValue("nombre_personalizado").'';
+        $seur_ccc->phone = SeurLib::cleanPhone(SeurLib::getValue("phone"));
+        $seur_ccc->fax = SeurLib::getValue("fax");
+        $seur_ccc->email = SeurLib::getValue("email");
+        $seur_ccc->e_devoluciones = SeurLib::getValue("eDevoluciones");
+        $seur_ccc->url_devoluciones = SeurLib::getValue("urleDevoluciones");
+        $seur_ccc->click_connect = SeurLib::getValue("clickCollect");
 
-        $seur_ccc->post_code = Tools::getValue("post_code");
-        $seur_ccc->street_type = Tools::getValue("street_type");
-        $seur_ccc->street_name = Tools::getValue("street_name");
-        $seur_ccc->town = Tools::getValue("town");
-        $seur_ccc->state = Tools::getValue("state");
-        $seur_ccc->country = Tools::getValue("country");
-        $seur_ccc->street_number = Tools::getValue("street_number");
-        $seur_ccc->staircase = Tools::getValue("staircase");
-        $seur_ccc->floor = Tools::getValue("floor");
-        $seur_ccc->door = Tools::getValue("door");
-        $seur_ccc->geolabel = Tools::getValue("geolabel");
-        $seur_ccc->id_shop = Tools::getValue("id_shop");
+        $seur_ccc->post_code = SeurLib::getValue("post_code");
+        $seur_ccc->street_type = SeurLib::getValue("street_type");
+        $seur_ccc->street_name = SeurLib::getValue("street_name");
+        $seur_ccc->town = SeurLib::getValue("town");
+        $seur_ccc->state = SeurLib::getValue("state");
+        $seur_ccc->country = SeurLib::getValue("country");
+        $seur_ccc->street_number = SeurLib::getValue("street_number");
+        $seur_ccc->staircase = SeurLib::getValue("staircase");
+        $seur_ccc->floor = SeurLib::getValue("floor");
+        $seur_ccc->door = SeurLib::getValue("door");
+        $seur_ccc->geolabel = SeurLib::getValue("geolabel");
+        $seur_ccc->id_shop = SeurLib::getValue("id_shop");
 
         $seur_ccc->save();
     }
 
     protected function postProcessSettings()
     {
-        Configuration::updateValue("SEUR2_SETTINGS_COD", Tools::getValue("SEUR2_SETTINGS_COD"));
-        Configuration::updateValue("SEUR2_SETTINGS_COD_DETAILED_TAXES", Tools::getValue("SEUR2_SETTINGS_COD_DETAILED_TAXES"));
-        Configuration::updateValue("SEUR2_SETTINGS_COD_FEE_PERCENT", Tools::getValue("SEUR2_SETTINGS_COD_FEE_PERCENT"));
-        Configuration::updateValue("SEUR2_SETTINGS_COD_FEE_MIN", Tools::getValue("SEUR2_SETTINGS_COD_FEE_MIN"));
-        Configuration::updateValue("SEUR2_SETTINGS_COD_MIN", Tools::getValue("SEUR2_SETTINGS_COD_MIN"));
-        Configuration::updateValue("SEUR2_SETTINGS_COD_MAX", Tools::getValue("SEUR2_SETTINGS_COD_MAX"));
-        Configuration::updateValue("SEUR2_SETTINGS_COD_RATE", Tools::getValue('SEUR2_SETTINGS_COD_RATE'));
-        Configuration::updateValue("SEUR2_SETTINGS_NOTIFICATION", Tools::getValue("SEUR2_SETTINGS_NOTIFICATION"));
-        Configuration::updateValue("SEUR2_SETTINGS_NOTIFICATION_TYPE", Tools::getValue("SEUR2_SETTINGS_NOTIFICATION_TYPE"));
-        Configuration::updateValue("SEUR2_SETTINGS_ALERT", Tools::getValue("SEUR2_SETTINGS_ALERT"));
-        Configuration::updateValue("SEUR2_SETTINGS_ALERT_TYPE", Tools::getValue("SEUR2_SETTINGS_ALERT_TYPE"));
-        Configuration::updateValue("SEUR2_SETTINGS_PRINT_TYPE", Tools::getValue("SEUR2_SETTINGS_PRINT_TYPE"));
-        Configuration::updateValue("SEUR2_SETTINGS_LABEL_REFERENCE_TYPE", Tools::getValue("SEUR2_SETTINGS_LABEL_REFERENCE_TYPE"));
-        Configuration::updateValue("SEUR2_SETTINGS_PICKUP", Tools::getValue("SEUR2_SETTINGS_PICKUP"));
-        Configuration::updateValue("SEUR2_GOOGLE_API_KEY", Tools::getValue("SEUR2_GOOGLE_API_KEY"));
-        Configuration::updateValue("SEUR2_CAPTURE_ORDER", Tools::getValue("SEUR2_CAPTURE_ORDER"));
-        Configuration::updateValue("SEUR2_STATUS_DELIVERED", Tools::getValue("select_status_SEUR2_STATUS_DELIVERED"));
-        Configuration::updateValue("SEUR2_STATUS_IN_TRANSIT", Tools::getValue("select_status_SEUR2_STATUS_IN_TRANSIT"));
-        Configuration::updateValue("SEUR2_STATUS_INCIDENCE", Tools::getValue("select_status_SEUR2_STATUS_INCIDENCE"));
-        Configuration::updateValue("SEUR2_STATUS_RETURN_IN_PROGRESS", Tools::getValue("select_status_SEUR2_STATUS_RETURN_IN_PROGRESS"));
-        Configuration::updateValue("SEUR2_STATUS_AVAILABLE_IN_STORE", Tools::getValue("select_status_SEUR2_STATUS_AVAILABLE_IN_STORE"));
-        Configuration::updateValue("SEUR2_STATUS_CONTRIBUTE_SOLUTION", Tools::getValue("select_status_SEUR2_STATUS_CONTRIBUTE_SOLUTION"));
-        Configuration::updateValue("SEUR2_SENDED_ORDER", Tools::getValue("SEUR2_MARK_SENDED")==1?1:0);
-        Configuration::updateValue("SEUR2_SENDED_IN_MANIFEST", Tools::getValue("SEUR2_MARK_SENDED")==2?1:0);
-        Configuration::updateValue("SEUR2_AUTO_CREATE_LABELS", Tools::getValue("SEUR2_AUTO_CREATE_LABELS"));
-        if(Tools::getValue("SEUR2_AUTO_CREATE_LABELS_PAYMENTS_METHODS_AVAILABLE"))
-            $auto_create_labels_payments_methods_available = implode(',', Tools::getValue("SEUR2_AUTO_CREATE_LABELS_PAYMENTS_METHODS_AVAILABLE"));
+        Configuration::updateValue("SEUR2_SETTINGS_COD", SeurLib::getValue("SEUR2_SETTINGS_COD"));
+        Configuration::updateValue("SEUR2_SETTINGS_COD_DETAILED_TAXES", SeurLib::getValue("SEUR2_SETTINGS_COD_DETAILED_TAXES"));
+        Configuration::updateValue("SEUR2_SETTINGS_COD_FEE_PERCENT", SeurLib::getValue("SEUR2_SETTINGS_COD_FEE_PERCENT"));
+        Configuration::updateValue("SEUR2_SETTINGS_COD_FEE_MIN", SeurLib::getValue("SEUR2_SETTINGS_COD_FEE_MIN"));
+        Configuration::updateValue("SEUR2_SETTINGS_COD_MIN", SeurLib::getValue("SEUR2_SETTINGS_COD_MIN"));
+        Configuration::updateValue("SEUR2_SETTINGS_COD_MAX", SeurLib::getValue("SEUR2_SETTINGS_COD_MAX"));
+        Configuration::updateValue("SEUR2_SETTINGS_COD_RATE", SeurLib::getValue('SEUR2_SETTINGS_COD_RATE'));
+        Configuration::updateValue("SEUR2_SETTINGS_NOTIFICATION", SeurLib::getValue("SEUR2_SETTINGS_NOTIFICATION"));
+        Configuration::updateValue("SEUR2_SETTINGS_NOTIFICATION_TYPE", SeurLib::getValue("SEUR2_SETTINGS_NOTIFICATION_TYPE"));
+        Configuration::updateValue("SEUR2_SETTINGS_ALERT", SeurLib::getValue("SEUR2_SETTINGS_ALERT"));
+        Configuration::updateValue("SEUR2_SETTINGS_ALERT_TYPE", SeurLib::getValue("SEUR2_SETTINGS_ALERT_TYPE"));
+        Configuration::updateValue("SEUR2_SETTINGS_PRINT_TYPE", SeurLib::getValue("SEUR2_SETTINGS_PRINT_TYPE"));
+        Configuration::updateValue("SEUR2_SETTINGS_LABEL_REFERENCE_TYPE", SeurLib::getValue("SEUR2_SETTINGS_LABEL_REFERENCE_TYPE"));
+        Configuration::updateValue("SEUR2_SETTINGS_PICKUP", SeurLib::getValue("SEUR2_SETTINGS_PICKUP"));
+        Configuration::updateValue("SEUR2_GOOGLE_API_KEY", SeurLib::getValue("SEUR2_GOOGLE_API_KEY"));
+        Configuration::updateValue("SEUR2_CAPTURE_ORDER", SeurLib::getValue("SEUR2_CAPTURE_ORDER"));
+        Configuration::updateValue("SEUR2_STATUS_DELIVERED", SeurLib::getValue("select_status_SEUR2_STATUS_DELIVERED"));
+        Configuration::updateValue("SEUR2_STATUS_IN_TRANSIT", SeurLib::getValue("select_status_SEUR2_STATUS_IN_TRANSIT"));
+        Configuration::updateValue("SEUR2_STATUS_INCIDENCE", SeurLib::getValue("select_status_SEUR2_STATUS_INCIDENCE"));
+        Configuration::updateValue("SEUR2_STATUS_RETURN_IN_PROGRESS", SeurLib::getValue("select_status_SEUR2_STATUS_RETURN_IN_PROGRESS"));
+        Configuration::updateValue("SEUR2_STATUS_AVAILABLE_IN_STORE", SeurLib::getValue("select_status_SEUR2_STATUS_AVAILABLE_IN_STORE"));
+        Configuration::updateValue("SEUR2_STATUS_CONTRIBUTE_SOLUTION", SeurLib::getValue("select_status_SEUR2_STATUS_CONTRIBUTE_SOLUTION"));
+        Configuration::updateValue("SEUR2_SENDED_ORDER", SeurLib::getValue("SEUR2_MARK_SENDED")==1?1:0);
+        Configuration::updateValue("SEUR2_SENDED_IN_MANIFEST", SeurLib::getValue("SEUR2_MARK_SENDED")==2?1:0);
+        Configuration::updateValue("SEUR2_AUTO_CREATE_LABELS", SeurLib::getValue("SEUR2_AUTO_CREATE_LABELS"));
+        if(SeurLib::getValue("SEUR2_AUTO_CREATE_LABELS_PAYMENTS_METHODS_AVAILABLE"))
+            $auto_create_labels_payments_methods_available = implode(',', SeurLib::getValue("SEUR2_AUTO_CREATE_LABELS_PAYMENTS_METHODS_AVAILABLE"));
         else
             $auto_create_labels_payments_methods_available = '';
         Configuration::updateValue("SEUR2_AUTO_CREATE_LABELS_PAYMENTS_METHODS_AVAILABLE", $auto_create_labels_payments_methods_available);
-        Configuration::updateValue("SEUR2_AUTO_CALCULATE_PACKAGES", Tools::getValue("SEUR2_AUTO_CALCULATE_PACKAGES"));
+        Configuration::updateValue("SEUR2_AUTO_CALCULATE_PACKAGES", SeurLib::getValue("SEUR2_AUTO_CALCULATE_PACKAGES"));
     }
 
     private function loadParamsMerchantSmarty($id_ccc)
@@ -1846,5 +1850,16 @@ class Seur extends CarrierModule
 
         echo json_encode($jsondata);
         die;  //para que no siga la ejecución y devuelva bien para el ajax
+    }
+
+    public function hookDisplayCarrierExtraContent($params)
+    {
+        $carrierId = (int) $params['carrier']['id'];
+        if (!SeurLib::isSeurPOSCarrier($carrierId)) { return ''; }
+
+        $this->context->smarty->assign(array(
+            'seur_pos_carrier_id' => $carrierId,
+        ));
+        return $this->fetch('module:seur/views/templates/hook/carrier_extra.tpl');
     }
 }

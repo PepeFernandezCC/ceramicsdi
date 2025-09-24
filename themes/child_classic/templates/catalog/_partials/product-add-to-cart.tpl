@@ -68,21 +68,12 @@
             {* PLANATEC *}
             {assign var="m2_caja" value="0"}
             {assign var="piezas_caja" value="0"}
-            {assign var="junta_recomendada" value="0"}
-            {assign var="dias_plazo" value=""}
-            {assign var="texto_muestra" value=""}
             {assign var="muestra_de_pago" value=""}
             {foreach from=$product.grouped_features item=feature}
                 {if $FEATURE_M2_CAJA_ID === $feature.id_feature}
                     {assign var="m2_caja" value="{$feature.value}"}
                 {elseif $FEATURE_PIEZAS_CAJA_ID === $feature.id_feature}
                     {assign var="piezas_caja" value="{$feature.value}"}
-                {elseif $FEATURE_JUNTA_RECOMENDADA_ID === $feature.id_feature}
-                    {assign var="junta_recomendada" value="{$feature.value}"}
-                {elseif $FEATURE_DIAS_PLAZO_ENTREGA_ID === $feature.id_feature}
-                    {assign var="dias_plazo" value="{$feature.value}"}
-                {elseif $FEATURE_TEXTO_MUESTRA_ID === $feature.id_feature}
-                    {assign var="texto_muestra" value="{$feature.value}"}
                 {elseif $FEATURE_MUESTRA_DE_PAGO_ID === $feature.id_feature}
                     {assign var="muestra_de_pago" value="{$feature.value}"}
                 {/if}
@@ -213,18 +204,11 @@
                         <div class="row mx-auto row-calculator" style="margin-top: -25px">
 
                             <div class="col-xl-6 col-xs-12 item-calculator">
-                                    <label class="surface-quantities" for="surface-input" style="width: 100%">
-                                        <div class="capacity-format">
-                                            <div>
-                                                {foreach from=$product.features item='feature'}
-                                                    {if isset($feature.id_feature) && $feature.id_feature == $FEATURE_M2_CAJA_ID}
-                                                        <span>m<sup>2</sup>/{l s='box' d='Shop.Theme.Catalog'}{l s=': ' d='Shop.Theme.Catalog'}<strong>{$feature.value}</strong></span>
-                                                    {/if}
-                                                {/foreach}
-                                            </div>   
-                                            <div>
-                                                <strong>m<sup>2</sup></strong>
-                                            </div>                 
+                                    <label>
+                                        <div class="queryCalculator">
+                                            <strong>
+                                                {l s='How many m2 do you need' d='Shop.Theme.Catalog'}
+                                            </strong>
                                         </div>                                
                                     </label>
 
@@ -242,6 +226,38 @@
                                             style="border: 2px solid #eac133;"
                                     >
                             </div>
+
+                            <div>
+                                {foreach from=$product.features item='feature'}
+                                    {if isset($feature.id_feature) && $feature.id_feature == $FEATURE_M2_CAJA_ID}
+                                        <span class="m2cajaInfo">m<sup>2</sup>/{l s='box' d='Shop.Theme.Catalog'}{l s=': ' d='Shop.Theme.Catalog'}<strong>{$feature.value}</strong></span>
+                                    {/if}
+                                {/foreach}
+                            </div> 
+
+                        </div>
+
+                        <div class="row mx-auto row-calculator">
+
+                            <div class="col-xl-6 col-xs-12 item-calculator">
+  
+                                <div style="text-transform: uppercase">
+                                    <label>
+                                        <strong>{l s='Boxes' d='Shop.Theme.Catalog'}:</strong>
+                                    </label>
+                                </div>
+                                <div class="box-container">
+                                    <button type="button" id="decrementButton" class="boxButton" style="width:65px; background-color: #eac133">
+                                        <i class="fa-solid fa-minus"></i>
+                                    </button>                            
+                                    <input type="number" id="numberInput" value="0" class="boxInput max-widt-box" inputmode="decimal">
+                                    <button type="button" id="incrementButton" class="boxButton" style="width:65px; background-color: #eac133">
+                                        <i class="fa-solid fa-plus"></i>
+                                    </button>
+                                </div>
+
+                            </div>
+
                             <div class="col-xl-6 col-xs-12 item-calculator">
                                 {if $category->id_category != $CATEGORY_INSTALACION_Y_MONTAJE_ID}
                                     <div class="recomendation">
@@ -260,17 +276,14 @@
                                 {/if}
                             </div>
 
-                        </div>
-
-                        <div class="row mx-auto row-calculator">
+                           
 
                             <div class="col-xl-6 col-xs-6 item-calculator">
                                 <div style="text-transform: uppercase">
                                     <label>
                                         <strong>
-                                        {* l s='rounded up to full boxes' d='Shop.Theme.Actions' *}
-                                        
-                                          {l s='Total' d='Shop.Theme.Actions'}:</strong>
+                                            {l s='Total' d='Shop.Theme.Actions'}:
+                                        </strong>
                                     </label>
                                 </div>
                                 <div>
@@ -285,26 +298,9 @@
                                 </div>
                             </div>
 
-                            <div class="col-xl-6 col-xs-6 item-calculator" style="padding-left: 20px">
-  
-                                <div style="text-transform: uppercase">
-                                    <label>
-                                        <strong>{l s='Boxes' d='Shop.Theme.Catalog'}:</strong>
-                                    </label>
-                                </div>
-                                <div class="box-container">
-                                    <button type="button" id="decrementButton" class="boxButton" style="width:40px; background-color: #eac133">
-                                        <i class="fa-solid fa-minus"></i>
-                                    </button>                            
-                                    <input type="number" id="numberInput" value="0" class="boxInput max-widt-box" inputmode="decimal">
-                                    <button type="button" id="incrementButton" class="boxButton" style="width:40px; background-color: #eac133">
-                                        <i class="fa-solid fa-plus"></i>
-                                    </button>
-                                </div>
-
-                            </div>
-
                         </div>
+
+                        <hr>
 
                     {/if}
 
@@ -419,99 +415,7 @@
                         {* END PLANATEC *}
                     </div>
 
-                    {* PLANATEC *}
-                    <div id="transport-wrapper" class="row mx-auto" style="margin-top:25px;margin-bottom:10px">
-                        <div class="col-xl-12 col-xs-12">
-                            <div class="product-transport">
-                                <div style="width: 100%;">
-                                    {if $dias_plazo !== '' or $texto_muestra !== ''}
-                                    
-                                        {if $texto_muestra !== ''}
-                                            
-                                            <div>
-                                                <div style="text-transform: uppercase; font-weight: 500">
-                                                   <span style="color: #a3a3a3; font-size: large "><i class="fa-solid fa-circle-exclamation"></i></span> {l s='Samples' d='Shop.Theme.Catalog'}
-                                                </div>
-                                                <div>
-                                                    {if $hasSample}
-                                                        {$productTransportSamples|replace:'{texto_muestra}':$texto_muestra nofilter}
-                                                    {else}
-                                                        <p>{$sampleTextWarning}<p>
-                                                    {/if}
-                                                </div>
-                                            </div>
-                                        {/if}
-                                        {if $dias_plazo !== ''}
-                                            <div>
-                                                <div style="text-transform: uppercase; font-weight: 500">
-                                                  <span style="color: #a3a3a3; font-size: large"><i class="fa-solid fa-truck"></i></span> {l s='Transport' d='Shop.Theme.Catalog'}
-                                                </div>
-                                                <div>{$productTransport|replace:'{dias_plazo}':$dias_plazo nofilter}</div>
-                                            </div>
-                                        {/if}
-                                    {/if}
-                                    {if $product.attachments}
-                                        {foreach from=$product.attachments item=attachment}
-                                            {if ($attachment.name == 'PDF Técnico' && $language.id == 1)
-                                                || ($attachment.name == 'PDF technique' && $language.id == 2)
-                                                || ($attachment.name == 'Technical PDF' && $language.id == 3)
-                                                || ($attachment.name == 'PDF Technical' && $language.id == 4)
-                                                || ($attachment.name == 'PDF Tecnico' && $language.id == 5)
-                                                || ($attachment.name == 'PDF-techniek' && $language.id == 6)
-                                            }
-                                                <div id="product-attachment-pdf-tecnico">
-                                                    <div>
-                                                        <span style="color: #a3a3a3; font-size: large"><i class="fa-solid fa-file"></i></span>
-                                                        <a href="{url entity='attachment' params=['id_attachment' => $attachment.id_attachment]}"
-                                                        target="_blank"
-                                                        style="text-transform: uppercase;font-weight: 500;font-size: 14px !important;">
-                                                            {l s='Download' d='Shop.Theme.Actions'} {l s='Technical PDF' d='Shop.Theme.Catalog'}
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            {/if}
-                                        {/foreach}
-                                    {/if}
 
-                                    {$junta_recomendada_nombre = Product::getProductName($junta_recomendada)}
-                                    {$imageCoverUrl= Product::getImageByPosition(1, $junta_recomendada)}
-                                    {$imageDustUrl= Product::getImageByPosition(2, $junta_recomendada)}
-                                    {assign var='hasCover' value=true}
-                                    {assign var='hasDust' value=true}
-                                    {if strpos($imageCoverUrl, 'no-hay-cover') !== false}
-                                        {assign var='hasCover' value=false}
-                                    {/if}
-
-                                    {if strpos($imageDustUrl, 'no-hay-cover') !== false}
-                                        {assign var='hasDust' value=false}
-                                    {/if}
-
-                                    {if !empty($junta_recomendada) && !empty($junta_recomendada_nombre)}
-                                        <div style="padding-top:25px">
-                                            <div id="recommended-board-wrapper" style="text-transform: uppercase; font-weight: 500">
-                                                <span style="padding-right:10px">{l s='Recommended board' d='Shop.Theme.Catalog'}{l s=':' d='Shop.Theme.Catalog'}</span> 
-                                                <a href="{Context::getContext()->link->getProductLink($junta_recomendada)}" style="font-size:.92rem;">
-                                                    {$junta_recomendada_nombre}
-                                                </a>
-                                            </div>
-                                            <div class="mobile-text-center">
-                                                <a href="{Context::getContext()->link->getProductLink($junta_recomendada)}">
-                                                    {if $hasCover}
-                                                        <img loading="lazy" src="{$imageCoverUrl}" style="max-width:155px" alt="{$junta_recomendada_nombre} - cover"/>
-                                                    {/if}
-                                                    {if $hasDust}
-                                                        <img loading="lazy" src="{$imageDustUrl}" style="max-width:155px" alt="{$junta_recomendada_nombre} - sample"/>
-                                                    {/if}
-                                                </a>
-                                            </div>
-                                        </div>
-                                    {/if}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {* END PLANATEC *}
                 </div>
             
                 {block name='waste_modal'}
@@ -688,90 +592,8 @@
                         </div>
                     {/if}
 
-                    <div id="transport-wrapper" class="row mx-auto" style="margin-bottom:30px">
-                        <div class="col-xl-12 col-xs-12">
-                            <div class="product-transport">
-                                <div style="width: 100%">
-                                    {if $dias_plazo !== '' or $texto_muestra !== ''}
-                                        {if $dias_plazo !== ''}
-                                            <div>
-                                                <div style="text-transform: uppercase; font-weight: 500">
-                                                    <span style="color: #a3a3a3; font-size: large"><i class="fa-solid fa-truck"></i></span> {l s='Transport' d='Shop.Theme.Catalog'}
-                                                </div>
-                                                <div>{$productTransport|replace:'{dias_plazo}':$dias_plazo nofilter}</div>
-                                            </div>
-                                        {/if}
-                                        {if $texto_muestra !== ''}
-                                            <div>
-                                                <div>
-                                                    <span style="color: #a3a3a3 "><i class="fa-solid fa-circle-exclamation"></i></span>
-                                                </div>
-                                            <div>
-                                            {if $hasSample}
-                                                {$productTransportSamples|replace:'{texto_muestra}':$texto_muestra nofilter}
-                                            {else}
-                                                <p>{$sampleTextWarning}</p>
-                                            {/if}
-                                        {/if}
-                                    {/if}
-                                    {if $product.attachments}
-                                        {foreach from=$product.attachments item=attachment}
-                                            {if ($attachment.name == 'PDF Técnico' && $language.id == 1)
-                                            || ($attachment.name == 'PDF technique' && $language.id == 2)
-                                            || ($attachment.name == 'Technical PDF' && $language.id == 3)
-                                            || ($attachment.name == 'PDF Technical' && $language.id == 4)
-                                            || ($attachment.name == 'PDF Tecnico' && $language.id == 5)
-                                            || ($attachment.name == 'PDF-techniek' && $language.id == 6)
-                                            }
-                                                <div id="product-attachment-pdf-tecnico">
-                                                    <div>
-                                                        <span style="color: #a3a3a3; font-size: large"><i class="fa-solid fa-file"></i></span>
-                                                        <a href="{url entity='attachment' params=['id_attachment' => $attachment.id_attachment]}"
-                                                        target="_blank"
-                                                        style="text-transform: uppercase;font-weight: 500;font-size: 14px !important;">
-                                                            {l s='Download' d='Shop.Theme.Actions'} {l s='Technical PDF' d='Shop.Theme.Catalog'}
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            {/if}
-                                        {/foreach}
-                                    {/if}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
-                {$junta_recomendada_nombre = Product::getProductName($junta_recomendada)}
-                                            
-                {$imageUrl= Product::getImageByPosition(2, $junta_recomendada)}
-                {assign var='hasCover' value=true}
-                {if strpos($imageUrl, 'no-hay-cover') !== false}
-                    {assign var='hasCover' value=false}
-                {/if}
-
-                {if !empty($junta_recomendada) && !empty($junta_recomendada_nombre)}
-                    <div id="recommended-board-wrapper" class="row" style="display:flex; align-items: center">
-                        <div class="col-xl-6 col-xs-12" style="display: flex;align-items: center;justify-content: space-between;">
-                            <label for="">{l s='Recommended board' d='Shop.Theme.Catalog'}{l s=':' d='Shop.Theme.Catalog'}</label>
-                            <a class="hidden-sm-up"
-                               href="{Context::getContext()->link->getProductLink($junta_recomendada)}">
-                                {if $hasCover}
-                                    <img src="{Product::getImageByPosition(2, $junta_recomendada)}" style="margin-left:10px;max-width:50px" alt="{$junta_recomendada_nombre}"/>
-                                {/if} 
-                                {$junta_recomendada_nombre}
-                            </a>
-                        </div>
-                        <div class="col-xl-6 col-xs-12 hidden-xs-down">
-                            <a href="{Context::getContext()->link->getProductLink($junta_recomendada)}">
-                                {if $hasCover}
-                                    <img src="{Product::getImageByPosition(2, $junta_recomendada)}" style="margin-left:10px;max-width:50px" alt="{$junta_recomendada_nombre}"/>
-                                {/if}
-                                {$junta_recomendada_nombre}
-                            </a>
-                        </div>
-                    </div>
-                {/if}
 
             {/if}
 

@@ -17,6 +17,7 @@ class SeurLib
 {
     const CODPaymentName = 'SEUR Contra Reembolso';
     const CODPaymentModule = 'seurcashondelivery';
+    const SKEW = 60; // margen de 60s para evitar caducar en mitad de una petición
 
     public static $baleares_states = array(
 		'ES-IB' => 'Baleares'
@@ -297,6 +298,17 @@ class SeurLib
 			FROM `'._DB_PREFIX_.'seur2_carrier` sc
 			LEFT JOIN `'._DB_PREFIX_.'carrier` c ON c.id_reference=sc.carrier_reference
 			WHERE c.`id_carrier` = "'.pSQL($id_carrier).'"'
+        );
+    }
+
+    public static function isSeurPOSCarrier($id_carrier)
+    {
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow('
+			SELECT sc.*,c.name
+			FROM `'._DB_PREFIX_.'seur2_carrier` sc
+			LEFT JOIN `'._DB_PREFIX_.'carrier` c ON c.id_reference=sc.carrier_reference
+			WHERE c.`id_carrier` = "'.pSQL($id_carrier).'"
+			AND sc.shipping_type = 2'
         );
     }
 
@@ -595,7 +607,65 @@ class SeurLib
         return false;
     }
 
+    private static function getValidToken(): string
+    {
+        $idShop = (int) Context::getContext()->shop->id;
+        $token  = (string) Configuration::get('SEUR2_TOKEN_API', null, null, $idShop);
+        $exp = (int) Configuration::get('SEUR2_TOKEN_API_EXPIRES_AT', null, null, $idShop);
+
+        if (!$token || $exp <= (time() + self::SKEW)) {
+            // Evitar carreras si hay peticiones concurrentes
+            SeurLib::withLock(function() use ($idShop, &$token) {
+
+                // Relee por si otra petición ya lo renovó mientras esperábamos el lock
+                $currentToken = (string) Configuration::get('SEUR2_TOKEN_API', null, null, $idShop);
+                $currentExp = (int) Configuration::get('SEUR2_TOKEN_API_EXPIRES_AT', null, null, $idShop);
+                if ($currentToken && $currentExp > (time() + self::SKEW)) {
+                    $token = $currentToken;
+                    return;
+                }
+
+                $resp = SeurLib::requestNewToken();
+                if (!$resp) {
+                    SeurLib::showMessageError(null, 'Error al obtener el token de la API de SEUR');
+                    $token = false;
+                    return;
+                }
+                $newToken    = $resp->access_token;
+                $expiresAt   = time() + (int) $resp->expires_in;
+
+                // Guarda en Configuration por tienda
+                Configuration::updateValue('SEUR2_TOKEN_API', $newToken, false, null, $idShop);
+                Configuration::updateValue('SEUR2_TOKEN_API_EXPIRES_AT', $expiresAt, false, null, $idShop);
+
+                $token = $newToken;
+            });
+        }
+
+        return $token;
+    }
+
+    private static function withLock(callable $fn): void
+    {
+        $lockFile = _PS_CACHE_DIR_.'seur_token.lock';
+        $fh = @fopen($lockFile, 'c');
+        if ($fh === false) { $fn(); return; } // fallback sin lock
+
+        try {
+            flock($fh, LOCK_EX);
+            $fn();
+        } finally {
+            flock($fh, LOCK_UN);
+            fclose($fh);
+        }
+    }
+
     public static function getToken()
+    {
+        return SeurLib::getValidToken();
+    }
+
+    private static function requestNewToken()
     {
         if (!SeurLib::isAPIConfigured()) {
             return false;
@@ -623,11 +693,11 @@ class SeurLib
         $curl_result = SeurLib::sendCurl($url, $headers, $data, "POST", true);
 
         if (isset($curl_result->access_token)) {
-            return $curl_result->access_token;
+            return $curl_result;
         } elseif ($curl_result == false || isset($curl_result->error)) {
             SeurLib::showMessageError(null, 'TOKEN ERROR: '.$curl_result->error_description);
-            return false;
         }
+        return false;
     }
 
     /**********
@@ -635,7 +705,8 @@ class SeurLib
      * @param $header array
      * @param $data array
      * @param $action string
-     * @param $implode bool
+     * @param $queryparams bool
+     * @param $file bool
      *
      * @return string json
      * */
@@ -693,7 +764,16 @@ class SeurLib
         }
 
         if (curl_errno($curl)) {
-            SeurLib::showMessageError(null, "CURL ERROR: " . curl_error($curl), true);
+            $errno = curl_errno($curl);
+            $error_message = curl_error($curl);
+            $error_str = function_exists('curl_strerror') ? curl_strerror($errno) : 'No strerror available';
+
+            SeurLib::showMessageError(
+                null,
+                "CURL ERROR #$errno: $error_message ($error_str)",
+                true
+            );
+
             curl_close($curl);
             return false;
         }
@@ -1032,6 +1112,15 @@ class SeurLib
         return $total_paid > 0 ? $total_paid : 0;
     }
 
+    public static function removeAccents($text)
+    {
+        return str_replace(
+            array('á', 'é', 'í', 'ó', 'ú', 'Á', 'É', 'Í', 'Ó', 'Ú', 'ñ', 'Ñ', 'ü', 'Ü'),
+            array('a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U', 'n', 'N', 'u', 'U'),
+            $text
+        );
+    }
+
     static function getLabelFileName($order, $label_file) {
         if (!$label_file) {
             $label_file = SeurLib::existLabelFile($order->reference);
@@ -1276,4 +1365,11 @@ class SeurLib
         return Context::getContext()->shop->getBaseURL(Configuration::get('PS_SSL_ENABLED'));
     }
 
+    public static function getValue($key, $default_value = false) {
+        $value = Tools::getValue($key, $default_value);
+        if (is_string($value)) {
+            return trim($value);
+        }
+        return $value;
+    }
 }
