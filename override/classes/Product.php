@@ -216,7 +216,11 @@ class Product extends ProductCore {
 
     }
 
-    public static function getProductAttribute($productId, $attributeId, $language = 1) {
+    public static function getProductAttribute($productId, $attributeId, $language = NULL) {
+
+        if(!$language) {
+            $language = (int) Context::getContext()->language->id;
+        }
 
         $db = Db::getInstance();
 

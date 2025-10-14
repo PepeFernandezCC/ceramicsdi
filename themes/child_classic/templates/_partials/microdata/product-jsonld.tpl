@@ -45,12 +45,17 @@
   {assign var=priceWeb value=$product.price_amount}
 {/if}
 
-
+{assign var=productColor value=Product::getProductAttribute($product.id, 46)}
+{assign var=productMaterial value=Product::getProductAttribute($product.id, 45)}
 <script type="application/ld+json">
   {
     "@context": "https://schema.org/",
     "@type": "Product",
     "name": "{$product.name}",
+    {if $productColor}"color": "{$productColor}",{/if}
+
+    {if $productMaterial}"material": "{$productMaterial}",{/if}
+
     "description": "{$page.meta.description|regex_replace:"/[\r\n]/" : " "}",
     "category": "{$product.category_name}",
     {if !empty($product.cover)}"image" :"{$product.cover.bySize.home_default.url}",{/if}
