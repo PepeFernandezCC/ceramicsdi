@@ -24,34 +24,12 @@
  *}
 
 {assign var="categoriasProducto" value=Product::getProductCategories($product.id)}
-
-{assign var="muestraEnCarrito" value=false}
-{assign var="productoEnCarrito" value=false}
+{assign var="id_cart" value=Context::getContext()->cart->id} 
+{assign var="muestraEnCarrito" value=Cart::checkProductInCartStatic($id_cart, $product.id, true)}
+{assign var="productoEnCarrito" value=Cart::checkProductInCartStatic($id_cart, $product.id, false)}
 {assign var="samplesInCart" value=0}
-{assign var="sampleAttribute" value=['Muestra', 'Échantillon', 'Sample', 'Muster', 'Amostra', 'Voorbeeld']}
-{assign var="sampleValues" value=['No', 'Non', 'Nein', 'Não', 'Geen']}
-
-
-{foreach from=$cart.products item='cartProduct'}
-    
-    {foreach from=$cartProduct.attributes key="attribute" item="value"}
-        {if in_array($attribute, $sampleAttribute)}
-            {if in_array($value, $sampleValues)}
-                {if $product.id == $cartProduct.id}
-                    {$productoEnCarrito = true}
-                {/if}
-            {else}
-                {$samplesInCart = $samplesInCart + 1}
-                {if $product.id == $cartProduct.id}
-                    {$muestraEnCarrito = true}
-                {/if}
-            {/if}
-        {/if}
-    {/foreach}
-{/foreach}
-
+{assign var="samplesInCart" value=Cart::getSamplesNumberInCartStatic($id_cart)}
 {assign var="maxProductsInCart" value=false}
-
 {if $samplesInCart >= 8}
     {$maxProductsInCart = true}
 {/if}

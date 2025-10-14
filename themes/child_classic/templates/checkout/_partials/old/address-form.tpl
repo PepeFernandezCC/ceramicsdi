@@ -32,12 +32,12 @@
 
     {block name='form_buttons'}
         {if !$form_has_continue_button}
-            <button id="confirmAddressButton" type="submit" class="btn btn-primary float-xs-right">{l s='Save' d='Shop.Theme.Actions'}</button>
+            <button id="confirmAddressButton" data-customer="{$customer.id}" type="submit" class="btn btn-primary float-xs-right">{l s='Save' d='Shop.Theme.Actions'}</button>
             <div class="clearfix"></div>
             <a id="cancel-address-form" class="btn js-cancel-address cancel-address float-xs-right" href="{url entity='order' params=['cancelAddress' => {$type}]}">{l s='Cancel' d='Shop.Theme.Actions'}</a>
         {else}
             <form>
-                <button id="confirmAddressButton" type="submit" class="continue btn btn-primary float-xs-right" name="confirm-addresses" value="1">
+                <button id="confirmAddressButton" data-customer="{$customer.id}" type="submit" class="continue btn btn-primary float-xs-right" name="confirm-addresses" value="1">
                     {l s='Continue' d='Shop.Theme.Actions'}
                 </button>
                 {if $customer.addresses|count > 0}

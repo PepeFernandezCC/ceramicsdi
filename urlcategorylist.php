@@ -11,26 +11,26 @@ $link = new Link();
 $db = Db::getInstance();
 
 // Consulta SQL
-$sql = 'SELECT id_product, id_lang, description, meta_title FROM ps_product_lang';
+$sql = 'SELECT id_category, id_lang, name, meta_title FROM ps_category_lang WHERE id_category != 1';
 $results = $db->executeS($sql);
 
 // Mostrar resultados en tabla HTML
 echo '<table border="1" cellpadding="5" cellspacing="0">';
-echo '<tr><th>ID Producto</th><th>ID Lenguaje</th><th>URL</th><th>MetaTitle(h1)</th><th>Descripción</th></tr>';
+echo '<tr><th>ID Categoría</th><th>ID Lenguaje</th><th>URL</th><th>name</th><th>MetaTitle(h1)</th></tr>';
 
 foreach ($results as $row) {
-    $id_product = $row['id_product'];
+    $id_category = $row['id_category'];
     $id_lang = $row['id_lang'];
     $metaTitle = $row['meta_title'];
-    $description = htmlspecialchars($row['description']); // Evitar HTML roto
-    $product_url = $link->getProductLink($id_product, null, null, null, $id_lang);
+    $name = htmlspecialchars($row['name']); // Evitar HTML roto
+    $category_url = $link->getCategoryLink($id_category, null, null, null, $id_lang);
 
     echo '<tr>';
-    echo '<td>' . $id_product . '</td>';
+    echo '<td>' . $id_category . '</td>';
     echo '<td>' . $id_lang . '</td>';
-    echo '<td> '. $product_url . '</td>';
+    echo '<td> '. $category_url . '</td>';
+    echo '<td>' . $name . '</td>';
     echo '<td>' . $metaTitle . '</td>';
-    echo '<td>' . $description . '</td>';
 
 
     echo '</tr>';

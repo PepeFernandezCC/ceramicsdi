@@ -90,41 +90,42 @@
 
                         <input type="number" name="euros" id="euros-input" inputmode="numeric" step="0.01" min="0.00" value="0.00" 
                         class="input-group boxInput cc-background-color-secondary" aria-label="Total" readonly="readonly" data-price="0" 
-                        style="font-weight: bold; font-size: 17px">
+                        style="font-weight: bold; font-size: 17px; max-height:40px">
                         <div class="scc-coin">€</div>
                     </div>
 
                     <div id="messageContainer" class="alert alert-danger" style="display: none">{l s='Please, complete all the form fields' d='Shop.Theme.Checkout'}</div>
                 </div>
 
+ 
+                    <div id="promo-code" class="{if $cart.discounts|count > 0} in{/if}">
+                        <div class="promo-code">
+                            <div class="row">
+                                <div class="col-xs-12 col-lg-4 text-uppercase">
+                                    {l s='Promo code' d='Shop.Theme.Checkout'}
+                                </div>
+                                <div class="col-xs-12 col-lg-8">
+                                    {block name='cart_voucher_form'}
+                                        <form action="{$urls.pages.cart}" data-link-action="add-voucher" method="post">
+                                            <input type="hidden" name="token" value="{$static_token}">
+                                            <input type="hidden" name="addDiscount" value="1">
+                                            <input class="promo-input" type="text" name="discount_name" placeholder="{l s='Promo code' d='Shop.Theme.Checkout'}">
+                                            <button type="submit" class="btn btn-primary"><span>{l s='Add' d='Shop.Theme.Actions'}</span></button>
+                                        </form>
+                                    {/block}
 
-                <div id="promo-code" class="{if $cart.discounts|count > 0} in{/if}">
-                    <div class="promo-code">
-                        <div class="row">
-                            <div class="col-xs-12 col-lg-4 text-uppercase">
-                                {l s='Promo code' d='Shop.Theme.Checkout'}
+                                    {block name='cart_voucher_notifications'}
+                                        <div class="alert alert-danger js-error" role="alert">
+                                            <i class="material-icons">&#xE001;</i><span class="ml-1 js-error-text"></span>
+                                        </div>
+                                    {/block}
+                                </div>
                             </div>
-                            <div class="col-xs-12 col-lg-8">
-                                {block name='cart_voucher_form'}
-                                    <form action="{$urls.pages.cart}" data-link-action="add-voucher" method="post">
-                                        <input type="hidden" name="token" value="{$static_token}">
-                                        <input type="hidden" name="addDiscount" value="1">
-                                        <input class="promo-input" type="text" name="discount_name" placeholder="{l s='Promo code' d='Shop.Theme.Checkout'}">
-                                        <button type="submit" class="btn btn-primary"><span>{l s='Add' d='Shop.Theme.Actions'}</span></button>
-                                    </form>
-                                {/block}
 
-                                {block name='cart_voucher_notifications'}
-                                    <div class="alert alert-danger js-error" role="alert">
-                                        <i class="material-icons">&#xE001;</i><span class="ml-1 js-error-text"></span>
-                                    </div>
-                                {/block}
-                            </div>
+
                         </div>
-
-
                     </div>
-                </div>
+                
 
                 {if $cart.discounts|count > 0}
                     <p class="block-promo promo-highlighted">

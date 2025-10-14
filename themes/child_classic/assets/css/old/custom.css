@@ -6301,6 +6301,7 @@ span.at-contact {
     position: absolute;
     top: 47px;
     left: 52.75%;
+	z-index: 9;
   }
 }
 
@@ -6323,4 +6324,12 @@ span.at-contact {
     display: block !important;
   }
 
+}
+
+div#deliveryPriceCalculator {
+    margin: 22px;
+}
+
+#category-extra-content a {
+  text-decoration: underline;
 }

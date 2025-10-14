@@ -205,6 +205,12 @@
                     
 
                     <div id="push-scroll-responsive-header">
+                        {assign var="title_material" value=""}
+                        {foreach from=$product.features item='feature'} 
+                            {if isset($feature.id_feature) && $feature.id_feature == $FEATURE_MATERIAL}
+                                {assign var="title_material" value="{$feature.value}"}</span>
+                            {/if}
+                        {/foreach}
 
                         {block name='page_header_container'}
 
@@ -217,7 +223,16 @@
                                         <h1 class="h1 product-card-title">
 
                                             {block name='page_title'}
-                                                {$product.name}
+
+                                                {assign var="product_mini_title_key" value=Product::getProductMinititleKey($product.id)}
+
+                                                <div style="text-transform: uppercase; font-size: 11px; color: gray; font-weight: 500; margin-bottom: 10px;">
+                                                    {l s={$product_mini_title_key} d='Shop.Theme.Catalog'}
+                                                </div>
+                                              
+                                                <div>
+                                                    {$product.name}
+                                                </div>
                                             {/block}
 
                                         </h1>

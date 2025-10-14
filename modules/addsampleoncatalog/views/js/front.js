@@ -426,7 +426,9 @@ if(document.getElementById("address-form")) {
                 document.getElementById("confirmAddressButton").disabled = false;
             }, 100);
         } else {
-            document.getElementById("dni-error").style.display = "none";
+            if(document.getElementById("dni-error")) {
+                document.getElementById("dni-error").style.display = "none";// error cif/dni vacío
+            }  
             this.submit();
         }
     });

@@ -28,22 +28,26 @@ class FrontController extends FrontControllerCore {
 	public const FEATURE_TIPO_ESTANCIA_ID      = '1';
 	public const FEATURE_FORMATO_ID            = '3';
 	public const FEATURE_MEDIDA_ID             = '4';
-	public const FEATURE_ACABADO			   = '7';
 	public const FEATURE_ESPESOR_ID            = '5';
+	public const FEATURE_ACABADO			   = '7';
+	public const FEATURE_VALIDATE_ID		   = '13';
 	public const FEATURE_TIPOLOGIA_PRECIO_ID   = '16';
 	public const FEATURE_M2_CAJA_ID            = '17';
-	public const FEATURE_M2_PIEZA_ID           = '30';
 	public const FEATURE_PIEZAS_CAJA_ID        = '18';
 	public const FEATURE_JUNTA_RECOMENDADA_ID  = '19';
 	public const FEATURE_DIAS_PLAZO_ENTREGA_ID = '20';
 	public const FEATURE_TEXTO_MUESTRA_ID      = '21';
+	public const FEATURE_INSTALLATION_ID	   = '23';
 	public const FEATURE_JUNTAS_ID       	   = '24';
 	public const FEATURE_HERRAMIENTAS_ID 	   = '25';
+	public const FEATURE_INSTANCE_ID		   = '26';
 	public const FEATURE_PRODUCTOS_ID    	   = '27';
+	public const FEATURE_M2_PIEZA_ID           = '30';
 	public const FEATURE_MARCA_ID        	   = '39';
 	public const FEATURE_WEB_PRICE       	   = '44';
 	public const FEATURE_MATERIAL		 	   = '45';
 	public const FEATURE_COLOR		 	   	   = '46';
+	public const FEATURE_POOL_VALIDATE_ID	   = '50';
 	public const FEATURE_SHOW_STOCK 	 	   = '55';
 	public const FEATURE_SAMPLE_AVAILABLE	   = '56';
 	public const FEATURE_PRIORITY			   = '58';
@@ -204,12 +208,33 @@ class FrontController extends FrontControllerCore {
 		$this->context->smarty->assign( 'SUBCATEGORY_CERAMICA__FRESCO_ID', self::SUBCATEGORY_CERAMICA__FRESCO_ID );
 		
 
+		
+		$this->context->smarty->assign(
+			'MEASURES_ARRAY', [
+				self::FEATURE_MEDIDA_ID,
+				self::FEATURE_ESPESOR_ID
+			]
+		);
+		$this->context->smarty->assign(
+			'USE_ARRAY', [
+				self::FEATURE_VALIDATE_ID,
+				self::FEATURE_INSTALLATION_ID,
+				self::FEATURE_INSTANCE_ID,
+				self::FEATURE_POOL_VALIDATE_ID
+			]
+		);
+		
 		$this->context->smarty->assign(
 			'DONT_SHOW_THIS_FEATURES', 
 			[
 				self::FEATURE_M2_CAJA_ID,
 				self::FEATURE_TEXTO_MUESTRA_ID,
-				//self::FEATURE_PIEZAS_CAJA_ID,
+				self::FEATURE_MEDIDA_ID,
+				self::FEATURE_ESPESOR_ID,
+				self::FEATURE_VALIDATE_ID,
+				self::FEATURE_INSTALLATION_ID,
+				self::FEATURE_INSTANCE_ID,
+				self::FEATURE_POOL_VALIDATE_ID,
 				self::FEATURE_TIPOLOGIA_PRECIO_ID,
 				self::FEATURE_JUNTA_RECOMENDADA_ID,
 				self::FEATURE_DIAS_PLAZO_ENTREGA_ID,

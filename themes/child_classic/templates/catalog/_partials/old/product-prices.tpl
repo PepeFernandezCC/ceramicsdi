@@ -29,6 +29,9 @@
             {if $product.has_discount}
                 <div class="product-discount">
                     {hook h='displayProductPriceBlock' product=$product type="old_price"}
+                    {* PLANATEC
+                    <span class="regular-price">{$product.regular_price}</span>
+                    *}
                     <span class="regular-price" style="margin-right: 0;">
                         {include file='catalog/_partials/product-calculate-price.tpl' regular_price=true}
                     </span>
@@ -53,6 +56,7 @@
                         {/if}
                     {/if}
 
+                    {*<span class="tax-message">({l s='Tax included' d='Admin.Global'})</span>*}
                 </div>
 
                 {block name='product_unit_price'}

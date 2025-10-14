@@ -4,6 +4,43 @@ $( document ).ready( function () {
    
    let initializeCustom = function () {
 
+      document
+         .querySelectorAll('#menu-desktop-list a[href="#"]')
+         .forEach(a => a.removeAttribute('href'));
+
+
+      document
+         .querySelectorAll('#menu-mobile-list a[href="#"]')
+         .forEach(a => a.removeAttribute('href'));
+      /* scrip clonar imagenes borrar 
+
+      $('#imgcloner').on('click', function() {
+         $.ajax({
+            url: '/ajax/imagecloner.php', 
+            method: 'POST', 
+
+            success: function(response) {
+               
+               console.log(response.msg);
+            },
+            error: function(err) {
+               // Manejo de errores en caso de que algo falle en la solicitud
+               console.error('Error en la solicitud AJAX:', err);
+            }
+         });
+      });
+
+       fin script clonar imagenes*/
+
+       
+      /* MOSTRAR PROMO CODE */
+      if(document.getElementById('show-promo-code')) {
+         $('#promo-code').css('display', 'block');
+      }else{
+         $('#promo-code').css('display', 'none');
+      }
+
+
       let $body = $( 'body' );
 
       $('.hideThisCheck').css('display', 'none');
@@ -236,7 +273,17 @@ $( document ).ready( function () {
 
       if ( piezasCaja !== undefined ) {
 
-         piezasCaja = parseFloat( piezasCaja.replace( ',', '.' ) );
+         if(piezasCaja < 1) {
+
+            piezasCaja = '1';
+
+            console.log('piezas cara raw: ' + piezasCaja);
+
+            piezasCaja = parseFloat( piezasCaja.replace( ',', '.' ) );
+
+            console.log('piezas cara format: ' + piezasCaja);
+
+         }
 
       }
 
@@ -1038,7 +1085,7 @@ $( document ).ready( function () {
    
                calculatepiecesbybox(piezasCaja, inputPiecesBox, document.getElementById('pieces-input'));
 
-               updateButtonStateByPiece();
+               //updateButtonStateByPiece();
    
             }
          });
@@ -1052,7 +1099,7 @@ $( document ).ready( function () {
          $('#inputPiecesBox').keyup ( function() {
             calculatepiecesbybox(piezasCaja, document.getElementById('inputPiecesBox'), document.getElementById('pieces-input'));
 
-            updateButtonStateByPiece();
+            //updateButtonStateByPiece();
          })
    
          //FUNCIONES
@@ -1120,41 +1167,49 @@ $( document ).ready( function () {
       $( '#add-wrapper' ).find( '.add-sample' ).find( '.add-to-cart-sample' ).on( 'click', function () {
 
          let cartId = document.getElementById('cartId').value;
+         let productId = $('#product_page_product_id').val();
+         let btn = $(this);
 
          $.ajax({
             url: '/ajax/checkSamplesInCart.php', 
             method: 'POST', 
             data: {
                id_cart: cartId,
+               id_product: productId
             },
             success: function(response) {
                
                // Si la respuesta es válida, puedes usar el resultado (por ejemplo, el costo de envío)
-               if (response.can_add_sample) {
+               if (response.can_add_sample && response.id_sample !== false) {
 
                   var quantityOriginalValue = $( '#quantity-input' ).val();
-           
-                  $( '#variants-wrapper' ).find( '.input-radio:input[value="6"]' ).removeAttr( 'checked' );
-      
-                  $( '#variants-wrapper' ).find( '.input-radio:input[value="5"]' ).attr( 'checked', 'checked' );
-      
+
+                  $('#product_page_product_id').val(response.id_sample);
+                  
                   $( '#quantity-input' ).val( 1 );
-      
-                  $( '#add-wrapper' ).find( '.add' ).find( '.add-to-cart' ).click();
-      
-                  $( '#variants-wrapper' ).find( '.input-radio' ).removeAttr( 'checked' );
+
+                  $( '#add-to-cart-submit' ).trigger('click');
       
                   $( '#quantity-input' ).val( quantityOriginalValue );
-      
-                  $( this ).attr( 'disabled', 'disabled' );
-      
+
+                  $('#product_page_product_id').val(productId);
+
+                  btn.attr( 'disabled', 'disabled' );
+
                   $('#sample-in-cart').show();
       
                }else{
       
-                  $( this ).attr( 'disabled', 'disabled' );
-      
-                  $('#max-samples-reached').show();
+                  btn.attr( 'disabled', 'disabled' );
+
+                  if(response.elements > 7 ) {
+                     $('#max-samples-reached').show();
+                  }
+                  
+                  if(response.status) {
+                     $('#sample-in-cart').show();
+                  }
+        
                }
             },
             error: function(err) {
@@ -1675,6 +1730,7 @@ $( document ).ready( function () {
                 
                if ($('#field-id_country').val() != 6 && $('input[name="treatment"]:checked').val() === 'particular') {
                   $( '#field-dni' ).closest( '.form-group' ).css( 'display', 'none' );
+                   $('#field-dni').val('');
                }else{
                   $( '#field-dni' ).closest( '.form-group' ).css( 'display', 'inherit' );
                }
@@ -1758,6 +1814,7 @@ $( document ).ready( function () {
 
             if ($('#field-id_country').val() != 6) {
                $fieldDniCif.css( 'display', 'none' );
+                $('#field-dni').val('');
             }else{
                $fieldDniCif.css( 'display', 'inherit' );
             }
@@ -1798,6 +1855,7 @@ $( document ).ready( function () {
 
                if ($('#field-id_country').val() != 6) {
                   $fieldDniCif.css( 'display', 'none' );
+                   $('#field-dni').val('');
                }else{
                   $fieldDniCif.css( 'display', 'inherit' );
                }
@@ -1818,6 +1876,7 @@ $( document ).ready( function () {
 
                if ($('#field-id_country').val() != 6) {
                   $fieldDniCif.css( 'display', 'none' );
+                   $('#field-dni').val('');
                }else{
                   $fieldDniCif.css( 'display', 'inherit' );
                }
@@ -1849,6 +1908,7 @@ $( document ).ready( function () {
                $fieldVatNumber.find('input').prop('required', true);
                $fieldVatNumber.css( 'display', 'inherit' );
                $fieldDniCif.css( 'display', 'none' );
+                $('#field-dni').val('');
                $fieldDniCif.find('input').prop('required', false);
             }else{
                $fieldDniCif.find('input').prop('required', true);
@@ -1942,20 +2002,37 @@ $( document ).ready( function () {
             return prefijosProvincias[provincia] === prefijo;
          }
 
+         /* VALIDACIONES */
          function getValidations() {
                let validation = true;
 
-               if ( intracomunitaryCheck.is(':checked')) { 
-                  if($('#field-vat_number').val() == ''){
-                     console.log('error en vat');
-                     document.getElementById("vat-required-error").style.display = "block";
+               if( $( '#field-particular' ).is(':checked')) { // VALIDAR PARTICULAR
+                  if ($('#field-id_country').val() == 6) { //si es español
+                     if ($('#field-dni').val() == '') {
+                        document.getElementById("dni-error").style.display = "block";// error cif/dni vacío
+                        validation = false;
+                     }else{
+                        if(document.getElementById("dni-error")) {
+                           document.getElementById("dni-error").style.display = "none";// error cif/dni vacío
+                        }  
+                     }
+                  }
+
+               }else{                                          //VALIDAR EMPRESA
+                  if($( '#field-company' ).val() == '')  {
+                     console.log('error en nombre empresa')
+                  }
+                  if ($('#field-dni').val() == '') {
+                     document.getElementById("dni-error").style.display = "block";// error cif/dni vacío
                      validation = false;
                   }else{
-                     document.getElementById("vat-required-error").style.display = "none";
-                  }
+                     if(document.getElementById("dni-error")) {
+                        document.getElementById("dni-error").style.display = "none";// error cif/dni vacío
+                     }  
+                  }                                    
                }
 
-               if($('#field-city').val() == ''){
+               if($('#field-city').val() == ''){ //validar ciudad
                   console.log('error en city');
                   document.getElementById("city-required-error").style.display = "block";
                   validation = false;
@@ -1963,7 +2040,7 @@ $( document ).ready( function () {
                   document.getElementById("city-required-error").style.display = "none";
                }
 
-               if($('#field-address1').val() == ''){
+               if($('#field-address1').val() == ''){ //validar dirección
                   console.log('error en address');
                   document.getElementById("address-required-error").style.display = "block";
                   validation = false;
@@ -1971,7 +2048,7 @@ $( document ).ready( function () {
                   document.getElementById("address-required-error").style.display = "none";
                }
 
-               if($('#field-postcode').val() == ''){
+               if($('#field-postcode').val() == ''){ //Validar Codigo Postal
                   console.log('error en postcode');
                   document.getElementById("postcode-required-error").style.display = "block";
                   document.getElementById("postcode-matchmaking").style.display = "none";
@@ -1991,14 +2068,13 @@ $( document ).ready( function () {
                         document.getElementById("postcode-matchmaking").style.display = "none";
                      }
                   }else{
-                     console.log('codigo postal fuera de españa');
                      document.getElementById("postcode-required-error").style.display = "none";
                      document.getElementById("postcode-matchmaking").style.display = "none";
                   }
                   
                }
 
-               if($('#field-phone').val() == ''){
+               if($('#field-phone').val() == ''){ //valida teléfono
                   console.log('error en phone');
                   document.getElementById("phone-required-error").style.display = "block";
                   validation = false;
@@ -2011,32 +2087,27 @@ $( document ).ready( function () {
                return validation;
          }
 
-         // Escucha el evento submit
+         /* VALIDAR Y COMPROBAR INTRACOMUNITARIO */
+
          if(document.getElementById("address-form")) {
             document.getElementById("confirmAddressButton").addEventListener("click", function(event) {
                var loader = document.getElementById("loader-overlay");
-               if (getValidations() === true) {             
-                  if ($('#field-id_country').val() != 6 && $( '#field-company' ).val() != ''){
-                     loader.style.display = "flex";
-                     document.getElementById("confirmAddressButton").classList.add("disabled");
-                     document.getElementById("cancel-address-form").style.display ="none";
-                     event.preventDefault();    
-                     if ($('#field-dni').val() != '') { // CIF/DNI NO VACÍO
-                        event.preventDefault(); 
+               let validations = false;
+               if (document.getElementById("confirmAddressButton").getAttribute("data-location") == "directions") {
+                  validations = true;
+                  if(document.getElementById('invoice-addresses')) {
+                     const selectedArticle = document.querySelector('#invoice-addresses article.selected');
+
+                     if (selectedArticle) {
+                        const addressId = selectedArticle.dataset.address; // equivale a getAttribute("data-address")
+                        event.preventDefault();    
                         $.ajax({ // comprueba si el vat es válido
-                           url: '/ajax/validateVatNumber.php',
+                           url: '/ajax/validateVatNumberInvoiceAddress.php',
                            method: 'POST', 
                            data: {
-                              country: $('#field-id_country').val(),
-                              vat_number: $('#field-dni').val(),
-                              customer: document.getElementById("confirmAddressButton").getAttribute("data-customer"),
+                              address: addressId,
                            },
                            success: function(response) {                                 
-                              if (response.result) {
-                                 $fieldVatNumber.find('input').val(response.fullVat); 
-                              } else {
-                                 $fieldVatNumber.find('input').val('');
-                              }
                               console.log(response);
                               document.getElementById("address-form").submit(); //envía el formulario
                            },
@@ -2045,16 +2116,53 @@ $( document ).ready( function () {
                               resetButtonState();
                            }
                         });
-                     }else{ 
-                        document.getElementById("dni-error").style.display = "block";// error cif/dni vacío
-                        resetButtonState();
-                     }   
+                     } 
                   }
-               } else{
-                  event.preventDefault();
-                  console.log('Fallo validaciones...');
-                  resetButtonState();
+               }else{
+                  validations = getValidations();
+                  if (validations === true) {             
+                     if ($('#field-id_country').val() != 6 && $( '#field-dni' ).val() != ''){
+                        loader.style.display = "flex";
+                        document.getElementById("confirmAddressButton").classList.add("disabled");
+                        if(document.getElementById("cancel-address-form")) {
+                           document.getElementById("cancel-address-form").style.display ="none";
+                        }
+
+                        if ($( '#field-empresa' ).is( ':checked' ) ) {
+                           event.preventDefault();    
+                           $.ajax({ // comprueba si el vat es válido
+                              url: '/ajax/validateVatNumber.php',
+                              method: 'POST', 
+                              data: {
+                                 country: $('#field-id_country').val(),
+                                 vat_number: $('#field-dni').val(),
+                                 customer: document.getElementById("confirmAddressButton").getAttribute("data-customer"),
+                              },
+                              success: function(response) {                                 
+                                 if (response.result) {
+                                    $fieldVatNumber.find('input').val(response.fullVat); 
+                                 } 
+                                 console.log(response);
+                                 document.getElementById("address-form").submit(); //envía el formulario
+                              },
+                              error: function(err) {
+                                 console.error('Error en la solicitud AJAX:', err);
+                                 resetButtonState();
+                              }
+                           });
+                        }else{                          
+                           $( '#field-dni' ).val('')
+                           document.getElementById("address-form").submit(); //envía el formulario
+                        }
+                        
+                     }
+                  } else{
+                     event.preventDefault();
+                     console.log('Fallo validaciones...');
+                     resetButtonState();
+                  }
                }
+
 
             });
          }

@@ -45,7 +45,7 @@
                                     {foreach from=$id_array item=id key=key}
                                         {if $key > 0}, {/if}
                                         {if in_array($id, $validFeatureidArray)}
-                                            <a style="text-decoration: underline" href="{$link->getCategoryLinkByIdFeatureValue($id|intval)}">{$valueArray[$key]|escape:'htmlall'}</a>
+                                            <a style="    text-decoration: underline; font-weight: 700; text-underline-offset: 3px;" href="{$link->getCategoryLinkByIdFeatureValue($id|intval)}">{$valueArray[$key]|escape:'htmlall'}</a>
                                         {else}
                                             <span style="font-weight:bold">{$valueArray[$key]|escape:'htmlall'}</span>
                                         {/if}

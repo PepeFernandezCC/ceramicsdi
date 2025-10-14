@@ -139,9 +139,6 @@
         </form>
     {/if}
 
-
-    <div id="show-promo-code"></div>
-
     {if $show_final_summary}
         {include file='checkout/_partials/order-final-summary.tpl'}
     {/if}

@@ -1,7 +1,30 @@
 <?php
 
 class FrontController extends FrontControllerCore {
-	
+
+	public const ID_FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_PIEZA = '74';
+	public const FAQ_NUM_QUESTIONS = 20;
+
+	//COUNTRIES
+	public const ALEMANIA = 1;
+	public const AUSTRIA = 2;
+	public const BELGICA = 3;
+	public const BULGARIA = 233;
+	public const CHEQUIA = 16;
+	public const CROACIA = 74;
+	public const DINAMARCA = 20;
+	public const ESLOVENIA = 191;
+	public const ESPANA = 6;
+	public const FINLANDIA = 7;
+	public const FRANCIA = 8;
+	public const HUNGRIA = 142;
+	public const ITALIA = 10;
+	public const LUXEMBURGO = 12;
+	public const PAISES_BAJOS = 13;
+	public const PORTUGAL = 15;
+	public const SUECIA = 18;
+
+	//FEATURES
 	public const FEATURE_TIPO_ESTANCIA_ID      = '1';
 	public const FEATURE_FORMATO_ID            = '3';
 	public const FEATURE_MEDIDA_ID             = '4';
@@ -23,6 +46,19 @@ class FrontController extends FrontControllerCore {
 	public const FEATURE_COLOR		 	   	   = '46';
 	public const FEATURE_SHOW_STOCK 	 	   = '55';
 	public const FEATURE_SAMPLE_AVAILABLE	   = '56';
+	public const FEATURE_PRIORITY			   = '58';
+	public const FEATURE_USE_IMAGE			   = '59';
+	public const FEATURE_PREPARE_DAYS		   = '60';
+	public const FEATURE_DELIVERY_SIZE		   = '61';
+	public const FEATURE_CHANNABLE			   = '62';
+	public const FEATURE_DESCRIPTION_ES		   = '63';
+	public const FEATURE_DESCRIPTION_FR		   = '64';
+	public const FEATURE_DESCRIPTION_EN		   = '65';
+	public const FEATURE_DESCRIPTION_DE		   = '66';
+	public const FEATURE_DESCRIPTION_PT		   = '67';
+	public const FEATURE_DESCRIPTION_NL		   = '68';
+	public const FEATURE_TOP_PRODUCT		   = '69';
+	public const FEATURE_EAN_COPY			   = '70';
 	public const FEATURE_MUESTRA_DE_PAGO_ID = '43'; // En la demo es el 31
 	public const FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2       = 'Por m2';
 	public const FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2_FR    = 'Par m2';
@@ -39,19 +75,20 @@ class FrontController extends FrontControllerCore {
 	public const FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_PIEZA_PT = 'Por peça';
 	public const FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_PIEZA_NL = 'Per stuk';
 	
-	public const ID_FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_PIEZA = '74';
-	
+	//ATTRIBUTE
 	public const ATTRIBUTE_MUESTRA_ID = '2';
 	
+	//CATEGORY
 	public const CATEGORY_CERAMICA                 = '3';
 	public const CATEGORY_INSTALACION_Y_MONTAJE_ID = '5';
 	public const CATEGORY_AZULEJOS                 = '11';
 	public const CATEGORY_INSTALACION_ID           = '36';
 	public const CATEGORY_MANTENIMIENTO_ID         = '67';
 	public const CATEGORY_OTROS_MATERIALES_ID      = '80';
+	public const CATEGORY_FORMA					   = '101';
+	public const CATEGORY_ARTICULATIONS			   = '94';
 	
-	public const FAQ_NUM_QUESTIONS = 20;
-	
+	//SUBCATEGORY
 	public const SUBCATEGORY_CERAMICA__MADERA_ID         = '20';
 	public const SUBCATEGORY_CERAMICA__HIDRAULICOS_ID    = '19';
 	public const SUBCATEGORY_CERAMICA__MONOCOLOR_ID      = '26';
@@ -88,16 +125,15 @@ class FrontController extends FrontControllerCore {
 		$imgFormatos    = array();
 		foreach ( $this->getFormatos() as $formato ) {
 			$row = Db::getInstance()->getRow(
-				'
-						SELECT * FROM `' . _DB_PREFIX_ . 'planatec_formatos`
-						WHERE `id_formato` = ' . $formato[ 'id_feature_value' ] . '
-					'
+				'SELECT * FROM `' . _DB_PREFIX_ . 'planatec_formatos` WHERE `id_formato` = ' . $formato[ 'id_feature_value' ] . ''
 			);
 			
 			if ( $row ) {
 				$imgFormatos[ $formato[ 'id_feature_value' ] ] = $dirImgFormatos . DIRECTORY_SEPARATOR . $row[ 'url' ];
 			}
 		}
+
+		
 		$this->context->smarty->assign( 'FEATURE_TIPO_ESTANCIA_ID', self::FEATURE_TIPO_ESTANCIA_ID );
 		$this->context->smarty->assign( 'FEATURE_FORMATO_ID', self::FEATURE_FORMATO_ID );
 		$this->context->smarty->assign( 'imgFormatos', $imgFormatos );
@@ -122,6 +158,8 @@ class FrontController extends FrontControllerCore {
 		$this->context->smarty->assign( 'CATEGORY_CERAMICA_ID', self::CATEGORY_CERAMICA );
 		$this->context->smarty->assign( 'CATEGORY_INSTALACION_Y_MONTAJE_ID', self::CATEGORY_INSTALACION_Y_MONTAJE_ID );
 		$this->context->smarty->assign( 'CATEGORY_AZULEJOS', self::CATEGORY_AZULEJOS );
+		$this->context->smarty->assign( 'CATEGORY_FORMA', self::CATEGORY_FORMA );
+		$this->context->smarty->assign( 'CATEGORY_ARTICULATIONS', self::CATEGORY_ARTICULATIONS );
 		$this->context->smarty->assign( 'CATEGORY_INSTALACION_ID', self::CATEGORY_INSTALACION_ID );
 		$this->context->smarty->assign( 'CATEGORY_MANTENIMIENTO_ID', self::CATEGORY_MANTENIMIENTO_ID );
 		$this->context->smarty->assign( 'CATEGORY_OTROS_MATERIALES_ID', self::CATEGORY_OTROS_MATERIALES_ID );
@@ -165,12 +203,13 @@ class FrontController extends FrontControllerCore {
 		$this->context->smarty->assign( 'SUBCATEGORY_CERAMICA__MOSAICOS_ID', self::SUBCATEGORY_CERAMICA__MOSAICOS_ID );
 		$this->context->smarty->assign( 'SUBCATEGORY_CERAMICA__FRESCO_ID', self::SUBCATEGORY_CERAMICA__FRESCO_ID );
 		
+
 		$this->context->smarty->assign(
 			'DONT_SHOW_THIS_FEATURES', 
 			[
 				self::FEATURE_M2_CAJA_ID,
 				self::FEATURE_TEXTO_MUESTRA_ID,
-				self::FEATURE_PIEZAS_CAJA_ID,
+				//self::FEATURE_PIEZAS_CAJA_ID,
 				self::FEATURE_TIPOLOGIA_PRECIO_ID,
 				self::FEATURE_JUNTA_RECOMENDADA_ID,
 				self::FEATURE_DIAS_PLAZO_ENTREGA_ID,
@@ -181,7 +220,41 @@ class FrontController extends FrontControllerCore {
 				self::FEATURE_WEB_PRICE,
 				self::FEATURE_MATERIAL,
 				self::FEATURE_SHOW_STOCK,
-				self::FEATURE_SAMPLE_AVAILABLE
+				self::FEATURE_SAMPLE_AVAILABLE,
+				self::FEATURE_PRIORITY,
+				self::FEATURE_PREPARE_DAYS,
+				self::FEATURE_DELIVERY_SIZE,
+				self::FEATURE_CHANNABLE,
+				self::FEATURE_DESCRIPTION_ES,
+				self::FEATURE_DESCRIPTION_FR,
+				self::FEATURE_DESCRIPTION_EN,
+				self::FEATURE_DESCRIPTION_DE,
+				self::FEATURE_DESCRIPTION_PT,
+				self::FEATURE_DESCRIPTION_NL,
+				self::FEATURE_EAN_COPY,
+				self::FEATURE_TOP_PRODUCT
+			]
+		);
+		$this->context->smarty->assign(
+			'VALID_COUNTRIES', 
+			[
+				self::ALEMANIA,
+				self::AUSTRIA,
+				self::BELGICA,
+				self::BULGARIA,
+				self::CHEQUIA,
+				self::CROACIA,
+				self::DINAMARCA,
+				self::ESLOVENIA,
+				self::ESPANA,
+				self::FINLANDIA,
+				self::FRANCIA,
+				self::HUNGRIA,
+				self::ITALIA,
+				self::LUXEMBURGO,
+				self::PAISES_BAJOS,
+				self::PORTUGAL,
+				self::SUECIA
 			]
 		);
 
@@ -445,17 +518,20 @@ class FrontController extends FrontControllerCore {
 		
 		$features = Feature::getFeatures( $id_lang );
 		$formatos = array();
-		foreach ( $features as &$feature ) {
-			if ( $feature[ 'id_feature' ] === self::FEATURE_FORMATO_ID ) {
-				$formatos[] = FeatureValue::getFeatureValuesWithLang(
+		foreach ($features as &$feature) {
+			if ($feature['id_feature'] === self::FEATURE_FORMATO_ID || $feature['id_feature'] === self::FEATURE_COLOR) {
+				$featureValues = FeatureValue::getFeatureValuesWithLang(
 					(int) $this->context->language->id,
-					$feature[ 'id_feature' ],
+					$feature['id_feature'],
 					true
 				);
+				
+				// Fusionar los valores en lugar de agregarlos como nuevos elementos
+				$formatos = array_merge($formatos, $featureValues);
 			}
 		}
 		
-		return $formatos[ 0 ];
+		return $formatos;
 	}
 
 	public function getLastParentCategoryInfo( $id ) {
@@ -477,4 +553,44 @@ class FrontController extends FrontControllerCore {
 			'link_rewrite' => $lastParentCategoryLinkRewrite
 		);
 	}
+
+	    /**
+     * Sets controller CSS and JS files.
+     *
+     * @return bool
+     */
+    public function setMedia()
+    {
+        $this->registerStylesheet('theme-main', '/assets/css/theme.css', ['media' => 'all', 'priority' => 50]);
+        $this->registerStylesheet('theme-custom', '/assets/css/custom.css', ['media' => 'all', 'priority' => 1000]);
+        $this->registerStylesheet('theme-jost', '/assets/css/jost.css', ['media' => 'all', 'priority' => 1000]);
+
+		//FONT AWESOME
+
+		//$this->registerStylesheet('theme-fa', '/assets/css/fontawesome/fontawesome.min.css', ['media' => 'all', 'priority' => 1000]);
+
+        if ($this->context->language->is_rtl) {
+            $this->registerStylesheet('theme-rtl', '/assets/css/rtl.css', ['media' => 'all', 'priority' => 900]);
+        }
+
+        $this->registerJavascript('corejs', '/themes/core.js', ['position' => 'bottom', 'priority' => 0]);
+        $this->registerJavascript('theme-main', '/assets/js/theme.js', ['position' => 'bottom', 'priority' => 50]);
+        $this->registerJavascript('theme-custom', '/assets/js/custom.js', ['position' => 'bottom', 'priority' => 1000]);
+		
+
+        $assets = $this->context->shop->theme->getPageSpecificAssets($this->php_self);
+        if (!empty($assets)) {
+            foreach ($assets['css'] as $css) {
+                $this->registerStylesheet($css['id'], $css['path'], $css);
+            }
+            foreach ($assets['js'] as $js) {
+                $this->registerJavascript($js['id'], $js['path'], $js);
+            }
+        }
+
+        // Execute Hook FrontController SetMedia
+        Hook::exec('actionFrontControllerSetMedia', []);
+
+        return true;
+    }
 }

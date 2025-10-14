@@ -4,6 +4,15 @@ $( document ).ready( function () {
    
    let initializeCustom = function () {
 
+      document
+         .querySelectorAll('#menu-desktop-list a[href="#"]')
+         .forEach(a => a.removeAttribute('href'));
+
+
+      document
+         .querySelectorAll('#menu-mobile-list a[href="#"]')
+         .forEach(a => a.removeAttribute('href'));
+
 
       /* scrip clonar imagenes borrar 
 
@@ -24,6 +33,107 @@ $( document ).ready( function () {
       });
 
        fin script clonar imagenes*/
+
+
+      /* MOSTRAR PROMO CODE */
+      if(document.getElementById('show-promo-code')) {
+         $('#promo-code').css('display', 'block');
+      }else{
+         $('#promo-code').css('display', 'none');
+      }
+
+      /* CARRUSEL JUNTAS */
+      if (document.getElementById('board-section')){
+
+         const track = document.querySelector(".carousel-track");
+         const images = track.querySelectorAll("img");
+         const prevBtn = document.querySelector(".carousel-btn.prev");
+         const nextBtn = document.querySelector(".carousel-btn.next");
+         let index = 0;
+
+         function updateCarousel() {
+            const width = images[0].clientWidth;
+            track.style.transform = `translateX(-${index * width}px)`;
+         }
+
+         nextBtn.addEventListener("click", () => {
+            index = (index + 1) % images.length;
+            updateCarousel();
+         });
+
+         prevBtn.addEventListener("click", () => {
+            index = (index - 1 + images.length) % images.length;
+            updateCarousel();
+         });
+
+         window.addEventListener("resize", updateCarousel);
+
+         // ---- Soporte táctil para móviles ----
+         let startX = 0;
+         let moveX = 0;
+
+         track.addEventListener("touchstart", (e) => {
+            startX = e.touches[0].clientX;
+         });
+
+         track.addEventListener("touchmove", (e) => {
+            moveX = e.touches[0].clientX - startX;
+         });
+
+         track.addEventListener("touchend", () => {
+            if (moveX > 50) { // swipe derecha
+               index = (index - 1 + images.length) % images.length;
+               updateCarousel();
+            } else if (moveX < -50) { // swipe izquierda
+               index = (index + 1) % images.length;
+               updateCarousel();
+            }
+            moveX = 0;
+         });
+
+      }
+  
+
+      /* BOTONES DE COMPRA FLOTANTES */
+
+      if(document.getElementById('sticky-sentinel')) {
+
+         const wrapper = document.getElementById("add-wrapper");
+         const sentinel = document.getElementById("sticky-sentinel");
+
+         let lastScrollY = window.scrollY;
+         let stuck = false; // si está anclado en su sitio
+         let floating = true; // si está flotando
+
+         const observer = new IntersectionObserver(
+            ([entry]) => {
+               const currentScrollY = window.scrollY;
+
+               if (entry.isIntersecting) {
+               stuck = true;
+               floating = false;
+               wrapper.classList.add("sticky-stop");
+               } else {
+               if (currentScrollY < lastScrollY) {
+                  // Scroll hacia arriba → volver a flotante
+                  floating = true;
+                  stuck = false;
+                  wrapper.classList.remove("sticky-stop");
+               }
+               }
+
+               lastScrollY = currentScrollY;
+            },
+            {
+               root: null,
+               threshold: 0
+            }
+         );
+
+         observer.observe(sentinel);
+      }
+
+
 
       let $body = $( 'body' );
 
@@ -237,7 +347,11 @@ $( document ).ready( function () {
 
       const $eurosInput = $( '#euros-input' );
 
+      const $m2TotalMeters = $( '#m2TotalMeters');
 
+      const $m2TotalPrice = $( '#m2TotalPrice');
+
+      const $pieceTotalMeters = $( '#pieceTotalMeters');
 
       const $surfaceInputReal = $( '#surface-real' );
 
@@ -257,7 +371,13 @@ $( document ).ready( function () {
 
       if ( piezasCaja !== undefined ) {
 
-         piezasCaja = parseFloat( piezasCaja.replace( ',', '.' ) );
+         if(piezasCaja < 1) {
+
+            piezasCaja = '1';
+
+            piezasCaja = parseFloat( piezasCaja.replace( ',', '.' ) );
+
+         }
 
       }
 
@@ -841,12 +961,14 @@ $( document ).ready( function () {
 
       // PRODUCTO POR SUPERFICIE
       const numberInput = document.getElementById('numberInput');
+      const m2SubtotalBoxes = document.getElementById('m2SubtotalBoxes');
 
       if (document.getElementById('numberInput')) {
 
          document.getElementById('incrementButton').addEventListener('click', function() {
 
             numberInput.value = parseInt(numberInput.value) + 1;
+            m2SubtotalBoxes.textContent = parseInt(numberInput.value);
   
             calculatem2bybox(m2Caja, numberInput, document.getElementById('surface-input'));
 
@@ -857,14 +979,13 @@ $( document ).ready( function () {
            if(document.getElementById('numberInput').value > 0) {
   
               numberInput.value = parseInt(numberInput.value) - 1;
+              m2SubtotalBoxes.textContent = parseInt(numberInput.value);
   
               calculatem2bybox(m2Caja, numberInput, document.getElementById('surface-input'));
 
            }
 
         });
-  
-        //document.getElementById('surface-input').addEventListener('change', function() {
   
         $('#surface-input').keyup( function() {
   
@@ -874,7 +995,6 @@ $( document ).ready( function () {
            
         })
   
-        //numberInput.addEventListener('change', function() {
         $('#numberInput').keyup ( function() {
         
            calculatem2bybox(m2Caja, document.getElementById('numberInput'), document.getElementById('surface-input'));
@@ -887,12 +1007,15 @@ $( document ).ready( function () {
            let totalSurface = (numberInput.value * m2Caja).toFixed( 2 );
   
            numberm2needed.value = totalSurface;
-  
+         
+           m2SubtotalBoxes.textContent = numberInput.value;
            $surfaceInputReal.val( totalSurface );
+           $m2TotalMeters.text(totalSurface);
   
            setQuantitiesValue(numberInput.value);
   
            $eurosInput.val( ( numberInput.value * price ).toFixed( 2 ) );
+           $m2TotalPrice.text( ( numberInput.value * price ).toFixed( 2 ) );
           
         }
   
@@ -901,16 +1024,19 @@ $( document ).ready( function () {
            let quantity = Math.ceil(m2required / m2Caja);
   
            numberInput.value = quantity;
+           m2SubtotalBoxes.textContent = quantity;
   
            let totalSurface = (numberInput.value * m2Caja).toFixed( 2 );
   
            //document.getElementById('surface-input').value = totalSurface;
   
            $surfaceInputReal.val( totalSurface );
+           $m2TotalMeters.text(totalSurface);
   
            setQuantitiesValue(quantity)
   
            $eurosInput.val( ( numberInput.value * price ).toFixed( 2 ) );
+           $m2TotalPrice.text( ( numberInput.value * price ).toFixed( 2 ) );
   
   
         }
@@ -927,7 +1053,7 @@ $( document ).ready( function () {
   
         }
 
-              //botón +15%
+       //botón +15%
       document.getElementById('recomendation-check').addEventListener('change', function() {
 
          let m2required = document.getElementById('surface-input');
@@ -1040,12 +1166,14 @@ $( document ).ready( function () {
       // PRODUCTO POR PIEZA
 
       const inputPiecesBox = document.getElementById('inputPiecesBox');
+      const pieceSubtotalBoxes = document.getElementById('pieceSubtotalBoxes');
 
       if (document.getElementById('inputPiecesBox')) {
 
          document.getElementById('incrementPieces').addEventListener('click', function() {
 
             inputPiecesBox.value = parseInt(inputPiecesBox.value) + 1;
+            pieceSubtotalBoxes.textContent = parseInt(inputPiecesBox.value);
    
             calculatepiecesbybox(piezasCaja, inputPiecesBox, document.getElementById('pieces-input'));
 
@@ -1056,10 +1184,11 @@ $( document ).ready( function () {
             if(document.getElementById('inputPiecesBox').value > 0) {
    
                inputPiecesBox.value = parseInt(inputPiecesBox.value) - 1;
+               pieceSubtotalBoxes.textContent = parseInt(inputPiecesBox.value);
    
                calculatepiecesbybox(piezasCaja, inputPiecesBox, document.getElementById('pieces-input'));
 
-               updateButtonStateByPiece();
+               //updateButtonStateByPiece();
    
             }
          });
@@ -1073,7 +1202,7 @@ $( document ).ready( function () {
          $('#inputPiecesBox').keyup ( function() {
             calculatepiecesbybox(piezasCaja, document.getElementById('inputPiecesBox'), document.getElementById('pieces-input'));
 
-            updateButtonStateByPiece();
+            //updateButtonStateByPiece();
          })
    
          //FUNCIONES
@@ -1084,12 +1213,15 @@ $( document ).ready( function () {
    
             piecesNeeded.value = totalPieces;
    
+            pieceSubtotalBoxes.textContent = inputPiecesBox.value;
             $piecesInputReal.val( totalPieces );
+            $pieceTotalMeters.text(totalPieces);
    
             setPiecesQuantitiesValue(inputPieces.value);
    
             $eurosInput.val( ( inputPieces.value * price ).toFixed( 2 ) );
-           
+            $m2TotalPrice.text( ( inputPiecesBox.value * price ).toFixed( 2 ) );
+
          }
    
          let calculatePiecesOnChangeEvent = function(piecesRequired, inputPieces) {
@@ -1097,15 +1229,17 @@ $( document ).ready( function () {
             let quantity = Math.ceil(piecesRequired / piezasCaja);
    
             inputPieces.value = quantity;
+            pieceSubtotalBoxes.textContent = quantity;
    
             let totalPieces = (inputPieces.value * piezasCaja).toFixed( 2 );
    
             $piecesInputReal.val( totalPieces );
+            $pieceTotalMeters.text(totalPieces);
    
             setPiecesQuantitiesValue(quantity);
    
             $eurosInput.val( ( inputPieces.value * price ).toFixed( 2 ) );
-   
+            $m2TotalPrice.text( ( inputPiecesBox.value * price ).toFixed( 2 ) );
    
          }
    
@@ -1114,6 +1248,7 @@ $( document ).ready( function () {
             let piecesValue = Math.ceil( quantity * piezasCaja );
    
             $piecesInputReal.val( piecesValue );
+            $pieceTotalMeters.text(piecesValue);
    
             $quantityInput.val( quantity );
    
@@ -1704,6 +1839,7 @@ $( document ).ready( function () {
                 
                if ($('#field-id_country').val() != 6 && $('input[name="treatment"]:checked').val() === 'particular') {
                   $( '#field-dni' ).closest( '.form-group' ).css( 'display', 'none' );
+                  $('#field-dni').val('');
                }else{
                   $( '#field-dni' ).closest( '.form-group' ).css( 'display', 'inherit' );
                }
@@ -1787,6 +1923,7 @@ $( document ).ready( function () {
 
             if ($('#field-id_country').val() != 6) {
                $fieldDniCif.css( 'display', 'none' );
+                $('#field-dni').val('');
             }else{
                $fieldDniCif.css( 'display', 'inherit' );
             }
@@ -1827,6 +1964,7 @@ $( document ).ready( function () {
 
                if ($('#field-id_country').val() != 6) {
                   $fieldDniCif.css( 'display', 'none' );
+                   $('#field-dni').val('');
                }else{
                   $fieldDniCif.css( 'display', 'inherit' );
                }
@@ -1847,6 +1985,7 @@ $( document ).ready( function () {
 
                if ($('#field-id_country').val() != 6) {
                   $fieldDniCif.css( 'display', 'none' );
+                   $('#field-dni').val('');
                }else{
                   $fieldDniCif.css( 'display', 'inherit' );
                }
@@ -1878,6 +2017,7 @@ $( document ).ready( function () {
                $fieldVatNumber.find('input').prop('required', true);
                $fieldVatNumber.css( 'display', 'inherit' );
                $fieldDniCif.css( 'display', 'none' );
+                $('#field-dni').val('');
                $fieldDniCif.find('input').prop('required', false);
             }else{
                $fieldDniCif.find('input').prop('required', true);
@@ -1971,20 +2111,37 @@ $( document ).ready( function () {
             return prefijosProvincias[provincia] === prefijo;
          }
 
+         /* VALIDACIONES */
          function getValidations() {
                let validation = true;
 
-               if ( intracomunitaryCheck.is(':checked')) { 
-                  if($('#field-vat_number').val() == ''){
-                     console.log('error en vat');
-                     document.getElementById("vat-required-error").style.display = "block";
+               if( $( '#field-particular' ).is(':checked')) { // VALIDAR PARTICULAR
+                  if ($('#field-id_country').val() == 6) { //si es español
+                     if ($('#field-dni').val() == '') {
+                        document.getElementById("dni-error").style.display = "block";// error cif/dni vacío
+                        validation = false;
+                     }else{
+                        if(document.getElementById("dni-error")) {
+                           document.getElementById("dni-error").style.display = "none";// error cif/dni vacío
+                        }  
+                     }
+                  }
+
+               }else{                                          //VALIDAR EMPRESA
+                  if($( '#field-company' ).val() == '')  {
+                     console.log('error en nombre empresa')
+                  }
+                  if ($('#field-dni').val() == '') {
+                     document.getElementById("dni-error").style.display = "block";// error cif/dni vacío
                      validation = false;
                   }else{
-                     document.getElementById("vat-required-error").style.display = "none";
-                  }
+                     if(document.getElementById("dni-error")) {
+                        document.getElementById("dni-error").style.display = "none";// error cif/dni vacío
+                     }  
+                  }                                    
                }
 
-               if($('#field-city').val() == ''){
+               if($('#field-city').val() == ''){ //validar ciudad
                   console.log('error en city');
                   document.getElementById("city-required-error").style.display = "block";
                   validation = false;
@@ -1992,7 +2149,7 @@ $( document ).ready( function () {
                   document.getElementById("city-required-error").style.display = "none";
                }
 
-               if($('#field-address1').val() == ''){
+               if($('#field-address1').val() == ''){ //validar dirección
                   console.log('error en address');
                   document.getElementById("address-required-error").style.display = "block";
                   validation = false;
@@ -2000,7 +2157,7 @@ $( document ).ready( function () {
                   document.getElementById("address-required-error").style.display = "none";
                }
 
-               if($('#field-postcode').val() == ''){
+               if($('#field-postcode').val() == ''){ //Validar Codigo Postal
                   console.log('error en postcode');
                   document.getElementById("postcode-required-error").style.display = "block";
                   document.getElementById("postcode-matchmaking").style.display = "none";
@@ -2020,14 +2177,13 @@ $( document ).ready( function () {
                         document.getElementById("postcode-matchmaking").style.display = "none";
                      }
                   }else{
-                     console.log('codigo postal fuera de españa');
                      document.getElementById("postcode-required-error").style.display = "none";
                      document.getElementById("postcode-matchmaking").style.display = "none";
                   }
                   
                }
 
-               if($('#field-phone').val() == ''){
+               if($('#field-phone').val() == ''){ //valida teléfono
                   console.log('error en phone');
                   document.getElementById("phone-required-error").style.display = "block";
                   validation = false;
@@ -2040,32 +2196,33 @@ $( document ).ready( function () {
                return validation;
          }
 
-         // Escucha el evento submit
+         /* VALIDAR Y COMPROBAR INTRACOMUNITARIO */
+
          if(document.getElementById("address-form")) {
             document.getElementById("confirmAddressButton").addEventListener("click", function(event) {
                var loader = document.getElementById("loader-overlay");
-               if (getValidations() === true) {             
-                  if ($('#field-id_country').val() != 6 && $( '#field-company' ).val() != ''){
-                     loader.style.display = "flex";
-                     document.getElementById("confirmAddressButton").classList.add("disabled");
-                     document.getElementById("cancel-address-form").style.display ="none";
-                     event.preventDefault();    
-                     if ($('#field-dni').val() != '') { // CIF/DNI NO VACÍO
-                        event.preventDefault(); 
+               let validations = false;
+               if (document.getElementById("confirmAddressButton").getAttribute("data-location") == "directions") {
+                  validations = true;
+                  if(document.getElementById('invoice-addresses')) {
+                     const selectedArticle = document.querySelector('#invoice-addresses article.selected');
+
+                     if (selectedArticle) {
+                        if ($('#field-id_country').val() == 6 && $('#field-dni').val() == '') {
+                           event.preventDefault();
+                           alert('Introduzca DNI válido en la dirección');
+                           console.error('Error critico dni español');
+                           resetButtonState();
+                        }else{
+                           const addressId = selectedArticle.dataset.address; // equivale a getAttribute("data-address")
+                        event.preventDefault();    
                         $.ajax({ // comprueba si el vat es válido
-                           url: '/ajax/validateVatNumber.php',
+                           url: '/ajax/validateVatNumberInvoiceAddress.php',
                            method: 'POST', 
                            data: {
-                              country: $('#field-id_country').val(),
-                              vat_number: $('#field-dni').val(),
-                              customer: document.getElementById("confirmAddressButton").getAttribute("data-customer"),
+                              address: addressId,
                            },
                            success: function(response) {                                 
-                              if (response.result) {
-                                 $fieldVatNumber.find('input').val(response.fullVat); 
-                              } else {
-                                 $fieldVatNumber.find('input').val('');
-                              }
                               console.log(response);
                               document.getElementById("address-form").submit(); //envía el formulario
                            },
@@ -2074,16 +2231,55 @@ $( document ).ready( function () {
                               resetButtonState();
                            }
                         });
-                     }else{ 
-                        document.getElementById("dni-error").style.display = "block";// error cif/dni vacío
-                        resetButtonState();
-                     }   
+                        }
+                        
+                     } 
                   }
-               } else{
-                  event.preventDefault();
-                  console.log('Fallo validaciones...');
-                  resetButtonState();
+               }else{
+                  validations = getValidations();
+                  if (validations === true) {             
+                     if ($('#field-id_country').val() != 6 && $( '#field-dni' ).val() != ''){
+                        loader.style.display = "flex";
+                        document.getElementById("confirmAddressButton").classList.add("disabled");
+                        if(document.getElementById("cancel-address-form")) {
+                           document.getElementById("cancel-address-form").style.display ="none";
+                        }
+
+                        if ($( '#field-empresa' ).is( ':checked' ) ) {
+                           event.preventDefault();    
+                           $.ajax({ // comprueba si el vat es válido
+                              url: '/ajax/validateVatNumber.php',
+                              method: 'POST', 
+                              data: {
+                                 country: $('#field-id_country').val(),
+                                 vat_number: $('#field-dni').val(),
+                                 customer: document.getElementById("confirmAddressButton").getAttribute("data-customer"),
+                              },
+                              success: function(response) {                                 
+                                 if (response.result) {
+                                    $fieldVatNumber.find('input').val(response.fullVat); 
+                                 } 
+                                 console.log(response);
+                                 document.getElementById("address-form").submit(); //envía el formulario
+                              },
+                              error: function(err) {
+                                 console.error('Error en la solicitud AJAX:', err);
+                                 resetButtonState();
+                              }
+                           });
+                        }else{                          
+                           $( '#field-dni' ).val('')
+                           document.getElementById("address-form").submit(); //envía el formulario
+                        }
+                        
+                     }
+                  } else{
+                     event.preventDefault();
+                     console.log('Fallo validaciones...');
+                     resetButtonState();
+                  }
                }
+
 
             });
          }

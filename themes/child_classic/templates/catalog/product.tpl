@@ -95,7 +95,7 @@
 
 
 {block name='content'}
-
+                    {assign var="id_cart" value=Context::getContext()->cart->id} 
                     {assign var="productColor" value="none"}
                     {assign var="validAspect" value=false}
                     {assign var="conversionRate" value=1}
@@ -213,39 +213,42 @@
                         {block name='page_header_container'}
 
                             {block name='page_header'}
+                                <div class="row product-head">
+                                    <div class="col-md-12 col-xs-12">
+                                        {assign var="product_mini_title_key" value=Product::getProductMinititleKey($product.id)}
+
+                                        <div class="product-type">
+                                            <div style="padding-bottom: 15px;">
+                                                {l s={$product_mini_title_key} d='Shop.Theme.Catalog'}
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
 
                                 <div class="row product-head">
 
-                                    <div class="col-xs-12">
+                                    <div class="col-md-8 col-xs-12">
 
                                         <h1 class="h1 product-card-title">
 
                                             {block name='page_title'}
-
-                                                {assign var="product_mini_title_key" value=Product::getProductMinititleKey($product.id)}
-
-                                                <div class="product-type">
-                                                    <div style="padding-right:10px;">
-                                                        {l s={$product_mini_title_key} d='Shop.Theme.Catalog'}
-                                                    </div>
-
-                                                    {if isset($product.reference_to_display) && $product.reference_to_display neq ''}
-                                                        <div class="product-reference">
-                                                            <span>Ref: {$product.reference_to_display}</span>
-                                                        </div>
-                                                    {/if}
-                                                </div>
-                                              
-                                                <div style="margin-bottom:10px">
+                                                <div style="margin-bottom:10px; text-transform:uppercase">
                                                     {$product.name}
                                                 </div>
+
+                                            {if isset($product.reference_to_display) && $product.reference_to_display neq ''}
+                                                <div class="product-reference">
+                                                    <span>{$product.reference_to_display}</span>
+                                                </div>
+                                            {/if}
                                             {/block}
 
                                         </h1>
 
                                     </div>
 
-                                    <div class="col-xs-12">
+                                    <div class="col-md-4 col-xs-12">
 
                                         {block name='product_prices'}
 
@@ -253,31 +256,33 @@
 
                                         {/block}
 
+                                        <div class="row" style="padding-top: 10px">
+
+                                            <div class="col-xs-12 alignText">
+
+                                                <span class="tax-message">
+
+                                                    {if $customer.id_default_group == 5}
+
+                                                        ({l s='Tax excluded' d='Admin.Global'})
+
+                                                    {else}
+
+                                                        ({l s='Tax included' d='Admin.Global'})
+
+                                                    {/if}
+
+                                                </span>
+
+                                            </div>
+
+                                        </div>
+
                                     </div>
 
                                 </div>
 
-                                <div class="row" style="padding-top: 10px">
 
-                                    <div class="col-xs-12">
-
-                                        <span class="tax-message">
-
-                                            {if $customer.id_default_group == 5}
-
-                                                ({l s='Tax excluded' d='Admin.Global'})
-
-                                            {else}
-
-                                                ({l s='Tax included' d='Admin.Global'})
-
-                                            {/if}
-
-                                        </span>
-
-                                    </div>
-
-                                </div>
 
                             {/block}
 
@@ -288,24 +293,25 @@
 
 
                         {block name='product_availability'}
-                            <span id="product-availability" class="js-product-availability">
+                            <span id="product-availability" class="js-product-availability" style="font-size:14px;">
                             
                                 {if $product.show_availability && $product.availability_message}
                                     {if $product.availability == 'available' and $product.quantity > 0}
-                                        <i class="material-icons rtl-no-flip product-available">&#xE5CA;</i>
+                                        <i class="material-icons rtl-no-flip product-available">&#xE5CA;</i> 
+                                        {* <img class="stock-icon" src="/themes/child_classic/assets/img/web/icons/stock-ico.png" alt="icon stock"/> *}
                                     {elseif $product.availability == 'last_remaining_items'}
                                         <i class="material-icons product-last-items">&#xE002;</i>
                                     {else}
                                         <i class="material-icons product-last-items">&#xE002;</i>
                                     {/if}
-                                    {($product.availability_message|lower)|capitalize}
+                                    {($product.availability_message|upper)}
                                 {/if}
                            
                                 {foreach from=$product.features item='feature'}
 
                                     {if $feature.id_feature === $FEATURE_SHOW_STOCK && $feature.value == 1}
                                                                                
-                                         - <strong>{$result} {$productUnit|capitalize}</strong>
+                                         - <strong>{$result} {$productUnit}</strong>
                                       
                                     {/if}
 
@@ -317,9 +323,9 @@
                     </div>
 
                     <div>
-                        <i class="fas fa-truck" style="font-size: 15px; padding-left: 2px"></i> 
-                        <span style="font-size:14px; padding-left:3px">
-                            {l s='estimated delivery' d='Shop.Theme.Catalog'}:
+                        <i class="fa-regular fa-clock" style="font-size: 14px; padding-left: 2px; color:orange"></i> 
+                        <span style="font-size:14px; padding-left:3px;">
+                            <span style="text-transform: uppercase">{l s='estimated delivery' d='Shop.Theme.Catalog'}:</span>
                             <strong>{$dias_plazo nofilter}{if $showDays} {l s='laborable days' d='Shop.Theme.Catalog'}{/if}</strong>
                         </span>
                     </div>
@@ -343,7 +349,7 @@
 
                         {if !($CATEGORY_INSTALACION_ID|in_array:$categoriasProducto) && !($CATEGORY_MANTENIMIENTO_ID|in_array:$categoriasProducto)}
                                            
-                            <div class="product-traits-box">
+                            <div class="product-traits-box" style="display:none">
 
                                 <hr>
 
@@ -399,13 +405,18 @@
 
                                 <button class="accordion-button">
 
-                                     <h2 class="accordion-item-h2">{l s='Measures' d='Shop.Theme.Catalog'}</h2>
+                                     <h2 class="accordion-item-h2">{l s='Measurements' d='Shop.Theme.Catalog'}</h2>
 
                                 </button>
 
                                 <div class="panel">
 
-                                    alto, ancho, espesor y peso
+                                    
+                                    {block name='product_measures'}
+
+                                        {include file='catalog/_partials/product-accordion-measures.tpl'}
+
+                                    {/block}
 
                                 </div>
 
@@ -425,7 +436,11 @@
 
                                 <div class="panel">
 
-                                    {$productUsoMantenimiento nofilter}
+                                    {block name='product_use'}
+
+                                        {include file='catalog/_partials/product-accordion-use.tpl'}
+
+                                    {/block}
 
                                 </div>
 
@@ -464,6 +479,38 @@
 
                                 </div>
 
+                                {if $product.attachments}
+                                    <button class="accordion-button">
+                                        <h2 class="accordion-item-h2">{l s='Downloadable content' d='Shop.Theme.Catalog'}</h2>
+                                    </button>
+                                    <div class="panel">
+                                        {block name='downloadable_content'}
+                                            <div class="tab-panel" id="product-accordion-downloads" role="tabpanel">
+                                                {foreach from=$product.attachments item=attachment}
+                                                    {if ($attachment.name == 'PDF Técnico' && $language.id == 1)
+                                                        || ($attachment.name == 'PDF technique' && $language.id == 2)
+                                                        || ($attachment.name == 'Technical PDF' && $language.id == 3)
+                                                        || ($attachment.name == 'PDF Technical' && $language.id == 4)
+                                                        || ($attachment.name == 'PDF Tecnico' && $language.id == 5)
+                                                        || ($attachment.name == 'PDF-techniek' && $language.id == 6)
+                                                    }
+                                                        <div id="product-attachment-pdf-tecnico" style="padding-left: 30px; padding-bottom: 14px;">
+                                                            <div>
+                                                                <span style="color: #a3a3a3; font-size: large"><i class="fa-solid fa-file"></i></span>
+                                                                <a href="{url entity='attachment' params=['id_attachment' => $attachment.id_attachment]}"
+                                                                    target="_blank"
+                                                                    style="text-transform: uppercase;font-weight: 500;font-size: 14px !important;">
+                                                                       {* {l s='Download' d='Shop.Theme.Actions'}*} {l s='Technical PDF' d='Shop.Theme.Catalog'}
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    {/if}
+                                                {/foreach}
+                                            </div>
+                                        {/block}
+                                    </div>
+                                {/if}
+
                             </div>
 
                         {/block}
@@ -475,14 +522,17 @@
                 <div class="newCalculatorBox">
 
                     {if !($CATEGORY_INSTALACION_ID|in_array:$categoriasProducto) && !($CATEGORY_MANTENIMIENTO_ID|in_array:$categoriasProducto)}
+                       {*
                         {block name='product_discounts'}
-
                             {include file='catalog/_partials/product-discounts.tpl'}
-
                         {/block}
+                        *}
 
-                        <div class="rowTitle" style="font-size: 15px">
-                            {l s='Price Calculator' d='Shop.Theme.Catalog'}:
+                        <div class="rowTitleCalculator">
+                            <div class="calculator-title">
+                                <div><span class="calculator-icon"><i class="fa-solid fa-calculator"></i></span></div>
+                                <div><span>{l s='Price Calculator' d='Shop.Theme.Catalog'}:</span></div>
+                            </div>
                         </div>
 
                     {/if}
@@ -541,7 +591,7 @@
 
                 </div>
 
-                <div class="productExtraContent">
+                <div class="productExtraContent no-padding-desktop">
                     {assign var="dias_plazo" value=""}
                     {assign var="texto_muestra" value=""}
                     {assign var="junta_recomendada" value="0"}
@@ -559,7 +609,6 @@
                             {assign var="sampleTextWarning" value=$feature.value}
 
                         {/if}
-
                     {/foreach}
                     {foreach from=$product.grouped_features item=feature}
                         {if $FEATURE_JUNTA_RECOMENDADA_ID === $feature.id_feature}
@@ -572,92 +621,139 @@
                     {/foreach}
 
                     {* PLANATEC *}
-                        <div id="transport-wrapper" class="row mx-auto" style="margin-top:25px;margin-bottom:10px">
-                            <div class="col-xl-12 col-xs-12">
+
+                        <div class="row" style="display:flex;justify-content:center">
+                            {assign var="samplesInCart" value=0}
+                            {assign var="samplesInCart" value=Cart::getSamplesNumberInCartStatic($id_cart)}
+                            {assign var="maxProductsInCart" value=false}
+                            {if $samplesInCart >= 8}
+                                {$maxProductsInCart = true}
+                            {/if}
+                            <div class ="col-xl-9 col-xs-12">
+                                {if $maxProductsInCart}
+                                    <p id="max-samples-reached" style="text-align: center; font-weight: bold; color: red; margin-top: 10px; font-size: 12px; margin-bottom: 0;">
+                                {else}
+                                    <p id="max-samples-reached" style="text-align: center; font-weight: bold; color: red; margin-top: 10px; font-size: 12px; margin-bottom: 0; display:none;">
+                                {/if}
+                                    {l s='You have reached the maximum number of samples allowed in the same purchase, if necessary, contact customer service.' d='Shop.Theme.Global'}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div id="transport-wrapper" class="row mx-auto no-padding-desktop" style="margin-bottom:10px">
+                            <div class="col-xl-12 col-xs-12 no-padding-desktop" style="padding-top:0">
                                 <div class="product-transport">
                                     <div style="width: 100%;">
-                                        {if $dias_plazo !== '' or $texto_muestra !== ''}
-                                                        
-                                            {if $texto_muestra !== ''}
+                                                      
+                                        {if $texto_muestra !== ''}
                                                                 
-                                                <div>
-                                                    <div style="text-transform: uppercase; font-weight: 500">
-                                                        <span style="color: #a3a3a3; font-size: large "><i class="fa-solid fa-circle-exclamation"></i></span> {l s='Samples' d='Shop.Theme.Catalog'}
+                                           <a href="#" id="openModal" data-toggle="modal" data-target="#sampleModal">
+                                                <div class="modalBanner" style="font-weight:bold; padding-top:10px; padding-bottom:10px">
+                                                    <div style="width: 50px;"> 
+                                                        <span>
+                                                            <img class="baner-icon" src="/themes/child_classic/assets/img/web/icons/sample-ico.png" alt="icon sample"/>
+                                                        </span> 
                                                     </div>
-                                                    <div>
-                                                        {if $hasSample}
-                                                            {$productTransportSamples|replace:'{texto_muestra}':$texto_muestra nofilter}
-                                                        {else}
-                                                            <p>{$sampleTextWarning}<p>
-                                                        {/if}
-                                                    </div>
-                                                </div>
-                                            {/if}
-                                            {if $dias_plazo !== ''}
-                                                <div>
-                                                    <div style="text-transform: uppercase; font-weight: 500">
-                                                        <span style="color: #a3a3a3; font-size: large"><i class="fa-solid fa-truck"></i></span> {l s='Transport' d='Shop.Theme.Catalog'}
-                                                    </div>
-                                                    <div>{$productTransport|replace:'{dias_plazo}':$dias_plazo nofilter}</div>
-                                                </div>
-                                            {/if}
-                                        {/if}
-                                        {if $product.attachments}
-                                            {foreach from=$product.attachments item=attachment}
-                                                {if ($attachment.name == 'PDF Técnico' && $language.id == 1)
-                                                    || ($attachment.name == 'PDF technique' && $language.id == 2)
-                                                    || ($attachment.name == 'Technical PDF' && $language.id == 3)
-                                                    || ($attachment.name == 'PDF Technical' && $language.id == 4)
-                                                    || ($attachment.name == 'PDF Tecnico' && $language.id == 5)
-                                                    || ($attachment.name == 'PDF-techniek' && $language.id == 6)
-                                                }
-                                                    <div id="product-attachment-pdf-tecnico">
+                                                    <div class="whyordersampletext">
                                                         <div>
-                                                            <span style="color: #a3a3a3; font-size: large"><i class="fa-solid fa-file"></i></span>
-                                                            <a href="{url entity='attachment' params=['id_attachment' => $attachment.id_attachment]}"
-                                                                target="_blank"
-                                                                style="text-transform: uppercase;font-weight: 500;font-size: 14px !important;">
-                                                                    {l s='Download' d='Shop.Theme.Actions'} {l s='Technical PDF' d='Shop.Theme.Catalog'}
+                                                            {l s='Why request a sample?' d='Shop.Theme.Catalog'}
+                                                        </div>
+                                                        <div>
+                                                            <span style="color:#eac133; font-size:30px"><i class="fa-solid fa-angle-right"></i></span>  
+                                                        </div>
+                                                    </div>    
+                                                </div>
+                                            </a>
+                                      
+                                        {/if}
+                                        
+
+
+                                        {if !empty($junta_recomendada) && $junta_recomendada != 0}
+                                            {$cardBoard = Product::getProductCard($junta_recomendada)}
+                                            {$imageCoverUrl= Product::getImageByPosition(1, $junta_recomendada)}
+                                            {$imageDustUrl= Product::getImageByPosition(2, $junta_recomendada)}
+                                            {assign var='hasCover' value=true}
+                                            {assign var='hasDust' value=true}
+                                            {if strpos($imageCoverUrl, 'no-hay-cover') !== false}
+                                                {assign var='hasCover' value=false}
+                                            {/if}
+
+                                            {if strpos($imageDustUrl, 'no-hay-cover') !== false}
+                                                {assign var='hasDust' value=false}
+                                            {/if}
+
+                                        
+                                          <hr>
+
+                                            <div id="board-section" style="padding:25px 0">
+                                                <h2 class="product_H2">{l s='Recommended board' d='Shop.Theme.Catalog'}</h2> 
+
+                                                <div class="board-card">
+                                                    <div class="board-img-carousel">
+                                                        <button class="carousel-btn prev"><span aria-label="Previous">‹</span></button>
+                                                        <div class="carousel-track">
+                                                            {if $hasCover}
+                                                                <img loading="lazy" src="{$imageCoverUrl}" style="max-width:155px" alt="{$cardBoard.name} - cover"/>
+                                                            {/if}
+                                                            {if $hasDust}
+                                                                <img loading="lazy" src="{$imageDustUrl}" style="max-width:155px" alt="{$cardBoard.name} - sample"/>
+                                                            {/if}
+                                                        </div>
+                                                        <button class="carousel-btn next"><span aria-label="Next">›</span></button>
+                                                    </div>
+                                                    
+                                                    <div id="board-info">
+
+                                                        <div class="product-reference"><span class="board-reference">Ref: {$cardBoard.ref}</span></div>
+                                                        <div class="board-title">{$cardBoard.name}</div>
+                                                        <div class="board-format">{$cardBoard.feature_format}</div>
+                                                        <div>
+                                                            <a href="{Context::getContext()->link->getProductLink($junta_recomendada)}" style="font-size:.92rem;">
+                                                                <button class="board-button">{l s='View Product' d='Shop.Theme.Catalog'}</button>
                                                             </a>
                                                         </div>
+                                                        
+
                                                     </div>
-                                                {/if}
-                                            {/foreach}
-                                        {/if}
-
-                                        {$junta_recomendada_nombre = Product::getProductName($junta_recomendada)}
-                                        {$imageCoverUrl= Product::getImageByPosition(1, $junta_recomendada)}
-                                        {$imageDustUrl= Product::getImageByPosition(2, $junta_recomendada)}
-                                        {assign var='hasCover' value=true}
-                                        {assign var='hasDust' value=true}
-                                        {if strpos($imageCoverUrl, 'no-hay-cover') !== false}
-                                            {assign var='hasCover' value=false}
-                                        {/if}
-
-                                        {if strpos($imageDustUrl, 'no-hay-cover') !== false}
-                                            {assign var='hasDust' value=false}
-                                        {/if}
-
-                                        {if !empty($junta_recomendada) && !empty($junta_recomendada_nombre)}
-                                            <div style="padding-top:25px">
-                                                <div id="recommended-board-wrapper" style="text-transform: uppercase; font-weight: 500">
-                                                    <span style="padding-right:10px">{l s='Recommended board' d='Shop.Theme.Catalog'}{l s=':' d='Shop.Theme.Catalog'}</span> 
-                                                    <a href="{Context::getContext()->link->getProductLink($junta_recomendada)}" style="font-size:.92rem;">
-                                                        {$junta_recomendada_nombre}
-                                                    </a>
                                                 </div>
-                                                <div class="mobile-text-center">
-                                                    <a href="{Context::getContext()->link->getProductLink($junta_recomendada)}">
-                                                        {if $hasCover}
-                                                            <img loading="lazy" src="{$imageCoverUrl}" style="max-width:155px" alt="{$junta_recomendada_nombre} - cover"/>
-                                                        {/if}
-                                                        {if $hasDust}
-                                                            <img loading="lazy" src="{$imageDustUrl}" style="max-width:155px" alt="{$junta_recomendada_nombre} - sample"/>
-                                                        {/if}
-                                                    </a>
-                                                </div>
+
                                             </div>
+                                            
+                                            <hr>
+
                                         {/if}
+
+                                       
+                                        <div class="modals-block">
+
+                                            <h2 class="product_H2">{l s='Terms of Purchase' d='Shop.Theme.Catalog'}</h2>
+
+                                           
+                                            <a href="#" id="openModal" data-toggle="modal" data-target="#transportModal">
+                                                <div class="modalBanner" style="padding: 15px">
+                                                    <div style="width: 50px;"> 
+                                                        <span style="font-size:30px">
+                                                            {*<img class="baner-icon" src="/themes/child_classic/assets/img/web/icons/truck-ico.png" alt="icon truck"/>*}
+                                                            <i class="fa-regular fa-file-lines"></i>
+                                                        </span> 
+                                                    </div>
+                                                    <div style="font-weight:500">{l s='Sales Conditions' d='Shop.Theme.Catalog'} </div>
+                                                </div>
+                                            </a>
+                                            
+                                            <a href="#" id="openModal" data-toggle="modal" data-target="#refundModal">
+                                                <div class="modalBanner">
+                                                    <div style="width: 50px;"> 
+                                                        <span>
+                                                            <img class="baner-icon" src="/themes/child_classic/assets/img/web/icons/refund-ico.png" alt="icon refund"/>
+                                                        </span>
+                                                    </div>
+                                                    <div style="font-weight:500">{l s='Returns / issues' d='Shop.Theme.Catalog'} </div>                                              
+                                                </div>
+                                            </a>
+
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -730,6 +826,23 @@
             </footer>
 
         {/block}
+
+        {block name='sample_modal'}
+            {include file='catalog/_partials/_modal-samples.tpl'}
+        {/block}
+
+        {block name='transport_modal'}
+            {include file='catalog/_partials/_modal-transport.tpl'}
+        {/block}
+
+        {block name='refund_modal'}
+            {include file='catalog/_partials/_modal-refund.tpl'}
+        {/block}
+
+        {block name='payment_modal'}
+            {include file='catalog/_partials/_modal-payment.tpl'}
+        {/block}
+
 
     </section>
 
