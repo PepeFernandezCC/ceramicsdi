@@ -148,9 +148,9 @@ if ($result) {
     
     customer::updateCustomerSiret($customer_id, $vatNumber);
     customer::assignIntracomunitaryGroup($customer_id);
-    customer::insertIntracomunitaryLog($result, $err, $vatNumber, $customer_id, $idCountry);
-
+    
 }
 
+customer::insertIntracomunitaryLog($result, $err, $vatNumber, $customer_id, $idCountry);
 echo json_encode(['result' => $result, 'userError' => $err, 'fullVat' => $vatNumber]);
 exit;
