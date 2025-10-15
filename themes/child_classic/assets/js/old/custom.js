@@ -12,6 +12,8 @@ $( document ).ready( function () {
       document
          .querySelectorAll('#menu-mobile-list a[href="#"]')
          .forEach(a => a.removeAttribute('href'));
+
+
       /* scrip clonar imagenes borrar 
 
       $('#imgcloner').on('click', function() {
@@ -32,13 +34,105 @@ $( document ).ready( function () {
 
        fin script clonar imagenes*/
 
-       
+
       /* MOSTRAR PROMO CODE */
       if(document.getElementById('show-promo-code')) {
          $('#promo-code').css('display', 'block');
       }else{
          $('#promo-code').css('display', 'none');
       }
+
+      /* CARRUSEL JUNTAS */
+      if (document.getElementById('board-section')){
+
+         const track = document.querySelector(".carousel-track");
+         const images = track.querySelectorAll("img");
+         const prevBtn = document.querySelector(".carousel-btn.prev");
+         const nextBtn = document.querySelector(".carousel-btn.next");
+         let index = 0;
+
+         function updateCarousel() {
+            const width = images[0].clientWidth;
+            track.style.transform = `translateX(-${index * width}px)`;
+         }
+
+         nextBtn.addEventListener("click", () => {
+            index = (index + 1) % images.length;
+            updateCarousel();
+         });
+
+         prevBtn.addEventListener("click", () => {
+            index = (index - 1 + images.length) % images.length;
+            updateCarousel();
+         });
+
+         window.addEventListener("resize", updateCarousel);
+
+         // ---- Soporte táctil para móviles ----
+         let startX = 0;
+         let moveX = 0;
+
+         track.addEventListener("touchstart", (e) => {
+            startX = e.touches[0].clientX;
+         });
+
+         track.addEventListener("touchmove", (e) => {
+            moveX = e.touches[0].clientX - startX;
+         });
+
+         track.addEventListener("touchend", () => {
+            if (moveX > 50) { // swipe derecha
+               index = (index - 1 + images.length) % images.length;
+               updateCarousel();
+            } else if (moveX < -50) { // swipe izquierda
+               index = (index + 1) % images.length;
+               updateCarousel();
+            }
+            moveX = 0;
+         });
+
+      }
+  
+
+      /* BOTONES DE COMPRA FLOTANTES */
+
+      if(document.getElementById('sticky-sentinel')) {
+
+         const wrapper = document.getElementById("add-wrapper");
+         const sentinel = document.getElementById("sticky-sentinel");
+
+         let lastScrollY = window.scrollY;
+         let stuck = false; // si está anclado en su sitio
+         let floating = true; // si está flotando
+
+         const observer = new IntersectionObserver(
+            ([entry]) => {
+               const currentScrollY = window.scrollY;
+
+               if (entry.isIntersecting) {
+               stuck = true;
+               floating = false;
+               wrapper.classList.add("sticky-stop");
+               } else {
+               if (currentScrollY < lastScrollY) {
+                  // Scroll hacia arriba → volver a flotante
+                  floating = true;
+                  stuck = false;
+                  wrapper.classList.remove("sticky-stop");
+               }
+               }
+
+               lastScrollY = currentScrollY;
+            },
+            {
+               root: null,
+               threshold: 0
+            }
+         );
+
+         observer.observe(sentinel);
+      }
+
 
 
       let $body = $( 'body' );
@@ -253,7 +347,11 @@ $( document ).ready( function () {
 
       const $eurosInput = $( '#euros-input' );
 
+      const $m2TotalMeters = $( '#m2TotalMeters');
 
+      const $m2TotalPrice = $( '#m2TotalPrice');
+
+      const $pieceTotalMeters = $( '#pieceTotalMeters');
 
       const $surfaceInputReal = $( '#surface-real' );
 
@@ -277,11 +375,7 @@ $( document ).ready( function () {
 
             piezasCaja = '1';
 
-            console.log('piezas cara raw: ' + piezasCaja);
-
             piezasCaja = parseFloat( piezasCaja.replace( ',', '.' ) );
-
-            console.log('piezas cara format: ' + piezasCaja);
 
          }
 
@@ -867,12 +961,14 @@ $( document ).ready( function () {
 
       // PRODUCTO POR SUPERFICIE
       const numberInput = document.getElementById('numberInput');
+      const m2SubtotalBoxes = document.getElementById('m2SubtotalBoxes');
 
       if (document.getElementById('numberInput')) {
 
          document.getElementById('incrementButton').addEventListener('click', function() {
 
             numberInput.value = parseInt(numberInput.value) + 1;
+            m2SubtotalBoxes.textContent = parseInt(numberInput.value);
   
             calculatem2bybox(m2Caja, numberInput, document.getElementById('surface-input'));
 
@@ -883,14 +979,13 @@ $( document ).ready( function () {
            if(document.getElementById('numberInput').value > 0) {
   
               numberInput.value = parseInt(numberInput.value) - 1;
+              m2SubtotalBoxes.textContent = parseInt(numberInput.value);
   
               calculatem2bybox(m2Caja, numberInput, document.getElementById('surface-input'));
 
            }
 
         });
-  
-        //document.getElementById('surface-input').addEventListener('change', function() {
   
         $('#surface-input').keyup( function() {
   
@@ -900,7 +995,6 @@ $( document ).ready( function () {
            
         })
   
-        //numberInput.addEventListener('change', function() {
         $('#numberInput').keyup ( function() {
         
            calculatem2bybox(m2Caja, document.getElementById('numberInput'), document.getElementById('surface-input'));
@@ -913,12 +1007,15 @@ $( document ).ready( function () {
            let totalSurface = (numberInput.value * m2Caja).toFixed( 2 );
   
            numberm2needed.value = totalSurface;
-  
+         
+           m2SubtotalBoxes.textContent = numberInput.value;
            $surfaceInputReal.val( totalSurface );
+           $m2TotalMeters.text(totalSurface);
   
            setQuantitiesValue(numberInput.value);
   
            $eurosInput.val( ( numberInput.value * price ).toFixed( 2 ) );
+           $m2TotalPrice.text( ( numberInput.value * price ).toFixed( 2 ) );
           
         }
   
@@ -927,16 +1024,19 @@ $( document ).ready( function () {
            let quantity = Math.ceil(m2required / m2Caja);
   
            numberInput.value = quantity;
+           m2SubtotalBoxes.textContent = quantity;
   
            let totalSurface = (numberInput.value * m2Caja).toFixed( 2 );
   
            //document.getElementById('surface-input').value = totalSurface;
   
            $surfaceInputReal.val( totalSurface );
+           $m2TotalMeters.text(totalSurface);
   
            setQuantitiesValue(quantity)
   
            $eurosInput.val( ( numberInput.value * price ).toFixed( 2 ) );
+           $m2TotalPrice.text( ( numberInput.value * price ).toFixed( 2 ) );
   
   
         }
@@ -953,7 +1053,7 @@ $( document ).ready( function () {
   
         }
 
-              //botón +15%
+       //botón +15%
       document.getElementById('recomendation-check').addEventListener('change', function() {
 
          let m2required = document.getElementById('surface-input');
@@ -1066,12 +1166,14 @@ $( document ).ready( function () {
       // PRODUCTO POR PIEZA
 
       const inputPiecesBox = document.getElementById('inputPiecesBox');
+      const pieceSubtotalBoxes = document.getElementById('pieceSubtotalBoxes');
 
       if (document.getElementById('inputPiecesBox')) {
 
          document.getElementById('incrementPieces').addEventListener('click', function() {
 
             inputPiecesBox.value = parseInt(inputPiecesBox.value) + 1;
+            pieceSubtotalBoxes.textContent = parseInt(inputPiecesBox.value);
    
             calculatepiecesbybox(piezasCaja, inputPiecesBox, document.getElementById('pieces-input'));
 
@@ -1082,6 +1184,7 @@ $( document ).ready( function () {
             if(document.getElementById('inputPiecesBox').value > 0) {
    
                inputPiecesBox.value = parseInt(inputPiecesBox.value) - 1;
+               pieceSubtotalBoxes.textContent = parseInt(inputPiecesBox.value);
    
                calculatepiecesbybox(piezasCaja, inputPiecesBox, document.getElementById('pieces-input'));
 
@@ -1110,12 +1213,15 @@ $( document ).ready( function () {
    
             piecesNeeded.value = totalPieces;
    
+            pieceSubtotalBoxes.textContent = inputPiecesBox.value;
             $piecesInputReal.val( totalPieces );
+            $pieceTotalMeters.text(totalPieces);
    
             setPiecesQuantitiesValue(inputPieces.value);
    
             $eurosInput.val( ( inputPieces.value * price ).toFixed( 2 ) );
-           
+            $m2TotalPrice.text( ( inputPiecesBox.value * price ).toFixed( 2 ) );
+
          }
    
          let calculatePiecesOnChangeEvent = function(piecesRequired, inputPieces) {
@@ -1123,15 +1229,17 @@ $( document ).ready( function () {
             let quantity = Math.ceil(piecesRequired / piezasCaja);
    
             inputPieces.value = quantity;
+            pieceSubtotalBoxes.textContent = quantity;
    
             let totalPieces = (inputPieces.value * piezasCaja).toFixed( 2 );
    
             $piecesInputReal.val( totalPieces );
+            $pieceTotalMeters.text(totalPieces);
    
             setPiecesQuantitiesValue(quantity);
    
             $eurosInput.val( ( inputPieces.value * price ).toFixed( 2 ) );
-   
+            $m2TotalPrice.text( ( inputPiecesBox.value * price ).toFixed( 2 ) );
    
          }
    
@@ -1140,6 +1248,7 @@ $( document ).ready( function () {
             let piecesValue = Math.ceil( quantity * piezasCaja );
    
             $piecesInputReal.val( piecesValue );
+            $pieceTotalMeters.text(piecesValue);
    
             $quantityInput.val( quantity );
    
@@ -1730,7 +1839,7 @@ $( document ).ready( function () {
                 
                if ($('#field-id_country').val() != 6 && $('input[name="treatment"]:checked').val() === 'particular') {
                   $( '#field-dni' ).closest( '.form-group' ).css( 'display', 'none' );
-                   $('#field-dni').val('');
+                  $('#field-dni').val('');
                }else{
                   $( '#field-dni' ).closest( '.form-group' ).css( 'display', 'inherit' );
                }
@@ -2099,7 +2208,13 @@ $( document ).ready( function () {
                      const selectedArticle = document.querySelector('#invoice-addresses article.selected');
 
                      if (selectedArticle) {
-                        const addressId = selectedArticle.dataset.address; // equivale a getAttribute("data-address")
+                        if ($('#field-id_country').val() == 6 && $('#field-dni').val() == '') {
+                           event.preventDefault();
+                           alert('Introduzca DNI válido en la dirección');
+                           console.error('Error critico dni español');
+                           resetButtonState();
+                        }else{
+                           const addressId = selectedArticle.dataset.address; // equivale a getAttribute("data-address")
                         event.preventDefault();    
                         $.ajax({ // comprueba si el vat es válido
                            url: '/ajax/validateVatNumberInvoiceAddress.php',
@@ -2116,6 +2231,8 @@ $( document ).ready( function () {
                               resetButtonState();
                            }
                         });
+                        }
+                        
                      } 
                   }
                }else{

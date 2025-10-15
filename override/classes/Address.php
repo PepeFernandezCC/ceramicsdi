@@ -120,31 +120,19 @@ class Address extends AddressCore
         $vat = $address->vat_number;
         $country = $address->id_country;
         $customer = $address->id_customer;
+        $validate = true;
         
 
         if ($country == 6) {
             customer::removeIntracomunitaryGroup($customer);
-            return ['validate' => false];
+            $validate = false;
         }
-
-        /* COMPROBAR SI YA EST INTRACOMUNITARIO */
-        /*
-        $customerGroups = customer::checkCustomerGroup($customer);
-
-        if($customerGroups['default_group'] == '6' 
-            || in_array('6', $customerGroups['customer_groups'])) {
-            
-                return ['check_intracomunitary' => true,
-                        'validate' => true
-                    ];
-        }
-        */
 
         return [
             'vat_number' => ($vat == '' || $vat == NULL) ? $cif : $vat,
             'customer' => $customer,
             'country' => $country, 
-            'validate' => true
+            'validate' => $validate
         ];
 
 

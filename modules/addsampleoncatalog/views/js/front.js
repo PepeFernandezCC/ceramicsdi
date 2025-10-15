@@ -413,7 +413,7 @@ function isValidCif(cif) {
 }
 
 // Escucha el evento submit
-if(document.getElementById("address-form")) {
+if(document.getElementById('confirmAddressButton') && document.getElementById("confirmAddressButton").getAttribute("data-location") == "form") {
     document.getElementById("address-form").addEventListener("submit", function(event) {
         console.log($('#field-id_country').val());
         if ($('#field-id_country').val() == 6 && !validarDNI()) {
@@ -516,7 +516,7 @@ prestashop.on( 'updatedAddressForm', function(){
     }
 
     // Escucha el evento submit
-    if(document.getElementById("address-form")) {
+    if(document.getElementById('confirmAddressButton') && document.getElementById("confirmAddressButton").getAttribute("data-location") == "form") {
         document.getElementById("address-form").addEventListener("submit", function(event) {
             console.log($('#field-id_country').val());
             if ($('#field-id_country').val() == 6 && !validarDNI()) {

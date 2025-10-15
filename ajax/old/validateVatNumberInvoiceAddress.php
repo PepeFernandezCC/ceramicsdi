@@ -6,10 +6,27 @@ header('Content-Type: application/json');
 
 //$vat_input = 'FR11849695879';
 //$customer_id = '7485';
+$address = Tools::getValue('address');
 
-$vat_input = Tools::getValue('vat_number');
-$customer_id = Tools::getValue('customer');
-$idCountry = Tools::getValue('country');
+$data = address::getVatApiData($address);
+/*
+$customer_is_intracomunitary = $data['check_intracomunitary'];
+
+if($customer_is_intracomunitary) {
+    echo json_encode(['true' => true, 'userError' => 'Cliente ya validado']);
+    exit;
+}
+*/
+$validate = $data['validate'];
+
+if (!$validate) {
+    echo json_encode(['true' => false, 'userError' => 'Cliente no apto para intracomunitario']);
+    exit;
+}
+
+$vat_input = $data['vat_number'];
+$customer_id = $data['customer'];
+$idCountry = $data['country'];
 $france = '8';
 $spain = '6';
 
@@ -26,11 +43,6 @@ if (!$vat_input || strlen($vat_input) < 3) {
 $prefix = substr($vat_input, 0, 2);
 $number = substr($vat_input, 2);
 
-/* CONTROLAR VAT ESPAÑOL */
-if ($idCountry == $spain || $country->iso_code == 'ES') {
-    echo json_encode(['result' => false, 'userError' => 'No aplica a España']);
-    exit;
-}
 
 if($prefix == $country->iso_code) {
     $vatNumber = $vat_input;
@@ -81,29 +93,8 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, [
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_TIMEOUT, 10);
 
-// Reintentos automáticos
-$maxAttempts = 3;
-$attempt = 0;
-
-do {
-    $attempt++;
-    $response = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-    if (curl_errno($ch)) {
-        echo json_encode(['result' => false, 'userError' => curl_error($ch), 'fullVat' => $vatNumber]);
-        curl_close($ch);
-        exit;
-    }
-
-    // Si es error de concurrencia (código 58 en la respuesta XML), reintentamos
-    if ($httpCode === 200 && strpos($response, '<code>58</code>') !== false) {
-        sleep($attempt * 2); // backoff exponencial
-        continue;
-    }
-
-    break;
-} while ($attempt < $maxAttempts);
+$response = curl_exec($ch);
+$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
 curl_close($ch);
 

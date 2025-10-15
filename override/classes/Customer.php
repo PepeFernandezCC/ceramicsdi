@@ -32,6 +32,18 @@ class Customer extends CustomerCore {
             ], 'id_customer = ' . $customerId);
     }
 
+    public static function insertIntracomunitaryLog($response, $message, $vatNumber, $idCustomer, $id_country) {
+
+            Db::getInstance()->insert('intracomunitary_log', [
+                'id_customer' => (int)$idCustomer,
+                'vat_number' => $vatNumber,
+                'id_country' => $id_country,
+                'response' => $response ? '1' : '0',
+                'message' => $message,
+                'date' => date("d-m-Y H:i:s")
+            ]);
+    }
+
     public static function removeIntracomunitaryGroup($idCustomer) {
         $customerGroups = customer::checkCustomerGroup($idCustomer);
 

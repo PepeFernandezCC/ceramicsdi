@@ -226,7 +226,7 @@
                             </div>
                         </div>
 
-                        <div class="subtotal-product" style="padding-bottom:15px">
+                        <div class="subtotal-product" style="padding-bottom:15px; display:none">
                             <div class="subtotal-title-product">{l s='Total Boxes' d='Shop.Theme.Catalog'}:</div>
                             <div class="subtotal-quantity-product"><span id="pieceSubtotalBoxes">0</span> {l s='Boxes' d='Shop.Theme.Catalog'}</div>
                         </div>

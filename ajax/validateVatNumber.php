@@ -19,6 +19,7 @@ $vat_input = preg_replace('/[^A-Za-z0-9]/', '', strtoupper($vat_input));
 
 if (!$vat_input || strlen($vat_input) < 3) {
     echo json_encode(['result' => false, 'userError' => 'Invalid VAT input']);
+    customer::insertIntracomunitaryLog(false, 'VAT con formato Incorrecto' , $vat_input, $customer_id, $idCountry);
     exit;
 }
 
@@ -29,6 +30,7 @@ $number = substr($vat_input, 2);
 /* CONTROLAR VAT ESPAÑOL */
 if ($idCountry == $spain || $country->iso_code == 'ES') {
     echo json_encode(['result' => false, 'userError' => 'No aplica a España']);
+    customer::insertIntracomunitaryLog(false, 'Vat Español', $vat_input, $customer_id, $idCountry);
     exit;
 }
 
@@ -41,6 +43,7 @@ if($prefix == $country->iso_code) {
     if ($idCountry == $france) {
         if (strlen($vat_input) != 9 && strlen($vat_input) != 11) {
             echo json_encode(['result' => false, 'userError' => 'Numero Vat no válido']);
+            customer::insertIntracomunitaryLog(false, 'VAT Francés incorrecto', $vatNumber, $customer_id, $idCountry);
             exit;
         }
         if (strlen($vat_input) == 9) {
@@ -92,6 +95,7 @@ do {
 
     if (curl_errno($ch)) {
         echo json_encode(['result' => false, 'userError' => curl_error($ch), 'fullVat' => $vatNumber]);
+        customer::insertIntracomunitaryLog(false, curl_error($ch), $vatNumber, $customer_id, $idCountry);
         curl_close($ch);
         exit;
     }
@@ -121,6 +125,7 @@ if ($httpCode === 200) {
 
             $err = "Error en VIES (código $errorCode): $errorMsg";
             $result = false; // indeterminado
+
         }
         elseif (isset($xml->vies->valid)) {
             $isValid = (string)$xml->vies->valid;
@@ -140,8 +145,10 @@ if ($httpCode === 200) {
 }
 
 if ($result) {
+    
     customer::updateCustomerSiret($customer_id, $vatNumber);
     customer::assignIntracomunitaryGroup($customer_id);
+    customer::insertIntracomunitaryLog($result, $err, $vatNumber, $customer_id, $idCountry);
 
 }
 

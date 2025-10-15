@@ -4,37 +4,30 @@ include(dirname(__FILE__) . '/../init.php');
 
 header('Content-Type: application/json');
 
-//$vat_input = 'FR11849695879';
-//$customer_id = '7485';
 $address = Tools::getValue('address');
 
 $data = address::getVatApiData($address);
-/*
-$customer_is_intracomunitary = $data['check_intracomunitary'];
 
-if($customer_is_intracomunitary) {
-    echo json_encode(['true' => true, 'userError' => 'Cliente ya validado']);
-    exit;
-}
-*/
 $validate = $data['validate'];
-
-if (!$validate) {
-    echo json_encode(['true' => false, 'userError' => 'Cliente no apto para intracomunitario']);
-    exit;
-}
-
 $vat_input = $data['vat_number'];
 $customer_id = $data['customer'];
 $idCountry = $data['country'];
 $france = '8';
 $spain = '6';
 
+if (!$validate) {
+    echo json_encode(['result' => false, 'userError' => 'Cliente no apto para intracomunitario']);
+    customer::insertIntracomunitaryLog(false, 'DIRECCIONES: Cliente no apto' , $vat_input, $customer_id, $idCountry);
+    exit;
+}
+
+
 $country = new Country($idCountry);
 
 $vat_input = preg_replace('/[^A-Za-z0-9]/', '', strtoupper($vat_input));
 
 if (!$vat_input || strlen($vat_input) < 3) {
+    customer::insertIntracomunitaryLog(false, 'DIRECCIONES: VAT CON FORMATO INCORRECTO' , $vat_input, $customer_id, $idCountry);
     echo json_encode(['result' => false, 'userError' => 'Invalid VAT input']);
     exit;
 }
@@ -53,6 +46,7 @@ if($prefix == $country->iso_code) {
     if ($idCountry == $france) {
         if (strlen($vat_input) != 9 && strlen($vat_input) != 11) {
             echo json_encode(['result' => false, 'userError' => 'Numero Vat no válido']);
+            customer::insertIntracomunitaryLog(false, 'DIRECCIONES: VAT NO VALIDO' , $vat_input, $customer_id, $idCountry);
             exit;
         }
         if (strlen($vat_input) == 9) {
@@ -133,8 +127,9 @@ if ($httpCode === 200) {
 if ($result) {
     customer::updateCustomerSiret($customer_id, $vatNumber);
     customer::assignIntracomunitaryGroup($customer_id);
-
+    
 }
-
+$msg_error = 'DIRECCIONES: ' . $err;
+customer::insertIntracomunitaryLog($result, $msg_error , $vatNumber, $customer_id, $idCountry);
 echo json_encode(['result' => $result, 'userError' => $err, 'fullVat' => $vatNumber]);
 exit;

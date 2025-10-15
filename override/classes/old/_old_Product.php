@@ -194,7 +194,33 @@ class Product extends ProductCore {
         return $products !== false ? $products : [];
     }
 
-    public static function getProductAttribute($productId, $attributeId, $language = 1) {
+    public static function getProductCard($idProduct, $lang = null) {
+        // use the lang in the context if $id_lang is not defined
+        if (!$lang) {
+            $lang = (int) Context::getContext()->language->id;
+        }
+
+
+        $query = 'SELECT p.reference, pl.name 
+                    FROM ' . _DB_PREFIX_ . 'product p 
+                    JOIN ' . _DB_PREFIX_ . 'product_lang pl ON p.id_product = pl.id_product 
+                    WHERE pl.id_lang = '.(int)$lang.' AND p.id_product = '.(int)$idProduct;
+
+        $info = Db::getInstance()->getRow($query);
+
+        return [
+            'ref' => $info['reference'],
+            'name' => $info['name'],
+            'feature_format' => self::getProductAttribute($idProduct, 4, $lang)
+        ];
+
+    }
+
+    public static function getProductAttribute($productId, $attributeId, $language = NULL) {
+
+        if(!$language) {
+            $language = (int) Context::getContext()->language->id;
+        }
 
         $db = Db::getInstance();
 
