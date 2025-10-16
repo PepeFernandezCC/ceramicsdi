@@ -156,6 +156,14 @@ class Product extends ProductCore {
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($query);
     }
 
+    public static function getMinimalQuantityPrice($productId) {
+        $idLang = (int) Context::getContext()->language->id;
+        $product = new Product($productId);
+        $price = self::getDefaultTaxByLang($idLang, $product->price);
+        $minimalQuantityPrice = round($price * $product->minimal_quantity, 2);
+        return number_format($minimalQuantityPrice, 2, '.', '');
+    }
+
 
     /**
      * Obtener todos los productos agrupados por colección
