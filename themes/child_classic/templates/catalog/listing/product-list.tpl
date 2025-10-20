@@ -309,8 +309,7 @@
 
                     </div>
 
-                </section>
-                
+                </section>  
             {/if}
 
 
@@ -332,6 +331,10 @@
                 </div>
 
             {/if}
+
+            <div id="inspiration-products-carousel">
+                {hook h='displayInspirationCarousel' id_category=$category.id}
+            </div>
 
         </section>
 

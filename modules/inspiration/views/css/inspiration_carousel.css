@@ -1,0 +1,79 @@
+/* Centrar todo el carrusel */
+#carousel-materials .owl-stage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Cada elemento ocupa más espacio y se centra */
+#carousel-materials .owl-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Miniaturas del carrusel */
+.inspiration-owl .inspiration-thumb img {
+  height: 220px;        /* 🔥 más grande */
+  width: auto;
+  display: block;
+  object-fit: cover;
+  box-shadow: 0 2px 8px rgba(0,0,0,.15);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+/* Animación al pasar el ratón */
+.inspiration-owl .inspiration-thumb:hover img {
+  transform: scale(1.03);
+  box-shadow: 0 4px 16px rgba(0,0,0,.25);
+}
+
+/* Reducir espacio entre elementos */
+.inspiration-owl .owl-stage-outer {
+  padding: 10px 0;
+}
+
+.inspiration-owl .owl-item {
+  margin-right: 6px !important;  /* 🔥 menos espacio lateral */
+}
+
+/* Quitar padding lateral de Owl */
+.inspiration-owl {
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Modal de ampliación */
+.inspiration-modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, .8);
+  z-index: 9999;
+  padding: 24px;
+}
+.inspiration-modal.is-open { display: flex; }
+.inspiration-modal__close {
+  position: absolute;
+  top: 20px; right: 25px;
+  background: #000;
+  color: #fff;
+  border: 0;
+  width: 40px; height: 40px;
+  font-size: 22px;
+  line-height: 40px;
+  cursor: pointer;
+}
+#inspirationModalImg {
+  max-width: 90vw;
+  max-height: 85vh;
+  box-shadow: 0 10px 30px rgba(0,0,0,.4);
+}
+
+@media (max-width: 768px) {
+  .inspiration-owl .inspiration-thumb img {
+    height: 200px;  /* un poco más grande en móvil */
+  }
+}
