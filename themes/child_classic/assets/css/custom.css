@@ -1311,6 +1311,7 @@ body:not(#category):not(#search) #wrapper #content-wrapper {
 
   #product .product-container #product-content-block .custom-content {
     padding: 18px;
+    padding-top: 0px;
   }
 
 
@@ -2015,7 +2016,9 @@ input[type=number]::-webkit-outer-spin-button {
   color: gray;
   font-weight: normal;
   text-transform: uppercase;
+  font-size: 12px;
 }
+
 @media (max-width: 1200px) {
   .tax-message {
     font-size: 13px;
@@ -6586,7 +6589,7 @@ span.at-contact {
     padding: 18px;
     padding-bottom: 35px;
     background: #e5e6e5;
-    margin-top:35px;
+    margin-top: 15px;
     margin-bottom: 65px;
   }
   #product .product-container #product-content-block .productExtraContent {
@@ -6615,10 +6618,14 @@ span.at-contact {
     display: flex;
   }
 
+  .final-price-taxed {
+    display: flex;
+    margin-top: 8px;
+  }
+
 
 /* versión movil */
 @media (max-width: 768px) {
-
 
 
     #product .product-container #product-content-block .newCalculatorBox {
@@ -6638,6 +6645,10 @@ span.at-contact {
       margin-bottom: 30px;
     }
 
+    .block-title {
+      display: flex;
+      flex-direction: column-reverse;
+    }
 
     .product-discount .regular-price {
       font-size: 23px;
@@ -6770,6 +6781,24 @@ span.at-contact {
 .carousel-btn.next { right: 0; }
 
 @media (min-width:769px) {
+
+
+  .final-price-taxed {
+    justify-content: flex-end;
+    margin-top: 13px;
+  }
+
+  .custom-content {
+    padding-top: 5px;
+  }
+
+  .block-pricing {
+    margin-top: 28px;
+  }
+
+  .minimal-price {
+    text-align: right;
+  }
 
   .wasteLink{
     position: absolute;

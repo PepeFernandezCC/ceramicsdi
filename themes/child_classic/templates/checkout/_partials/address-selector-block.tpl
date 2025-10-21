@@ -40,8 +40,8 @@
             >
             <span></span>
           </span>
-          <span class="address-alias h4">{$address.alias}</span>
-          <div class="address">{$address.formatted nofilter}</div>
+          {* <span class="address-alias h4">{$address.alias}</span> *}
+          <div class="address" style="margin-top:-15px">{$address.formatted nofilter}</div>
         </label>
       </header>
       <hr>

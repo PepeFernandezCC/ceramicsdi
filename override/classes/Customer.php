@@ -25,7 +25,20 @@ class Customer extends CustomerCore {
 
     }
 
+    public static function getCustomerShowTax($idCustomer) {
+        
+        $customerGroups = customer::checkCustomerGroup($idCustomer);
 
+        if($customerGroups['default_group'] == '5' || $customerGroups['default_group'] == '6') {
+            return false;
+        }
+
+        if (in_array('5', $customerGroups['customer_groups']) || in_array('6', $customerGroups['customer_groups'])) {
+            return false;
+        }
+
+        return true;
+    }
     public static function updateCustomerSiret($customerId, $siret) {
             Db::getInstance()->update('customer', [
                 'siret' => $siret,

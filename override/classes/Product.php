@@ -159,10 +159,41 @@ class Product extends ProductCore {
     public static function getMinimalQuantityPrice($productId) {
         $idLang = (int) Context::getContext()->language->id;
         $product = new Product($productId);
-        $price = self::getDefaultTaxByLang($idLang, $product->price);
-        $minimalQuantityPrice = round($price * $product->minimal_quantity, 2);
+        $discount = self::getProductDiscount($productId);
+        $price = $product->price * (1-$discount);
+        $price = self::getDefaultTaxByLang($idLang, $price);
+        //$minimalQuantityPrice = round($price * $product->minimal_quantity, 2);
+        $minimalQuantityPrice = round($price , 2);
         return number_format($minimalQuantityPrice, 2, '.', '');
     }
+
+    public static function getMinimalPriceTemplate($productId, $customerId) {
+
+        $showTax = Customer::getCustomerShowTax($customerId);
+        $idLang = (int) Context::getContext()->language->id;
+
+        $product = new Product($productId);
+
+        $discount = self::getProductDiscount($productId);
+        $price = $product->price * (1-$discount);
+
+        if ($showTax) {
+            $price = self::getDefaultTaxByLang($idLang, $price);
+        }
+
+        $minimalQuantityPrice = round($price, 2);
+        return number_format($minimalQuantityPrice, 2, '.', '');
+
+    }
+
+    public static function getProductDiscount($productId) {
+        $query = 'SELECT `reduction` FROM `ps_specific_price` WHERE `id_product` = '.(int)$productId;
+        $reduction = (float) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($query);
+
+        return $reduction > 0 ? $reduction : 0.0;
+
+    }
+
 
 
     /**
@@ -411,6 +442,22 @@ class Product extends ProductCore {
             'tipologia' => self::getTipologyString($pieceTypology)
         ];
         
+    }
+
+    public static function getProductUnit($productId) {
+
+        if (self::getIfNormalSell($productId)) {
+            return 'UNIT';
+        } 
+        
+        $pieceTypology = self::getTipology($productId);
+
+        if (!$pieceTypology) {
+            return 'BOX';
+        }
+
+        return 'PIECE';
+
     }
 
     private static function getIfNormalSell(int $productId) {

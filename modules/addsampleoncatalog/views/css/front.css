@@ -199,11 +199,6 @@
 
 @media (max-width: 1224px) {
 
-  .product-card-title {
-    flex-direction: column-reverse;
-  }
-
-
   .product-table-cell {
     padding: 2px;
     display: flex;

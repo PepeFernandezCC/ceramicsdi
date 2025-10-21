@@ -1744,21 +1744,21 @@ $( document ).ready( function () {
         
                 // Realiza la llamada AJAX al nuevo endpoint
                 fetch(`/ajax/getProvinces.php?id_country=${countryId}`)
-                    .then((response) => response.json())
-                    .then((data) => {
-                        // Limpia el selector y agrega las nuevas provincias
-                        provinceSelector.innerHTML = "<option value=''>" + provinceMessage + "</option>";
-                        data.forEach((province) => {
-                            const option = document.createElement("option");
-                            option.value = province.id_state;
-                            option.textContent = province.name;
-                            provinceSelector.appendChild(option);
-                        });
-                    })
-                    .catch((error) => {
-                        console.error("Error cargando provincias:", error);
-                        provinceSelector.innerHTML = '<option value=""> - . Error . - </option>';
-                    });
+                  .then((response) => response.json())
+                  .then((data) => {
+                     // Limpia el selector y agrega las nuevas provincias
+                     provinceSelector.innerHTML = "<option value=''>" + provinceMessage + "</option>";
+                     data.forEach((province) => {
+                        const option = document.createElement("option");
+                        option.value = province.id_state;
+                        option.textContent = province.name;
+                        provinceSelector.appendChild(option);
+                     });
+                  })
+                  .catch((error) => {
+                     console.error("Error cargando provincias:", error);
+                     provinceSelector.innerHTML = '<option value=""> - . Error . - </option>';
+                  });
             });
    
             deliverySearchButton.addEventListener("click", function () {
@@ -1839,7 +1839,6 @@ $( document ).ready( function () {
                 
                if ($('#field-id_country').val() != 6 && $('input[name="treatment"]:checked').val() === 'particular') {
                   $( '#field-dni' ).closest( '.form-group' ).css( 'display', 'none' );
-                  $('#field-dni').val('');
                }else{
                   $( '#field-dni' ).closest( '.form-group' ).css( 'display', 'inherit' );
                }
@@ -1883,10 +1882,9 @@ $( document ).ready( function () {
          let $dniLabel = $('.dniShowClass');
          let $cifLabel = $('.cifShowClass');
          let intracomunitaryInput = $('#intracomunitary-identification');
-         let intracomunitaryCheck = $('#intracomunitary-checkbox');
    
-         let aliasTranslation = $('#alias-translation').data('translation');
-         $fieldAlias.find('label').html(aliasTranslation);
+         
+         $fieldAlias.css( 'display', 'none' );
          let companyTranslation = $('#company-translation').data('translation');
          $fieldCompany.find('label').html(companyTranslation);
          let address2Translation = $('#address2-translation').data('translation');
@@ -1901,7 +1899,7 @@ $( document ).ready( function () {
 
          /* PRIMERA CARGA */
          if ( $treatment.val() === 'empresa' ) {
-   
+            $( '#field-alias' ).val('COMPANY');
             intracomunitaryInput.css('display', 'inherit');
             $fieldDniCif.css( 'display', 'inherit' );
             $fieldCompany.css( 'display', 'inherit' );
@@ -1912,7 +1910,7 @@ $( document ).ready( function () {
             $fieldLastName.find('input').val('');
 
          } else if ( $treatment.val() === 'particular' ) {
-
+            $( '#field-alias' ).val('PARTICULAR');
             $fieldCompany.css( 'display', 'none' );
             $fieldCompany.find('input').prop('required', false);
 
@@ -1923,7 +1921,6 @@ $( document ).ready( function () {
 
             if ($('#field-id_country').val() != 6) {
                $fieldDniCif.css( 'display', 'none' );
-                $('#field-dni').val('');
             }else{
                $fieldDniCif.css( 'display', 'inherit' );
             }
@@ -1936,6 +1933,7 @@ $( document ).ready( function () {
 
             if ( $( this ).is( ':checked' ) ) {
       
+               $( '#field-alias' ).val('COMPANY');
                $fieldDniCif.css( 'display', 'inherit' );        
                intracomunitaryInput.css('display', 'inherit');
                if ($('#field-id_country').val() == 6) {
@@ -1952,6 +1950,7 @@ $( document ).ready( function () {
                $fieldLastName.find('input').val('');
                
             } else {
+               $( '#field-alias' ).val('PARTICULAR');
                $dniLabel.css( 'display', 'inherit' );
                $cifLabel.css( 'display', 'none' );
                $fieldCompany.css( 'display', 'none' );
@@ -1964,7 +1963,6 @@ $( document ).ready( function () {
 
                if ($('#field-id_country').val() != 6) {
                   $fieldDniCif.css( 'display', 'none' );
-                   $('#field-dni').val('');
                }else{
                   $fieldDniCif.css( 'display', 'inherit' );
                }
@@ -1973,6 +1971,7 @@ $( document ).ready( function () {
    
          $( '#field-particular' ).on( 'change', function () {
             if ( $( this ).is( ':checked' ) ) {
+               $( '#field-alias' ).val('PARTICULAR');
                $dniLabel.css( 'display', 'inherit' );
                $cifLabel.css( 'display', 'none' );
                $fieldCompany.css( 'display', 'none' );
@@ -1985,12 +1984,12 @@ $( document ).ready( function () {
 
                if ($('#field-id_country').val() != 6) {
                   $fieldDniCif.css( 'display', 'none' );
-                   $('#field-dni').val('');
                }else{
                   $fieldDniCif.css( 'display', 'inherit' );
                }
 
             } else {
+               $( '#field-alias' ).val('COMPANY');
                $fieldDniCif.css( 'display', 'inherit' );
                intracomunitaryInput.css('display', 'inherit');
 
@@ -2010,33 +2009,23 @@ $( document ).ready( function () {
 
          } );
 
-         intracomunitaryCheck.on( 'change', function () {
-            let $fieldDniCif = $( '#field-dni' ).closest( '.form-group' );
-
-            if ( $( this ).is( ':checked' ) ) {
-               $fieldVatNumber.find('input').prop('required', true);
-               $fieldVatNumber.css( 'display', 'inherit' );
-               $fieldDniCif.css( 'display', 'none' );
-                $('#field-dni').val('');
-               $fieldDniCif.find('input').prop('required', false);
-            }else{
-               $fieldDniCif.find('input').prop('required', true);
-               $fieldDniCif.css( 'display', 'inherit' );
-               $fieldVatNumber.css( 'display', 'none' );
-               $fieldVatNumber.find('input').prop('required', false);
-
-            }
-
-         });
-
          $fieldAddress2.css('display', 'none');
 
          function resetButtonState() {
             setTimeout(() => {
-                document.getElementById("cancel-address-form").style.display = "block";
-                document.getElementById("confirmAddressButton").classList.remove("disabled");
-                document.getElementById("confirmAddressButton").disabled = false;
-                document.getElementById("loader-overlay").style.display = "none"; // Oculta el loader
+               if(document.getElementById("cancel-address-form")) {
+                  document.getElementById("cancel-address-form").style.display = "block";
+               }
+               if(document.getElementById("confirmAddressButton")) {
+                  document.getElementById("confirmAddressButton").classList.remove("disabled");
+               }
+               if(document.getElementById("confirmAddressButton")) {
+                  document.getElementById("confirmAddressButton").disabled = false;
+               }
+               if(document.getElementById("loader-overlay")) {
+                  document.getElementById("loader-overlay").style.display = "none"; // Oculta el loader
+               }
+                
             }, 200);
         }
 
@@ -2204,6 +2193,7 @@ $( document ).ready( function () {
                var loader = document.getElementById("loader-overlay");
                let validations = false;
                if (document.getElementById("confirmAddressButton").getAttribute("data-location") == "directions") {
+                  console.log('Listado de direcciones detectado...');
 
                   let selectedArticle = false;
 
@@ -2229,7 +2219,14 @@ $( document ).ready( function () {
                         },
                         success: function(response) {                                 
                            console.log(response);
-                           document.getElementById("address-form").submit(); //envía el formulario
+                           if (response.validations) {
+                              document.getElementById('warning-incomplete-address').style.display = 'none';
+                              document.getElementById("address-form").submit(); //envía el formulario
+                           }else{
+                              console.log('Error en validaciones:', response.error);
+                              document.getElementById('warning-incomplete-address').style.display = 'block';
+                              resetButtonState();
+                           }
                         },
                         error: function(err) {
                            console.error('Error en la solicitud AJAX:', err);
@@ -2251,7 +2248,7 @@ $( document ).ready( function () {
                         if(document.getElementById("cancel-address-form")) {
                            document.getElementById("cancel-address-form").style.display ="none";
                         }
-
+                        /* Extranjero Empresa con dni*/
                         if ($( '#field-empresa' ).is( ':checked' ) ) {
                            event.preventDefault();    
                            $.ajax({ // comprueba si el vat es válido
@@ -2274,11 +2271,24 @@ $( document ).ready( function () {
                                  resetButtonState();
                               }
                            });
-                        }else{                          
-                           $( '#field-dni' ).val('')
+                        }else{  
+                           /*Extranjero Particular con dni*/                        
+                           $( '#field-dni' ).val(''); //no lo pedimos a extranjeros particulares por lo que hay que borrarlo
+                           $('#field-company').val(''); //si es particular no debe tener nada en campo empresa
                            document.getElementById("address-form").submit(); //envía el formulario
                         }
                         
+                     }
+
+                     /*Extranjero Particular sin dni*/
+                     if ($('#field-id_country').val() != 6 && $( '#field-dni' ).val() == ''){
+                        loader.style.display = "flex";
+                        if ($( '#field-particular' ).is( ':checked' ) ) {
+                           event.preventDefault();   
+                           $( '#field-dni' ).val('');
+                           $('#field-company').val('');
+                           document.getElementById("address-form").submit(); //envía el formulario
+                        }
                      }
                   } else{
                      event.preventDefault();

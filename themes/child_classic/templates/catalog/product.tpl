@@ -95,6 +95,7 @@
 
 
 {block name='content'}
+
                     {assign var="id_cart" value=Context::getContext()->cart->id} 
                     {assign var="productColor" value="none"}
                     {assign var="validAspect" value=false}
@@ -102,6 +103,8 @@
                     {assign var="otherMaterialsArray" value=[81, 82, 88]}
                     {assign var="isByPiece" value=false}
                     {assign var="showDays" value=true}
+                    {assign var="customerShowTax" value=customer::getCustomerShowTax($customer.id)}
+
                     {foreach from=$product.features item='feature'}
                         {if isset($feature.id_feature) && $feature.id_feature == $FEATURE_COLOR}
                             {assign var="productColor" value=$feature.value}
@@ -213,62 +216,88 @@
                         {block name='page_header_container'}
 
                             {block name='page_header'}
+
                                 <div class="row product-head">
-                                    <div class="col-md-12 col-xs-12">
+
+                                    <div class="col-md-6 col-xs-12 block-title">
+
                                         {assign var="product_mini_title_key" value=Product::getProductMinititleKey($product.id)}
 
-                                        <div class="product-type">
-                                            <div style="padding-bottom: 15px;">
-                                                {l s={$product_mini_title_key} d='Shop.Theme.Catalog'}
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row product-head">
-
-                                    <div class="col-md-8 col-xs-12">
-
-                                        <h1 class="h1 product-card-title">
-
-                                            {block name='page_title'}
+                                        <div>
+                                            <h1 class="h1 product-card-title">
+                                                <div class="product-type" style="padding-bottom: 15px;">
+                                                    {l s={$product_mini_title_key} d='Shop.Theme.Catalog'}
+                                                </div>
                                                 <div style="margin-bottom:10px; text-transform:uppercase">
                                                     {$product.name}
                                                 </div>
-
+                                            </h1>
+                                        </div>
+                                        
+                                        {block name='page_title'}
                                             {if isset($product.reference_to_display) && $product.reference_to_display neq ''}
                                                 <div class="product-reference">
                                                     <span>{$product.reference_to_display}</span>
                                                 </div>
                                             {/if}
-                                            {/block}
-
-                                        </h1>
+                                        {/block}
 
                                     </div>
 
-                                    <div class="col-md-4 col-xs-12">
+                                    <div class="col-md-6 col-xs-12 block-pricing">
+                                        <div>
+                                            <div>
+                                                {block name='product_prices'}
+                                                    {include file='catalog/_partials/product-prices.tpl'}
+                                                {/block}
+                                            </div>
+                                            {assign var="productType" value=Product::getProductUnit($product.id)}
+                                            <div class="final-price-taxed">
+                                                {if $productType != "UNIT"}
+                                                    <div class="minimal-price">
+                                                        
+                                                        {assign var="minimalPrice" value=Product::getMinimalPriceTemplate($product.id, $customer.id)}
+                                                        
+                                                        <div style="padding-right: 10px">
+                                                            <span>
+                                                                {$minimalPrice} €/<span style="text-transform:capitalize">{if $productType == "PIECE"}{l s='piece' d='Shop.Theme.Catalog'}{else}{l s='box' d='Shop.Theme.Catalog'}{/if}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                {/if}
+                                                <div class="tax-message-box alignText">
+                                                    <span class="tax-message">
 
-                                        {block name='product_prices'}
+                                                        {if $customerShowTax}
 
-                                            {include file='catalog/_partials/product-prices.tpl'}
+                                                            {l s='Tax included' d='Admin.Global'}
 
-                                        {/block}
+                                                        {else}
 
-                                        <div class="row" style="padding-top: 10px">
+                                                            {l s='Tax excluded' d='Admin.Global'}
+
+                                                        {/if}
+
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        
+
+                                        </div>
+                                        {*
+                                        <div class="row" style="padding-top: 5px">
 
                                             <div class="col-xs-12 alignText">
 
                                                 <span class="tax-message">
 
-                                                    {if $customer.id_default_group == 5}
+                                                    {if $customerShowTax}
 
-                                                        ({l s='Tax excluded' d='Admin.Global'})
+                                                        ({l s='Tax included' d='Admin.Global'})
 
                                                     {else}
 
-                                                        ({l s='Tax included' d='Admin.Global'})
+                                                        ({l s='Tax excluded' d='Admin.Global'})
 
                                                     {/if}
 
@@ -277,6 +306,7 @@
                                             </div>
 
                                         </div>
+                                        *}
 
                                     </div>
 

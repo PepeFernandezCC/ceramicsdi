@@ -36,6 +36,9 @@
       action="{url entity='order' params=['id_address' => $id_address]}"
       data-refresh-url="{url entity='order' params=['ajax' => 1, 'action' => 'addressForm']}"
     >
+      <div id="warning-incomplete-address" style="display:none">
+         <p class="alert alert-danger js-address-error" name="alert-delivery">{l s="Your address is incomplete, please update it." d="Shop.Notifications.Error"}</p>
+      </div>
 
       <div id="delivery-address">
         <div class="js-address-form">

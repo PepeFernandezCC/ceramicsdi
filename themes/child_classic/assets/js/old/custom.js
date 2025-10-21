@@ -2200,43 +2200,50 @@ $( document ).ready( function () {
 
          if(document.getElementById("address-form")) {
             document.getElementById("confirmAddressButton").addEventListener("click", function(event) {
+
                var loader = document.getElementById("loader-overlay");
                let validations = false;
                if (document.getElementById("confirmAddressButton").getAttribute("data-location") == "directions") {
-                  validations = true;
-                  if(document.getElementById('invoice-addresses')) {
-                     const selectedArticle = document.querySelector('#invoice-addresses article.selected');
 
-                     if (selectedArticle) {
-                        if ($('#field-id_country').val() == 6 && $('#field-dni').val() == '') {
-                           event.preventDefault();
-                           alert('Introduzca DNI válido en la dirección');
-                           console.error('Error critico dni español');
-                           resetButtonState();
-                        }else{
-                           const addressId = selectedArticle.dataset.address; // equivale a getAttribute("data-address")
-                        event.preventDefault();    
-                        $.ajax({ // comprueba si el vat es válido
-                           url: '/ajax/validateVatNumberInvoiceAddress.php',
-                           method: 'POST', 
-                           data: {
-                              address: addressId,
-                           },
-                           success: function(response) {                                 
-                              console.log(response);
-                              document.getElementById("address-form").submit(); //envía el formulario
-                           },
-                           error: function(err) {
-                              console.error('Error en la solicitud AJAX:', err);
-                              resetButtonState();
-                           }
-                        });
-                        }
-                        
-                     } 
+                  let selectedArticle = false;
+
+                  if(document.getElementById('invoice-addresses')) {
+                     selectedArticle = document.querySelector('#invoice-addresses article.selected');
                   }
+
+                  if(document.getElementById('delivery-addresses')) {
+                     selectedArticle = document.querySelector('#delivery-addresses article.selected');
+                  }
+
+                  validations = true;
+
+                  if(selectedArticle) { 
+
+                     const addressId = selectedArticle.dataset.address; // equivale a getAttribute("data-address")
+                     event.preventDefault();    
+                     $.ajax({ // comprueba si el vat es válido
+                        url: '/ajax/validateVatNumberInvoiceAddress.php',
+                        method: 'POST', 
+                        data: {
+                           address: addressId,
+                        },
+                        success: function(response) {                                 
+                           console.log(response);
+                           document.getElementById("address-form").submit(); //envía el formulario
+                        },
+                        error: function(err) {
+                           console.error('Error en la solicitud AJAX:', err);
+                           resetButtonState();
+                        }
+                     });
+                     
+                  }
+
                }else{
-                  validations = getValidations();
+                  validations = getValidations(); 
+
+                  console.log('formulario de direcciones detectado...');
+
                   if (validations === true) {             
                      if ($('#field-id_country').val() != 6 && $( '#field-dni' ).val() != ''){
                         loader.style.display = "flex";
