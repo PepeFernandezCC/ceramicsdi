@@ -2185,121 +2185,109 @@ $( document ).ready( function () {
                return validation;
          }
 
-         /* VALIDAR Y COMPROBAR INTRACOMUNITARIO */
+         /* FORZAR VALORES DE LISTADO DE DIRECCIONES*/
+         /*
+         if(document.getElementById("address-form") && document.getElementById("confirmAddressButton").getAttribute("data-location") == "directions") {
+            // Determinar use_same_address según si hay bloque de factura
+            let useSame = document.getElementById('invoice-addresses') ? '0' : '1';
+            let inputUseSame = document.querySelector('input[name="use_same_address"]');
+            if (!inputUseSame) {
+               inputUseSame = document.createElement('input');
+               inputUseSame.type = 'hidden';
+               inputUseSame.name = 'use_same_address';
+               document.getElementById('address-form').appendChild(inputUseSame);
+            }
+            inputUseSame.value = useSame;
 
+            // (Opcional) también garantiza que haya los otros hidden esperados
+            let confInput = document.querySelector('input[name="confirm-addresses"]');
+            if (!confInput) {
+               confInput = document.createElement('input');
+               confInput.type = 'hidden';
+               confInput.name = 'confirm-addresses';
+               confInput.value = '1';
+               document.getElementById('address-form').appendChild(confInput);
+            }
+         }
+      */
+
+         /* VALIDAR Y COMPROBAR INTRACOMUNITARIO */
+   
          if(document.getElementById("address-form")) {
-            document.getElementById("confirmAddressButton").addEventListener("click", function(event) {
+     
 
                var loader = document.getElementById("loader-overlay");
                let validations = false;
-               if (document.getElementById("confirmAddressButton").getAttribute("data-location") == "directions") {
-                  console.log('Listado de direcciones detectado...');
 
-                  let selectedArticle = false;
+               if (document.getElementById("confirmAddressButton").getAttribute("data-location") == "form") {
+                  document.getElementById("confirmAddressButton").addEventListener("click", function(event) {
+                     validations = getValidations(); 
 
-                  if(document.getElementById('invoice-addresses')) {
-                     selectedArticle = document.querySelector('#invoice-addresses article.selected');
-                  }
+                     console.log('formulario de direcciones detectado...');
 
-                  if(document.getElementById('delivery-addresses')) {
-                     selectedArticle = document.querySelector('#delivery-addresses article.selected');
-                  }
-
-                  validations = true;
-
-                  if(selectedArticle) { 
-
-                     const addressId = selectedArticle.dataset.address; // equivale a getAttribute("data-address")
-                     event.preventDefault();    
-                     $.ajax({ // comprueba si el vat es válido
-                        url: '/ajax/validateVatNumberInvoiceAddress.php',
-                        method: 'POST', 
-                        data: {
-                           address: addressId,
-                        },
-                        success: function(response) {                                 
-                           console.log(response);
-                           if (response.validations) {
-                              document.getElementById('warning-incomplete-address').style.display = 'none';
-                              document.getElementById("address-form").submit(); //envía el formulario
-                           }else{
-                              console.log('Error en validaciones:', response.error);
-                              document.getElementById('warning-incomplete-address').style.display = 'block';
-                              resetButtonState();
+                     if (validations === true) {       
+                        //Extranjero con dni     
+                        if ($('#field-id_country').val() != 6 && $( '#field-dni' ).val() != ''){
+                           loader.style.display = "flex";
+                           document.getElementById("confirmAddressButton").classList.add("disabled");
+                           if(document.getElementById("cancel-address-form")) {
+                              document.getElementById("cancel-address-form").style.display ="none";
                            }
-                        },
-                        error: function(err) {
-                           console.error('Error en la solicitud AJAX:', err);
-                           resetButtonState();
+                           // Extranjero Empresa con dni
+                           if ($( '#field-empresa' ).is( ':checked' ) ) {
+                              event.preventDefault();    
+                              $.ajax({ // comprueba si el vat es válido
+                                 url: '/ajax/validateVatNumber.php',
+                                 method: 'POST', 
+                                 data: {
+                                    country: $('#field-id_country').val(),
+                                    vat_number: $('#field-dni').val(),
+                                    customer: document.getElementById("confirmAddressButton").getAttribute("data-customer"),
+                                 },
+                                 success: function(response) {                                 
+                                    if (response.result) {
+                                       $fieldVatNumber.find('input').val(response.fullVat); 
+                                    } 
+                                    console.log(response);
+                                    document.getElementById("address-form").submit(); //envía el formulario
+                                 },
+                                 error: function(err) {
+                                    console.error('Error en la solicitud AJAX:', err);
+                                    resetButtonState();
+                                 }
+                              });
+                           }else{  
+                              //Extranjero Particular con dni                       
+                              $('#field-dni').val(''); //no lo pedimos a extranjeros particulares por lo que hay que borrarlo
+                              $('#field-company').val(''); //si es particular no debe tener nada en campo empresa
+                              document.getElementById("address-form").submit(); //envía el formulario
+                           }
+                           
                         }
-                     });
-                     
-                  }
 
-               }else{
-                  validations = getValidations(); 
-
-                  console.log('formulario de direcciones detectado...');
-
-                  if (validations === true) {             
-                     if ($('#field-id_country').val() != 6 && $( '#field-dni' ).val() != ''){
-                        loader.style.display = "flex";
-                        document.getElementById("confirmAddressButton").classList.add("disabled");
-                        if(document.getElementById("cancel-address-form")) {
-                           document.getElementById("cancel-address-form").style.display ="none";
+                        //Extranjero Particular sin dni
+                        if ($('#field-id_country').val() != 6 && $( '#field-dni' ).val() == ''){
+                           loader.style.display = "flex";
+                           if ($( '#field-particular' ).is( ':checked' ) ) {
+                              event.preventDefault();   
+                              $( '#field-dni' ).val('');
+                              $('#field-company').val('');
+                              document.getElementById("address-form").submit(); //envía el formulario
+                           }
                         }
-                        /* Extranjero Empresa con dni*/
-                        if ($( '#field-empresa' ).is( ':checked' ) ) {
-                           event.preventDefault();    
-                           $.ajax({ // comprueba si el vat es válido
-                              url: '/ajax/validateVatNumber.php',
-                              method: 'POST', 
-                              data: {
-                                 country: $('#field-id_country').val(),
-                                 vat_number: $('#field-dni').val(),
-                                 customer: document.getElementById("confirmAddressButton").getAttribute("data-customer"),
-                              },
-                              success: function(response) {                                 
-                                 if (response.result) {
-                                    $fieldVatNumber.find('input').val(response.fullVat); 
-                                 } 
-                                 console.log(response);
-                                 document.getElementById("address-form").submit(); //envía el formulario
-                              },
-                              error: function(err) {
-                                 console.error('Error en la solicitud AJAX:', err);
-                                 resetButtonState();
-                              }
-                           });
-                        }else{  
-                           /*Extranjero Particular con dni*/                        
-                           $( '#field-dni' ).val(''); //no lo pedimos a extranjeros particulares por lo que hay que borrarlo
-                           $('#field-company').val(''); //si es particular no debe tener nada en campo empresa
-                           document.getElementById("address-form").submit(); //envía el formulario
-                        }
-                        
+
+                     } else{
+                        event.preventDefault();
+                        console.log('Fallo validaciones...');
+                        resetButtonState();
                      }
-
-                     /*Extranjero Particular sin dni*/
-                     if ($('#field-id_country').val() != 6 && $( '#field-dni' ).val() == ''){
-                        loader.style.display = "flex";
-                        if ($( '#field-particular' ).is( ':checked' ) ) {
-                           event.preventDefault();   
-                           $( '#field-dni' ).val('');
-                           $('#field-company').val('');
-                           document.getElementById("address-form").submit(); //envía el formulario
-                        }
-                     }
-                  } else{
-                     event.preventDefault();
-                     console.log('Fallo validaciones...');
-                     resetButtonState();
-                  }
+                  });
                }
 
 
-            });
+         
          }
+         
         
       }
    

@@ -1260,49 +1260,6 @@ body:not(#category):not(#search) #wrapper #content-wrapper {
 #product .product-container #product-content-block {
   padding: 60px;
   height: auto !important;
-  /*@include mobile {
-    position: fixed;
-    overflow: scroll;
-    bottom: 0;
-    height: 90px;
-    background-color: white;
-    border-top: 1px solid black;
-    padding: $defaultHorizontalPadding;
-    z-index: 99;
-
-    .product-head {
-      flex-direction: row;
-      margin-top: 20px;
-    }
-
-    #push-scroll-responsive {
-      position: absolute;
-      left: 0;
-      top: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 100%;
-      height: 40px;
-      cursor: pointer;
-
-      .line {
-        width: 40px;
-
-        hr {
-          margin-top: .5rem;
-          margin-bottom: .5rem;
-        }
-      }
-    }
-
-    #push-scroll-responsive-header {
-      margin-left: -15px;
-      margin-right: -15px;
-      padding-left: 15px;
-      padding-right: 15px;
-    }
-  }*/
 }
 @media (max-width: 1200px) {
   #product .product-container #product-content-block {

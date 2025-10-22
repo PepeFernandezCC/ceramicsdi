@@ -4,18 +4,17 @@ include(dirname(__FILE__) . '/../init.php');
 
 header('Content-Type: application/json');
 
-$address = Tools::getValue('address');
+$deliveryAddress = Tools::getValue('deliveryAddress');
+$invoiceAddress = Tools::getValue('invoiceAddress');
 
-$data = address::getVatApiData($address);
-$validations = address::getAddressValidations($address);
-
-//$context  = Context::getContext();
-//$cart     = $context->cart;
-
-if(!$validations['validations']) {
-    echo json_encode (['result' => false, 'userError' => 'Validations Failed', 'validations' => false, 'error' => $validations['error']]);
-    exit;
+if ($invoiceAddress == 0) { //misma dirección envio y facturación
+    $invoiceAddress = $deliveryAddress;
 }
+
+//VALIDACIÓNES
+
+$address = $invoiceAddress;
+$data = address::getVatApiData($address);
 
 $validate = $data['validate'];
 $vat_input = $data['vat_number'];
@@ -24,12 +23,6 @@ $idCountry = $data['country'];
 $france = '8';
 $spain = '6';
 
-if (!$validate) {
-    echo json_encode(['result' => false, 'userError' => 'Cliente no apto para intracomunitario', 'validations' => true, 'error' => $validations['error']]);
-    customer::insertIntracomunitaryLog(false, 'DIRECCIONES: Cliente no apto' , $vat_input, $customer_id, $idCountry);
-    exit;
-}
-
 
 $country = new Country($idCountry);
 
@@ -37,7 +30,10 @@ $vat_input = preg_replace('/[^A-Za-z0-9]/', '', strtoupper($vat_input));
 
 if (!$vat_input || strlen($vat_input) < 3) {
     customer::insertIntracomunitaryLog(false, 'DIRECCIONES: VAT CON FORMATO INCORRECTO' , $vat_input, $customer_id, $idCountry);
-    echo json_encode(['result' => false, 'userError' => 'Invalid VAT input', 'validations' => true, 'error' => $validations['error']]);
+    echo json_encode([
+        'result' => false, 
+        'userError' => 'Invalid VAT input', 
+    ]);
     exit;
 }
 
@@ -54,7 +50,10 @@ if($prefix == $country->iso_code) {
     /* CONTROLAR VAT FRANCÉS */
     if ($idCountry == $france) {
         if (strlen($vat_input) != 9 && strlen($vat_input) != 11) {
-            echo json_encode(['result' => false, 'userError' => 'Numero Vat no válido', 'validations' => true, 'error' => $validations['error']]);
+            echo json_encode([
+                'result' => false, 
+                'userError' => 'Numero Vat no válido', 
+            ]);
             customer::insertIntracomunitaryLog(false, 'DIRECCIONES: VAT NO VALIDO' , $vat_input, $customer_id, $idCountry);
             exit;
         }
@@ -140,5 +139,9 @@ if ($result) {
 }
 $msg_error = 'DIRECCIONES: ' . $err;
 customer::insertIntracomunitaryLog($result, $msg_error , $vatNumber, $customer_id, $idCountry);
-echo json_encode(['result' => $result, 'userError' => $err, 'fullVat' => $vatNumber, 'validations' => true, 'error' => $validations['error']]);
+echo json_encode([
+    'result' => $result, 
+    'userError' => $err, 
+    'fullVat' => $vatNumber, 
+]);
 exit;

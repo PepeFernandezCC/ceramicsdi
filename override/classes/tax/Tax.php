@@ -9,7 +9,7 @@ class Tax extends TaxCore
     * version: 2.4.0
     */
 
-    
+/*
     public static function excludeTaxeOption()
     {
         if (Context::getContext()->cart) {
@@ -25,7 +25,7 @@ class Tax extends TaxCore
         return !Configuration::get('PS_TAX');
        
     }
-    
+    */
 
     public static function getStandardTaxByCountryId($id_country)
     {
