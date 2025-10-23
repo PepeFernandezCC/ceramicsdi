@@ -44,19 +44,6 @@
                         {* PLANATEC *}
                         <div class="form-group row" style="width: 100%;">
                             <div class="col-md-12">
-                                <label class="radio-inline" for="field-empresa">
-                                  <span class="custom-radio">
-                                    <input
-                                            name="treatment"
-                                            id="field-empresa"
-                                            type="radio"
-                                            value="empresa"
-                                            required
-                                    >
-                                    <span></span>
-                                  </span>
-                                    {l s='company' d='Shop.Theme.Checkout'}
-                                </label>
                                 <label class="radio-inline" for="field-particular"> 
                                   <span class="custom-radio">
                                     <input
@@ -70,6 +57,19 @@
                                     <span></span>
                                   </span>
                                     {l s='individual' d='Shop.Theme.Checkout'}
+                                </label>
+                                <label class="radio-inline" for="field-empresa">
+                                  <span class="custom-radio">
+                                    <input
+                                            name="treatment"
+                                            id="field-empresa"
+                                            type="radio"
+                                            value="empresa"
+                                            required
+                                    >
+                                    <span></span>
+                                  </span>
+                                    {l s='company' d='Shop.Theme.Checkout'}
                                 </label>
                             </div>
                         </div>
