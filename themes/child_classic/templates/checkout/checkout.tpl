@@ -48,7 +48,13 @@
                     {foreach from=$stepsTitle item=stepTitle key="index"}
                         <div id="planatec-step-title-{$index + 1}" class="planatec-step-title col-xs-12 col-md-2-5"
                              data-index="{$index + 1}" data-tabname="{$tabsName[$index]}">
-                            {$index + 1}.<br>{$stepTitle}
+                            {$index + 1}.<br>
+                            {if $index == 0}
+                                {l s='Customer Account' d='Shop.Theme.Global'}
+                            {else}
+                                {$stepTitle}
+                            {/if}
+                            
                         </div>
                     {/foreach}
                     {$index = $index + 1}
