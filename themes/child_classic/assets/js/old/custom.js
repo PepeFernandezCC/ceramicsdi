@@ -2032,6 +2032,7 @@ $( document ).ready( function () {
          function comprobarCPPorProvincia(cp, provincia) {
             console.log('cp: '+ cp);
             console.log('provincia: ' + provincia);
+            console.log('provincia (raw):', JSON.stringify(provincia)); // para ver espacios ocultos
             const prefijosProvincias = {
                "354": "01", //alava
                "355": "02", //albacete
@@ -2042,6 +2043,7 @@ $( document ).ready( function () {
                "405": "07", //menorca
                "406": "07", //mayorca
                "407": "07", //ibiza
+               "408": "07", //formentera
                "362": "08", //barcelona
                "363": "09", //burgos
                "364": "10", //caceres

@@ -47,6 +47,7 @@
             {if $field.type === 'select'}
 
                 {block name='form_field_item_select'}
+                <input type="hidden" id="language" value="{$language.id}">
                     <select id="field-{$field.name}" class="form-control form-control-select" name="{$field.name}"
                             {if $field.required}required{/if}>
                         <option value disabled selected>{l s='Please choose' d='Shop.Forms.Labels'}</option>
@@ -59,12 +60,21 @@
             {elseif $field.type === 'countrySelect'}
 
                 {block name='form_field_item_country'}
+                {*
                     <select
                             id="field-{$field.name}"
                             class="form-control form-control-select js-country"
                             name="{$field.name}"
                             {if $field.required}required{/if}
                     >
+                *}
+                    <select
+                            id="field-{$field.name}"
+                            class="form-control form-control-select"
+                            name="{$field.name}"
+                            {if $field.required}required{/if}
+                    >
+
                         <option value disabled selected>{l s='Please choose' d='Shop.Forms.Labels'}</option>
                         {foreach from=$field.availableValues item="label" key="value"}
                             <option value="{$value}" {if $value eq $field.value} selected {/if}>{$label}</option>

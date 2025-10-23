@@ -9,7 +9,7 @@
 
                 <div id="planatec-tabs">
                     <div id="planatec-step-title-1" class="planatec-step-title col-xs-12 col-md-2-5">
-                        1.<br>{l s='Personal data' d='Shop.Theme.Checkout'}
+                        1.<br>{l s='Customer Account' d='Shop.Theme.Checkout'}
                     </div>
                     <div id="planatec-step-title-2" class="planatec-step-title col-xs-12 col-md-2-5">
                         2.<br>{l s='Address' d='Shop.Theme.Checkout'}
