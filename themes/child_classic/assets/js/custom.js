@@ -2042,6 +2042,7 @@ $( document ).ready( function () {
                "405": "07", //menorca
                "406": "07", //mayorca
                "407": "07", //ibiza
+               "408": "07", //formentera
                "362": "08", //barcelona
                "363": "09", //burgos
                "364": "10", //caceres

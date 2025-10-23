@@ -25,11 +25,35 @@ class Customer extends CustomerCore {
 
     }
 
+    public static function getCustomerShowTax($idCustomer) {
+        $customerGroups = customer::checkCustomerGroup($idCustomer);
 
+        if($customerGroups['default_group'] == '5' || $customerGroups['default_group'] == '6') {
+            return false;
+        }
+
+        if (in_array('5', $customerGroups['customer_groups']) || in_array('6', $customerGroups['customer_groups'])) {
+            return false;
+        }
+
+        return true;
+    }
     public static function updateCustomerSiret($customerId, $siret) {
             Db::getInstance()->update('customer', [
                 'siret' => $siret,
             ], 'id_customer = ' . $customerId);
+    }
+
+    public static function insertIntracomunitaryLog($response, $message, $vatNumber, $idCustomer, $id_country) {
+
+            Db::getInstance()->insert('intracomunitary_log', [
+                'id_customer' => (int)$idCustomer,
+                'vat_number' => $vatNumber,
+                'id_country' => $id_country,
+                'response' => $response ? '1' : '0',
+                'message' => $message,
+                'date' => date("d-m-Y H:i:s")
+            ]);
     }
 
     public static function removeIntracomunitaryGroup($idCustomer) {

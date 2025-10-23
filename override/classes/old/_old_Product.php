@@ -156,6 +156,40 @@ class Product extends ProductCore {
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($query);
     }
 
+    public static function getMinimalQuantityPrice($productId) {
+        $idLang = (int) Context::getContext()->language->id;
+        $product = new Product($productId);
+        $discount = self::getProductDiscount($productId);
+        $price = $product->price * (1-$discount);
+        $price = self::getDefaultTaxByLang($idLang, $price);
+        $minimalQuantityPrice = round($price * $product->minimal_quantity, 2);
+        return number_format($minimalQuantityPrice, 2, '.', '');
+    }
+
+    public static function getMinimalPriceTemplate($productId, $customer) {
+        $idLang = (int) Context::getContext()->language->id;
+        $customerShowTax = Customer::getCustomerShowTax($customer['id']);
+        $product = new Product($productId);
+
+        $discount = self::getProductDiscount($productId);
+        $price = $product->price * (1-$discount);
+    
+        if ($customerShowTax) {
+            $price = self::getDefaultTaxByLang($idLang, $price);
+        }
+        
+        $minimalQuantityPrice = round($price * $product->minimal_quantity, 2);
+        return number_format($minimalQuantityPrice, 2, ',', '');
+        
+    }
+
+    public static function getProductDiscount($productId) {
+        $query = 'SELECT `reduction` FROM `ps_specific_price` WHERE `id_product` = '.(int)$productId;
+        $reduction = (float) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($query);
+
+        return $reduction > 0 ? $reduction : 0.0;
+
+    }
 
     /**
      * Obtener todos los productos agrupados por colección
@@ -277,6 +311,53 @@ class Product extends ProductCore {
         }
 
         return $tipologia;
+
+    }
+
+    public static function getInspirationalProducts($idCategory) {
+
+        // Validar el ID de categoría
+        if (!(int)$idCategory) {
+            return [];
+        }
+
+        // Obtener el contexto
+        $context = Context::getContext();
+
+        // Limitar a 10 productos
+        $limit = 10;
+
+        // Obtener los productos de la categoría
+        $products = Product::getProducts(
+            $context->language->id,   // ID del idioma actual
+            0,                        // Desde
+            $limit,                   // Límite
+            'id_product',             // Ordenar por ID de producto
+            'DESC',                   // Orden descendente (puedes cambiar a ASC)
+            $idCategory,              // ID de categoría
+            true                      // Activos
+        );
+
+        // Si no hay productos, devolver vacío
+        if (empty($products)) {
+            return [];
+        }
+
+        // Array final con URLs de producto e imagen
+        $result = [];
+        foreach ($products as $product) {
+            $productObj = new Product($product['id_product'], false, $context->language->id);
+            $link = $context->link->getProductLink($productObj);
+            $image = self::getImageByPosition(6, $product['id_product']);
+
+            $result[] = [
+                'urlProduct' => $link,
+                'urlImage'   => $image,
+            ];
+        }
+
+        return $result;
+
 
     }
 

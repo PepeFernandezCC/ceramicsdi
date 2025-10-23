@@ -244,6 +244,7 @@
 
                                     </div>
 
+
                                     <div class="col-md-6 col-xs-12 block-pricing">
                                         <div>
                                             <div>

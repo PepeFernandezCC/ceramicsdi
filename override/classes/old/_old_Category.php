@@ -2,14 +2,15 @@
 
 class Category extends CategoryCore {
 
-    public function getSubCategoriesArray($idCategory, $idLang) {
+    public static function getSubCategoriesArray($idCategory, $idLang) {
         
         $sql = '
-        SELECT c.`id_category`, cl.`name`, c.id_parent 
+        SELECT c.`id_category`, cl.`name`, c.id_parent, cl.`meta_title` 
         FROM `' . _DB_PREFIX_ . 'category` c JOIN `' . _DB_PREFIX_ . 'category_lang` cl 
         WHERE cl.`id_category` = c.`id_category` 
         AND cl.`id_lang` = ' . (int) $idLang . ' 
         AND c.id_parent = '. (int) $idCategory . ' 
+        AND c.active = 1
         GROUP BY c.id_category 
         ORDER BY c.`id_category`';
         
@@ -19,10 +20,10 @@ class Category extends CategoryCore {
 
     }
 
-    public function getPopularCategoriesArray($idLang) {
+    public static function getPopularCategoriesArray($idLang) {
         
         $sql = '
-        SELECT c.`id_category`, cl.`name`, c.id_parent 
+        SELECT c.`id_category`, cl.`name`, c.id_parent, cl.`meta_title`
         FROM `' . _DB_PREFIX_ . 'category` c JOIN `' . _DB_PREFIX_ . 'category_lang` cl 
         WHERE cl.`id_category` = c.`id_category` 
         AND cl.`id_lang` = ' . (int) $idLang . ' 
@@ -37,7 +38,7 @@ class Category extends CategoryCore {
     }
 
 
-    public function categoryProductsCountById($idCategory) {
+    public static function categoryProductsCountById($idCategory) {
 
         $sql = '
         SELECT COUNT(`id_category`) 
@@ -50,7 +51,23 @@ class Category extends CategoryCore {
         return (int) $result;
           
     }
-    public function getCategoryMinPriceById($idCategory) {
+
+    public static function getFatherCategory($idCategory, $idLang) {
+        
+        $sql = '
+        SELECT c.`id_category`, cl.`name`, c.id_parent, cl.`meta_title` 
+        FROM `' . _DB_PREFIX_ . 'category` c JOIN `' . _DB_PREFIX_ . 'category_lang` cl 
+        WHERE cl.`id_category` = c.`id_category` 
+        AND cl.`id_lang` = ' . (int) $idLang . '
+        AND c.id_category = '. (int) $idCategory ;
+        
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+
+        return $result[0];
+
+    }
+
+    public static function getCategoryMinPriceById($idCategory) {
 
         $query = '
         SELECT MIN(CAST(REPLACE(SUBSTRING_INDEX(value, " ", 1), ",", ".") AS DECIMAL(10, 2))) AS precio_min
@@ -68,7 +85,7 @@ class Category extends CategoryCore {
 
     }
 
-    public function getCategoryMaxPriceById($idCategory) {
+    public static function getCategoryMaxPriceById($idCategory) {
 
         $query = '
         SELECT MAX(CAST(REPLACE(SUBSTRING_INDEX(value, " ", 1), ",", ".") AS DECIMAL(10, 2))) AS precio_min
@@ -86,7 +103,7 @@ class Category extends CategoryCore {
 
     }
 
-    public function getSchemaCategoryData($idCategory) {
+    public static function getSchemaCategoryData($idCategory) {
 
         $productsCount = Category::categoryProductsCountById($idCategory);
         $minPrice = Category::getCategoryMinPriceById($idCategory);
@@ -99,5 +116,33 @@ class Category extends CategoryCore {
         ];
 
     }
+
+
+    public static function getCategoryInfoArray($idsCategory, $idLang = null)
+    {
+        if ($idLang === null) {
+            $idLang = Context::getContext()->language->id;
+        }
+
+        if (!is_array($idsCategory) || !count($idsCategory)) {
+            return false;
+        }
+
+        $categories = [];
+        $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
+		SELECT c.`id_category`, cl.`name`, cl.`meta_title`, cl.`link_rewrite`, cl.`id_lang`
+		FROM `' . _DB_PREFIX_ . 'category` c
+		LEFT JOIN `' . _DB_PREFIX_ . 'category_lang` cl ON (c.`id_category` = cl.`id_category`' . Shop::addSqlRestrictionOnLang('cl') . ')
+		' . Shop::addSqlAssociation('category', 'c') . '
+		WHERE cl.`id_lang` = ' . (int) $idLang . '
+		AND c.`id_category` IN (' . implode(',', array_map('intval', $idsCategory)) . ')');
+
+        foreach ($results as $category) {
+            $categories[$category['id_category']] = $category;
+        }
+
+        return $categories;
+    }
+
     
 }

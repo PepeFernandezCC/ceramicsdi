@@ -26,7 +26,6 @@ class Customer extends CustomerCore {
     }
 
     public static function getCustomerShowTax($idCustomer) {
-        
         $customerGroups = customer::checkCustomerGroup($idCustomer);
 
         if($customerGroups['default_group'] == '5' || $customerGroups['default_group'] == '6') {

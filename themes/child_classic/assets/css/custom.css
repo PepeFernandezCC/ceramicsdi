@@ -1260,6 +1260,49 @@ body:not(#category):not(#search) #wrapper #content-wrapper {
 #product .product-container #product-content-block {
   padding: 60px;
   height: auto !important;
+  /*@include mobile {
+    position: fixed;
+    overflow: scroll;
+    bottom: 0;
+    height: 90px;
+    background-color: white;
+    border-top: 1px solid black;
+    padding: $defaultHorizontalPadding;
+    z-index: 99;
+
+    .product-head {
+      flex-direction: row;
+      margin-top: 20px;
+    }
+
+    #push-scroll-responsive {
+      position: absolute;
+      left: 0;
+      top: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 40px;
+      cursor: pointer;
+
+      .line {
+        width: 40px;
+
+        hr {
+          margin-top: .5rem;
+          margin-bottom: .5rem;
+        }
+      }
+    }
+
+    #push-scroll-responsive-header {
+      margin-left: -15px;
+      margin-right: -15px;
+      padding-left: 15px;
+      padding-right: 15px;
+    }
+  }*/
 }
 @media (max-width: 1200px) {
   #product .product-container #product-content-block {
@@ -1268,7 +1311,6 @@ body:not(#category):not(#search) #wrapper #content-wrapper {
 
   #product .product-container #product-content-block .custom-content {
     padding: 18px;
-    padding-top: 0px;
   }
 
 
@@ -1973,9 +2015,7 @@ input[type=number]::-webkit-outer-spin-button {
   color: gray;
   font-weight: normal;
   text-transform: uppercase;
-  font-size: 12px;
 }
-
 @media (max-width: 1200px) {
   .tax-message {
     font-size: 13px;
@@ -6426,6 +6466,16 @@ span.at-contact {
 
 /* REFORMA PAGINA PRODUCTO */
 
+.minimal-price {
+    font-weight: 700;
+    font-size: 14px;
+    text-align: right;
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: row;
+    margin-bottom: 5px;
+}
+
   .add-product-to-cart {
     height: 65px !important;
     width: 100%;
@@ -6546,7 +6596,7 @@ span.at-contact {
     padding: 18px;
     padding-bottom: 35px;
     background: #e5e6e5;
-    margin-top: 15px;
+    margin-top:35px;
     margin-bottom: 65px;
   }
   #product .product-container #product-content-block .productExtraContent {
@@ -6580,10 +6630,12 @@ span.at-contact {
     margin-top: 8px;
   }
 
-
 /* versión movil */
 @media (max-width: 768px) {
 
+    .minimal-price {
+        justify-content: flex-start; 
+    }
 
     #product .product-container #product-content-block .newCalculatorBox {
       padding-bottom: 15px;
@@ -6601,11 +6653,11 @@ span.at-contact {
       flex-direction: column;
       margin-bottom: 30px;
     }
-
     .block-title {
       display: flex;
       flex-direction: column-reverse;
     }
+
 
     .product-discount .regular-price {
       font-size: 23px;
@@ -6756,7 +6808,6 @@ span.at-contact {
   .minimal-price {
     text-align: right;
   }
-
   .wasteLink{
     position: absolute;
     top: 22px;

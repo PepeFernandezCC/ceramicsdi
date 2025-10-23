@@ -194,8 +194,6 @@ class Product extends ProductCore {
 
     }
 
-
-
     /**
      * Obtener todos los productos agrupados por colección
      */
@@ -316,6 +314,53 @@ class Product extends ProductCore {
         }
 
         return $tipologia;
+
+    }
+
+    public static function getInspirationalProducts($idCategory) {
+
+        // Validar el ID de categoría
+        if (!(int)$idCategory) {
+            return [];
+        }
+
+        // Obtener el contexto
+        $context = Context::getContext();
+
+        // Limitar a 10 productos
+        $limit = 10;
+
+        // Obtener los productos de la categoría
+        $products = Product::getProducts(
+            $context->language->id,   // ID del idioma actual
+            0,                        // Desde
+            $limit,                   // Límite
+            'id_product',             // Ordenar por ID de producto
+            'DESC',                   // Orden descendente (puedes cambiar a ASC)
+            $idCategory,              // ID de categoría
+            true                      // Activos
+        );
+
+        // Si no hay productos, devolver vacío
+        if (empty($products)) {
+            return [];
+        }
+
+        // Array final con URLs de producto e imagen
+        $result = [];
+        foreach ($products as $product) {
+            $productObj = new Product($product['id_product'], false, $context->language->id);
+            $link = $context->link->getProductLink($productObj);
+            $image = self::getImageByPosition(6, $product['id_product']);
+
+            $result[] = [
+                'urlProduct' => $link,
+                'urlImage'   => $image,
+            ];
+        }
+
+        return $result;
+
 
     }
 
@@ -444,7 +489,7 @@ class Product extends ProductCore {
         
     }
 
-    public static function getProductUnit($productId) {
+        public static function getProductUnit($productId) {
 
         if (self::getIfNormalSell($productId)) {
             return 'UNIT';

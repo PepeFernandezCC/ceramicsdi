@@ -2218,54 +2218,6 @@ $( document ).ready( function () {
 
                var loader = document.getElementById("loader-overlay");
                let validations = false;
-               /*
-               if (document.getElementById("confirmAddressButton").getAttribute("data-location") == "directions") {
-
-                  document.getElementById("confirmAddressButton").addEventListener("click", function(event) {
-                  console.log('Listado de direcciones detectado...');
-
-                  let selectedArticle = false;
-                  let invoiceAddress = 0;
-                  let deliveryAddress = 0;
-                  
-                 
-                  if(document.getElementById('invoice-addresses')) {
-                     selectedArticle = document.querySelector('#invoice-addresses article.selected');
-                     invoiceAddress = selectedArticle.dataset.address;                
-
-                  }
-
-                  if(document.getElementById('delivery-addresses')) {
-                     selectedArticle = document.querySelector('#delivery-addresses article.selected');
-                     deliveryAddress = selectedArticle.dataset.address;
-                  }
-
-                  validations = true;
-                  
-                  if(selectedArticle) { 
-                     event.preventDefault();    
-                     $.ajax({ // comprueba si el vat es válido
-                        url: '/ajax/validateVatNumberInvoiceAddress.php',
-                        method: 'POST', 
-                        data: {
-                           deliveryAddress: deliveryAddress,
-                           invoiceAddress: invoiceAddress,
-                        },
-                        success: function(response) {                                 
-                           console.log(response);
-                        },
-                        error: function(err) {
-                           console.error('Error en la solicitud AJAX:', err);
-                           resetButtonState();
-                        }
-                     });
-                     
-                  }
-                  
-                  });
-               }
-               */
-
 
                if (document.getElementById("confirmAddressButton").getAttribute("data-location") == "form") {
                   document.getElementById("confirmAddressButton").addEventListener("click", function(event) {
