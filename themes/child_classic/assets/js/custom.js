@@ -2225,6 +2225,10 @@ $( document ).ready( function () {
                let validations = false;
 
                if (document.getElementById("confirmAddressButton").getAttribute("data-location") == "form") {
+
+                  if (document.getElementById('useSameText')){
+                     document.getElementById("useSameText").style.display ="none";
+                  }
                   document.getElementById("confirmAddressButton").addEventListener("click", function(event) {
                      validations = getValidations(); 
 

@@ -64,43 +64,11 @@ class CheckoutAddressesStep extends CheckoutAddressesStepCore
                 // Tu AJAX: "Cliente no apto para intracomunitario"
                 Customer::insertIntracomunitaryLog(false, 'DIRECCIONES: Cliente no apto', $vat_input, $customer_id, $idCountry);
                 $errors_msg = 'Cliente no apto para intracomunitario';
-                        // Si hemos llegado aquí, no hay errores: asegúrate de avanzar a envío
-                if (!$this->getCheckoutProcess()->hasErrors()) {
-                    $session = $this->getCheckoutSession();
-
-                    // por si acaso, garantiza invoice cuando use_same o no vino
-                    if (!(int)$session->getIdAddressInvoice()) {
-                        $session->setIdAddressInvoice((int)$session->getIdAddressDelivery());
-                    }
-
-                    // Marca siguiente paso y completa este
-                    $this->setNextStepAsCurrent();
-
-                }
-
-                // Nada de recalcular totales/aquí.
-                return $this;
             }
 
             if (strlen($vat_input) < 3) {
                 Customer::insertIntracomunitaryLog(false, 'DIRECCIONES: VAT CON FORMATO INCORRECTO', $vat_input, $customer_id, $idCountry);
                 $error_msg = 'Invalid VAT input';
-
-                if (!$this->getCheckoutProcess()->hasErrors()) {
-                    $session = $this->getCheckoutSession();
-
-                    // por si acaso, garantiza invoice cuando use_same o no vino
-                    if (!(int)$session->getIdAddressInvoice()) {
-                        $session->setIdAddressInvoice((int)$session->getIdAddressDelivery());
-                    }
-
-                    // Marca siguiente paso y completa este
-                    $this->setNextStepAsCurrent();
-
-                }
-
-                // Nada de recalcular totales/aquí.
-                return $this;
             }
 
             // Prefijo y número

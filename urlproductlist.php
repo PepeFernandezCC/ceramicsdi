@@ -11,7 +11,7 @@ $link = new Link();
 $db = Db::getInstance();
 
 // Consulta SQL
-$sql = 'SELECT id_product, id_lang, description, meta_title FROM ps_product_lang';
+$sql = 'SELECT id_product, id_lang, description, meta_title, name FROM ps_product_lang';
 $results = $db->executeS($sql);
 
 // Mostrar resultados en tabla HTML
@@ -21,7 +21,7 @@ echo '<tr><th>ID Producto</th><th>ID Lenguaje</th><th>URL</th><th>MetaTitle(h1)<
 foreach ($results as $row) {
     $id_product = $row['id_product'];
     $id_lang = $row['id_lang'];
-    $metaTitle = $row['meta_title'];
+    $metaTitle = $row['name'];
     $description = htmlspecialchars($row['description']); // Evitar HTML roto
     $product_url = $link->getProductLink($id_product, null, null, null, $id_lang);
 

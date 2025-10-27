@@ -31,7 +31,7 @@
                 method="POST"
                 action="{url entity='address' params=['id_address' => $id_address]}"
                 data-id-address="{$id_address}"
-                data-refresh-url="{url entity='address' params=['ajax' => 1, 'action' => 'addressForm']}" 
+                data-refresh-url="{url entity='address' params=['ajax' => 1, 'action' => 'addressForm']}"
         >
             {/block}
 
@@ -73,6 +73,14 @@
                                 </label>
                             </div>
                         </div>
+
+                        {if $use_same_address}
+                            <div class="form-group row">
+                                <div class="col-md-12">
+                                    <h2 class="h4">{l s='Shipping Address' d='Shop.Theme.Checkout'}</h2>
+                                </div>
+                            </div>
+                        {/if}
 
                         {*
                             <div class="form-group row" id="intracomunitary-identification">

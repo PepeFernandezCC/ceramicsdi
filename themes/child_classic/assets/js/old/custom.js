@@ -1551,6 +1551,7 @@ $( document ).ready( function () {
 
       let $buttonNewAccount = $checkoutBody.find( '#planatec-new-account' );
 
+
       $buttonNewAccount.on( 'click', function () {
          let $fieldCompany = $( '.companyClass' ).closest( '.form-group' );
          $fieldCompany.find('input').prop('required', false);
@@ -1591,6 +1592,9 @@ $( document ).ready( function () {
             }
 
          } );
+         $('#field-siret').closest('.form-group').css('display', 'none');
+         $('#field-birthday').closest('.form-group').css('display', 'none');
+         
 
          document.querySelector('input[name="customer_privacy"]').checked = true;
          $('.bac-position-8').css('display', 'none');
@@ -1654,7 +1658,7 @@ $( document ).ready( function () {
 
          
          $('#field-company').closest('.form-group').css('display', 'none');
-         $('#field-siret').closest('.form-group').css('display', 'none');
+         
          $('#field-birthday').closest('.form-group').css('display', 'none');
          $('.bag-position-6').css('display', 'none');
          document.querySelector('input[name="customer_privacy"]').checked = true;
@@ -2032,7 +2036,6 @@ $( document ).ready( function () {
          function comprobarCPPorProvincia(cp, provincia) {
             console.log('cp: '+ cp);
             console.log('provincia: ' + provincia);
-            console.log('provincia (raw):', JSON.stringify(provincia)); // para ver espacios ocultos
             const prefijosProvincias = {
                "354": "01", //alava
                "355": "02", //albacete

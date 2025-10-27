@@ -44,7 +44,7 @@
         <div class="js-address-form">
         
           {if $use_same_address}
-            <p>
+            <p id="useSameText">
               {if $cart.is_virtual}
                 {l s='The selected address will be used as your personal address (for invoice).' d='Shop.Theme.Checkout'}
               {else}
@@ -57,7 +57,7 @@
 
           {if $show_delivery_address_form}
             <div id="delivery-address">
-              {render file                      = 'checkout/_partials/address-form.tpl'
+              {render file                = 'checkout/_partials/address-form.tpl'
                 ui                        = $address_form
                 use_same_address          = $use_same_address
                 type                      = "delivery"
