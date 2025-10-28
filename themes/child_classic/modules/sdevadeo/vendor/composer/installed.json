@@ -1,0 +1,38 @@
+{
+    "packages": [
+        {
+            "name": "scaledev/mirakl-php-connector",
+            "version": "dev-develop",
+            "version_normalized": "dev-develop",
+            "source": {
+                "type": "git",
+                "url": "https://git.scaledev.net/internal/common-packages/mirakl-php-connector.git",
+                "reference": "8c0ffd8d428ae435821fd080a5f124f17db4848d"
+            },
+            "require": {
+                "php": ">=5.6"
+            },
+            "time": "2022-06-27T14:09:01+00:00",
+            "type": "library",
+            "installation-source": "source",
+            "autoload": {
+                "psr-4": {
+                    "Scaledev\\MiraklPhpConnector\\": "src/"
+                }
+            },
+            "license": [
+                "Commercial"
+            ],
+            "authors": [
+                {
+                    "name": "ScaleDEV",
+                    "email": "contact@scaledev.fr"
+                }
+            ],
+            "description": "PHP connector for the Mirakl API",
+            "install-path": "../scaledev/mirakl-php-connector"
+        }
+    ],
+    "dev": true,
+    "dev-package-names": []
+}

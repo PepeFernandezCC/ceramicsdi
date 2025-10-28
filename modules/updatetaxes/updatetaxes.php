@@ -233,10 +233,25 @@ public function postProcess()
             // 3. Actualizar ps_order_detail_tax
             foreach ($orderDetails as $orderDetail) {
                 $idOrderDetail = (int)$orderDetail['id_order_detail'];
-                $query_detail_tax = 'UPDATE `'._DB_PREFIX_.'order_detail_tax`
-                         SET `id_tax` = '.(int)$taxId.'
-                         WHERE `id_order_detail` = '.(int)$idOrderDetail;
-                Db::getInstance()->execute($query_detail_tax);
+
+                $query = 'SELECT `id_tax` 
+                    FROM `'._DB_PREFIX_.'order_detail_tax`
+                    WHERE `id_order_detail` = '.(int)$idOrderDetail;
+                $detailTax = Db::getInstance()->executeS($query);
+
+                if (!empty($detailTax)) {            
+                    $query_update_detail_tax = 'UPDATE `'._DB_PREFIX_.'order_detail_tax`
+                            SET `id_tax` = '.(int)$taxId.'
+                            WHERE `id_order_detail` = '.(int)$idOrderDetail;
+                    Db::getInstance()->execute($query_update_detail_tax);
+                }else{
+                    
+                    $query_insert_detail_tax = 'INSERT INTO `'._DB_PREFIX_.'order_detail_tax`
+                    (`id_order_detail`, `id_tax`, `unit_amount`, `total_amount`) 
+                    VALUES ('. (int)$idOrderDetail .', '.(int)$taxId.', "0.000000", "0.000000")';
+                    Db::getInstance()->execute($query_insert_detail_tax);
+                }
+
             }
 
             // Mensaje de éxito

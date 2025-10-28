@@ -1,0 +1,23 @@
+{
+    "name": "scaledev/adeo",
+    "description": "PrestaShop module to export products and import orders for Adeo marketplace.",
+    "license": "Commercial",
+    "autoload": {
+        "psr-4": {
+            "Scaledev\\Adeo\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "ScaleDEV",
+            "email": "contact@scaledev.fr"
+        }
+    ],
+    "require": {
+        "php": ">=5.6",
+        "ext-json": "*"
+    },
+    "config": {
+        "prepend-autoloader": false
+    },
+}
