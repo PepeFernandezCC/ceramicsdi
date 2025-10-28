@@ -288,6 +288,10 @@ final class ImportOrdersAction extends AbstractAction
             $newOrder->total_wrapping = 0;
             $newOrder->total_wrapping_tax_excl = 0;
             $newOrder->total_wrapping_tax_incl = 0;
+            
+            //AGREGAR REDONDEO
+            $newOrder->round_mode = 2;
+            $newOrder->round_type = 2;
 
             $newOrder->total_paid = (float)($newOrder->total_products_wt + $newOrder->total_shipping_tax_incl);
             $newOrder->total_paid_real = 0;
