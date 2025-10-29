@@ -123,11 +123,6 @@ class CustomRequest extends AbstractRequest
         return 'Trustedshops-' . $type . '=' . $result;
     }
 
-    /**
-     * Retrieve method
-     *
-     * @return string $method
-     */
     public function getMethod()
     {
         return $this->method;

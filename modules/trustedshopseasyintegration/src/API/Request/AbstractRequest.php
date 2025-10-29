@@ -89,9 +89,6 @@ abstract class AbstractRequest implements JsonSerializable
     /** @var string|null */
     protected $requestTarget;
 
-    /** @var string */
-    protected $method = 'GET';
-
     public function __construct()
     {
         $this->uri = new ApiUri();
@@ -271,16 +268,6 @@ abstract class AbstractRequest implements JsonSerializable
         }
 
         return $returnValues;
-    }
-
-    /**
-     * Retrieve method
-     *
-     * @return string $method
-     */
-    public function getMethod()
-    {
-        return $this->method;
     }
 
     /**

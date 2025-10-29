@@ -124,7 +124,7 @@ class ApiLogger
      */
     public function log($logModel)
     {
-        $this->logger->info(json_encode($logModel->toArray()));
+        $this->logger->addInfo(json_encode($logModel->toArray()));
     }
 
     /**
@@ -134,7 +134,7 @@ class ApiLogger
      */
     public function logInfo($info)
     {
-        $this->logger->info($info);
+        $this->logger->addInfo($info);
     }
 
     public static function getInstance()

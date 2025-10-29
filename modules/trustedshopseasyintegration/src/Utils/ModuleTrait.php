@@ -162,7 +162,7 @@ trait ModuleTrait
     {
         $installer = new ModuleInstaller($this);
 
-        return $installer->reset($this); // @phpstan-ignore-line
+        return $installer->reset($this);
     }
 
     /**
@@ -246,7 +246,7 @@ trait ModuleTrait
             if ($extensionClass != $action) {
                 continue;
             }
-            $extension->setModule($this); // @phpstan-ignore-line
+            $extension->setModule($this);
             if (is_callable([$extension, $method])) {
                 return $extension->{$method}($hookName, $configuration);
             }
@@ -359,9 +359,9 @@ trait ModuleTrait
                 if ($key === 'name' || $key === 'template') {
                     foreach ($allLanguages as $language) {
                         if (empty($value[$language['iso_code']])) {
-                            $orderState->{$key[$language['id_lang']]} = $value['en'];
+                            $orderState->$key[$language['id_lang']] = $value['en'];
                         } else {
-                            $orderState->{$key[$language['id_lang']]} = $value[$language['iso_code']];
+                            $orderState->$key[$language['id_lang']] = $value[$language['iso_code']];
                         }
                     }
                 } elseif ($key !== 'logo' && property_exists($orderState, $key)) {

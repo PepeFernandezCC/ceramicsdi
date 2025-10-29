@@ -60,6 +60,7 @@ if (!defined('_PS_VERSION_')) {
 use Configuration;
 use Language;
 use Shop;
+use Tools;
 use TrustedshopsAddon\Model\Constant\GtinType;
 use TrustedshopsAddon\Model\Constant\ProductIdentifier;
 use TrustedshopsAddon\Model\Constant\SkuType;
@@ -813,7 +814,7 @@ class ChannelService
     {
         $shopLang = (int) $idShop . '-' . (int) $idLang;
 
-        return 'shop-' . $shopLang . '-' . \TrustedshopsAddon\Utils\CompatibilityUtils::hash($shopLang);
+        return 'shop-' . $shopLang . '-' . Tools::encrypt($shopLang);
     }
 
     /**

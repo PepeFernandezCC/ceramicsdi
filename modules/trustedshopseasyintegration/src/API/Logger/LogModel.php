@@ -72,7 +72,7 @@ class LogModel
     protected $newOrderStatus;
 
     /**
-     * @var string
+     * @var int
      */
     protected $configuredTriggerStatus;
 
@@ -122,7 +122,7 @@ class LogModel
     }
 
     /**
-     * @return string
+     * @return int
      */
     public function getConfiguredTriggerStatus()
     {
@@ -130,7 +130,7 @@ class LogModel
     }
 
     /**
-     * @param string $configuredTriggerStatus
+     * @param int $configuredTriggerStatus
      *
      * @return LogModel
      */

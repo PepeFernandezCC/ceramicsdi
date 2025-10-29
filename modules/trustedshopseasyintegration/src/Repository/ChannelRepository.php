@@ -85,7 +85,7 @@ class ChannelRepository
      * @param int $idShop
      * @param int $idLang
      *
-     * @return int|null
+     * @return false|string|null
      */
     public function getChannelByClientIdLangShop($clientId, $idShop, $idLang)
     {
@@ -96,9 +96,7 @@ class ChannelRepository
             ->where('id_lang = ' . (int) $idLang)
             ->where('id_shop = ' . (int) $idShop);
 
-        $idChannel = Db::getInstance()->getValue($query);
-
-        return $idChannel !== false ? (int) $idChannel : null;
+        return Db::getInstance()->getValue($query);
     }
 
     public function getChannelsByChannelId($clientId, $channelId, $idLang = null, $idShop = null)

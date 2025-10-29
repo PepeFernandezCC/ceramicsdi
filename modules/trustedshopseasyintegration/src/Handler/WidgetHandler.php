@@ -191,10 +191,10 @@ class WidgetHandler
                 $gtin = Configuration::get(Trustedshopseasyintegration::GTIN_TYPE);
                 switch ($gtin) {
                     case GtinType::EAN13:
+                    default:
                         return !empty($product->ean13) ? $product->ean13 : $product->id;
                 }
-
-                return !empty($product->ean13) ? $product->ean13 : $product->id;
+                break;
             case ProductIdentifier::SKU:
             default:
                 $sku = Configuration::get(Trustedshopseasyintegration::SKU_TYPE);

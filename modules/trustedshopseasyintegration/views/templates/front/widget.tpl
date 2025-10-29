@@ -50,7 +50,7 @@
  * zustand             MIT     Copyright (c) 2019 (Paul Henschel)
  *}
 {if $location == 'wdg-loc-ft'}
-  <div class="row">
+  <div class="row" style="width: 100%;">
     {if isset($isPs17) && $isPs17 != false}
     <div class="col-xs-12">
     {/if}

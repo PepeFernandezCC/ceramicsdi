@@ -90,7 +90,7 @@ class CustomerModel extends AbstractModel
     protected $mobile;
 
     /**
-     * @var string
+     * @var int
      */
     protected $reference;
 
@@ -217,7 +217,7 @@ class CustomerModel extends AbstractModel
     }
 
     /**
-     * @return string
+     * @return int
      */
     public function getReference()
     {
@@ -225,14 +225,18 @@ class CustomerModel extends AbstractModel
     }
 
     /**
-     * @param string $reference
+     * @param int $reference
      *
      * @return CustomerModel
      */
     public function setReference($reference)
     {
-        $this->reference = $reference;
+        if (is_string($reference) === true) {
+            $this->reference = $reference;
 
-        return $this;
+            return $this;
+        }
+
+        throw new InvalidArgumentException('Customer reference must be a string but ' . gettype($reference) . ' is given.');
     }
 }

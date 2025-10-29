@@ -148,23 +148,22 @@ class Trustedshopseasyintegration extends Module
     {
         $this->module_key = 'ed69e3433cc658b9130d7e9325820bf1';
         $this->name = 'trustedshopseasyintegration';
-        $this->version = '2.0.2';
+        $this->version = '1.1.3';
         $this->author = '202 ecommerce';
         $this->tab = 'front_office_features';
         $this->ps_versions_compliancy = [
-            'min' => '1.7.6.0',
+            'min' => '1.6.1.24',
             'max' => _PS_VERSION_,
         ];
         $this->need_instance = 0;
 
         $this->__mConstruct();
 
-        require_once __DIR__ . '/src/Utils/CompatibilityUtils.php';
-        $this->secure_key = TrustedshopsAddon\Utils\CompatibilityUtils::hash($this->name);
+        $this->secure_key = Tools::encrypt($this->name);
         $this->confirmUninstall = $this->l('This will delete the Trusted shops module, are you sure ?');
         $this->displayName = $this->l('Trusted Shops Easy Integration');
         $this->description = $this->l('This module integrates Trusted Shops into your Prestashop installation.');
-        $this->hookDispatcher = new TrustedshopsAddon\Hook\HookDispatcher($this); // @phpstan-ignore-line
+        $this->hookDispatcher = new TrustedshopsAddon\Hook\HookDispatcher($this);
         $this->hooks = array_merge($this->hooks, $this->hookDispatcher->getAvailableHooks());
     }
 
@@ -181,6 +180,7 @@ class Trustedshopseasyintegration extends Module
     public function install()
     {
         $result = $this->mInstall();
+        $result &= $this->registerHook('displayFooterBefore');
         $moduleInitializer = new \TrustedshopsAddon\Utils\ModuleInitializer();
         $result &= $moduleInitializer->initialize();
 
@@ -207,7 +207,7 @@ class Trustedshopseasyintegration extends Module
         if ($result = $this->handleExtensionsHook($name,
             !empty($arguments[0]) ? $arguments[0] : [])
         ) {
-            if (!is_null($result)) { // @phpstan-ignore-line
+            if (!is_null($result)) {
                 return $result;
             }
         }

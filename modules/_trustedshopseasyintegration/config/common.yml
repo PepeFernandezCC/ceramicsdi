@@ -1,0 +1,11 @@
+imports:
+  - { resource: partials/api.yml }
+  - { resource: partials/repository.yml }
+  - { resource: partials/service.yml }
+
+services:
+  trustedshopseasyintegration:
+    class: 'Trustedshopseasyintegration'
+    factory: ['Module', 'getInstanceByName']
+    arguments:
+      - 'trustedshopseasyintegration'

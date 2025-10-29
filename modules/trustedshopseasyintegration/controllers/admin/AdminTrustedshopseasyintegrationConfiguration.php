@@ -132,7 +132,7 @@ class AdminTrustedshopseasyintegrationConfigurationController extends ModuleAdmi
         return [
             'translations' => [
                 'common' => [
-                    'error_occurred' => $this->module->l('Error occurred, try to reload this page'),
+                    'error_occurred' => $this->l('Error occurred, try to reload this page'),
                 ],
             ],
             'version' => $this->module->version,

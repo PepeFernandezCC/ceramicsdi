@@ -107,7 +107,7 @@ class OrderConfirmationHandler
         $orderModel->setSendProducts($hasProducts)
             ->setTsCheckoutOrderNr($order->reference)
             ->setTsCheckoutBuyerEmail($customer->email)
-            ->setTsCheckoutOrderAmount((string) \Tools::ps_round($orderTotal, 2))
+            ->setTsCheckoutOrderAmount(\Tools::ps_round($orderTotal, 2))
             ->setTsCheckoutOrderCurrency($currency->iso_code)
             ->setTsCheckoutOrderPaymentType($order->payment);
 

@@ -138,8 +138,8 @@ class HookService
     }
 
     /**
-     * @param int|null $idShop
-     * @param int|mixed $idLang
+     * @param string $idShop
+     * @param string $idLang
      * @param int $idOrder
      *
      * @return OrderModel|null

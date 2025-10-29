@@ -1,0 +1,9 @@
+services:
+  TrustedshopsAddon\Repository\ChannelRepository:
+    public: true
+    class: TrustedshopsAddon\Repository\ChannelRepository
+
+  TrustedshopsAddon\Repository\OrderProductRepository:
+    public: true
+    class: TrustedshopsAddon\Repository\OrderProductRepository
+

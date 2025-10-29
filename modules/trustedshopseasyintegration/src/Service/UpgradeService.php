@@ -325,11 +325,11 @@ class UpgradeService
     /**
      * Create cURL request options
      *
-     * @param AbstractRequest $request
+     * @param CustomRequest $request
      *
      * @return array<mixed> cURL options
      */
-    protected function createOptions(AbstractRequest $request, $url, $body)
+    protected function createOptions(CustomRequest $request, $url, $body)
     {
         $options = [];
 

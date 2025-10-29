@@ -1,0 +1,36 @@
+services:
+  TrustedshopsAddon\Service\CredentialsService:
+    public: true
+    class: TrustedshopsAddon\Service\CredentialsService
+
+  TrustedshopsAddon\Service\OrderProductService:
+    public: true
+    class: TrustedshopsAddon\Service\OrderProductService
+    arguments:
+      - '@TrustedshopsAddon\Repository\OrderProductRepository'
+
+  TrustedshopsAddon\Service\ChannelService:
+    public: true
+    class: TrustedshopsAddon\Service\ChannelService
+    arguments:
+      - '@TrustedshopsAddon\Repository\ChannelRepository'
+      - '@TrustedshopsAddon\Service\CredentialsService'
+      - '@TrustedshopsAddon\Service\OrderProductService'
+
+  TrustedshopsAddon\Service\HookService:
+    public: true
+    class: TrustedshopsAddon\Service\HookService
+    arguments:
+      - '@TrustedshopsAddon\Service\ChannelService'
+      - '@TrustedshopsAddon\Service\OrderProductService'
+
+  TrustedshopsAddon\Service\OrderStatusService:
+    public: true
+    class: TrustedshopsAddon\Service\OrderStatusService
+    arguments:
+      - '@TrustedshopsAddon\Service\ChannelService'
+      - '@TrustedshopsAddon\Service\CredentialsService'
+
+  TrustedshopsAddon\Service\UpgradeService:
+    public: true
+    class: TrustedshopsAddon\Service\UpgradeService

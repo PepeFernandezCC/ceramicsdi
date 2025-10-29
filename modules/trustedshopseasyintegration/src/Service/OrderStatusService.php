@@ -210,11 +210,10 @@ class OrderStatusService
      *
      * @return mixed Order Status - int[] if $savedConfig =  false
      */
-    public function getOrderStatus($savedConfig, $refChannel)
+    public function getOrderStatus($savedConfig = false, $refChannel)
     {
-        /** @var string|false $config */
-        $config = Configuration::get(Trustedshopseasyintegration::ORDER_STATUS_PRODUCTS_SERVICE, null, null, null, '');
-        if (empty($config) === true) {
+        $config = Configuration::get(Trustedshopseasyintegration::ORDER_STATUS_PRODUCTS_SERVICE);
+        if (empty($config) || $config === false) {
             return $this->defaultConfig($savedConfig);
         }
 
@@ -281,8 +280,6 @@ class OrderStatusService
         $customer = new Customer($order->id_customer);
         $address = new Address($order->id_address_delivery, $language->id);
         $nbDays = $this->getNbDays($order->id_carrier);
-        $module = \Module::getInstanceByName('trustedshopseasyintegration');
-        $versionModule = empty($module->version) === false ? $module->version : 'Unkwnown';
 
         $body = (new EventsModel())
             ->setCustomer(
@@ -303,9 +300,9 @@ class OrderStatusService
                     ->setReference($order->reference)
             )
             ->setEstimatedDeliveryDate(date('Y-m-d', strtotime("+$nbDays days", time())))
-            ->setSystem('TRUSTEDSHOPS__PLUGIN__PRESTASHOP')
+            ->setSystem('PrestaShop')
             ->setType(self::TYPE_EVENT_PRESTASHOP)
-            ->setSystemVersion($versionModule)
+            ->setSystemVersion(_PS_VERSION_)
             ->setCreatedAt(date('Y-m-d\TH:i:s.000\Z', time()));
 
         $orderConfirmationHandler = new OrderConfirmationHandler();
