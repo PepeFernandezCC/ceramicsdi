@@ -283,7 +283,7 @@ function saveCollectorPoint(id_cart, postCodeData )
 		var current_token = seur_token_[chosen_address_delivery];
 
 	$.ajax({
-		url: baseDir+'modules/seur/ajax/getPickupPointsAjax.php',
+		url: window.seur_pickups_url,
 		type: 'GET',
 		data: {
 			savepos : true,
@@ -515,17 +515,17 @@ function getUserAddress(idAddress)
 
 	address = "";
 	$.ajax({
-		url: baseDir+'modules/seur/ajax/getPickupPointsAjax.php',
+		url: window.seur_pickups_url,
 		type: 'GET',
 		data: {
 			usr_id_address : encodeURIComponent(idAddress),
 			token : encodeURIComponent(current_token)
 		},
-		dataType: 'html',
+		dataType: 'json',
 		async: false,
 		success: function(addr)
 		{
-			address = addr;
+			address = addr.result;
 		},
 		error: function(xhr, ajaxOptions, thrownError)
 		{
@@ -579,7 +579,7 @@ function getSeurCollectionPoints()
 	points = false;
 
 	$.ajax({
-		url: baseDir+'modules/seur/ajax/getPickupPointsAjax.php',
+		url: window.seur_pickups_url,
 		type: 'GET',
 		data: {
 			id_address_delivery : encodeURIComponent(id_address_delivery_seur.val()),

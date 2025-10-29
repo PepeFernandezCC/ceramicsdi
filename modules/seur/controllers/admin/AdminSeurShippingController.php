@@ -486,9 +486,7 @@ class AdminSeurShippingController extends ModuleAdminController
                         SeurLib::invoiceTariff((int)$seur_order->id_seur_order);
                     }
                 }
-                $is_international = SeurLib::isInternationalShipping($iso_country);
-                $is_geolabel = SeurLib::isGeoLabel($id_seur_ccc);
-                $label_file = SeurLabel::createLabels((int)$order->id, $label_data, $merchant_data, $is_geolabel, $is_international);
+                $label_file = SeurLabel::createLabels((int)$order->id, $label_data, $merchant_data);
 
                 if ($label_file === false) {
                     SeurLib::showMessageError($this, 'Could not set printed value for this order '. $order->reference);

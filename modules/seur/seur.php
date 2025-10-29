@@ -47,7 +47,7 @@ class Seur extends CarrierModule
     {
         $this->name = 'seur';
         $this->tab = 'shipping_logistics';
-        $this->version = '2.5.23';
+        $this->version = '2.5.24';
         $this->author = 'Seur';
         $this->need_instance = 0;
 
@@ -92,6 +92,7 @@ class Seur extends CarrierModule
         parent::__construct();
 
         $this->path = $this->_path;
+        $this->local_path = _PS_MODULE_DIR_ . $this->name . '/';
 
         $this->displayName = $this->l('SEUR');
         $this->description = $this->l('Manage your shipments with SEUR. Leader in the Express Shipping, National or International.');
@@ -277,18 +278,28 @@ class Seur extends CarrierModule
         // Build menu tabs
         foreach ($this->tabs as $className => $data) {
             // Check if exists
-            if (!$id_tab = Tab::getIdFromClassName($className)) {
+            $id_tab = $this->findTabIdByClassName($className);
+            if (!$id_tab) {
                 if ($data['rootClass']) {
                     $this->_confirmations[] = "Instalando Tab $className<br>\n";
                     $flagInstall = $flagInstall && $this->installModuleTab($className, $data['label'], 0);
                 } else {
+                    $id_tab = $this->findTabIdByClassName($data['parent']);
                     $this->_confirmations[] = "Instalando Tab $className cuyo padre es " . $data['parent'] . "<br>\n";
-                    $flagInstall = $flagInstall && $this->installModuleTab($className, $data['label'], (int)Tab::getIdFromClassName($data['parent']));
+                    $flagInstall = $flagInstall && $this->installModuleTab($className, $data['label'], $id_tab);
                 }
             }
         }
 
         return $flagInstall;
+    }
+
+    protected function findTabIdByClassName(string $className): int
+    {
+       // Compatible con todas las versiones
+        return (int) \Db::getInstance()->getValue(
+            'SELECT id_tab FROM `'._DB_PREFIX_.'tab` WHERE `class_name` = \''.pSQL($className).'\''
+        );
     }
 
 
@@ -465,33 +476,20 @@ class Seur extends CarrierModule
 
     public function installSeurCashOnDelivery()
     {
-        if (version_compare(_PS_VERSION_, '1.7', '<')) {
-            if (!is_dir(_PS_MODULE_DIR_ . 'seurcashondelivery')) {
-                $module_dir = _PS_MODULE_DIR_ . str_replace(array('.', '/', '\\'), array('', '', ''), 'seurcashondelivery');
-                $this->recursiveDeleteOnDisk($module_dir);
-            }
-            $dir = _PS_MODULE_DIR_ . $this->name . '/install/1.5/seurcashondelivery';
-            if (!is_dir($dir))
-                return false;
+        $module_name = 'seurcashondelivery';
+        $module_dir = _PS_MODULE_DIR_ . $module_name;
+        $install_version = version_compare(_PS_VERSION_, '1.7', '<') ? '1.5' : '1.7';
+        $install_dir = _PS_MODULE_DIR_ . $this->name . '/install/' . $install_version . '/' . $module_name;
+        if ( !is_dir($install_dir) ) return false;
 
-            $this->copyDirectory($dir, _PS_MODULE_DIR_ . 'seurcashondelivery');
-            $cash_on_delivery = Module::GetInstanceByName('seurcashondelivery');
-
-            return $cash_on_delivery->install();
-        } else {
-            if (!is_dir(_PS_MODULE_DIR_ . 'seurcashondelivery')) {
-                $module_dir = _PS_MODULE_DIR_ . str_replace(array('.', '/', '\\'), array('', '', ''), 'seurcashondelivery');
-                $this->recursiveDeleteOnDisk($module_dir);
-            }
-            $dir = _PS_MODULE_DIR_ . $this->name . '/install/1.7/seurcashondelivery';
-            if (!is_dir($dir))
-                return false;
-
-            $this->copyDirectory($dir, _PS_MODULE_DIR_ . 'seurcashondelivery');
-            $cash_on_delivery = Module::GetInstanceByName('seurcashondelivery');
-
-            return $cash_on_delivery->install();
+        if ( is_dir($module_dir) ) {
+            $this->recursiveDeleteOnDisk($module_dir);
         }
+
+        $this->copyDirectory($install_dir, $module_dir);
+        $module = Module::GetInstanceByName($module_name);
+
+        return $module ? $module->install() : false;
     }
 
     public function recursiveDeleteOnDisk($dir)
@@ -595,21 +593,33 @@ class Seur extends CarrierModule
 
     public function uninstallSeurCashOnDelivery()
     {
-
-        if ($module = Module::getInstanceByName('seurcashondelivery')) {
-            if (Module::isInstalled($module->name) && !$module->uninstall())
+        $module_name = 'seurcashondelivery';
+        if ( $this->isModuleInstalled($module_name) ) {
+            $module = Module::getInstanceByName($module_name);
+            if ( $module and $module->uninstall() === false ) {
                 return false;
+            }
+        }
 
-            $module_dir = _PS_MODULE_DIR_ . str_replace(array('.', '/', '\\'), array('', '', ''), $module->name);
+        $module_dir = _PS_MODULE_DIR_ . $module_name;
+        if ( is_dir($module_dir) ) {
             $this->recursiveDeleteOnDisk($module_dir);
         }
 
         return true;
     }
 
+    protected function isModuleInstalled(string $moduleName): bool
+    {
+        // universal: consulta ps_module
+        return (bool) \Db::getInstance()->getValue(
+            'SELECT id_module FROM `'._DB_PREFIX_.'module` WHERE `name` = \''.pSQL($moduleName).'\''
+        );
+    }
+
     public function tabHasChilds($className)
     {
-        $id_tab = Tab::getIdFromClassName($className);
+        $id_tab = $this->findTabIdByClassName($className);
         if ($id_tab) {
             $sql = 'SELECT * FROM `' . _DB_PREFIX_ . 'tab` WHERE `id_parent` = ' . $id_tab;
             $hijos = Db::getInstance()->executeS($sql);
@@ -619,7 +629,7 @@ class Seur extends CarrierModule
 
     public function uninstallModuleTab($tabClass)
     {
-        $idTab = Tab::getIdFromClassName($tabClass);
+        $idTab = $this->findTabIdByClassName($tabClass);
         Logger::addLog("ADMIN TAB Uninstall. $tabClass, $idTab", 1);
         if ($idTab != 0) {
             $tab = new Tab($idTab);
@@ -685,10 +695,6 @@ class Seur extends CarrierModule
         $success &= Configuration::deleteByName('SEUR2_SETTINGS_COD_MIN');
         $success &= Configuration::deleteByName('SEUR2_SETTINGS_COD_MAX');
         $success &= Configuration::deleteByName('SEUR2_SETTINGS_COD_RATE');
-        $success &= Configuration::deleteByName('SEUR2_SETTINGS_NOTIFICATION');
-        $success &= Configuration::deleteByName('SEUR2_SETTINGS_NOTIFICATION_TYPE');
-        $success &= Configuration::deleteByName('SEUR2_SETTINGS_ALERT');
-        $success &= Configuration::deleteByName('SEUR2_SETTINGS_ALERT_TYPE');
         $success &= Configuration::deleteByName('SEUR2_SETTINGS_PRINT_TYPE');
         $success &= Configuration::deleteByName('SEUR2_SETTINGS_LABEL_REFERENCE_TYPE');
         $success &= Configuration::deleteByName('SEUR2_SETTINGS_PICKUP');
@@ -738,15 +744,18 @@ class Seur extends CarrierModule
                 ));
         }
 
+        $id_tab = (int)$this->findTabIdByClassName('AdminModules');
         $this->context->smarty->assign(
             array(
                 'url_module' => $this->context->link->getAdminLink('AdminModules', true) . "&configure=seur&module_name=seur",
                 'img_path' => $this->_path . 'views/img/',
-                'module_path' => 'index.php?controller=AdminModules&configure=' . $this->name . '&token=' . Tools::getAdminToken("AdminModules" . (int)(Tab::getIdFromClassName("AdminModules")) . (int)$this->context->cookie->id_employee),
+                'module_path' => 'index.php?controller=AdminModules&configure=' . $this->name . '&token=' . Tools::getAdminToken("AdminModules" . $id_tab . (int)$this->context->cookie->id_employee),
                 'lista_ccc' =>  SeurCCC::getListCCC(),
                 'module_url' => seurLib::getBaseLink(),
                 'module_secret' => Configuration::get('SEUR2_API_CLIENT_SECRET'),
-                'module_folder' => __DIR__
+                'module_folder' => __DIR__,
+                'seur_url_basepath' => SeurLib::getBaseLink(),
+                'ps_version' => _PS_VERSION_
             ));
 
         $this->context->smarty->assign('module_dir', $this->_path);
@@ -822,6 +831,42 @@ class Seur extends CarrierModule
     */
     public function hookActionAdminControllerSetMedia()
     {
+        Media::addJsDef([
+            'seur_getservices_url' => $this->context->link->getModuleLink(
+                'seur',
+                'getservices',
+                [],
+                (bool) Configuration::get('PS_SSL_ENABLED')
+            ),
+        ]);
+
+        Media::addJsDef([
+            'seur_getproducts_url' => $this->context->link->getModuleLink(
+                'seur',
+                'getproducts',
+                [],
+                (bool) Configuration::get('PS_SSL_ENABLED')
+            ),
+        ]);
+
+        Media::addJsDef([
+            'seur_saveinsured_url' => $this->context->link->getModuleLink(
+                'seur',
+                'saveinsured',
+                [],
+                (bool) Configuration::get('PS_SSL_ENABLED')
+            ),
+        ]);
+
+        Media::addJsDef([
+            'seur_tracking_url' => $this->context->link->getModuleLink(
+                'seur',
+                'updateshipments',
+                ['secret' => Configuration::get('SEUR2_API_CLIENT_SECRET')],
+                (bool) Configuration::get('PS_SSL_ENABLED')
+            ),
+        ]);
+
         $this->context->controller->addJS($this->_path.'views/js/back.js');
         $this->context->controller->addCSS($this->_path.'views/css/back.css');
 
@@ -870,6 +915,12 @@ class Seur extends CarrierModule
 
         if ($pos_is_enabled && ($page == 'order-opc.php' || $page == 'order.php' || $page == 'orderopc' || $page == 'order')) {
             $this->context->controller->addCSS($this->_path . 'views/css/seurGMap.css');
+
+            Media::addJsDef([
+                'seur_pickups_url' => $this->context->link->getModuleLink(
+                    'seur', 'getpickuppoints', [], (bool)Configuration::get('PS_SSL_ENABLED')
+                ),
+            ]);
 
             if (Tools::version_compare(_PS_VERSION_, '1.7', '<'))
             {
@@ -1298,7 +1349,6 @@ class Seur extends CarrierModule
         $seur_ccc->staircase = SeurLib::getValue("staircase");
         $seur_ccc->floor = SeurLib::getValue("floor");
         $seur_ccc->door = SeurLib::getValue("door");
-        $seur_ccc->geolabel = SeurLib::getValue("geolabel");
         $seur_ccc->id_shop = SeurLib::getValue("id_shop");
 
         $seur_ccc->save();
@@ -1313,10 +1363,6 @@ class Seur extends CarrierModule
         Configuration::updateValue("SEUR2_SETTINGS_COD_MIN", SeurLib::getValue("SEUR2_SETTINGS_COD_MIN"));
         Configuration::updateValue("SEUR2_SETTINGS_COD_MAX", SeurLib::getValue("SEUR2_SETTINGS_COD_MAX"));
         Configuration::updateValue("SEUR2_SETTINGS_COD_RATE", SeurLib::getValue('SEUR2_SETTINGS_COD_RATE'));
-        Configuration::updateValue("SEUR2_SETTINGS_NOTIFICATION", SeurLib::getValue("SEUR2_SETTINGS_NOTIFICATION"));
-        Configuration::updateValue("SEUR2_SETTINGS_NOTIFICATION_TYPE", SeurLib::getValue("SEUR2_SETTINGS_NOTIFICATION_TYPE"));
-        Configuration::updateValue("SEUR2_SETTINGS_ALERT", SeurLib::getValue("SEUR2_SETTINGS_ALERT"));
-        Configuration::updateValue("SEUR2_SETTINGS_ALERT_TYPE", SeurLib::getValue("SEUR2_SETTINGS_ALERT_TYPE"));
         Configuration::updateValue("SEUR2_SETTINGS_PRINT_TYPE", SeurLib::getValue("SEUR2_SETTINGS_PRINT_TYPE"));
         Configuration::updateValue("SEUR2_SETTINGS_LABEL_REFERENCE_TYPE", SeurLib::getValue("SEUR2_SETTINGS_LABEL_REFERENCE_TYPE"));
         Configuration::updateValue("SEUR2_SETTINGS_PICKUP", SeurLib::getValue("SEUR2_SETTINGS_PICKUP"));
@@ -1373,7 +1419,6 @@ class Seur extends CarrierModule
                 'staircase' => $seur_ccc->staircase,
                 'floor' => $seur_ccc->floor,
                 'door' => $seur_ccc->door,
-                'geolabel' => $seur_ccc->geolabel,
                 'id_shop' => $seur_ccc->id_shop,
                 'shops' => SeurCCC::getShops(),
             ));
@@ -1386,6 +1431,7 @@ class Seur extends CarrierModule
                 'cit' => '',
                 'ccc' => '',
                 'franchise' => '',
+                'nombre_personalizado' => '',
                 'phone' => '',
                 'email' => '',
                 'eDevoluciones' => '',
@@ -1448,10 +1494,6 @@ class Seur extends CarrierModule
                 'cod_min' => Configuration::get('SEUR2_SETTINGS_COD_MIN'),
                 'cod_max' => Configuration::get('SEUR2_SETTINGS_COD_MAX'),
                 'cod_rate' => Configuration::get('SEUR2_SETTINGS_COD_RATE') ? Configuration::get('SEUR2_SETTINGS_COD_RATE') : 21,
-                'notification' => Configuration::get('SEUR2_SETTINGS_NOTIFICATION'),
-                'notification_type' => Configuration::get('SEUR2_SETTINGS_NOTIFICATION_TYPE'),
-                'alerts' => Configuration::get('SEUR2_SETTINGS_ALERT'),
-                'alerts_type' => Configuration::get('SEUR2_SETTINGS_ALERT_TYPE'),
                 'print_type' => Configuration::get('SEUR2_SETTINGS_PRINT_TYPE'),
                 'label_reference_type' => Configuration::get('SEUR2_SETTINGS_LABEL_REFERENCE_TYPE')?Configuration::get('SEUR2_SETTINGS_LABEL_REFERENCE_TYPE'):1,
                 'collection_type' => Configuration::get('SEUR2_SETTINGS_PICKUP'),
@@ -1516,7 +1558,7 @@ class Seur extends CarrierModule
             $out['response'] = $active;
         }
 
-        return Tools::jsonEncode($out);
+        return json_encode($out);
     }
 
     public function isConfigured()

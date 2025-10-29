@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.5.24] - 2025-10-22
+### Added
+- PS9 compatibility
+
+## Changed
+- Config options cleanup 
+
 ## [2.5.23] - 2025-09-23
 ### Added
 - Get new token only when expirated

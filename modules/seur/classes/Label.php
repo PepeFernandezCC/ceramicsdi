@@ -68,7 +68,7 @@ class SeurLabel
 
     }
 
-    public static function createLabels($id_order, $label_data, $merchant_data, $is_geolabel, $is_international, $auto_create_label = false)
+    public static function createLabels($id_order, $label_data, $merchant_data, $auto_create_label = false)
     {
         try {
             $seur_order = SeurOrder::getByOrder($id_order);
@@ -166,9 +166,6 @@ class SeurLabel
         }
 
         $preparedData['name'] = $name;
-        $preparedData['notification'] = (Configuration::get('SEUR2_SETTINGS_NOTIFICATION')==1 ? Configuration::get('SEUR2_SETTINGS_NOTIFICATION_TYPE'):0);
-        $preparedData['advice_checkbox'] = Configuration::get('SEUR2_SETTINGS_ALERT');
-        $preparedData['distribution_checkbox'] = Configuration::get('SEUR2_SETTINGS_ALERT_TYPE');
         $preparedData['servicio'] = $servicio;
         $preparedData['producto'] = $producto;
         $preparedData['mercancia'] = $mercancia;

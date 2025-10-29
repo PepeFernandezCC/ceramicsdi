@@ -390,6 +390,8 @@ class SeurLib
 
     public static function setOrderShippingNumber($id_order, $trackingNumber) {
         $order = new OrderCore($id_order);
+        // limitar a 64 caracteres por si el transportista devuelve un número muy largo
+        $trackingNumber = substr($trackingNumber, 0, 64);
         $order->setWsShippingNumber($trackingNumber);
     }
 
@@ -579,22 +581,12 @@ class SeurLib
 
     public static function isGeoLabel($id_seur_ccc)
     {
-        $seur_ccc = new SeurCCC($id_seur_ccc);
-        if ($seur_ccc->geolabel == 1) {
-            return true;
-        }
         return false;
     }
 
     public static function  hasAnyGeoLabel()
     {
-	    $is = DB::getInstance()->ExecuteS('
-			SELECT * FROM `'._DB_PREFIX_.'seur2_ccc` WHERE  geolabel = 1
-	    ');
-	    if ($is) {
-            return true;
-        }
-        return false;
+	    return false;
     }
 
     public static function hasFridgeProduct($id_order)

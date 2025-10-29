@@ -994,15 +994,8 @@ class AdminSeurTrackingController extends ModuleAdminController
                         );
                     }
                 }
-                if (SeurLib::isGeoLabel($id_seur_ccc)) {
-                    if (SeurLib::isInternationalShipping($iso_country)) {
-                        $label_file = SeurLabel::createLabelsGeoLabel((int)$order->id, $label_data, $merchant_data);
-                    } else {
-                        $label_file = SeurLabel::createLabels((int)$order->id, $label_data, $merchant_data, SeurLib::hasAnyGeoLabel());
-                    }
-                } else {
-                    $label_file = SeurLabel::createLabels((int)$order->id, $label_data, $merchant_data, false);
-                }
+
+                $label_file = SeurLabel::createLabels((int)$order->id, $label_data, $merchant_data, false);
 
                 if ($label_file === false) {
                     SeurLib::showMessageError($this, 'Could not set printed value for this order');
