@@ -1,5 +1,5 @@
 {**
- * Copyright 2024 LÍNEA GRÁFICA E.C.E S.L.
+ * Copyright 2025 LÍNEA GRÁFICA E.C.E S.L.
  *
  * @author    Línea Gráfica E.C.E. S.L.
  * @copyright Lineagrafica.es - Línea Gráfica E.C.E. S.L. all rights reserved.
@@ -21,33 +21,8 @@
 {if !empty($lgseoredirects_pagesnotfound)}
     {foreach $lgseoredirects_pagesnotfound as $index => $redirect}
     <tr id="{$redirect['id']|intval}">
-        {*
-        <td>
-            <input type="checkbox" name="selected_pages_not_found[]" value="{$index|intval}">
-        </td>
-        <td>
-            <span id="redid{$index|intval|intval}">{$index|intval|intval}</span>
-        </td>
-        *}
         <td style="direction: ltr !important;">
             <span id="oldurl{$redirect['id']|intval}">
-            {* check if the old URI starts with a / *}
-            {*{if $redirect['error_startwith']}
-                <input type="hidden" name="wrongformat{$redirect['id']|intval}" class="wrongformat{$redirect['id']|intval}" value="2">
-                <span class="toolTip1">
-                    <img src="../modules/lgseoredirect/views/img/important.png" />
-                    <p class="tooltipDesc1">{l s='Wrong format: the old URI must start with a "/"' mod='lgseoredirect'}</p>
-                </span>
-            {/if}*}
-            {* check if the old URI is duplicated *}
-            {*{if $redirect['error_checkduplicate'] > 1}
-                <input type="hidden" name="duplicate{$redirect['id']|intval}" class="duplicate{$redirect['id']|intval}" value="1">
-                <span class="toolTip2">
-                    <img src="../modules/lgseoredirect/views/img/important2.png" />
-                    <p class="tooltipDesc2">{l s='Duplicated redirects: several redirects exist for this old URI.' mod='lgseoredirect'}</p>
-                </span>
-            {/if}*}
-            {* OLD URI *}
                 {if isset($lgseoredirect_is_rtl) AND $lgseoredirect_is_rtl}
                     <a href="{$lgseoredirect_shop_domain|escape:'htmlall':'UTF-8'}{$lgseoredirect_shop_uri|escape:'htmlall':'UTF-8'}{if isset($redirect['url_old'])}{$redirect['url_old']|escape:'htmlall':'UTF-8'}{else}{$redirect['request_uri']|escape:'htmlall':'UTF-8'}{/if}" style="direction: ltr !important;" target="_blank">
                         <span style="font-weight: normal; color: #aaaaaa;">{$lgseoredirect_shop_domain|escape:'htmlall':'UTF-8'}{$lgseoredirect_shop_uri|escape:'htmlall':'UTF-8'}</span><span style="font-weight:bold;">{if isset($redirect['url_old'])}{$redirect['url_old']|escape:'htmlall':'UTF-8'}{else}{$redirect['request_uri']|escape:'htmlall':'UTF-8'}{/if}</span>
@@ -57,12 +32,6 @@
                         <span style="font-weight: normal; color: #aaaaaa;">{$lgseoredirect_shop_domain|escape:'htmlall':'UTF-8'}{$lgseoredirect_shop_uri|escape:'htmlall':'UTF-8'}</span><span style="font-weight:bold;">{if isset($redirect['url_old'])}{$redirect['url_old']|escape:'htmlall':'UTF-8'}{else}{$redirect['request_uri']|escape:'htmlall':'UTF-8'}{/if}</span>
                     </a>
                 {/if}
-                {*{if $redirect['error_checkduplicate'] > 1}
-                    <span class="autofilter" data-url="{$redirect['url_old']|escape:'htmlall':'UTF-8'}" style="cursor: pointer">
-                        <img src="../modules/lgseoredirect/views/img/filter.png" />
-                        <p class="tooltipDesc2">{l s='Duplicated redirects: several redirects exist for this old URI.' mod='lgseoredirect'}</p>
-                    </span>
-                {/if}*}
             </span>
         </td>
         <td style="font-size:x-large;">{if isset($lgseoredirect_is_rtl) AND $lgseoredirect_is_rtl}&larr;{else}&rarr;{/if}</td>
@@ -71,14 +40,6 @@
             <div class="lgseoredirect-target-url-text"{if !isset($redirect['url_old'])} style="display: none;"{/if}>
                 <div style="display: inline-block;">
                     <span id="newurl{$redirect['id']|intval}">
-                    {* check if the new URL starts with a http or https *}
-                    {*{if $redirect['error_startwith2']}
-                        <input type="hidden" name="wrongformat{$redirect['id']|intval}" class="wrongformat{$redirect['id']|intval}" value="2">
-                        <span class="toolTip1" class="wrongformat{$redirect['id']|intval}">
-                            <img src="../modules/lgseoredirect/views/img/important.png" />
-                            <p class="tooltipDesc1">{l s='Wrong format: the new URL must start with a "http" or "https".' mod='lgseoredirect'}</p>
-                        </span>
-                    {/if}*}
                     {$redirect['url_new']|escape:'htmlall':'UTF-8'}
                     </span>
                 </div>
@@ -89,15 +50,6 @@
         </td>
         <td>
             <input type="hidden" name="type{$redirect['id']|intval}" id="type{$redirect['id']|intval}" value="{$redirect['redirect_type']|escape:'htmlall':'UTF-8'}">
-            {* check if the type of redirect starts is 301, 302 or 303*}
-            {*{if $redirect['error_wrong_redirect_type']}
-                <input type="hidden" name="wrongformat{$redirect['id']|intval}" class="wrongformat{$redirect['id']|intval}" value="2">
-                <span class="toolTip1" class="wrongformat{$redirect['id']|intval}">
-                    <img src="../modules/lgseoredirect/views/img/important.png" />
-                    <p class="tooltipDesc1">{l s='Wrong format: the type of redirect must be "301", "302" or "303".' mod='lgseoredirect'}</p>
-                </span>
-            {/if}*}
-            {* TYPE - DATE -DELETE *}
             <div class="lgseoredirect-target-type-text"{if !isset($redirect['url_old'])} style="display: none;"{/if}>
             {$redirect['redirect_type']|escape:'htmlall':'UTF-8'}
             </div>
@@ -110,9 +62,6 @@
                 </select>
             </div>
         </td>
-        {*<td>*}
-            {*<span id="date{$redirect['id']|intval}">{if isset($redirect['fecha'])}{$redirect['fecha']|escape:'htmlall':'UTF-8'}{else}--{/if}*}
-        {*</td>*}
         <td>
             <button class="button btn btn-primary editPNF" type="button" data-id="{$redirect['id_pagenotfound']|intval}"{if !isset($redirect['url_old'])} style="display: none;"{/if}>
                 <i class="icon-edit"></i> {l s='Edit' mod='lgseoredirect'}

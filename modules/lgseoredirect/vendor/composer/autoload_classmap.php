@@ -11,5 +11,7 @@ return array(
     'LGSEORedirect' => $baseDir . '/lgseoredirect.php',
     'LGSeoRedirectPageNotFound' => $baseDir . '/classes/LGSeoRedirectPageNotFound.php',
     'LGSeoRedirectPageRedirection' => $baseDir . '/classes/LGSeoRedirectPageRedirection.php',
-    'LGSeoRedirectPubli' => $baseDir . '/classes/LGSeoRedirectPubli.php',
+    'LGSEORedirectPubli' => $baseDir . '/classes/publi/LGSEORedirectPubli.php',
+    'LGSEORedirectPubliLG' => $baseDir . '/classes/publi/LGSEORedirectPubliLG.php',
+    'LGSEORedirectPubliPS' => $baseDir . '/classes/publi/LGSEORedirectPubliPS.php',
 );

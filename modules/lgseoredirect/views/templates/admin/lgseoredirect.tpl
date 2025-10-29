@@ -1,5 +1,5 @@
 {**
- * Copyright 2024 LÍNEA GRÁFICA E.C.E S.L.
+ * Copyright 2025 LÍNEA GRÁFICA E.C.E S.L.
  *
  * @author    Línea Gráfica E.C.E. S.L.
  * @copyright Lineagrafica.es - Línea Gráfica E.C.E. S.L. all rights reserved.
@@ -26,4 +26,5 @@
 {include './list.tpl'}
 {if isset($lgseoredirect_pagesnotfoundenabled) && $lgseoredirect_pagesnotfoundenabled}
     {include './pages_not_found.tpl'}
+    {include './general_configuration.tpl'}
 {/if}

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2024 LÍNEA GRÁFICA E.C.E S.L.
+ * Copyright 2025 LÍNEA GRÁFICA E.C.E S.L.
  *
  * @author    Línea Gráfica E.C.E. S.L.
  * @copyright Lineagrafica.es - Línea Gráfica E.C.E. S.L. all rights reserved.
@@ -28,6 +28,11 @@ class LGSEORedirect extends Module
 {
     const NUMBER_OF_PRODUCTS = 10;
 
+    public $platform = 'lg';
+    public $id_product;
+    public $context;
+
+    protected $configurations_list;
     protected $pagination = [];
     protected $total_pages = 0;
     protected $total_redirects = 0;
@@ -43,6 +48,8 @@ class LGSEORedirect extends Module
     protected $sql_count = '';
     protected $redirects = [];
     protected $html = '';
+    protected $content_only = true;
+    protected $debug = [];
 
     protected $pagesnotfoundinstalled = false;
     protected $pnf_pagination = [];
@@ -66,10 +73,13 @@ class LGSEORedirect extends Module
 
         $this->name = 'lgseoredirect';
         $this->tab = 'seo';
-        $this->version = '1.4.8';
+        $this->version = '1.4.10';
         $this->author = 'Línea Gráfica';
         $this->module_key = 'f95aace4e5d00f07742643a87be835fe';
         $this->need_instance = 0;
+        $this->id_product = 11399;
+        $this->platform = 'lg';
+
         $this->bootstrap = true;
 
         parent::__construct();
@@ -77,25 +87,42 @@ class LGSEORedirect extends Module
         $this->description = $this->l('Create an unlimited number of 301, 302 and 303 URL redirects.');
 
         $this->ps_versions_compliancy = [
-            'min' => '1.5',
+            'min' => '1.7.0',
             'max' => _PS_VERSION_,
         ];
 
-        if (Tools::getIsset('ajax')
-            && !in_array(
-                Tools::getValue('action'),
-                [
-                    'getPNF',
-                    'getRedirects',
-                    'deleteRedirects',
-                    'deletePNF',
-                    'saveRedirects',
-                    'savePagesNotFound',
-                ]
-            )
-        ) {
-            return;
+        $this->context = Context::getContext();
+
+        if (Tools::getValue('action', 0) == 'getPNF' && Tools::getIsset('ajax')) {
+            $this->ajaxProcessGetPNF();
         }
+        if (Tools::getValue('action', 0) == 'getRedirects' && Tools::getIsset('ajax')) {
+            $this->ajaxProcessGetRedirects();
+        }
+        if (Tools::getValue('action', 0) == 'deleteRedirect' && Tools::getIsset('ajax')) {
+            $this->ajaxProcessDeleteRedirect();
+        }
+        if (Tools::getValue('action', 0) == 'deleteRedirects' && Tools::getIsset('ajax')) {
+            $this->ajaxProcessDeleteRedirects();
+        }
+        if (Tools::getValue('action', 0) == 'saveRedirects' && Tools::getIsset('ajax')) {
+            $this->ajaxProcessSaveRedirects();
+        }
+        if (Tools::getValue('action', 0) == 'savePagesNotFound' && Tools::getIsset('ajax')) {
+            $this->ajaxProcessSavePagesNotFound();
+        }
+        if (Tools::getValue('action', 0) == 'saveGeneralConfiguration' && Tools::getIsset('ajax')) {
+            $this->ajaxProcessSaveGeneralConfiguration();
+        }
+
+        $this->configurations_list = [
+            'LGSEO_AUTOMATIC_REDIRECTIONS' => [
+                'default_value' => false,
+                'auto_proccess' => true,
+                'add_field_value' => true,
+                'html' => false,
+            ],
+        ];
 
         // Check about Pages not found module is installed
         $this->pagesnotfoundinstalled = Module::isInstalled('pagesnotfound') && Module::isEnabled('pagesnotfound');
@@ -123,7 +150,7 @@ class LGSEORedirect extends Module
         }
 
         // Para las redirecciones
-        if ($this->context->cookie->__isset('lgseoredirect_user_pagination_' . $this->context->shop->id)) {
+        /*if ($this->context->cookie->__isset('lgseoredirect_user_pagination_' . $this->context->shop->id)) {
             $this->last_selected_pagination = $this->context->cookie->__get(
                 'lgseoredirect_user_pagination_' . $this->context->shop->id
             );
@@ -216,33 +243,7 @@ class LGSEORedirect extends Module
             $this->pnf_offset
         );
 
-        $this->context->cookie->write();
-
-        if (version_compare(_PS_VERSION_, '1.6', '<')) {
-            if (Tools::getIsset('ajax')) {
-                switch (Tools::getValue('action')) {
-                    case 'saveRedirects':
-                        $this->ajaxProcessSaveRedirects();
-                        break;
-                    case 'deleteRedirects':
-                        $this->ajaxProcessDeleteRedirects();
-                        break;
-                    case 'savePagesNotFound':
-                        $this->ajaxProcessSavePagesNotFound();
-                        break;
-                    case 'deletePNF':
-                        $this->ajaxProcessDeletePNF();
-                        break;
-                    case 'getPNF':
-                        $this->ajaxProcessGetPNF();
-                        break;
-                    case 'getRedirects':
-                    default:
-                        $this->ajaxProcessGetRedirects();
-                        break;
-                }
-            }
-        }
+        $this->context->cookie->write();*/ // Error en cliente, se le cierra la sesión del BO y no le deja navegar
     }
 
     public function install()
@@ -250,6 +251,7 @@ class LGSEORedirect extends Module
         if (!parent::install()
             || !$this->registerHook('moduleRoutes')
             || !$this->registerHook('actionDispatcher')
+            // || !$this->registerHook('actionDispatcherBefore')
             || !$this->registerHook('displayBackOfficeHeader')
         ) {
             return false;
@@ -266,7 +268,7 @@ class LGSEORedirect extends Module
               PRIMARY KEY (`id`),
               KEY `redirect_type` (`redirect_type`),
               KEY `pnf` (`redirect_type`)
-            ) ENGINE=' . (defined('ENGINE_TYPE') ? ENGINE_TYPE : 'Innodb') . ' CHARSET=utf8'
+            ) ENGINE=' . (defined('ENGINE_TYPE') ? ENGINE_TYPE : 'Innodb') . ' CHARSET=utf8',
         ];
 
         foreach ($queries as $query) {
@@ -284,13 +286,33 @@ class LGSEORedirect extends Module
         Db::getInstance()->Execute('DROP TABLE IF EXISTS `' . _DB_PREFIX_ . 'lgseoredirect`');
         return $this->unregisterHook('moduleRoutes')
             && $this->unregisterHook('actionDispatcher')
+            // && $this->unregisterHook('actionDispatcherBefore')
             && $this->unregisterHook('displayBackOfficeHeader')
             && parent::uninstall();
     }
 
+    public static function getModuleConfiguration()
+    {
+        $context = Context::getContext();
+
+        $id_shop = $context->shop->id;
+        $id_shop_group = Shop::getGroupFromShop((int) $id_shop);
+
+        $configuration = Configuration::getMultiple(
+            [
+                'LGSEO_AUTOMATIC_REDIRECTIONS',
+            ],
+            null,
+            (int) $id_shop_group,
+            (int) $id_shop
+        );
+
+        return $configuration;
+    }
+
     public function getContent()
     {
-        $this->registerHook('actionDispatcher');
+        // $this->registerHook('actionDispatcher'); // Si el módulo funciona bien sin este hook eliminar en versión futura 1.4.11
         $this->check();
         $this->postProcess();
 
@@ -298,6 +320,12 @@ class LGSEORedirect extends Module
         $shop_dom = $this->context->shop->domain;
         $shop_domain = (Tools::usingSecureMode() ? 'https://' . $shop_ssl : 'http://' . $shop_dom);
         $shop_uri = $this->context->shop->getBaseURI();
+
+        $publi_class_name = str_replace('Override', '', get_class($this));
+        $publi_class_name .= 'Publi' . Tools::strtoupper($this->platform);
+
+        $publi_class_name::setModule($this);
+        $publi_class_name::setModules($publi_class_name::$modules);
 
         // Obtenemos las redirecciones
         $offset = $this->offset - 1;
@@ -316,9 +344,7 @@ class LGSEORedirect extends Module
                 'lgseoredirect_pagesnotfoundenabled' => $this->pagesnotfoundinstalled,
                 'lgseoredirect_pagesnotfound_installed' => $this->pagesnotfoundinstalled,
                 'lgseoredirect_is_rtl' => $this->context->language->is_rtl,
-                'lgseoredirect_ps16' => !version_compare(_PS_VERSION_, '1.6', '<'),
                 'lgseoredirect_shop_domain' => $shop_domain,
-                'module_name' => $this->name,
                 'lgseoredirect_shop_uri' => $this->rtrim($shop_uri, '/'),
                 'domain_base' => $this->getAdminUrl(),
                 'lgseoredirect_token' => Tools::getAdminTokenLite('AdminModules'),
@@ -327,6 +353,7 @@ class LGSEORedirect extends Module
                 'filters' => $this->filters,
                 'countredirects' => $this->total_redirects,
                 'total_selected_redirects' => $this->total_selected_redirects,
+                'lg_path' => $this->_path,
 
                 // Para evitar reenviar el fichero si se recarga
                 'lgseoredirect_file_uploaded' => (int) Tools::isSubmit('newCSV'),
@@ -369,7 +396,9 @@ class LGSEORedirect extends Module
         ];
 
         if (!empty($this->debug)) {
-            $this->context->smarty->assign('lgseoredirect_debug', $this->debug);
+            $this->context->smarty->assign([
+                'lgseoredirect_debug' => $this->debug,
+            ]);
         }
 
         $this->html .= $this->context->smarty->fetch(
@@ -380,9 +409,10 @@ class LGSEORedirect extends Module
             DIRECTORY_SEPARATOR . 'lgseoredirect.tpl'
         );
 
-        return LGSeoRedirectPubli::getInstance()->getHeader()
-            . $this->html
-            . LGSeoRedirectPubli::getInstance()->getFooter();
+        $header = $publi_class_name::renderHeader();
+        $footer = $publi_class_name::renderFooter();
+
+        return $header . $this->html . $footer;
     }
 
     public function postProcess()
@@ -412,9 +442,6 @@ class LGSEORedirect extends Module
         }
     }
 
-    /**
-     * AJAX CALLS
-     */
     public function ajaxProcessGetPNF()
     {
         $shop_ssl = $this->context->shop->domain_ssl;
@@ -435,9 +462,7 @@ class LGSEORedirect extends Module
             [
                 'lgseoredirect_is_rtl' => $this->context->language->is_rtl,
                 'lgseoredirect_shop_domain' => $shop_domain,
-                'lgseoredirect_module_name' => 'lgseoredirects',
-                'lgseoredirect_shop_uri' => Tools::rtrimString($shop_uri, '/'),
-                'countredirects' => $this->pnf_total_redirects,
+                'lgseoredirect_shop_uri' => $shop_uri,
                 'lgseoredirects_pagesnotfound' => $this->pages_not_found,
             ]
         );
@@ -452,7 +477,6 @@ class LGSEORedirect extends Module
 
         $pagination_vars = [
             // Estos son para la paginación
-            'lgseoredirect_ps16' => !version_compare(_PS_VERSION_, '1.6', '<'),
             'lgseoredirect_token' => Tools::getAdminTokenLite('AdminModules'),
             'simple_header' => false,
             'list_total' => $this->pnf_total_redirects,
@@ -476,8 +500,6 @@ class LGSEORedirect extends Module
             DIRECTORY_SEPARATOR . 'admin' .
             DIRECTORY_SEPARATOR . 'pagination.tpl'
         );
-
-        // Tools::dieObject($response['pagination']);
 
         if (_PS_MODE_DEV_) {
             $response['debug']['sql'] = $this->sql;
@@ -509,19 +531,20 @@ class LGSEORedirect extends Module
         $shop_uri = $shop->getBaseURI();
 
         // Obtenemos las redirecciones
-        $this->redirects = $this->getRedirects((($this->offset - 1) * $this->limit), $this->limit);
+        if ($this->offset <= 0) {
+            $this->offset = 1;
+        }
+        $limit = ($this->offset - 1) * $this->limit;
+        $this->redirects = $this->getRedirects($limit, $this->limit);
 
-        $this->context->smarty->assign(
-            [
-                'lgseoredirect_shop_domain' => $shop_domain,
-                'lgseoredirect_module_name' => 'lgseoredirects',
-                'lgseoredirect_shop_uri' => Tools::rtrimString($shop_uri, '/'),
-                'countredirects' => $this->total_redirects,
-                'redirects' => $this->redirects,
-                ]
-        );
+        $this->context->smarty->assign([
+            'lgseoredirect_is_rtl' => $this->context->language->is_rtl,
+            'lgseoredirect_shop_domain' => $shop_domain,
+            'lgseoredirect_shop_uri' => $shop_uri,
+            'redirects' => $this->redirects,
+            'lg_path' => $this->_path,
+        ]);
 
-        // TODO: Change fetch for display
         $response['rows'] = $this->context->smarty->fetch(
             _PS_MODULE_DIR_ . $this->name .
             DIRECTORY_SEPARATOR . 'views' .
@@ -533,7 +556,6 @@ class LGSEORedirect extends Module
         $pagination_vars = [
             // Estos son para la paginación
             'lgseoredirect_is_rtl' => $this->context->language->is_rtl,
-            'lgseoredirect_ps16' => !version_compare(_PS_VERSION_, '1.6', '<'),
             'lgseoredirect_token' => Tools::getAdminTokenLite('AdminModules'),
             'simple_header' => false,
             'list_total' => $this->total_redirects,
@@ -679,11 +701,50 @@ class LGSEORedirect extends Module
         LGJsonApi::returnResponse($response);
     }
 
+    public function ajaxProcessSaveGeneralConfiguration()
+    {
+        $response = [];
+        $automatic_redirections = Tools::getValue('automatic_redirections');
+
+        // Tools::dieObject($automatic_redirections, 1);
+
+        if (!empty($automatic_redirections)) {
+            // TODO
+        } else {
+            // TODO
+        }
+        LGJsonApi::returnResponse($response);
+    }
+
+    public function ajaxProcessDeleteRedirect()
+    {
+        $response = [];
+        $redirects = Tools::getValue('redirect');
+
+        if ($redirects) {
+            $sql = 'DELETE FROM `' . _DB_PREFIX_ . 'lgseoredirect` ' .
+                'WHERE `id` = ' . (int) $redirects;
+            if (Db::getInstance()->execute($sql)) {
+                $response['status'] = 'ok';
+                $response['message'] = $this->l('Redirect deleted with success');
+            } else {
+                $response['status'] = 'ko';
+                $response['message'] = $this->l('Error deleting redirect. Please try again.');
+            }
+        } else {
+            $response['status'] = 'ko';
+            $response['message'] = $this->l('Error. Selection empty');
+        }
+
+        LGJsonApi::returnResponse($response);
+    }
+
     public function ajaxProcessDeleteRedirects()
     {
         $response = [];
         $all_selected = (int) Tools::getValue('allselected', -1);
         $redirects = Tools::getValue('redirects', []);
+
         if ($all_selected >= 0) {
             if (empty($redirects) && $all_selected == 0) {
                 $response['status'] = 'ko';
@@ -781,26 +842,12 @@ class LGSEORedirect extends Module
         LGJsonApi::returnResponse($response);
     }
 
-    /**
-     * HOOKS
-     */
-
-    /**
-     * Add the CSS & JavaScript files you want to be loaded in the BO.
-     */
     public function hookDisplayBackOfficeHeader()
     {
-        if ($this->context->controller instanceof AdminModulesController
-            && pSQL(Tools::getValue('configure')) == $this->name) {
-            $this->context->controller->addJQuery();
+        if (pSQL(Tools::getValue('configure')) == $this->name) {
             $this->context->controller->addJS(_MODULE_DIR_ . $this->name . '/views/js/loadingoverlay.min.js');
             $this->context->controller->addJS(_MODULE_DIR_ . $this->name . '/views/js/lgseoredirect.js');
 
-            if (version_compare(_PS_VERSION_, '1.6.0', '<')) {
-                $this->context->controller->addJS(_MODULE_DIR_ . $this->name . '/views/js/bootstrap.js');
-                $this->context->controller->addJS(_MODULE_DIR_ . $this->name . '/views/js/admin15.js');
-                $this->context->controller->addCSS(_MODULE_DIR_ . $this->name . '/views/css/admin15.css');
-            }
             $this->context->controller->addCSS(_MODULE_DIR_ . $this->name . '/views/css/' . $this->name . '.css');
             $this->context->controller->addCSS($this->_path . '/views/css/publi/lgpubli.css');
         }
@@ -812,21 +859,12 @@ class LGSEORedirect extends Module
         return [];
     }
 
+
     public function hookActionDispatcher($params)
     {
         $this->checkRedirection();
     }
 
-    /**
-     * USEFUL METHODS
-     */
-
-    /**
-     * @param string $str Original string
-     * @param string $needle String to trim from the end of $str
-     * @param bool|true $caseSensitive Perform case sensitive matching, defaults to true
-     * @return string Trimmed string
-     */
     public function rtrim($str, $needle, $caseSensitive = true)
     {
         $strPosFunction = $caseSensitive ? 'strpos' : 'stripos';
@@ -836,12 +874,6 @@ class LGSEORedirect extends Module
         return $str;
     }
 
-    /**
-     * Get a valid URL to use from BackOffice (On versions < 1.6 this functionality is not included on classTools)
-     *
-     * @param string $url An URL to use in BackOffice
-     * @param bool $entites Set to true to use htmlentities function on URL param
-     */
     protected function getAdminUrl($url = null, $entities = false)
     {
         if (version_compare(_PS_VERSION_, '1.6', '<')) {
@@ -859,12 +891,14 @@ class LGSEORedirect extends Module
 
     public function checkRedirection()
     {
+
         if (Module::isEnabled($this->name)) {
             $context = Context::getContext();
             $uri_var = $_SERVER['REQUEST_URI'];
             if ($context->language->is_rtl) {
                 $uri_var = rawurldecode($uri_var);
             }
+            $uri_var = urldecode($uri_var);
             $shop_id = $context->shop->id;
             $baseuri = Tools::rtrimString($context->shop->getBaseURI(), '/');
             $sql = 'SELECT * FROM ' . _DB_PREFIX_ . 'lgseoredirect ' .
@@ -877,6 +911,7 @@ class LGSEORedirect extends Module
                 && $uri_var == preg_replace('/(#.*)/', '', $baseuri . $redirect['url_old'])
                 && $shop_id == $redirect['id_shop']
             ) {
+                $header = '';
                 if ($redirect['redirect_type'] == 301) {
                     $header = 'HTTP/1.1 301 Moved Permanently';
                 }
@@ -893,7 +928,9 @@ class LGSEORedirect extends Module
 
     protected function getRedirects($limit = 0, $offset = 100)
     {
-        $ands = ' AND id_shop = ' . Context::getContext()->shop->id;
+        $context = Context::getContext();
+
+        $ands = ' AND id_shop = ' . $context->shop->id;
         if (!empty($this->filters)) {
             foreach ($this->filters as $filter => $value) {
                 switch ($filter) {
@@ -969,10 +1006,11 @@ class LGSEORedirect extends Module
         $sql .= 'WHERE 1 ' . $ands;
 
         $sql1 = $sql_selected_rows . $sql;
+        // Tools::dieObject($sql1); //corregir error de duplicados en esta consulta
         if (isset($this->filters['error']) && $this->filters['error'] != 1) {
             $sql1 .= ' GROUP BY lg.`url_old`, lg.`id_shop` ';
         }
-        $sql1 .= ' ORDER BY lg.id DESC '; // Todo: Add results ordering
+        $sql1 .= ' ORDER BY lg.id DESC ';
         $sql1 .= 'LIMIT ' . $limit . ', ' . $offset;
 
         $sql2 = $sql_total_rows . $sql;
@@ -990,8 +1028,6 @@ class LGSEORedirect extends Module
             }
         }
 
-        // Por rapidez, quitamos la subconsulta cuando no se filtra por duplicados y lo que hacemos es que chequeamos
-        // los dupliacdos sólo para los resultados
         if (!isset($this->filters['error']) || (isset($this->filters['error']) && $this->filters['error'] != 1)) {
             $ids = [];
             foreach ($redirects as $redirect) {
@@ -1010,7 +1046,7 @@ class LGSEORedirect extends Module
             unset($duplicate_count);
 
             foreach ($redirects as $index => $redirect) {
-                $redirects[$index]['error_checkduplicate'] = $dc_final[$redirect['url_old']];
+                $redirects[$index]['error_checkduplicate'] = isset($dc_final[$redirect['url_old']]) ? $dc_final[$redirect['url_old']] : '';
             }
         }
 
@@ -1027,7 +1063,25 @@ class LGSEORedirect extends Module
     public function getPagesNotFound($limit = 0, $offset = 100)
     {
         $db = Db::getInstance();
-        $this->sql = 'SELECT *  FROM `' . _DB_PREFIX_ . 'pagenotfound` as pnf WHERE 1 GROUP BY `request_uri`';
+        // $shop_ssl = $this->context->shop->domain_ssl;
+        // $shop_dom = $this->context->shop->domain;
+        // $shop_domain = (Tools::usingSecureMode() ? 'https://' . $shop_ssl : 'http://' . $shop_dom);
+        // $this->sql = 'SELECT *  FROM `' . _DB_PREFIX_ . 'pagenotfound` as pnf WHERE 1 GROUP BY `request_uri`';
+        $not_like = [
+            '.css',
+            '.js',
+            '.ico',
+            '.gif',
+            '.png',
+            '.map',
+            '.php',
+            '.git',
+            '.well-known',
+        ];
+        $this->sql = 'SELECT *  FROM `' . _DB_PREFIX_ . 'pagenotfound` as pnf WHERE 1' .
+            // ' AND (`request_uri` LIKE "%' . $shop_domain . '%" OR `request_uri` LIKE "%' . __PS_BASE_URI__ . '%")' .
+            ' AND `request_uri` NOT LIKE "%' . implode('%" AND `request_uri` NOT LIKE "%', $not_like) . '%" ' .
+            ' GROUP BY `request_uri`';
         if (!empty($this->pnf_filters)) {
             foreach ($this->pnf_filters as $filter => $value) {
                 switch ($filter) {
@@ -1073,7 +1127,8 @@ class LGSEORedirect extends Module
         }
         $this->sql .= 'ORDER BY pnf.`id_pagenotfound` ASC LIMIT ' . $limit . ', ' . $offset;
 
-        $this->sql_count = (int) $db->getValue('SELECT COUNT(DISTINCT `request_uri`) FROM `' . _DB_PREFIX_ . 'pagenotfound`', false);
+        // $this->sql_count = (int) $db->getValue('SELECT COUNT(DISTINCT `request_uri`) FROM `' . _DB_PREFIX_ . 'pagenotfound`', false);
+        $this->sql_count = (int) count($db->executeS($this->sql, true, false));
 
         $this->pnf_total_redirects = $this->sql_count;
 
@@ -1138,9 +1193,6 @@ class LGSEORedirect extends Module
         $this->checkPagesNotFountInstalled();
     }
 
-    /**
-     * check if the overrides are not disabled
-     */
     protected function checkOverridesDisabled()
     {
         if ((int) Configuration::get('PS_DISABLE_OVERRIDES') > 0) {
@@ -1156,9 +1208,6 @@ class LGSEORedirect extends Module
         }
     }
 
-    /**
-     * check if the native modules are not disabled
-     */
     protected function checkNativeModulesEnabled()
     {
         if ((int) Configuration::get('PS_DISABLE_NON_NATIVE_MODULE') > 0) {
@@ -1174,9 +1223,6 @@ class LGSEORedirect extends Module
         }
     }
 
-    /**
-     * check if the redirect option in the module "Advanced URL" is disabled
-     */
     protected function checkVipAdvencedUrlRedirect()
     {
         if (Module::isInstalled('vipadvancedurl')
@@ -1198,8 +1244,7 @@ class LGSEORedirect extends Module
     protected function checkPagesNotFountInstalled()
     {
         if (!$this->pagesnotfoundinstalled) {
-            $url = 'index.php?controller=AdminModules&token='
-                . Tools::getAdminTokenLite('AdminModules');
+            $url = 'https://addons.prestashop.com/en/analytics-statistics/15258-pages-not-found.html';
             $this->html .= $this->displayError(
                 $this->l('The module "Pages not found" is not installed on your shop.') . '&nbsp;' .
                 $this->l('Please install the module if you want be able to redirect pages not founded by it.') .
@@ -1284,12 +1329,13 @@ class LGSEORedirect extends Module
                                     \'' . pSQL(trim($datos[1])) . '\',
                                     \'' . pSQL(trim($datos[2])) . '\',
                                     NOW(),
-                                    \'' . pSQL((int) trim($datos[3])) . '\',
+                                    \'' . (int) pSQL(trim($datos[3])) . '\',
                                     0
                                 )'
                         );
                     }
                     fclose($fp);
+                    unset($_FILES['csv']);
                     $this->html .=
                         Module::DisplayConfirmation(
                             $this->l('The redirects of the CSV file have been successfully created')
@@ -1332,7 +1378,7 @@ class LGSEORedirect extends Module
         if ($getredirects != false) {
             $context = Context::getContext();
             $context->smarty->assign([
-                'name' => $this->name,
+                'lg_path' => $this->_path,
                 'type' => 'saveredirects',
             ]);
             $saveredirects = $context->smarty->fetch($this->getTemplatePath(
@@ -1376,7 +1422,7 @@ class LGSEORedirect extends Module
         if ($pagesNotFound != false) {
             $context = Context::getContext();
             $context->smarty->assign([
-                'name' => $this->name,
+                'lg_path' => $this->_path,
                 'type' => 'pagesnotfound',
             ]);
             $pagesnotfound = $context->smarty->fetch($this->getTemplatePath(
@@ -1390,4 +1436,45 @@ class LGSEORedirect extends Module
             $this->html .= Module::DisplayError($this->l('There are no pages not found on your shop'));
         }
     }
+
+    // Nueva opción para redirigir automáticamente urls 404 a 301 (home) desde PageNotFoundControllerCore
+    // Revisar codigo generado por IA
+    /* public function hookActionDispatcherBefore()
+    {
+        $configuration = self::getModuleConfiguration();
+
+        if ($this->pagesnotfoundinstalled && $configuration['LGSEO_AUTOMATIC_REDIRECTIONS']) {
+            Tools::dieObject($_SERVER['REQUEST_URI']);
+            $context = Context::getContext();
+            $uri_var = $_SERVER['REQUEST_URI'];
+            if ($context->language->is_rtl) {
+                $uri_var = rawurldecode($uri_var);
+            }
+            $uri_var = urldecode($uri_var);
+            $shop_id = $context->shop->id;
+            $baseuri = Tools::rtrimString($context->shop->getBaseURI(), '/');
+            $sql = 'SELECT * FROM ' . _DB_PREFIX_ . 'lgseoredirect ' .
+                'WHERE (CONCAT("' . $baseuri . '", url_old) LIKE BINARY "' . pSQL($uri_var) . '" ' .
+                'OR CONCAT("' . $baseuri . '", url_old) LIKE BINARY "' . pSQL($uri_var) . '#%") ' .
+                'AND id_shop = "' . (int) $shop_id . '" ' .
+                'ORDER BY id DESC';
+            $redirect = Db::getInstance()->getRow($sql);
+            if ($redirect
+                && $uri_var == preg_replace('/(#.*)/', '', $baseuri . $redirect['url_old'])
+                && $shop_id == $redirect['id_shop']
+            ) {
+                $header = '';
+                if ($redirect['redirect_type'] == 301) {
+                    $header = 'HTTP/1.1 301 Moved Permanently';
+                }
+                if ($redirect['redirect_type'] == 302) {
+                    $header = 'HTTP/1.1 302 Moved Temporarily';
+                }
+                if ($redirect['redirect_type'] == 303) {
+                    $header = 'HTTP/1.1 303 See Other';
+                }
+                Tools::redirect($redirect['url_new'], __PS_BASE_URI__, null, $header);
+            }
+        }
+    } */
 }

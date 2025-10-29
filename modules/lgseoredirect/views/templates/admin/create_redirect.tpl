@@ -1,5 +1,5 @@
 {**
- * Copyright 2024 LÍNEA GRÁFICA E.C.E S.L.
+ * Copyright 2025 LÍNEA GRÁFICA E.C.E S.L.
  *
  * @author    Línea Gráfica E.C.E. S.L.
  * @copyright Lineagrafica.es - Línea Gráfica E.C.E. S.L. all rights reserved.
@@ -23,8 +23,8 @@
         <legend>
             {l s='Create a redirect' mod='lgseoredirect'}
             &nbsp;
-            <a href="../modules/{$module_name|escape:'htmlall':'UTF-8'}/readme/readme_{l s='en' mod='lgseoredirect'}.pdf#page=4" target="_blank">
-                <img src="../modules/{$module_name|escape:'htmlall':'UTF-8'}/views/img/info.png">
+            <a href="{$lg_path|escape:'htmlall':'UTF-8'}readme/readme_{l s='en' mod='lgseoredirect'}.pdf#page=4" target="_blank">
+                <img src="{$lg_path|escape:'htmlall':'UTF-8'}views/img/info.png">
             </a>
         </legend>
         <form method="post" action="{$smarty.server.REQUEST_URI|escape:'htmlall':'UTF-8'}">

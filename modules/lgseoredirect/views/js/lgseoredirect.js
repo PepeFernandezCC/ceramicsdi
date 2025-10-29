@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 LÍNEA GRÁFICA E.C.E S.L.
+ * Copyright 2025 LÍNEA GRÁFICA E.C.E S.L.
  *
  * @author    Línea Gráfica E.C.E. S.L.
  * @copyright Lineagrafica.es - Línea Gráfica E.C.E. S.L. all rights reserved.
@@ -69,91 +69,85 @@ function LGGetRedirects(who) {
         }
     }
 
-    var data = {
-        ajax: true,
-        controller: 'AdminModules',
-        module_name: 'AdminModules',
-        configure: 'lgseoredirect',
-        token: lgseoredirect_token,
-        rand: new Date().getTime(),
-        cache: false
+    var params = {
+        ajax: 1
     };
 
     if ($(who).closest('form').attr('id') == 'lgseoredirect_pnf_list_form') {
-        data['lgseoredirect_pnf_pagination'] = $(who).closest('form').find('input.lgseoredirect_pnf-pagination-items-page').val();
-        data['p_pnf']                       = $(who).closest('form').find('input.lgseoredirect_pnf-pagination-page').val();
-        data['filters_pnf']                     = filters;
-        data['action']                      = 'getPNF';
+        params['action'] = 'getPNF';
+        params['lgseoredirect_pnf_pagination'] = $(who).closest('form').find('input.lgseoredirect_pnf-pagination-items-page').val();
+        params['p_pnf']  = $(who).closest('form').find('input.lgseoredirect_pnf-pagination-page').val();
+        params['filters_pnf'] = filters;
     } else {
-        data['lgseoredirect_pagination'] = $(who).closest('form').find('input.lgseoredirect-pagination-items-page').val();
-        data['p']                       = $(who).closest('form').find('input.lgseoredirect-pagination-page').val();
-        data['filters']                 = filters;
-        data['action']                  = 'getRedirects';
+        params['action'] = 'getRedirects';
+        params['lgseoredirect_pagination'] = $(who).closest('form').find('input.lgseoredirect-pagination-items-page').val();
+        params['p'] = $(who).closest('form').find('input.lgseoredirect-pagination-page').val();
+        params['filters'] = filters;
     }
 
     $(target).LoadingOverlay('show');
     $.ajax({
-        method: 'get',
-        url: 'index.php',
-        data: data,
+        url: window.location.href,
+        type: 'GET',
         dataType: 'json',
-        timeout: 30000
-    }).error(function(jqXHR, textStatus, errorThrown) {
-        if (textStatus == 'timeout') {
+        data: params,
+        success: function(response) {
             $(target).LoadingOverlay('hide', true);
-            showErrorMessage(lgseoredirect_msg_error_timeout);
-        } else {
-            showErrorMessage(lgseoredirect_msg_error_unknown);
-        }
-    }).done(function(response) {
-        $(target).LoadingOverlay('hide', true);
-        if (response.status == 'ok') {
-            $('#checkall').prop('checked', false);
-            //$('#tableproduct tbody').('');
-            $(target).html(response.rows);
-            $(who).closest('form').find('.lgseoredirect_pagination').html(response.pagination);
+            if (response.status == 'ok') {
+                $('#checkall').prop('checked', false);
+                $(target).html(response.rows);
+                $(who).closest('form').find('.lgseoredirect_pagination').html(response.pagination);
 
-            if ($(who).closest('form').find('table.table').attr('id') != 'tablepnf') {
-                if (window.lgseoredirect_select_all) {
-                    if (window.lgseoredirect_selected_items.length > 0) {
-                        var some_deselected = false;
-                        $('input[name^="selected_redirects"]').each(function(){
-                            if (window.lgseoredirect_selected_items.indexOf(parseInt($(this).val())) >= 0) {
-                                $(this).prop('checked', false);
-                                some_deselected = true;
-                            } else {
-                                $(this).prop('checked', true);
-                            }
-                        });
-                        $('#lgseoredirect_checkall').prop('checked', !some_deselected);
-                    } else {
-                        lgseoredirectCheckAll();
-                    }
-                } else {
-                    if (window.lgseoredirect_selected_items.length > 0) {
-                        $('input[name^="selected_redirects"]').each(function(){
-                            if (window.lgseoredirect_selected_items.indexOf(parseInt($(this).val())) >= 0) {
-                                $(this).prop('checked', true);
-                            }
-                        });
-                    }
-                    var all_selected = true && ($(who).closest('form').find('input[name^="selected_redirects"]').length > 0);
-                    $(who).closest('form').find('input[name^="selected_redirects"]').each(function(){
-                        if (!$(this).is(':checked')) {
-                            all_selected = false;
+                if ($(who).closest('form').find('table.table').attr('id') != 'tablepnf') {
+                    if (window.lgseoredirect_select_all) {
+                        if (window.lgseoredirect_selected_items.length > 0) {
+                            var some_deselected = false;
+                            $('input[name^="selected_redirects"]').each(function(){
+                                if (window.lgseoredirect_selected_items.indexOf(parseInt($(this).val())) >= 0) {
+                                    $(this).prop('checked', false);
+                                    some_deselected = true;
+                                } else {
+                                    $(this).prop('checked', true);
+                                }
+                            });
+                            $('#lgseoredirect_checkall').prop('checked', !some_deselected);
+                        } else {
+                            lgseoredirectCheckAll();
                         }
-                    });
-                    if (all_selected) {
-                        $('#lgseoredirect_checkall').prop('checked', true);
                     } else {
-                        $('#lgseoredirect_checkall').prop('checked', false);
+                        if (window.lgseoredirect_selected_items.length > 0) {
+                            $('input[name^="selected_redirects"]').each(function(){
+                                if (window.lgseoredirect_selected_items.indexOf(parseInt($(this).val())) >= 0) {
+                                    $(this).prop('checked', true);
+                                }
+                            });
+                        }
+                        var all_selected = true && ($(who).closest('form').find('input[name^="selected_redirects"]').length > 0);
+                        $(who).closest('form').find('input[name^="selected_redirects"]').each(function(){
+                            if (!$(this).is(':checked')) {
+                                all_selected = false;
+                            }
+                        });
+                        if (all_selected) {
+                            $('#lgseoredirect_checkall').prop('checked', true);
+                        } else {
+                            $('#lgseoredirect_checkall').prop('checked', false);
+                        }
                     }
                 }
-            }
 
-            if ($(who).closest('form').attr('id') == 'lgseoredirect_list_form') {
-                $('#buttonlistredirects .lgseoredirect_total_products').html(response.total_products);
-                $('#listredirects .lgseoredirect_total_products').html(response.total_products);
+                if ($(who).closest('form').attr('id') == 'lgseoredirect_list_form') {
+                    $('#buttonlistredirects .lgseoredirect_total_products').html(response.total_products);
+                    $('#listredirects .lgseoredirect_total_products').html(response.total_products);
+                }
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            if (textStatus == 'timeout') {
+                $(target).LoadingOverlay('hide', true);
+                showErrorMessage(lgseoredirect_msg_error_timeout);
+            } else {
+                showErrorMessage(lgseoredirect_msg_error_unknown);
             }
         }
     });
@@ -289,36 +283,32 @@ $(document).ready(function(){
 
     $(document).on('click', 'button[name="lgseoredirect_deleteSelected"]', function() {
         $('#lgseoredirect_list_form').LoadingOverlay('show');
+        params = {};
+        params['ajax'] = 1;
+        params['action'] = 'deleteRedirects';
+        params['redirects'] = window.lgseoredirect_selected_items;
+        params['allselected'] = window.lgseoredirect_select_all;
         $.ajax({
-            method: 'get',
-            url: 'index.php',
-            data: {
-                ajax: true,
-                controller: 'AdminModules',
-                module_name: 'AdminModules',
-                configure: 'lgseoredirect',
-                token: lgseoredirect_token,
-                action: 'deleteRedirects',
-                redirects: window.lgseoredirect_selected_items,
-                allselected: window.lgseoredirect_select_all,
-                rand: new Date().getTime(),
-                cache: false
-            },
-            dataType: 'json'
-        }).success(function (response) {
-            $('#lgseoredirect_list_form').LoadingOverlay('hide');
-            if (response.status == 'ok') {
-                window.lgseoredirect_selected_items = [];
-                window.lgseoredirect_select_all = 0;
+            url: window.location.href,
+            type: 'GET',
+            dataType: 'json',
+            data: params,
+            success: function (response) {
+                $('#lgseoredirect_list_form').LoadingOverlay('hide');
+                if (response.status == 'ok') {
+                    window.lgseoredirect_selected_items = [];
+                    window.lgseoredirect_select_all = 0;
+                }
                 showSuccessMessage(response.message);
                 LGGetRedirects($('#lgseoredirect_list_form table'));
-            }
-        }).error(function (response) {
-            $('#lgseoredirect_list_form').LoadingOverlay('hide');
-            if (response.status == 'ok') {
-                window.lgseoredirect_selected_items = [];
-                window.lgseoredirect_select_all = 0;
-                showErrorMessage(response.message);
+            },
+            error: function (response) {
+                $('#lgseoredirect_list_form').LoadingOverlay('hide');
+                if (response.status == 'ok') {
+                    window.lgseoredirect_selected_items = [];
+                    window.lgseoredirect_select_all = 0;
+                    showErrorMessage(response.message);
+                }
                 LGGetRedirects($('#lgseoredirect_list_form table'));
             }
         });
@@ -326,39 +316,38 @@ $(document).ready(function(){
 
     $(document).on('click', 'button.deleteRedirect', function() {
         var id_redirect = $(this).data('id');
-        var redirects  = [];
+        var redirects = [];
         redirects.push(id_redirect);
+
         $('#lgseoredirect_list_form').LoadingOverlay('show');
+
+        params = {};
+        params['ajax'] = 1;
+        params['action'] = 'deleteRedirect';
+        params['redirect'] = id_redirect;
         $.ajax({
-            method: 'get',
-            url: 'index.php',
-            data: {
-                ajax: true,
-                controller: 'AdminModules',
-                module_name: 'AdminModules',
-                configure: 'lgseoredirect',
-                token: lgseoredirect_token,
-                action: 'deleteRedirects',
-                redirects: redirects,
-                allselected: 0,
-                rand: new Date().getTime()
-            },
-            dataType: 'json'
-        }).success(function (response) {
-            $('#lgseoredirect_list_form').LoadingOverlay('hide');
-            if (response.status == 'ok') {
-                if (window.lgseoredirect_selected_items.indexOf(id_redirect) >= 0) {
-                    var pos = window.lgseoredirect_selected_items.indexOf(id_redirect);
-                    window.lgseoredirect_selected_items.splice(parseInt(pos), 1);
+            url: window.location.href,
+            type: 'GET',
+            dataType: 'json',
+            data: params,
+            success: function(response) {
+                console.log(response);
+                $('#lgseoredirect_list_form').LoadingOverlay('hide');
+                if (response.status == 'ok') {
+                    if (window.lgseoredirect_selected_items.indexOf(id_redirect) >= 0) {
+                        var pos = window.lgseoredirect_selected_items.indexOf(id_redirect);
+                        window.lgseoredirect_selected_items.splice(parseInt(pos), 1);
+                    }
+                    showSuccessMessage(response.message);
                 }
-                showSuccessMessage(response.message);
-            }
-            LGGetRedirects($('#lgseoredirect_list_form table'));
-            LGGetRedirects($('#lgseoredirect_pnf_list_form table'));
-        }).error(function (response) {
-            $('#lgseoredirect_list_form').LoadingOverlay('hide');
-            if (response.status == 'ok') {
-                showErrorMessage(response.message);
+                LGGetRedirects($('#lgseoredirect_list_form table'));
+                LGGetRedirects($('#lgseoredirect_pnf_list_form table'));
+            },
+            error: function(response) {
+                $('#lgseoredirect_list_form').LoadingOverlay('hide');
+                if (response.status == 'ok') {
+                    showErrorMessage(response.message);
+                }
             }
         });
     });
@@ -388,33 +377,31 @@ $(document).ready(function(){
         var type       = $(this).closest('tr').find('select[name^="lgseoredirect-target-type-select-"]').val();
         var redirects  = [];
         redirects.push({id: id_redirect, target: target, origin: origin, type: type});
+
+        params = {};
+        params['ajax'] = 1;
+        params['action'] = 'saveRedirects';
+        params['redirects'] = redirects;
+        params['allselected'] = 0;
         $.ajax({
-            method: 'get',
-            url: 'index.php',
-            data: {
-                ajax: true,
-                controller: 'AdminModules',
-                module_name: 'lgseoredirect',
-                configure: 'lgseoredirect',
-                token: lgseoredirect_token,
-                action: 'saveRedirects',
-                redirects: redirects,
-                allselected: 0,
-                rand: new Date().getTime()
+            url: window.location.href,
+            type: 'GET',
+            dataType: 'json',
+            data: params,
+            success: function (response) {
+                if (response.status == 'ok') {
+                    showSuccessMessage(response.message);
+                }
+                $('#lgseoredirect_list_form').LoadingOverlay('hide');
+                LGGetRedirects($('#lgseoredirect_list_form table'));
+                LGGetRedirects($('#lgseoredirect_pnf_list_form table'));
             },
-            dataType: 'json'
-        }).success(function (response) {
-            if (response.status == 'ok') {
-                showSuccessMessage(response.message);
+            error: function (response) {
+                if (response.status == 'ko') {
+                    showErrorMessage(response.message);
+                }
+                $('#lgseoredirect_list_form').LoadingOverlay('hide');
             }
-            $('#lgseoredirect_list_form').LoadingOverlay('hide');
-            LGGetRedirects($('#lgseoredirect_list_form table'));
-            LGGetRedirects($('#lgseoredirect_pnf_list_form table'));
-        }).error(function (response) {
-            if (response.status == 'ko') {
-                showErrorMessage(response.message);
-            }
-            $('#lgseoredirect_list_form').LoadingOverlay('hide');
         });
     });
 
@@ -510,13 +497,13 @@ $(document).ready(function(){
     });
 
     $(document).on('click', 'button.savePNF', function() {
-        var obj            = $(this);
+        var obj = $(this);
         var id_pagenotfound = $(this).data('id');
-        var request_uri    = encodeURIComponent($(this).data('request-uri'));
-        var target         = $(this).closest('tr').find('input[name="lgseoredirect-target-url-input-'+id_pagenotfound+'"]').val();
-        var type           = $(this).closest('tr').find('select[name^="lgseoredirect-target-type-select-"]').val();
+        var request_uri = encodeURIComponent($(this).data('request-uri'));
+        var target = $(this).closest('tr').find('input[name="lgseoredirect-target-url-input-'+id_pagenotfound+'"]').val();
+        var type = $(this).closest('tr').find('select[name^="lgseoredirect-target-type-select-"]').val();
         var pages_not_found = [];
-        var block          = $(this).closest('tr');
+        var block = $(this).closest('tr');
         $(block).LoadingOverlay('show');
 
         pages_not_found.push({
@@ -526,32 +513,29 @@ $(document).ready(function(){
             type: type
         });
 
+        params = {};
+        params['ajax'] = 1;
+        params['action'] = 'savePagesNotFound';
+        params['pages_not_found'] = pages_not_found;
+        params['allselected'] = 0;
         $.ajax({
-            method: 'get',
-            url: 'index.php',
-            data: {
-                ajax: true,
-                controller: 'AdminModules',
-                module_name: 'lgseoredirect',
-                configure: 'lgseoredirect',
-                token: lgseoredirect_token,
-                action: 'savePagesNotFound',
-                'pages_not_found': pages_not_found,
-                allselected: 0,
-                rand: new Date().getTime()
+            url: window.location.href,
+            type: 'GET',
+            dataType: 'json',
+            data: params,
+            success: function (response) {
+                if (response.status == 'ok') {
+                    showSuccessMessage(response.message);
+                }
+                $(block).LoadingOverlay('hide');
+                LGGetRedirects(obj);
+                LGGetRedirects($('#lgseoredirect_list_form table'));
             },
-            dataType: 'json'
-        }).success(function (response) {
-            if (response.status == 'ok') {
-                showSuccessMessage(response.message);
-            }
-            $(block).LoadingOverlay('hide');
-            LGGetRedirects(obj);
-            LGGetRedirects($('#lgseoredirect_list_form table'));
-        }).error(function (response) {
-            $('#lgseoredirect_list_form').LoadingOverlay('hide');
-            if (response.status == 'ko') {
-                showErrorMessage(response.message);
+            error: function (response) {
+                $('#lgseoredirect_list_form').LoadingOverlay('hide');
+                if (response.status == 'ko') {
+                    showErrorMessage(response.message);
+                }
             }
         });
     });
@@ -563,32 +547,64 @@ $(document).ready(function(){
 
         pages_not_found.push(request_uri);
         $(block).LoadingOverlay('show');
+
+        params = {};
+        params['ajax'] = 1;
+        params['action'] = 'deletePNF';
+        params['pages_not_found'] = pages_not_found;
+        params['allselected'] = 0;
         $.ajax({
-            method: 'get',
-            url: 'index.php',
-            data: {
-                ajax: true,
-                controller: 'AdminModules',
-                module_name: 'AdminModules',
-                configure: 'lgseoredirect',
-                token: lgseoredirect_token,
-                action: 'deletePNF',
-                'pages_not_found': pages_not_found,
-                allselected: 0,
-                rand: new Date().getTime()
+            url: window.location.href,
+            type: 'GET',
+            dataType: 'json',
+            data: params,
+            success: function (response) {
+                if (response.status == 'ok') {
+                    showSuccessMessage(response.message);
+                }
             },
-            dataType: 'json'
-        }).success(function (response) {
-            if (response.status == 'ok') {
-                showSuccessMessage(response.message);
-            }
-        }).error(function (response) {
-            if (response.status == 'ko') {
-                showErrorMessage(response.message);
+            error: function (response) {
+                if (response.status == 'ko') {
+                    showErrorMessage(response.message);
+                }
             }
         });
         $(block).LoadingOverlay('hide');
         LGGetRedirects($(this));
         LGGetRedirects($('#lgseoredirect_list_form table'));
+    });
+
+    $(document).on('click', 'button.generalConfiguration', function(){
+        var value = false;
+        
+        var option = $(this).closest('fieldset').find('input[name="lgseo_automatic_redirections"]');
+
+        $(option).each(function(){
+            if ($(this).is(':checked')) {
+                value = $(this).val();
+            }
+        });
+
+        params = {};
+        params['ajax'] = 1;
+        params['action'] = 'SaveGeneralConfiguration';
+        params['automatic_redirections'] = value;
+        $.ajax({
+            url: window.location.href,
+            type: 'GET',
+            dataType: 'json',
+            data: params,
+            success: function (response) {
+                if (response.status == 'ok') {
+                    showSuccessMessage(response.message);
+                }
+            },
+            error: function (response) {
+                if (response.status == 'ko') {
+                    showErrorMessage(response.message);
+                }
+                $('#lgseoredirect_list_form').LoadingOverlay('hide');
+            }
+        });
     });
 });

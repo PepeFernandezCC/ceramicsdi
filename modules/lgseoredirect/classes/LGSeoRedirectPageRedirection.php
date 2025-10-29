@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2024 LÍNEA GRÁFICA E.C.E S.L.
+ * Copyright 2025 LÍNEA GRÁFICA E.C.E S.L.
  *
  * @author    Línea Gráfica E.C.E. S.L.
  * @copyright Lineagrafica.es - Línea Gráfica E.C.E. S.L. all rights reserved.
@@ -22,7 +22,7 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-class LGSeoRedirectPageRedirection
+class LGSeoRedirectPageRedirection extends ObjectModel
 {
     /**a
      * @see ObjectModel::$definition
@@ -33,7 +33,6 @@ class LGSeoRedirectPageRedirection
         'multilang' => false,
         'multilangshop' => true,
         'fields' => [
-            'id_pagenotfound' => ['type' => self::TYPE_INT, 'required' => true],
             'id_pagenotfound' => ['type' => self::TYPE_INT, 'required' => true],
         ],
     ];

@@ -1,5 +1,5 @@
 {**
- * Copyright 2024 LÍNEA GRÁFICA E.C.E S.L.
+ * Copyright 2025 LÍNEA GRÁFICA E.C.E S.L.
  *
  * @author    Línea Gráfica E.C.E. S.L.
  * @copyright Lineagrafica.es - Línea Gráfica E.C.E. S.L. all rights reserved.
@@ -20,19 +20,22 @@
 
 <div id="menubar">
     <fieldset>
-        <a id="buttonindividualredirect" class="lgseoredirect_menubarbutton button btn btn-default" style="width:280px;">
+        <a id="buttonindividualredirect" class="lgseoredirect_menubarbutton button btn btn-default" style="width:275px;">
             <i class="icon-plus-square"></i>&nbsp;{l s='Create a redirect' mod='lgseoredirect'}
         </a>
-        <a id="buttonbulkredirects" class="lgseoredirect_menubarbutton button btn btn-default" style="width:280px;">
+        <a id="buttonbulkredirects" class="lgseoredirect_menubarbutton button btn btn-default" style="width:275px;">
             <i class="icon-cloud-upload"></i>&nbsp;{l s='Import redirects in bulk' mod='lgseoredirect'}
         </a>
-        <a id="buttonlistredirects" class="lgseoredirect_menubarbutton button btn btn-default" style="width:280px;">
+        <a id="buttonlistredirects" class="lgseoredirect_menubarbutton button btn btn-default" style="width:275px;">
             <i class="icon-list"></i>&nbsp;{l s='List of created redirects' mod='lgseoredirect'} (<span class="lgseoredirect_total_products">{$countredirects|intval}</span>)
         </a>
         {if isset($lgseoredirect_pagesnotfoundenabled) && $lgseoredirect_pagesnotfoundenabled}
-            <a id="buttonpagesnotfound" class="lgseoredirect_menubarbutton button btn btn-default" style="width:280px;">
+            <a id="buttonpagesnotfound" class="lgseoredirect_menubarbutton button btn btn-default" style="width:275px;">
                 <i class="icon-list"></i>&nbsp;{l s='pages not found' mod='lgseoredirect'} (<span class="lgseoredirect_total_products">{$lgseoredirects_count_pages_not_found|intval}</span>)
             </a>
         {/if}
+        {* <a id="buttongeneralconfiguration" class="lgseoredirect_menubarbutton button btn btn-default" style="width:275px;">
+            <i class="icon-list"></i>&nbsp;{l s='General configuration' mod='lgseoredirect'}
+        </a> *}
     </fieldset>
 </div>

@@ -26,7 +26,9 @@ class ComposerStaticInit5ac37203025493f47a278d3e689426f4
         'LGSEORedirect' => __DIR__ . '/../..' . '/lgseoredirect.php',
         'LGSeoRedirectPageNotFound' => __DIR__ . '/../..' . '/classes/LGSeoRedirectPageNotFound.php',
         'LGSeoRedirectPageRedirection' => __DIR__ . '/../..' . '/classes/LGSeoRedirectPageRedirection.php',
-        'LGSeoRedirectPubli' => __DIR__ . '/../..' . '/classes/LGSeoRedirectPubli.php',
+        'LGSEORedirectPubli' => __DIR__ . '/../..' . '/classes/publi/LGSEORedirectPubli.php',
+        'LGSEORedirectPubliLG' => __DIR__ . '/../..' . '/classes/publi/LGSEORedirectPubliLG.php',
+        'LGSEORedirectPubliPS' => __DIR__ . '/../..' . '/classes/publi/LGSEORedirectPubliPS.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
