@@ -107,18 +107,7 @@ SDEVADEO.controller.admin.categoriesRules = {
         let error = false;
         let errorArray = [];
         let disclaimer;
-        // Check price adjustment
-        let priceAdjustment = refNode.querySelector('[id="category-rule-cost-adjustment"]').value;
-        priceAdjustment = parseFloat(priceAdjustment.replace(',', '.'));
-        if (priceAdjustment && isNaN(priceAdjustment)) {
-            error = true;
-            if (!refNode.querySelector('[for="category-rule-cost-adjustment"] span')) {
-                disclaimer = document.createElement('strong');
-                disclaimer.classList.add('text-danger');
-                disclaimer.textContent = disclaimerMessage;
-                refNode.querySelector('[for="category-rule-cost-adjustment"]').appendChild(disclaimer);
-            }
-        }
+
         // Check shipping cost
         let shippingCost = refNode.querySelector('[id="category-rule-shipping-cost"]').value;
         shippingCost = parseFloat(shippingCost.replace(',', '.'));
@@ -170,6 +159,9 @@ SDEVADEO.controller.admin.categoriesRules = {
                 return;
             }
         }
+
+        let selectElement = document.querySelector("#category-rule-countries");
+
         $.ajax({
             type: 'POST',
             dataType: 'json',
@@ -182,9 +174,10 @@ SDEVADEO.controller.admin.categoriesRules = {
                     'shippingDelay': refNode.querySelector('[id="category-rule-shipping-delay"]').value,
                     'additionalShippingCost': refNode.querySelector('[id="category-rule-shipping-cost"]').value,
                     'freeCarriers': free_carriers,
-                    'priceAdjustment': refNode.querySelector('[id="category-rule-cost-adjustment"]').value,
                     'adjustmentApplied': adjustmentApplied,
-                    'logisticClass' : refNode.querySelector('[id="category-rule-logistic-class"] option:checked').value
+                    'logisticClass' : refNode.querySelector('[id="category-rule-logistic-class"] option:checked').value,
+                    'weightMin': refNode.querySelector('[id="category-rule-weight-min"]').value,
+                    'weightMax': refNode.querySelector('[id="category-rule-weight-max"]').value
                 }
             },
             success: function (response) {
@@ -321,18 +314,27 @@ SDEVADEO.controller.admin.categoriesRules = {
                     editNode.querySelector('[id="category-rule-name"]').value = response['name'];
                     editNode.querySelector('[id="category-rule-shipping-delay"]').value = response['shippingDelay'];
                     editNode.querySelector('[id="category-rule-shipping-cost"]').value = response['shippingCost'];
+                    
+                    editNode.querySelector('[id="category-rule-weight-min"]').value = response['weightMin'];
+                    editNode.querySelector('[id="category-rule-weight-max"]').value = response['weightMax'];
                     if (response['freeCarrierList'] && response['freeCarrierList'].length > 0) {
                         response['freeCarrierList'].forEach(function (carrierCode) {
                             editNode.querySelector('[name="category-rule-free-carriers"] option[value="' + carrierCode + '"]').selected = true;
                         });
                     }
+
+                    if(response['countries'] && response['countries'].length > 0){
+                        response['countries'].forEach(function (code) {
+                            editNode.querySelector('[name="category-rule-countries"] option[value="' + code + '"]').selected = true;
+                        });
+                    }
+
                     // set logistic class value
                     if (response['logisticClass']) {
                         editNode.querySelector('[name="category-rule-logistic-class"] option[value="' + response['logisticClass'] + '"]').selected = true;
                     } else {
                         editNode.querySelector('[name="category-rule-logistic-class"] option[value="'+defaultLogisticClass+'"]').selected = true;
                     }
-                    editNode.querySelector('[id="category-rule-cost-adjustment"]').value = response['additionalPrice'];
                     editNode.querySelector('[id="disabled-categories-switch_1"]').setAttribute('name', 'disabled-categories-switch-'+ruleId);
                     editNode.querySelector('[id="disabled-categories-switch_0"]').setAttribute('name', 'disabled-categories-switch-'+ruleId);
                     editNode.querySelector('[id="disabled-categories-switch_0"]').value = 0;
@@ -346,12 +348,25 @@ SDEVADEO.controller.admin.categoriesRules = {
                     editNode.querySelector('fieldset.form-horizontal.panel>fieldset').classList.remove('hidden');
                     if (response['pricingRule'].length > 0) {
                         response['pricingRule'].forEach(function (pricingRule) {
+                            let selectElement = document.querySelector("#category-rule-countries");
+                            let optionNames;
+
+                            if(pricingRule['countries'] != 'null'){
+                                optionNames =  JSON.parse(pricingRule['countries']).map(value => {
+                                    let option = Array.from(selectElement.options).find(opt => opt.value === value);
+                                    return option ? option.text : null;
+                                }).filter(name => name !== null).join(', ');
+                            } else {
+                                optionNames = '-';
+                            }
+
                             $this.createPriceRuleTr(
                                 pricingRule['id'],
                                 pricingRule['minAmount'],
                                 pricingRule['maxAmount'],
                                 pricingRule['value'],
-                                pricingRule['typePercent']
+                                pricingRule['typePercent'],
+                                optionNames
                             );
                         })
                     } else {
@@ -543,6 +558,8 @@ SDEVADEO.controller.admin.categoriesRules = {
         document.querySelectorAll('[id="categories"] button').forEach(function (button) {
             button.setAttribute('disabled', '');
         })
+        
+        let selectElement = document.querySelector("#category-rule-countries");
 
         $.ajax({
             type: 'POST',
@@ -551,6 +568,7 @@ SDEVADEO.controller.admin.categoriesRules = {
                 ajax: true,
                 action: 'savePricingRule',
                 params: {
+                    'countries' : Array.from(selectElement.selectedOptions).map(option => option.value),
                     'minPrice': minPrice,
                     'maxPrice': maxPrice,
                     'valuePrice': valuePrice,
@@ -570,18 +588,24 @@ SDEVADEO.controller.admin.categoriesRules = {
                         ruleTr.querySelector('.min-price-rule').textContent = minPrice;
                         ruleTr.querySelector('.max-price-rule').textContent = maxPrice;
                         ruleTr.querySelector('.value-price-rule').textContent = valuePrice;
+                        console.log(typePrice);
+
                         if (typePrice === "1") {
                             ruleTr.querySelector('.type-price-rule').textContent = percentTranslation;
                         } else {
                             ruleTr.querySelector('.type-price-rule').textContent = amountTranslation;
                         }
                     } else {
+                        let selectElement = document.querySelector("#category-rule-countries");
+                        countries = Array.from(selectElement.selectedOptions).map(option => option.text).join(', ');
+
                         $this.createPriceRuleTr(
                             response['idRule'],
                             minPrice,
                             maxPrice,
                             valuePrice,
-                            typePrice
+                            typePrice,
+                            countries
                         );
                     }
                     if (document.querySelector('[data-edit-rule]:not(.hidden) [id="price-rule-panel"] .no-price-rule')) {
@@ -603,7 +627,7 @@ SDEVADEO.controller.admin.categoriesRules = {
             }
         });
     },
-    createPriceRuleTr: function(pricingRuleId, minAmount, maxAmount, value, type)
+    createPriceRuleTr: function(pricingRuleId, minAmount, maxAmount, value, type, coutries)
     {
         let trElement;
         let tdElement;
@@ -611,6 +635,10 @@ SDEVADEO.controller.admin.categoriesRules = {
         let editNode = document.querySelector('[data-edit-rule]:not(.hidden)');
         trElement = document.createElement('tr');
         trElement.setAttribute('data-id-price-rule', pricingRuleId);
+        tdElement = document.createElement('td');
+        tdElement.innerHTML = coutries
+        tdElement.classList.add('coutries');
+        trElement.appendChild(tdElement);
         tdElement = document.createElement('td');
         tdElement.innerHTML = (Math.round(minAmount * 100) / 100).toFixed(6) + ' €';
         tdElement.classList.add('min-price-rule');
@@ -620,7 +648,7 @@ SDEVADEO.controller.admin.categoriesRules = {
         tdElement.classList.add('max-price-rule');
         trElement.appendChild(tdElement);
         tdElement = document.createElement('td');
-        if (type !== "1") {
+        if (type != 1) {
             tdElement.innerHTML = (Math.round(value * 100) / 100).toFixed(6) + ' €';
         } else {
             tdElement.innerHTML = (Math.round(value * 100) / 100).toFixed(6) + ' %';
@@ -630,7 +658,7 @@ SDEVADEO.controller.admin.categoriesRules = {
         tdElement = document.createElement('td');
         tdElement.classList.add('type-price-rule');
         tdElement.setAttribute('data-type-value', type);
-        if (type === "1") {
+        if (type == 1) {
             tdElement.innerHTML = percentTranslation;
         } else {
             tdElement.innerHTML = amountTranslation;
@@ -669,6 +697,7 @@ SDEVADEO.controller.admin.categoriesRules = {
                     document.querySelector('[id="categories-notification"]').classList.add('warn', 'alert', 'alert-danger');
                 } else {
                     document.querySelector('[id="categories-notification"]').classList.add('conf', 'alert', 'alert-success');
+                    document.querySelector('#category-rule-logistic-class').innerHTML = response.html;
                 }
             },
             error: function () {

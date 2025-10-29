@@ -201,6 +201,26 @@
                 </div>
             </fieldset>
 
+            {* SHIPPING COUNTRY *}
+            <fieldset class="form-group">
+                <label class="col-sm-2 control-label" for="use-weight-switch">
+                    {l s='Use weight rules ?' mod='sdevadeo'}
+                </label>
+                <div class="margin-form">
+                    <div class="input-group">
+                        <span class="switch prestashop-switch fixed-width-lg" id="use-weight-switch">
+                            <input id="use-weight-switch_1" name="use-weight-switch" value="1"{if $use_weight == 1} checked{/if} type="radio" />
+                            <label for="use-weight-switch_1" class="label-checkbox">{l s='Yes' mod='sdevadeo'}</label>
+
+                            <input id="use-weight-switch_0" name="use-weight-switch" value="0"{if $use_weight == 0} checked{/if} type="radio" />
+                            <label for="use-weight-switch_0" class="label-checkbox">{l s='No' mod='sdevadeo'}</label>
+
+                            <a class="slide-button btn"></a>
+                        </span>
+                    </div>
+                </div>
+            </fieldset>
+
             <fieldset class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
                     <button
@@ -262,7 +282,7 @@
                             <select class="form-control" name="tax_mapping_{$tax}" id="tax_mapping_{$tax}">
                                 <option selected value=''>{l s='Select the equivalent tax' mod='sdevadeo'}</option>
                                 {foreach $cms_taxes as $cms_tax}
-                                    <option {if array_key_exists($tax, $mapped_taxes) && $mapped_taxes[$tax] == $cms_tax['id_tax']}selected {/if}value="{$cms_tax['id_tax']}">{$cms_tax['name']}</option>
+                                    <option {if array_key_exists($tax, $mapped_taxes) && $mapped_taxes[$tax] == $cms_tax['id_tax_rules_group']}selected {/if}value="{$cms_tax['id_tax_rules_group']}">{$cms_tax['name']}</option>
                                 {/foreach}
                             </select>
                         </div>
@@ -398,47 +418,48 @@
             </fieldset>
 
             {* CARRIER RULES CONFIGURATION *}
-            <fieldset class="form-group">
-                <label class="col-sm-2 control-label" for="additional_shipping">
-                    {l s='Carrier rules :' mod='sdevadeo'}
-                </label>
+            <fieldset class="form-group" id="carrier-rules">
+            {foreach ['FR', 'IT', 'ES', 'PT'] as $country_iso}
+                <div class="row">
+                    <label class="col-sm-2 control-label" for="additional_shipping">
+                        {l s='Carrier rules' mod='sdevadeo'} {$country_iso}:
+                    </label>
 
-                <div class="col-sm-10" id="connection-panel">
-                    {if $apiShippingUpdateDate == null}
-                        <button class="button btn btn-info" onclick="SDEVADEO.controller.admin.parameters.updateCarrierList()">
-                            {l s='Update marketplace\'s carrier list' mod='sdevadeo'}
-                        </button>
-                    {/if}
-                    <table id="carrier-rule-table" class="table table-hover{if $apiShippingUpdateDate == null} hidden{/if}">
-                        <thead>
-                            <tr>
-                                <th>{l s='Marketplace\'s shipment mode' mod='sdevadeo'}</th>
-                                <th>{l s='Internal\'s carrier' mod='sdevadeo'}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {foreach $marketplace_shipping as $shipping_method}
-                                <tr data-code-method="{$shipping_method['code']}">
-                                    <td>
-                                        <p class="form-control">{$shipping_method['label']}</p>
-                                    </td>
-                                    <td>
-                                        <select id="cms_carrier" class="form-control">
-                                            <option selected>
-                                                -
-                                            </option>
-                                            {foreach $internal_carriers as $cms_carrier}
-                                                <option value="{$cms_carrier['id_reference']}"{if array_key_exists($shipping_method['code'], $carrier_rules) && $carrier_rules[$shipping_method['code']] == $cms_carrier['id_reference']} selected{/if}>
-                                                    {$cms_carrier['name']}
-                                                </option>
-                                            {/foreach}
-                                        </select>
-                                    </td>
+                    <div class="col-sm-10" id="connection-panel">
+                        <table class="carrier-rule-table table table-hover{if $apiShippingUpdateDate == null} hidden{/if}">
+                            <thead>
+                                <tr>
+                                    <th>{l s='Marketplace\'s shipment mode' mod='sdevadeo'}</th>
+                                    <th>{l s='Internal\'s carrier' mod='sdevadeo'}</th>
                                 </tr>
-                            {/foreach}
-                        </tbody>
-                    </table>
-                    <button
+                            </thead>
+                            <tbody>
+                                {foreach $marketplace_shipping as $shipping_method}
+                                    <tr data-code-method="{$shipping_method['code']}" data-country-iso="{$country_iso}">
+                                        <td>
+                                            <p class="form-control">{$shipping_method['label']}</p>
+                                        </td>
+                                        <td>
+                                            <select id="cms_carrier" class="form-control">
+                                                <option selected>
+                                                    -
+                                                </option>
+                                                {foreach $internal_carriers as $cms_carrier}
+                                                    <option value="{$cms_carrier['id_reference']}"{if array_key_exists($country_iso, $carrier_rules) && array_key_exists($shipping_method['code'], $carrier_rules[$country_iso]) && $carrier_rules[$country_iso][$shipping_method['code']] == $cms_carrier['id_reference']} selected{/if}>
+                                                    {$cms_carrier['name']}
+                                                    </option>
+                                                {/foreach}
+                                            </select>
+                                        </td>
+                                    </tr>
+                                {/foreach}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {/foreach}
+                
+                <button
                             type="submit"
                             class="btn btn-primary pull-right"
                             title="{l s='Save the general parameters.' mod='sdevadeo'}"
@@ -447,7 +468,6 @@
                         <i class="icon-save"></i>&nbsp;
                         {l s='Save' mod='sdevadeo'}
                     </button>
-                </div>
             </fieldset>
 
             <fieldset class="form-group">
@@ -461,6 +481,12 @@
                             {l s='Date of the last update: ' mod='sdevadeo'}{$apiShippingUpdateDate}
                         </label>
                     </div>
+                    {else}
+                        <div id="button-form-group button-form-group">
+                            <button class="button btn btn-info" onclick="SDEVADEO.controller.admin.parameters.updateCarrierList()">
+                            {l s='Update marketplace\'s carrier list' mod='sdevadeo'}
+                            </button>
+                        </div>
                 {/if}
             </fieldset>
         </div>

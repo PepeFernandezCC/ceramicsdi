@@ -50,7 +50,9 @@
  * yup                 MIT     Copyright (c) 2014 (Jason Quense)
  * zustand             MIT     Copyright (c) 2019 (Paul Henschel)
  */
-
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 use TrustedshopsAddon\Service\ChannelService;
 use TrustedshopsAddon\Utils\ServiceContainer;
 
@@ -110,6 +112,9 @@ class AdminTrustedshopseasyintegrationConfigurationController extends ModuleAdmi
 
     public function initContent()
     {
+        if (Tools::getValue('show_invite_order') !== false) {
+            $this->context->smarty->assign('ts_show_modal', true);
+        }
         $this->content .= $this->renderConfiguration();
         parent::initContent();
     }
@@ -127,7 +132,7 @@ class AdminTrustedshopseasyintegrationConfigurationController extends ModuleAdmi
         return [
             'translations' => [
                 'common' => [
-                    'error_occurred' => $this->l('Error occurred, try to reload this page'),
+                    'error_occurred' => $this->module->l('Error occurred, try to reload this page'),
                 ],
             ],
             'version' => $this->module->version,

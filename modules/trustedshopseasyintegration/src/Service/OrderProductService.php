@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\Service;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 use Configuration;
 use Context;
 use Image;

@@ -39,7 +39,7 @@
             <h4>{l s='Offer flows (by shop)' mod='sdevadeo'}</h4>
 
             {* Intégration variable pour tâche cron OFFER. *}
-            {foreach $shop_list as $shop}
+            {foreach $shops_list as $shop}
             <div class="form-group">
                 <label class="control-label col-lg-3" style="padding-top : 0">
                     {$shop.name|escape:'htmlall':'UTF-8'}
@@ -65,7 +65,7 @@
         <fieldset class="form-horizontal">
             <h4>{l s='Accept orders (by shop)' mod='sdevadeo'}</h4>
 
-            {foreach $shop_list as $shop}
+            {foreach $shops_list as $shop}
                 <div class="form-group">
                     <label class="control-label col-lg-3" style="padding-top : 0">
                         {$shop.name|escape:'htmlall':'UTF-8'}
@@ -91,7 +91,7 @@
         <fieldset class="form-horizontal">
             <h4>{l s='Ship orders (by shop)' mod='sdevadeo'}</h4>
 
-            {foreach $shop_list as $shop}
+            {foreach $shops_list as $shop}
                 <div class="form-group">
                     <label class="control-label col-lg-3" style="padding-top : 0">
                         {$shop.name|escape:'htmlall':'UTF-8'}

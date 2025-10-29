@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\API\Model;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 use JsonSerializable;
 
 abstract class AbstractModel implements JsonSerializable
@@ -60,6 +64,7 @@ abstract class AbstractModel implements JsonSerializable
     /**
      * {@inheritdoc}
      */
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         $getterName = get_class_methods(get_class($this));

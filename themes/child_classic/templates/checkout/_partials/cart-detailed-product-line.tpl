@@ -149,6 +149,14 @@
 
                     {/foreach}
 
+                    {assign var='terracota' value='88'}
+
+                    {if in_array($terracota, $categoriasProducto)}
+                            
+                        <p style="margin-bottom: 0"><span style="color:red; font-size:11px">Los productos terracotta se trabajan bajo pedido mínimo de 4.</span></p>
+                        
+                    {/if}
+
                     {if is_array($product.customizations) && $product.customizations|count}
 
                         <br>

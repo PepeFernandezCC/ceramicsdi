@@ -77,6 +77,8 @@ class SdevAdeo extends Module
         'displayAdminProductExtra',
     );
 
+    public static $channels = [];
+
     /**
      * The module's tabs list.
      *
@@ -93,6 +95,7 @@ class SdevAdeo extends Module
         SdevAdeoCategoryRule::class,
         SdevAdeoCategoryMapping::class,
         SdevAdeoCarrierRule::class,
+        SdevAdeoFilter::class,
         SdevAdeoPricingRule::class,
         SdevAdeoImportLogs::class,
         SdevAdeoLogisticClass::class
@@ -115,7 +118,7 @@ class SdevAdeo extends Module
      */
     public function __construct()
     {
-        $this->version = '1.1.7';
+        $this->version = '1.3.1';
         $this->author = 'ScaleDEV';
         $this->name = 'sdevadeo';
         $this->tab = 'administration';
@@ -126,14 +129,37 @@ class SdevAdeo extends Module
             'max' => _PS_VERSION_,
         );
 
-        // Module key provided by addons.prestashop.com.
         $this->module_key = '';
+
+        self::$channels = [
+            '001' => [
+                'name' => $this->l('France'),
+                'iso' => 'FR'
+            ],
+            '002' => [
+                'name' => $this->l('Spain'),
+                'iso' => 'ES'
+            ],
+            '003' => [
+                'name' => $this->l('Portugal'),
+                'iso' => 'PT'
+            ],
+            '005' => [
+                'name' => $this->l('Italy'),
+                'iso' => 'IT'
+            ],
+            '014' => [
+                'name' => $this->l('Bricoman France'),
+                'iso' => 'FR'
+            ],
+        ];
 
         // Defines the module's controllers list.
         self::$tabsList = array(
             'index' => $this->displayName,
             'info' => $this->l('Information'),
             'authentication' => $this->l('Authentication'),
+            'filter' => $this->l('Filter products'),
             'parameters' => $this->l('Parameters'),
             'categoriesRules' => $this->l('Categories rules'),
             'categoriesMapping' => $this->l('Categories mapping'),

@@ -68,6 +68,7 @@ final class Configuration
     const LAST_ORDER_UPDATE_DATE = 'ORDER_UPDATE';
     const ENABLED_COUNTRIES = 'ENABLED_COUNTRIES';
     const SHIPPING_COUNTRY = 'SHIPPING_COUNTRY';
+    const USE_WEIGHT = 'USE_WEIGHT';
     const TAX_MAPPING = 'TAX_MAPPING';
 
     /**

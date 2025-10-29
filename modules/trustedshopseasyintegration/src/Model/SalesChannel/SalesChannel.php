@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\Model\SalesChannel;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 class SalesChannel implements \JsonSerializable
 {
     /**
@@ -155,6 +159,7 @@ class SalesChannel implements \JsonSerializable
         return $this;
     }
 
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return get_object_vars($this);

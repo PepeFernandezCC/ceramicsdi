@@ -50,11 +50,15 @@
  * yup                 MIT     Copyright (c) 2014 (Jason Quense)
  * zustand             MIT     Copyright (c) 2019 (Paul Henschel)
  */
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 /**
  * @param Trustedshopseasyintegration $module
  *
  * @return bool
+ *
  * @throws PrestaShopException
  */
 function upgrade_module_1_0_3($module)

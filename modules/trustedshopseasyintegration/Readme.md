@@ -60,12 +60,12 @@ These are the default settings in the file and they are **mandatory**:
 ```
 
 ### Description line by line:
-- *skuType* : 
-Used to define the field from the database in order to identify a product. The default value is **‘sku’** (taken from the Prestashop database’s field reference).  
-Alternative value often used is: **‘id’** (Database field reference for ID)
+- *skuType* :
+  Used to define the field from the database in order to identify a product. The default value is **‘sku’** (taken from the Prestashop database’s field "reference").  
+Alternative value often used is: **‘id’** (Database field product ID)
   
 - *gtinType* :
-Used to define a database field in order to obtain the GTIN of a product. The default field used in Prestashop is: **‘ean13’**
+  Used to define the field from the database in order to identify a product. The default and not modifiable field used in Prestashop is : **‘ean13’** (taken from the Prestashop database’s field "ean13").
 
 - *order_status_reviews* :
 This object determines the behavior of the review invite e-mail sending, if the option *'Use order status ”Shipped” to send Review Invites'* is selected in the plugin configuration.  

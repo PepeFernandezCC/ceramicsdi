@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\Handler;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 use Configuration;
 use Product;
 use TrustedshopsAddon\Model\Constant\GtinType;
@@ -187,10 +191,10 @@ class WidgetHandler
                 $gtin = Configuration::get(Trustedshopseasyintegration::GTIN_TYPE);
                 switch ($gtin) {
                     case GtinType::EAN13:
-                    default:
                         return !empty($product->ean13) ? $product->ean13 : $product->id;
                 }
-                break;
+
+                return !empty($product->ean13) ? $product->ean13 : $product->id;
             case ProductIdentifier::SKU:
             default:
                 $sku = Configuration::get(Trustedshopseasyintegration::SKU_TYPE);

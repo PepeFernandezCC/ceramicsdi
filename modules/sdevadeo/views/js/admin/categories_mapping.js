@@ -65,9 +65,9 @@ SDEVADEO.controller.admin.categoriesMapping = {
                             subRow.querySelector('.row').dataset.parentId = idCategory;
 
                             // Set selected category rule, either legacy one or db one
-                            if ('legacyCategoryRule' in categoryRow.querySelector('.row').dataset) {
+                            if ('legacyCategoryRule' in categoryRow.querySelector('.row').dataset && subRow.querySelector("select")) {
                                 subRow.querySelector("select").value = subRow.querySelector('.row').dataset.legacyCategoryRule = categoryRow.querySelector('.row').dataset.legacyCategoryRule;
-                            } else if (subCategory.mapping !== undefined && subCategory.mapping.length > 0 && subCategory.mapping['0']['category_rule'] !== undefined) {
+                            } else if (subCategory.mapping !== undefined && subCategory.mapping.length > 0 && subCategory.mapping['0']['category_rule'] !== undefined && subRow.querySelector("select")) {
                                 subRow.querySelector("select").value = subCategory.mapping['0']['category_rule'] ? subCategory.mapping['0']['category_rule'] : '0';
                             }
                             // Set if category rule is activated
@@ -127,7 +127,9 @@ SDEVADEO.controller.admin.categoriesMapping = {
         let rowNode = document.querySelector('.mapping-categories [data-id-category="'+idCategory+'"]');
         if (action === 'legacy' && level > 1) {
             let parentCategory = document.querySelector('.mapping-categories [data-id-category="'+rowNode.dataset.parentId+'"]');
-            rowNode.querySelector('select').value = rowNode.dataset.legacyCategoryRule = parentCategory.dataset.legacyCategoryRule;
+            if(rowNode.querySelector('select')){
+                rowNode.querySelector('select').value = rowNode.dataset.legacyCategoryRule = parentCategory.dataset.legacyCategoryRule;
+            }
             rowNode.querySelector('.checkboxCatRuleCategory').checked = rowNode.dataset.legacyActivatedCategory = (parentCategory.dataset.legacyActivatedCategory === "true");
         }
         if (document.querySelector('.mapping-categories [data-parent-id="'+idCategory+'"]')) {
@@ -152,7 +154,7 @@ SDEVADEO.controller.admin.categoriesMapping = {
             buttonNode.setAttribute('disabled', '');
         });
         let categoryRow = document.querySelector('.mapping-categories [data-id-category="'+idCategory+'"]');
-        categoryRow.dataset.legacyCategoryRule = categoryRow.querySelector('select').value;
+        categoryRow.dataset.legacyCategoryRule = categoryRow.querySelector('select') ? categoryRow.querySelector('select').value : '';
         categoryRow.dataset.legacyActivatedCategory = categoryRow.querySelector('.checkboxCatRuleCategory').checked;
         $this.recursiveSubCategory(idCategory, 'legacy');
         document.querySelectorAll('.mapping-categories button').forEach(function (buttonNode) {
@@ -236,7 +238,7 @@ SDEVADEO.controller.admin.categoriesMapping = {
             });
             return {
                 'idCategory': categoryNode.dataset.idCategory,
-                'categoryRule': categoryNode.querySelector('select').value,
+                'categoryRule': categoryNode.querySelector('select') ? categoryNode.querySelector('select').value : '',
                 'categoryActivated': categoryNode.querySelector('.checkboxCatRuleCategory').checked,
                 'legacyCategoryRule': legacyCategoryRule,
                 'legacyActivatedCategory': legacyActivatedCategory,
@@ -245,7 +247,7 @@ SDEVADEO.controller.admin.categoriesMapping = {
         } else {
             return {
                 'idCategory': categoryNode.dataset.idCategory,
-                'categoryRule': categoryNode.querySelector('select').value,
+                'categoryRule': categoryNode.querySelector('select') ? categoryNode.querySelector('select').value : '',
                 'categoryActivated': categoryNode.querySelector('.checkboxCatRuleCategory').checked,
                 'legacyCategoryRule': legacyCategoryRule,
                 'legacyActivatedCategory': legacyActivatedCategory

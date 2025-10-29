@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\Model\Widget;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 class WidgetLocationsModel implements \JsonSerializable
 {
     /**
@@ -80,6 +84,7 @@ class WidgetLocationsModel implements \JsonSerializable
         return $this;
     }
 
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return $this->getWidgetLocations();

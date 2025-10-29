@@ -53,20 +53,45 @@
 
 namespace TrustedshopsAddon\Utils;
 
-use PrestaShop\ModuleLibServiceContainer\DependencyInjection\ServiceContainer as Container;
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
+use PrestaShop\PrestaShop\Adapter\ContainerBuilder;
+use PrestaShop\PrestaShop\Adapter\SymfonyContainer as Container;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class ServiceContainer
 {
     private static $instance;
 
+    /** @var ContainerBuilder|ContainerInterface|\PrestaShop\ModuleLibServiceContainer\DependencyInjection\ServiceContainer */
     private $container;
+
+    /** @var bool */
+    private $phpUnit;
 
     final protected function __construct()
     {
-        $this->container = new Container(
-            'trustedshopseasyintegration',
-            _PS_MODULE_DIR_ . 'trustedshopseasyintegration/'
-        );
+        $this->phpUnit = false;
+        $controller = isset(\Context::getContext()->controller) ? \Context::getContext()->controller : null;
+        if (empty($controller) === false && $controller instanceof \FrontController) {
+            // Front Controller
+            $this->container = \Context::getContext()->controller->getContainer();
+        } else {
+            // Admin Controller
+            $this->container = Container::getInstance();
+        }
+        if (empty($this->container)) {
+            $this->phpUnit = true;
+            try {
+                $this->container = new \PrestaShop\ModuleLibServiceContainer\DependencyInjection\ServiceContainer(
+                    'trustedshopseasyintegration',
+                    _PS_MODULE_DIR_ . 'trustedshopseasyintegration/'
+                );
+            } catch (\Exception $ex) {
+            }
+        }
     }
 
     protected function __clone()
@@ -89,6 +114,11 @@ class ServiceContainer
 
     public function get($serviceName)
     {
+        // Added for tests - if we are in testing case this will not be ContainerBuilder
+        if ($this->phpUnit === false) {
+            return $this->container->get($serviceName);
+        }
+
         return $this->container->getService($serviceName);
     }
 

@@ -53,10 +53,13 @@
 
 namespace TrustedshopsAddon\Service;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 use Configuration;
 use Language;
 use Shop;
-use Tools;
 use TrustedshopsAddon\Model\Constant\GtinType;
 use TrustedshopsAddon\Model\Constant\ProductIdentifier;
 use TrustedshopsAddon\Model\Constant\SkuType;
@@ -65,6 +68,7 @@ use TrustedshopsAddon\Model\ExportOrders\ExportOrderModel;
 use TrustedshopsAddon\Model\ExportOrders\OrdersModel;
 use TrustedshopsAddon\Model\MappedChannel\MappedChannelModel;
 use TrustedshopsAddon\Model\MappedChannel\MappedChannelsModel;
+use TrustedshopsAddon\Model\OrderStatus\OrderStatusModel;
 use TrustedshopsAddon\Model\OrderStatusEvents\OrderStatusEventsModel;
 use TrustedshopsAddon\Model\ProductIdentifiers\ProductIdentifierModel;
 use TrustedshopsAddon\Model\ProductIdentifiers\ProductIdentifiersModel;
@@ -184,8 +188,8 @@ class ChannelService
             $channel->id_trustbadge = '';
             $channel->trustbadge_config = '';
             $channel->widget_config = '';
-            $channel->products_review_invites = false;
-            $channel->order_status_events = false;
+            $channel->products_review_invites = true;
+            $channel->order_status_events = true;
             $result &= $channel->save();
         }
 
@@ -282,9 +286,7 @@ class ChannelService
             return $productReviewModel;
         }
 
-        $channel = reset($channels);
-        $channelObj = new TrustedshopsChannel($channel[TrustedshopsChannel::$definition['primary']]);
-        $productReviewModel->setIsProductReviewActivated((bool) $channelObj->products_review_invites);
+        $productReviewModel->setIsProductReviewActivated(true);
 
         return $productReviewModel;
     }
@@ -352,6 +354,47 @@ class ChannelService
         $channel = reset($channels);
         $channelObj = new TrustedshopsChannel($channel[TrustedshopsChannel::$definition['primary']]);
         $orderStatusEventsModel->setIsOrderStatusEventsActivated((bool) $channelObj->order_status_events);
+
+        return $orderStatusEventsModel;
+    }
+
+    /**
+     * @param string $idChannel
+     * @param string $salesChannelRef
+     *
+     * @return OrderStatusModel
+     *
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
+     */
+    public function getOrderStatusForChannel($idChannel, $salesChannelRef)
+    {
+        $credentials = $this->credentialsService->getCredentials();
+        $orderStatusEventsModel = (new OrderStatusModel())
+            ->setSalesChannelRef($salesChannelRef)
+            ->setETrustedChannelRef($idChannel);
+
+        list($idShop, $idLang) = $this->getShopLangFromSalesReference($orderStatusEventsModel->getSalesChannelRef());
+
+        $channels = $this->channelRepository->getChannelsByChannelId(
+            $credentials->getClientId(),
+            $idChannel,
+            $idLang,
+            $idShop
+        );
+
+        if (empty($channels)) {
+            return $orderStatusEventsModel;
+        }
+
+        $status = \OrderState::getOrderStates(\Context::getContext()->language->id);
+        $orderStatusEventsModel->setStatus(array_map(function ($state) {
+            return [
+                'ID' => $state['id_order_state'],
+                'name' => $state['name'],
+                'type' => 'order_status_from_prestashop',
+            ];
+        }, $status));
 
         return $orderStatusEventsModel;
     }
@@ -565,7 +608,7 @@ class ChannelService
             $channel->id_shop,
             $channel->id_lang,
             $exportOrderModel->getNumberOfDays(),
-            (bool) $channel->products_review_invites
+            (bool) $exportOrderModel->getIncludeProductData()
         );
 
         $orderProductsModel->setOrderProducts($resultOrderProducts);
@@ -770,7 +813,7 @@ class ChannelService
     {
         $shopLang = (int) $idShop . '-' . (int) $idLang;
 
-        return 'shop-' . $shopLang . '-' . Tools::encrypt($shopLang);
+        return 'shop-' . $shopLang . '-' . \TrustedshopsAddon\Utils\CompatibilityUtils::hash($shopLang);
     }
 
     /**

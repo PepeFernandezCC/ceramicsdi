@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\API\Model\Events;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 use InvalidArgumentException;
 use TrustedshopsAddon\API\Constant\EventType;
 use TrustedshopsAddon\API\Model\AbstractModel;
@@ -346,6 +350,7 @@ class EventsModel extends AbstractModel
 
     // endregion
 
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         $data = parent::jsonSerialize();

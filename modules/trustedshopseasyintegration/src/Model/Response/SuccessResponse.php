@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\Model\Response;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 class SuccessResponse extends FrontResponse
 {
     protected $type = ResponseResultType::SUCCESS;

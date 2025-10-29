@@ -49,6 +49,8 @@ final class SdevAdeoCategoryRule extends AbstractObjectModel
     const COLUMN_ADDITIONAL_PRICE = 'additionalPrice';
     const COLUMN_ADD_IF_FORCED_PRICE = 'addIfForcedPrice';
     const COLUMN_LOGISTIC_CLASS = 'logisticClass';
+    const COLUMN_WEIGHT_MIN = 'weightMin';
+    const COLUMN_WEIGHT_MAX = 'weightMax';
     const COLUMN_CREATION_DATE = 'creation_date';
     const COLUMN_UPDATE_DATE = 'update_date';
 
@@ -104,13 +106,6 @@ final class SdevAdeoCategoryRule extends AbstractObjectModel
     public $update_date;
 
     /**
-     * Defines the impact on price as percent
-     *
-     * @var float
-     */
-    public $additionalPrice;
-
-    /**
      * Defines if the additional price is applied on forced price
      *
      * @var boolean
@@ -123,6 +118,20 @@ final class SdevAdeoCategoryRule extends AbstractObjectModel
      * @var string
      */
     public $freeCarrierList;
+
+    /**
+     * Defines the weight min to apply the rule
+     *
+     * @var float
+     */
+    public $weightMin;
+
+     /**
+     * Defines the weight max to apply the rule
+     *
+     * @var float
+     */
+    public $weightMax;
 
     /**
      * The table's definition.
@@ -148,11 +157,6 @@ final class SdevAdeoCategoryRule extends AbstractObjectModel
                 'validate' => 'isFloat',
                 'required' => false,
             ),
-            self::COLUMN_ADDITIONAL_PRICE => array(
-                'type' => self::TYPE_FLOAT,
-                'validate' => 'isFloat',
-                'required' => false,
-            ),
             self::COLUMN_ADD_IF_FORCED_PRICE => array(
                 'type' => self::TYPE_BOOL,
                 'validate' => 'isBool',
@@ -166,6 +170,16 @@ final class SdevAdeoCategoryRule extends AbstractObjectModel
             self::COLUMN_LOGISTIC_CLASS => array(
                 'type' => self::TYPE_STRING,
                 'validate' => 'isString',
+                'required' => false,
+            ),
+            self::COLUMN_WEIGHT_MIN => array(
+                'type' => self::TYPE_FLOAT,
+                'validate' => 'isFloat',
+                'required' => false,
+            ),
+            self::COLUMN_WEIGHT_MAX => array(
+                'type' => self::TYPE_FLOAT,
+                'validate' => 'isFloat',
                 'required' => false,
             ),
             self::COLUMN_CREATION_DATE => array(
@@ -194,17 +208,17 @@ final class SdevAdeoCategoryRule extends AbstractObjectModel
                 `'.self::COLUMN_NAME.'` VARCHAR(255) NOT NULL,
                 `'.self::COLUMN_SHIPPING_DELAY.'` INT(11) NULL,
                 `'.self::COLUMN_SHIPPING_COST.'` FLOAT NULL,
-                `'.self::COLUMN_ADDITIONAL_PRICE.'` FLOAT NULL,
                 `'.self::COLUMN_ADD_IF_FORCED_PRICE.'` TINYINT(1) NULL,
                 `'.self::COLUMN_FREE_CARRIER_LIST.'` VARCHAR(255) NULL,
                 `'.self::COLUMN_LOGISTIC_CLASS.'` VARCHAR(255) NULL,
+                `'.self::COLUMN_WEIGHT_MIN.'` FLOAT NULL,
+                `'.self::COLUMN_WEIGHT_MAX.'` FLOAT NULL,
                 `'.self::COLUMN_CREATION_DATE.'` TIMESTAMP DEFAULT \'0000-00-00 00:00:00\',
                 `'.self::COLUMN_UPDATE_DATE.'` TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
                 PRIMARY KEY (`'.self::COLUMN_ID.'`),
                 KEY (`'.self::COLUMN_NAME.'`),
                 KEY (`'.self::COLUMN_SHIPPING_DELAY.'`),
                 KEY (`'.self::COLUMN_SHIPPING_COST.'`),
-                KEY (`'.self::COLUMN_ADDITIONAL_PRICE.'`),
                 KEY (`'.self::COLUMN_ADD_IF_FORCED_PRICE.'`),
                 KEY (`'.self::COLUMN_FREE_CARRIER_LIST.'`),
                 KEY (`'.self::COLUMN_LOGISTIC_CLASS.'`)
@@ -330,24 +344,6 @@ final class SdevAdeoCategoryRule extends AbstractObjectModel
     }
 
     /**
-     * @return int
-     */
-    public function getAdditionalPrice()
-    {
-        return $this->additionalPrice;
-    }
-
-    /**
-     * @param int $additionalPrice
-     * @return $this
-     */
-    public function setAdditionalPrice($additionalPrice)
-    {
-        $this->additionalPrice = $additionalPrice;
-        return $this;
-    }
-
-    /**
      * @return bool
      */
     public function isAddIfForcedPrice()
@@ -438,6 +434,54 @@ final class SdevAdeoCategoryRule extends AbstractObjectModel
     public function setFreeCarrierList($freeCarrierList)
     {
         $this->freeCarrierList = $freeCarrierList;
+        return $this;
+    }
+
+    /**
+     * Get defines the weight max to apply the rule
+     *
+     * @return int
+     */ 
+    public function getWeightMax()
+    {
+        return $this->weightMax;
+    }
+
+    /**
+     * Set defines the weight max to apply the rule
+     *
+     * @param int $weightMax  Defines the weight max to apply the rule
+     *
+     * @return self
+     */ 
+    public function setWeightMax(float $weightMax)
+    {
+        $this->weightMax = $weightMax;
+
+        return $this;
+    }
+
+    /**
+     * Get defines the weight min to apply the rule
+     *
+     * @return int
+     */ 
+    public function getWeightMin()
+    {
+        return $this->weightMin;
+    }
+
+    /**
+     * Set defines the weight min to apply the rule
+     *
+     * @param int $weightMin  Defines the weight min to apply the rule
+     *
+     * @return self
+     */ 
+    public function setWeightMin(float $weightMin)
+    {
+        $this->weightMin = $weightMin;
+
         return $this;
     }
 }

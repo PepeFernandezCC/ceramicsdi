@@ -50,6 +50,10 @@
  * yup                 MIT     Copyright (c) 2014 (Jason Quense)
  * zustand             MIT     Copyright (c) 2019 (Paul Henschel)
  */
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 use TrustedshopsAddon\Service\CredentialsService;
 use TrustedshopsAddon\Utils\ServiceContainer;
 

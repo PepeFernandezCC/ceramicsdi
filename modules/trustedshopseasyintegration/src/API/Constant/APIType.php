@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\API\Constant;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 class APIType
 {
     const QUERY_SYSTEM = 'ClientSystem';

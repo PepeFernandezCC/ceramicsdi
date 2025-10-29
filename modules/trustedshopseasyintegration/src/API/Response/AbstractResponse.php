@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\API\Response;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 use JsonSerializable;
 use TrustedshopsAddon\API\Model\AbstractModel;
 use TrustedshopsAddon\API\Model\ArrayCollection;
@@ -178,6 +182,7 @@ abstract class AbstractResponse implements JsonSerializable
     /**
      * {@inheritdoc}
      */
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return get_object_vars($this);

@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\Smarty;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 class TrustbadgePrefilter
 {
     public static function addTrustbadge($source)

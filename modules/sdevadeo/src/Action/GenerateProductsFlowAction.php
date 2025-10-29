@@ -372,6 +372,57 @@ final class GenerateProductsFlowAction extends AbstractAction
             $this->logs[] = Tools::addProductFlowLogs($this->context->shop->id, self::FLOW_TYPE, 204, $product, $idProductAttribute);
             return;
         }
+        
+        //Check if product has filter
+        // If it is: SDEV-ERROR-206.
+        $productFilters = \SdevAdeoFilter::findAll();
+        foreach($productFilters as $filter) {
+            $target = '';
+            switch ($filter['filterTarget']) {
+                case 'productName':
+                    $target = $product->name[Context::getContext()->language->id];
+                    break;
+                case 'productEan':
+                    $target = $product->ean13;
+                    break;
+            }
+            
+            $isFiltered = false;
+            switch ($filter['filterType']) {
+                case 'equal':
+                    if($target == $filter['filterValue']){
+                        $isFiltered = true;
+                    }
+                    break;
+                case 'contain':
+                    if (strpos($target, $filter['filterValue']) !== false) {
+                        $isFiltered = true;
+                    }
+                    break;
+                case 'higher':
+                    if($target > $filter['filterValue']){
+                        $isFiltered = true;
+                    }
+                    break;
+                case 'lower':
+                    if($target < $filter['filterValue']){
+                        $isFiltered = true;
+                    }
+                    break;
+                case 'start':
+                    if (strpos($target, $filter['filterValue']) === 0) {
+                        $isFiltered = true;
+                    }
+                    break;
+            }
+
+            if($isFiltered){
+                $this->nbProductsFiltered++;
+                $this->logs[] = Tools::addProductFlowLogs($this->context->shop->id, self::FLOW_TYPE, 206, $product, $idProductAttribute);
+                return;
+            }
+        }
+
         // PRODUCT REFERENCE
         $eanReference = $productAttribute ? $productAttribute->ean13 : $product->ean13;
         if (!$eanReference || !is_numeric($eanReference) || (strlen($eanReference) != 13)) {
@@ -458,15 +509,11 @@ final class GenerateProductsFlowAction extends AbstractAction
             (bool)Configuration::getValue(Configuration::ENABLED_DISCOUNT)
         );
         if ($categoryRule = Tools::getCategoryRule($product->id_category_default, $this->context->shop->id)) {
-            // CATEGORY RULE ADDITIONAL PRICE
-            if ($categoryRule['additionalPrice']) {
-                $productPriceVatIncl += (($productPriceVatIncl * $categoryRule['additionalPrice']) / 100);
-            }
             // PRICING RULE
             if ($categoryRule['pricingRule']) {
                 foreach ($categoryRule['pricingRule'] as $pricingRule) {
                     if (($productPriceVatIncl >= (float)$pricingRule['minAmount']) && ($productPriceVatIncl < (float)$pricingRule['maxAmount'])) {
-                        if ($pricingRule['pricingRuleTypePercent']) {
+                        if (!$pricingRule['pricingRuleTypePercent']) {
                             $productPriceVatIncl += (float)$pricingRule['pricingRuleValue'];
                         } else {
                             $productPriceVatIncl += (($productPriceVatIncl * (float)$pricingRule['pricingRuleValue']) / 100);
@@ -474,7 +521,6 @@ final class GenerateProductsFlowAction extends AbstractAction
                     }
                 }
             }
-            $productPriceVatIncl += $categoryRule['additionalPrice'];
         }
 
         $quantity = StockAvailable::getQuantityAvailableByProduct($product->id, $idProductAttribute);

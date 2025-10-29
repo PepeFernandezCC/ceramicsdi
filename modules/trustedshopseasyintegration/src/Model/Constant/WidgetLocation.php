@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\Model\Constant;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 class WidgetLocation
 {
     const HEADER = 'wdg-loc-hd';

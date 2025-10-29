@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\API\Exception;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 use Exception;
 use TrustedshopsAddon\API\Request\AbstractRequest;
 

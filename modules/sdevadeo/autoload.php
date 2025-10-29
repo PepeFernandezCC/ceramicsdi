@@ -25,6 +25,7 @@
 
 require_once(dirname(__FILE__).'/vendor/autoload.php');
 require_once(dirname(__FILE__).'/models/SdevAdeoCarrierRule.php');
+require_once(dirname(__FILE__).'/models/SdevAdeoFilter.php');
 require_once(dirname(__FILE__).'/models/SdevAdeoCategoryMapping.php');
 require_once(dirname(__FILE__).'/models/SdevAdeoCategoryRule.php');
 require_once(dirname(__FILE__).'/models/SdevAdeoPricingRule.php');

@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\Utils;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 use Configuration;
 use TrustedshopsAddon\Model\Constant\GtinType;
 use TrustedshopsAddon\Model\Constant\SkuType;

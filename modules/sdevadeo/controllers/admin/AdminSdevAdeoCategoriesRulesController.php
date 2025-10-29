@@ -64,7 +64,9 @@ final class AdminSdevAdeoCategoriesRulesController extends AbstractModuleAdminCo
             'defaultLogisticClass' => SdevAdeoLogisticClass::DEFAULT_CODE
         ));
         $this->context->smarty->assign(array(
+            'channels' => $this->module::$channels,
             'categoryRules' => SdevAdeoCategoryRule::findAll(),
+            'use_weight' => (int)Configuration::getValue(Configuration::USE_WEIGHT),
             'marketplace_shipping' => json_decode(Configuration::getValue(Configuration::API_SHIPPING_METHODS), 1),
             'logisticClass' => SdevAdeoLogisticClass::findAll(),
             'defaultLogisticClass' => SdevAdeoLogisticClass::getLabelFromCode(SdevAdeoLogisticClass::DEFAULT_CODE)
@@ -87,7 +89,7 @@ final class AdminSdevAdeoCategoriesRulesController extends AbstractModuleAdminCo
             } else {
                 $rule = new SdevAdeoCategoryRule();
             }
-
+            
             $rule->setName($request['categoryRuleName']);
             if (array_key_exists('shippingDelay', $request)) {
                 $rule->setShippingDelay($request['shippingDelay']);
@@ -98,9 +100,6 @@ final class AdminSdevAdeoCategoriesRulesController extends AbstractModuleAdminCo
             if (array_key_exists('freeCarriers', $request) && json_encode($request['freeCarriers'])) {
                 $rule->setFreeCarrierList(json_encode($request['freeCarriers']));
             }
-            if (array_key_exists('priceAdjustment', $request)) {
-                $rule->setAdditionalPrice($request['priceAdjustment']);
-            }
             if (array_key_exists('adjustmentApplied', $request)) {
                 $rule->setAddIfForcedPrice($request['adjustmentApplied']);
             }
@@ -108,6 +107,12 @@ final class AdminSdevAdeoCategoriesRulesController extends AbstractModuleAdminCo
                 $rule->setLogisticClass($request['logisticClass']);
             } else {
                 $rule->setLogisticClass(SdevAdeoLogisticClass::DEFAULT_CODE);
+            }
+            if (array_key_exists('weightMin', $request)) {
+                $rule->setWeightMin((float)$request['weightMin']);
+            }
+            if (array_key_exists('weightMax', $request)) {
+                $rule->setWeightMax((float)$request['weightMax']);
             }
 
             $rule->save();
@@ -188,11 +193,15 @@ final class AdminSdevAdeoCategoriesRulesController extends AbstractModuleAdminCo
             } else {
                 $pricingRule = new SdevAdeoPricingRule($request['idRule']);
             }
+
+            $countries = isset($request['countries']) ? $request['countries'] : null;
+
             $pricingRule->setMinAmount($request['minPrice']);
             $pricingRule->setMaxAmount($request['maxPrice']);
             $pricingRule->setValue($request['valuePrice']);
             $pricingRule->setTypePercent($request['typePrice']);
             $pricingRule->setCategoryRule($request['categoryRule']);
+            $pricingRule->setCountries((string)json_encode($countries));
 
             if ($new) {
                 $pricingRule->add();
@@ -243,7 +252,14 @@ final class AdminSdevAdeoCategoriesRulesController extends AbstractModuleAdminCo
             }
         }
 
+        $this->context->smarty->assign([
+            'logisticClass' => SdevAdeoLogisticClass::findAll()
+        ]);
+
+        $templateHtml = $this->context->smarty->fetch(_PS_MODULE_DIR_ . $this->module->name . '/views/templates/inc/admin/logistic_class_options.tpl');
+
         if ($errorList['hasError'] == false) {
+            $errorList['html'] = $templateHtml;
             $errorList['errorMessage'][] = $this->module->l('All the data have been correctly imported');
         }
 

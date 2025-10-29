@@ -44,6 +44,7 @@ SDEVADEO.controller.admin.parameters = {
                     DISABL_CATEG: document.querySelector('[id="disabled-categories-switch"] > input:checked').value,
                     ENABLED_COUNTRIES: enabled_countries,
                     SHIPPING_COUNTRY: document.querySelector('[id="shipping_country"] > option:checked').value,
+                    USE_WEIGHT: document.querySelector('[id="use-weight-switch"] > input:checked').value,
                 }
             },
             success: function (response) {
@@ -80,8 +81,9 @@ SDEVADEO.controller.admin.parameters = {
             let tax = select.children[0].innerHTML.trim();
             mapped_taxes[select.children[0].innerHTML.trim()] = select.querySelector('option:checked').value;
         }
-        mapped_taxes = Object.assign({}, mapped_taxes);
 
+        mapped_taxes = Object.assign({}, mapped_taxes);
+        console.log(mapped_taxes)
         $.ajax({
             type: 'POST',
             dataType: 'json',
@@ -215,6 +217,10 @@ SDEVADEO.controller.admin.parameters = {
                             })
                         })
                     }
+                    if(response.html) {
+                        body = document.querySelector('#carrier-rules');
+                        body.innerHTML = response.html;
+                    }
                 } else {
                     document.querySelector('[id="carriers-notification"]').classList.add('warn', 'alert', 'alert-danger');
                 }
@@ -224,9 +230,6 @@ SDEVADEO.controller.admin.parameters = {
                     document.querySelector('[id="carriers-notification"]').appendChild($childNode);
                 })
                 document.querySelector('[id="connection-panel"] table').classList.remove('hidden');
-                if (document.querySelector('[id="connection-panel"] > button')) {
-                    document.querySelector('[id="connection-panel"] > button').classList.add('hidden');
-                }
             },
             error: function (response) {
                 console.log(response);
@@ -241,11 +244,12 @@ SDEVADEO.controller.admin.parameters = {
         document.querySelector('[id="carriers-notification"]').innerHTML = '';
         SDEVADEO.handleButtons(true);
         let carrier_rules = [];
-        document.querySelectorAll('#carrier-rule-table tbody tr').forEach(function (trElement){
+        document.querySelectorAll('.carrier-rule-table tbody tr').forEach(function (trElement){
             let cms_carrier;
             if ((cms_carrier = trElement.querySelector('#cms_carrier').value) !== '-') {
                 carrier_rules.push({
                     'marketplaceShippingCode': trElement.getAttribute('data-code-method'),
+                    'countryIso': trElement.getAttribute('data-country-iso'),
                     'internalCarrierId': cms_carrier
                 });
             }

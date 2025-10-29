@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\Hook;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 use Context;
 use TrustedshopsAddon\Model\Constant\WidgetLocation;
 use TrustedshopsAddon\Service\HookService;
@@ -73,7 +77,6 @@ class HookLayout extends AbstractHook
         'displayTop',
         'displayNav1',
         'displayFooter',
-        'displayFooterBefore',
         'displayTrustbadge',
     ];
 
@@ -259,19 +262,6 @@ class HookLayout extends AbstractHook
         return $widgetModels;
     }
 
-    
-    public function displayFooterBefore($params)
-    {
-        $widgetModels = $this->getWidgetModels(WidgetLocation::FOOTER);
-
-        if (empty($widgetModels)) {
-            return '';
-        }
-
-        return $widgetModels;
-    }
-
-
     public function displayTrustbadge()
     {
         if (\Tools::getValue('content_only') !== false) {
@@ -292,7 +282,7 @@ class HookLayout extends AbstractHook
 
         $file = _PS_MODULE_DIR_ . 'trustedshopseasyintegration';
         $cssLoaderLink = Context::getContext()->link->getMediaLink(
-            '/modules/trustedshopseasyintegration/views/js/front/css-loader.' . $this->module->version . '.js'
+            _MODULE_DIR_ . 'trustedshopseasyintegration/views/js/front/css-loader.' . $this->module->version . '.js'
         );
         Context::getContext()->smarty->assign([
             'jsPathCssLoader' => $cssLoaderLink,

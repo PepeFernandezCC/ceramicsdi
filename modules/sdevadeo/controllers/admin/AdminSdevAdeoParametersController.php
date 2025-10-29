@@ -107,13 +107,14 @@ final class AdminSdevAdeoParametersController extends AbstractModuleAdminControl
             'disabled_products' => (int)Configuration::getValue(Configuration::DISABLED_PRODUCT),
             'disabled_categories' => (int)Configuration::getValue(Configuration::DISABLED_CAT),
             'enabled_countries' => json_decode(Configuration::getValue(Configuration::ENABLED_COUNTRIES)),
+            'use_weight' => (int)Configuration::getValue(Configuration::USE_WEIGHT),
             'shipping_countries' => $shipping_countries,
             'shipping_country' => Configuration::getValue(Configuration::SHIPPING_COUNTRY),
 
             // products
             'products' => Configuration::getValue(Configuration::PRODUCT_BURST),
             'flow_type' => $flowType,
-            'cms_taxes' => Tax::getTaxes(Context::getContext()->language->id),
+            'cms_taxes' => TaxRulesGroup::getTaxRulesGroups(true),
             'mp_taxes' => array('Standard', 'Reduced', 'SpecialReduced', 'Exoneration'),
             'mapped_taxes' => is_array($mappedTaxes = json_decode(Configuration::getValue(Configuration::TAX_MAPPING), 1)) ? $mappedTaxes : [],
 
@@ -188,7 +189,7 @@ final class AdminSdevAdeoParametersController extends AbstractModuleAdminControl
                 foreach ($rules as $key => $rule) {
                     foreach ($shipping_methods as $method) {
                         if ($method['code'] == $rule['marketplaceShippingCode']) {
-                            $carrier_rules[$method['code']] = $rule[SdevAdeoCarrierRule::COLUMN_INTERNAL_CARRIER_ID];
+                            $carrier_rules[$rule['countryIso']][$method['code']] = $rule[SdevAdeoCarrierRule::COLUMN_INTERNAL_CARRIER_ID];
                             break;
                         }
                     }
@@ -232,12 +233,34 @@ final class AdminSdevAdeoParametersController extends AbstractModuleAdminControl
             Configuration::updateValue(Configuration::API_SHIPPING_METHODS, json_encode($methods));
             Configuration::updateValue(Configuration::DATE_UPD_METHOD, date('d-m-Y'));
 
+            $carrier_rules = [];
+            if (!empty($rules = SdevAdeoCarrierRule::findAll())) {
+                foreach ($rules as $key => $rule) {
+                    foreach ($methods as $method) {
+                        if ($method['code'] == $rule['marketplaceShippingCode']) {
+                            $carrier_rules[$rule['countryIso']][$method['code']] = $rule[SdevAdeoCarrierRule::COLUMN_INTERNAL_CARRIER_ID];
+                            break;
+                        }
+                    }
+                }
+            }
+
+            $this->context->smarty->assign([
+                'marketplace_shipping' => $methods,
+                'carrier_rules' => $carrier_rules,
+                'internal_carriers' => Carrier::getCarriers($this->context->language->id, true, false, false, null, 5),
+                'apiShippingUpdateDate' => Configuration::getValue(Configuration::DATE_UPD_METHOD)
+            ]);
+
+            $templateHtml = $this->context->smarty->fetch(_PS_MODULE_DIR_ . $this->module->name . '/views/templates/inc/admin/carriers.tpl');
+
             die(json_encode(array(
                 'hasError' => false,
                 'errorMessage' => array(
                     $this->module->l('Marketplace\'s shipping methods successfully updated.')
                 ),
-                'methods' => $methods
+                'methods' => $methods,
+                'html' => $templateHtml
             )));
         } catch (Exception $e) {
             die(json_encode(array(
@@ -274,6 +297,7 @@ final class AdminSdevAdeoParametersController extends AbstractModuleAdminControl
                     ->select(SdevAdeoCarrierRule::COLUMN_ID)
                     ->from(SdevAdeoCarrierRule::getTableName())
                     ->where(SdevAdeoCarrierRule::COLUMN_MARKETPLACE_SHIPMENT . ' = \'' . pSQL($ruleToProceed[SdevAdeoCarrierRule::COLUMN_MARKETPLACE_SHIPMENT]).'\'')
+                    ->where(SdevAdeoCarrierRule::COLUMN_COUNTRY_ISO . ' = \'' . pSQL($ruleToProceed[SdevAdeoCarrierRule::COLUMN_COUNTRY_ISO]).'\'')
                 );
                 if (!$id) {
                     $id = null;
@@ -283,6 +307,7 @@ final class AdminSdevAdeoParametersController extends AbstractModuleAdminControl
                     $method = 'set' . ucfirst($propertyName);
                     $rule->$method($value);
                 }
+
                 if (!$rule->save()) {
                     $hasError = true;
                 }

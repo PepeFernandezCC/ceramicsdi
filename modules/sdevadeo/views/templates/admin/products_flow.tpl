@@ -52,6 +52,7 @@
                     <label class="control-label col-lg-2">
                     </label>
                     <div class="margin-form col-md-7">
+                    <button class="btn btn-danger pull-left cancel hidden" data-canceled="false" onclick="SDEVADEO.controller.admin.productsFlow.cancelProductFlow()">{l s='Cancel' mod='sdevadeo'}</button>
                         <div class="input-group">
                             <a title="{l s='Generate the flow' mod='sdevadeo'}" class="input-group-addon" id="btnGenerateFlux" onclick="SDEVADEO.controller.admin.productsFlow.generateProductFlow(
                                 '{$context->link->getModuleLink(
@@ -64,7 +65,7 @@
                                     ],
                                     true
                                 )}'
-                            )" rel="FR2">
+                            , event)" rel="FR2">
                                 <i class="fa fa-refresh fa-fw ng-scope"></i>
                             </a>
                             <input type="text" readonly="readonly" value="{$module_url|escape:'htmlall':'UTF-8'}fluxs/products/{$shop_name_formatted}/Products.csv">
@@ -94,6 +95,7 @@
                                 <a
                                         class="btn btn-warning mirakl-mapping-button"
                                         href={$mapping_wizard_url}
+                                        target="_blank"
                                 >
                                 <i class="icon-external-link-sign pull-left"></i>
                                 {l s='Mirakl mapping' mod='sdevadeo'}
@@ -235,6 +237,7 @@
                     <label class="control-label col-lg-2">
                     </label>
                     <div class="margin-form col-md-7">
+                        <button class="btn btn-danger pull-left cancel hidden" data-canceled="false" onclick="SDEVADEO.controller.admin.productsFlow.cancelOfferFlow()">{l s='Cancel' mod='sdevadeo'}</button>
                         <div class="input-group">
                             <a title="{l s='Generate the flow' mod='sdevadeo'}" class="input-group-addon" id="btnGenerateFlux" onclick="SDEVADEO.controller.admin.productsFlow.generateOfferFlow(
                                     '{$context->link->getModuleLink(
@@ -246,7 +249,7 @@
                             'flow' => 'offers'
                             ],
                             true
-                            )}'
+                            )}', event
                                     )" rel="FR2">
                                 <i class="fa fa-refresh fa-fw"></i>
                             </a>

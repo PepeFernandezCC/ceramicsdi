@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\API\Request;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 use JsonSerializable;
 use TrustedshopsAddon\API\Constant\APIType;
 use TrustedshopsAddon\API\Model\AbstractModel;
@@ -84,6 +88,9 @@ abstract class AbstractRequest implements JsonSerializable
 
     /** @var string|null */
     protected $requestTarget;
+
+    /** @var string */
+    protected $method = 'GET';
 
     public function __construct()
     {
@@ -267,8 +274,19 @@ abstract class AbstractRequest implements JsonSerializable
     }
 
     /**
+     * Retrieve method
+     *
+     * @return string $method
+     */
+    public function getMethod()
+    {
+        return $this->method;
+    }
+
+    /**
      * {@inheritdoc}
      */
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return get_object_vars($this);

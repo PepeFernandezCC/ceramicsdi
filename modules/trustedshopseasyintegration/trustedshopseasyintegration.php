@@ -140,26 +140,31 @@ class Trustedshopseasyintegration extends Module
 
     const ORDER_STATUS_EVENTS_CONFIG = 'TRUSTEDSHOPSEASYINTEGRATION_ORDER_STATUS_EVENTS_CONFIG';
 
+    const ORDER_STATUS_PRODUCTS_SERVICE = 'TRUSTEDSHOPSEASYINTEGRATION_ORDER_STATUS_PRODUCTS_SERVICE';
+
+    const UPGRADE_NEW_ORDER_STATUS = 'TRUSTEDSHOPSEASYINTEGRATION_UPGRADE_NEW_ORDER_STATUS';
+
     public function __construct()
     {
         $this->module_key = 'ed69e3433cc658b9130d7e9325820bf1';
         $this->name = 'trustedshopseasyintegration';
-        $this->version = '1.0.5';
+        $this->version = '2.0.2';
         $this->author = '202 ecommerce';
         $this->tab = 'front_office_features';
         $this->ps_versions_compliancy = [
-            'min' => '1.6.1.24',
+            'min' => '1.7.6.0',
             'max' => _PS_VERSION_,
         ];
         $this->need_instance = 0;
 
         $this->__mConstruct();
 
-        $this->secure_key = Tools::encrypt($this->name);
+        require_once __DIR__ . '/src/Utils/CompatibilityUtils.php';
+        $this->secure_key = TrustedshopsAddon\Utils\CompatibilityUtils::hash($this->name);
         $this->confirmUninstall = $this->l('This will delete the Trusted shops module, are you sure ?');
         $this->displayName = $this->l('Trusted Shops Easy Integration');
         $this->description = $this->l('This module integrates Trusted Shops into your Prestashop installation.');
-        $this->hookDispatcher = new TrustedshopsAddon\Hook\HookDispatcher($this);
+        $this->hookDispatcher = new TrustedshopsAddon\Hook\HookDispatcher($this); // @phpstan-ignore-line
         $this->hooks = array_merge($this->hooks, $this->hookDispatcher->getAvailableHooks());
     }
 
@@ -202,7 +207,7 @@ class Trustedshopseasyintegration extends Module
         if ($result = $this->handleExtensionsHook($name,
             !empty($arguments[0]) ? $arguments[0] : [])
         ) {
-            if (!is_null($result)) {
+            if (!is_null($result)) { // @phpstan-ignore-line
                 return $result;
             }
         }

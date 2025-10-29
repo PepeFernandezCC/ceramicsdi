@@ -118,7 +118,13 @@ final class GenerateOfferFlowAction extends AbstractAction
     const COMMON_QUANTITY = 'quantity';
     const COMMON_SHIPPING_COUNTRY = 'shipment-origin';
     const COMMON_LOGICTIC_CLASS = 'logistic-class';
-    const COMMON_PLATFORMS = array('vat-lmfr', 'vat-bmfr', 'vat-lmit', 'vat-lmes', 'vat-lmpt');
+    const COMMON_PLATFORMS = [
+        '001' => 'vat-lmfr',
+        '014' => 'vat-bmfr',
+        '005' => 'vat-lmit',
+        '002' => 'vat-lmes',
+        '003' => 'vat-lmpt'
+    ];
 
     /**
      * @return int|null
@@ -332,18 +338,21 @@ final class GenerateOfferFlowAction extends AbstractAction
         // TAX RULE
         $mappedTaxes = json_decode(Configuration::getValue(Configuration::TAX_MAPPING), 1);
         $productTaxRulesGroup = $product->getIdTaxRulesGroup();
-        $taxes = array();
+        $taxes = [];
+
         foreach (self::COMMON_PLATFORMS as $taxName) {
-            $countryIso = substr($taxName, -2, 2);
-            $tax_id = Tools::getTaxByTaxRulesGroupAndCountry($productTaxRulesGroup, \Country::getByIso($countryIso));
-            $tax = array_search($tax_id, $mappedTaxes);
+            $tax = array_search($productTaxRulesGroup, $mappedTaxes);
+
             if ($tax) {
                 $taxes[$taxName] = $tax;
                 continue;
             }
-            $this->nbOffersInError++;
-            $this->logs[] = Tools::addProductFlowLogs($this->context->shop->id, $this->flowType, 311, $product, $idProductAttribute);
-            return;
+
+            if (in_array(strtoupper(substr($taxName, -2)), json_decode(Configuration::getValue(Configuration::ENABLED_COUNTRIES)))) {
+                $this->nbOffersInError++;
+                $this->logs[] = Tools::addProductFlowLogs($this->context->shop->id, $this->flowType, 311, $product, $idProductAttribute);
+                return;
+            }
         }
 
         // CATEGORY RULE
@@ -352,7 +361,12 @@ final class GenerateOfferFlowAction extends AbstractAction
             $this->logs[] = Tools::addProductFlowLogs($this->context->shop->id, $this->flowType, 202, $product, $idProductAttribute);
             return;
         }
-        $categoryRule = Tools::getCategoryRule($product->id_category_default, $this->context->shop->id);
+
+        if (Configuration::getValue(Configuration::USE_WEIGHT)) {
+            $categoryRule = Tools::getRuleByWeight($product->weight);
+        } else {
+            $categoryRule = Tools::getCategoryRule($product->id_category_default, $this->context->shop->id);
+        }
 
         // FILTERS
         $manufacturers_exclude = Tools::jsonDecode(Configuration::getValue(Configuration::EXCL_MANUFACTURER), true);
@@ -393,6 +407,56 @@ final class GenerateOfferFlowAction extends AbstractAction
             return;
         }
 
+        //Check if product has filter
+        // If it is: SDEV-ERROR-206.
+        $productFilters = \SdevAdeoFilter::findAll();
+        foreach($productFilters as $filter) {
+            $target = '';
+            switch ($filter['filterTarget']) {
+                case 'productName':
+                    $target = $product->name[Context::getContext()->language->id];
+                    break;
+                case 'productEan':
+                    $target = $product->ean13;
+                    break;
+            }
+            
+            $isFiltered = false;
+            switch ($filter['filterType']) {
+                case 'equal':
+                    if($target == $filter['filterValue']){
+                        $isFiltered = true;
+                    }
+                    break;
+                case 'contain':
+                    if (strpos($target, $filter['filterValue']) !== false) {
+                        $isFiltered = true;
+                    }
+                    break;
+                case 'higher':
+                    if($target > $filter['filterValue']){
+                        $isFiltered = true;
+                    }
+                    break;
+                case 'lower':
+                    if($target < $filter['filterValue']){
+                        $isFiltered = true;
+                    }
+                    break;
+                case 'start':
+                    if (strpos($target, $filter['filterValue']) === 0) {
+                        $isFiltered = true;
+                    }
+                    break;
+            }
+
+            if($isFiltered){
+                $this->nbOffersFiltered++;
+                $this->logs[] = Tools::addProductFlowLogs($this->context->shop->id, $this->flowType, 206, $product, $idProductAttribute);
+                return;
+            }
+        }
+
         // LOGISTIC CLASS
         $logisticClass = !$categoryRule || !array_key_exists('logisticClass', $categoryRule) || !$categoryRule['logisticClass']
             ?  \SdevAdeoLogisticClass::DEFAULT_CODE
@@ -428,6 +492,75 @@ final class GenerateOfferFlowAction extends AbstractAction
             $priceType[] = 'discount';
         }
         foreach ($priceType as $price) {
+            foreach (self::COMMON_PLATFORMS as $platformNumber => $platform) {
+                $countryIso = strtoupper(substr($platform, -2, 2));
+                $id_country = \Country::getByIso($countryIso);
+                $country = new \Country($id_country);
+                $specific_price = null;
+
+                $tempPricePerCountry[$platformNumber] = \Product::priceCalculation(
+                    $this->context->shop->id,
+                    $product->id,
+                    (int)$idProductAttribute,
+                    $id_country,
+                    0,
+                    null,
+                    $country->id_currency,
+                    0,
+                    1,
+                    true,
+                    2,
+                    false,
+                    !($price == 'full') && (bool)Configuration::getValue(Configuration::ENABLED_DISCOUNT),
+                    true,
+                    $specific_price,
+                    false
+                );
+                $globalAdditionalPrice = 0;
+                if ($categoryRule) {
+                    // PRICING RULE                    
+                    if ($categoryRule['pricingRule']) {
+                        foreach ($categoryRule['pricingRule'] as $pricingRule) {
+                            $pRuleCountries = json_decode($pricingRule['countries'], true);
+                            $pRuleCountries = (empty($pRuleCountries)) ? [] : $pRuleCountries;
+                            
+                            if ($pRuleCountries){
+                                if (in_array($platformNumber, $pRuleCountries)) {
+                                    if (($tempPricePerCountry[$platformNumber] >= (float)$pricingRule['minAmount']) && ($tempPricePerCountry[$platformNumber] < (float)$pricingRule['maxAmount'])) {
+                                        if (!$pricingRule['pricingRuleTypePercent']) {
+                                            $tempPricePerCountry[$platformNumber] += (float)$pricingRule['pricingRuleValue'];
+                                        } else {
+                                            $tempPricePerCountry[$platformNumber]+= ($tempPricePerCountry[$platformNumber] * (float)$pricingRule['pricingRuleValue']) / 100;
+                                        }
+                                    }
+                                }
+                            } else {
+                                if (($tempPricePerCountry[$platformNumber] >= (float)$pricingRule['minAmount']) && ($tempPricePerCountry[$platformNumber] + $globalAdditionalPrice < (float)$pricingRule['maxAmount'])) {
+                                    if (!$pricingRule['pricingRuleTypePercent']) {
+                                        $globalAdditionalPrice += (float)$pricingRule['pricingRuleValue'];
+                                    } else {
+                                        $globalAdditionalPrice += (($tempPricePerCountry[$platformNumber] + $globalAdditionalPrice) * (float)$pricingRule['pricingRuleValue']) / 100;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            foreach ($tempPricePerCountry as $code => $countryPrice) {
+                if ($countryPrice <= 0) {
+                    if ($price == 'full') {
+                        $this->nbOffersInError++;
+                        $this->logs[] = Tools::addProductFlowLogs($this->context->shop->id, $this->flowType, 305, $product, $idProductAttribute);
+                        return;
+                    }
+                    $productPriceVatIncl[$code][$price] = '';
+                } else {
+                    $productPriceVatIncl[$code][$price] = $countryPrice + $globalAdditionalPrice;
+                }
+            }
+
             $tempPrice = \Product::getPriceStatic(
                 $product->id,
                 true,
@@ -437,47 +570,23 @@ final class GenerateOfferFlowAction extends AbstractAction
                 false,
                 !($price == 'full') && (bool)Configuration::getValue(Configuration::ENABLED_DISCOUNT)
             );
-            if ($categoryRule) {
-                // ATTRIBUTE RULE PRICE ADJUSTMENT
-                if ($categoryRule['additionalPrice']) {
-                    $tempPrice += (($tempPrice * $categoryRule['additionalPrice']) / 100);
-                }
-                // PRICING RULE
-                if ($categoryRule['pricingRule']) {
-                    foreach ($categoryRule['pricingRule'] as $pricingRule) {
-                        if (($tempPrice >= (float)$pricingRule['minAmount']) && ($tempPrice < (float)$pricingRule['maxAmount'])) {
-                            if ($pricingRule['pricingRuleTypePercent']) {
-                                $tempPrice += (float)$pricingRule['pricingRuleValue'];
-                            } else {
-                                $tempPrice += (($tempPrice * (float)$pricingRule['pricingRuleValue']) / 100);
-                            }
-                        }
-                    }
-                }
-            }
 
-            if ($tempPrice <= 0) {
-                if ($price == 'full') {
-                    $this->nbOffersInError++;
-                    $this->logs[] = Tools::addProductFlowLogs($this->context->shop->id, $this->flowType, 305, $product, $idProductAttribute);
-                    return;
-                }
-                $productPriceVatIncl[$price] = '';
-            } else {
-                $productPriceVatIncl[$price] = $tempPrice;
-            }
+            $productPriceVatIncl['other'][$price] = $tempPrice + $globalAdditionalPrice;
         }
 
         $quantity = StockAvailable::getQuantityAvailableByProduct($product->id, $idProductAttribute);
         if ($quantity < 0) {
             $quantity = 0;
         }
-
-        $discount = array_key_exists('discount', $productPriceVatIncl)
-            && (
-                $productPriceVatIncl['discount'] == ''
-                || $productPriceVatIncl['discount'] < $productPriceVatIncl['full']
-            ) ? $productPriceVatIncl['discount'] : '';
+        foreach ($productPriceVatIncl as $key => $prices){
+            if ( array_key_exists('discount', $prices)
+                && ( $prices['discount'] == '' || $prices['discount'] < $prices['full'] )
+            ) {
+                continue;
+            } else {
+                $prices[$key]['discount'] = '';
+            }
+        }
 
         //PRODUCT LINE CREATION
         $offerLine = array();
@@ -494,10 +603,10 @@ final class GenerateOfferFlowAction extends AbstractAction
                     $offerLine[] = 'EAN';
                     break;
                 case self::COMMON_PRICE:
-                    $offerLine[] = $productPriceVatIncl['full'];
+                    $offerLine[] = $productPriceVatIncl['other']['full'];
                     break;
                 case self::COMMON_DISCOUNT_PRICE:
-                    $offerLine[] = $discount;
+                    $offerLine[] = $productPriceVatIncl['other']['discount'];
                     break;
                 case self::COMMON_STATE:
                     $offerLine[] = $state;
@@ -523,9 +632,11 @@ final class GenerateOfferFlowAction extends AbstractAction
                         break;
                     }
                     if (preg_match('('.self::COMMON_DISCOUNT_PRICE.'\[)' ,$field)) {
-                        $offerLine[] = $discount;
+                        preg_match('/channel=(\d+)/', $field, $channels);
+                        $offerLine[] = $productPriceVatIncl[$channels[1]]['discount'];
                     } else if (preg_match('('.self::COMMON_PRICE.'\[)' ,$field)) {
-                        $offerLine[] = $productPriceVatIncl['full'];
+                        preg_match('/channel=(\d+)/', $field, $channels);
+                        $offerLine[] = $productPriceVatIncl[$channels[1]]['full'];
                     }
             }
         }

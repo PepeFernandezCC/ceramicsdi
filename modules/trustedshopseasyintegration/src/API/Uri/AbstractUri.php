@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\API\Uri;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 abstract class AbstractUri
 {
     /** @var array<string,int> SCHEMES. */

@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\Service;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 use Configuration;
 use TrustedshopsAddon\Model\Credentials\CredentialsModel;
 
@@ -102,5 +106,6 @@ class CredentialsService
     {
         Configuration::deleteByName(\Trustedshopseasyintegration::CLIENT_ID);
         Configuration::deleteByName(\Trustedshopseasyintegration::CLIENT_SECRET);
+        Configuration::deleteByName(\Trustedshopseasyintegration::ORDER_STATUS_PRODUCTS_SERVICE);
     }
 }

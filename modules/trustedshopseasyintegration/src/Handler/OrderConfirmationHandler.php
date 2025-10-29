@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\Handler;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 use Cart;
 use Configuration;
 use Context;
@@ -98,12 +102,12 @@ class OrderConfirmationHandler
 
         $orderModel = new OrderModel();
 
-        $orderTotal = $order->total_products_wt + $order->total_shipping_tax_incl;
+        $orderTotal = $order->total_products_wt + $order->total_shipping_tax_incl - $order->total_discounts_tax_incl;
 
         $orderModel->setSendProducts($hasProducts)
             ->setTsCheckoutOrderNr($order->reference)
             ->setTsCheckoutBuyerEmail($customer->email)
-            ->setTsCheckoutOrderAmount(\Tools::ps_round($orderTotal, 2))
+            ->setTsCheckoutOrderAmount((string) \Tools::ps_round($orderTotal, 2))
             ->setTsCheckoutOrderCurrency($currency->iso_code)
             ->setTsCheckoutOrderPaymentType($order->payment);
 

@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\Service;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 use Address;
 use Carrier;
 use Configuration;
@@ -80,6 +84,8 @@ class OrderStatusService
 
     const DEFAULT_ORDER_STATUS = _PS_OS_SHIPPING_;
 
+    const TYPE_EVENT_PRESTASHOP = 'order_status_from_prestashop';
+
     /**
      * @var ChannelService
      */
@@ -106,23 +112,29 @@ class OrderStatusService
         $this->apiLogger = ApiLogger::getInstance();
     }
 
-    public function sendOrderStatusEvent(Order $order, $newOrderStatus)
+    public function sendOrderStatusEvent(Order $order, $newOrderStatus, $returnResponse = false)
     {
-        $triggerStatusId = $this->getOrderStatus($order->id_carrier);
-
         $isSuccess = true;
         /** @var TrustedshopsChannel|null $channel */
         $channel = $this->channelService->getChannelFromIdShopIdLang($order->id_shop, $order->id_lang);
-        if (empty($channel) || !Validate::isLoadedObject($channel) || !$channel->order_status_events) {
+        if (empty($channel) || !Validate::isLoadedObject($channel)) {
+            if ($returnResponse) {
+                $message = 'Error empty channel : it seems the Shop (' . $order->id_shop . ') ';
+                $languageIso = (new Language($order->id_lang))->iso_code;
+                $message .= 'with this language ' . $languageIso . ' has no linked channel';
+            }
+
             return $isSuccess;
         }
 
+        $triggerStatusId = $this->getOrderStatus(false, $channel->e_trusted_channel_ref);
+
         $logModel = (new LogModel())
             ->setOrderNumber($order->reference)
-            ->setConfiguredTriggerStatus($triggerStatusId)
+            ->setConfiguredTriggerStatus(implode(',', $triggerStatusId))
             ->setNewOrderStatus($newOrderStatus);
 
-        if ((int) $triggerStatusId === (int) $newOrderStatus) {
+        if (in_array((int) $newOrderStatus, $triggerStatusId) === true) {
             try {
                 $body = $this->buildRequestBody($order, $channel);
                 $client = new Client();
@@ -140,6 +152,19 @@ class OrderStatusService
             }
         }
         $this->apiLogger->log($logModel);
+
+        if ($returnResponse) {
+            if (isset($response)) {
+                return 'Done - ' . json_encode($response);
+            } else {
+                if (in_array((int) $newOrderStatus, $triggerStatusId) !== true) {
+                    $message = 'Statut of order (' . $newOrderStatus . ') different from config (';
+                    $message .= implode(',', $triggerStatusId) . ')';
+
+                    return $message;
+                }
+            }
+        }
 
         return $isSuccess;
     }
@@ -178,25 +203,76 @@ class OrderStatusService
     }
 
     /**
-     * @param int $idCarrier
+     * Return product and services choosed order status
      *
-     * @return int
+     * @param bool $savedConfig - Used to return full saved config for display in TS Js
+     * @param string|bool $refChannel - Get config by channel (default false to retrieve full config to save)
+     *
+     * @return mixed Order Status - int[] if $savedConfig =  false
      */
-    protected function getOrderStatus($idCarrier)
+    public function getOrderStatus($savedConfig, $refChannel)
     {
-        $carrier = new Carrier($idCarrier);
-        $idCarrierReference = $carrier->id_reference;
-        $config = $this->getConfig();
-
-        if (isset($config[$idCarrierReference]) && isset($config[$idCarrierReference]['trigger_order_status_id'])) {
-            return $config[$idCarrierReference]['trigger_order_status_id'];
+        /** @var string|false $config */
+        $config = Configuration::get(Trustedshopseasyintegration::ORDER_STATUS_PRODUCTS_SERVICE, null, null, null, '');
+        if (empty($config) === true) {
+            return $this->defaultConfig($savedConfig);
         }
 
-        if (isset($config['all']) && isset($config['all']['trigger_order_status_id'])) {
-            return $config['all']['trigger_order_status_id'];
+        $config = json_decode($config, true);
+        $config = isset($config[$refChannel]) ? $config[$refChannel] : false;
+        if ($config !== false) {
+            if ($savedConfig === true) {
+                return $config;
+            }
+            $idStateProduct = isset($config['product']['ID']) ? $config['product']['ID'] : self::DEFAULT_ORDER_STATUS;
+            $idStateService = isset($config['service']['ID']) ? $config['service']['ID'] : self::DEFAULT_ORDER_STATUS;
+
+            return array_filter([(int) $idStateProduct, (int) $idStateService], function ($status) {
+                return $status > 0;
+            });
         }
 
-        return self::DEFAULT_ORDER_STATUS;
+        return $this->defaultConfig($savedConfig);
+    }
+
+    /**
+     * Return default configuration if nothing is saved
+     */
+    private function defaultConfig($savedConfig)
+    {
+        if ($savedConfig === true) {
+            $orderStateReturn = [
+                'ID' => 'checkout',
+                'name' => 'checkout',
+                'event_type' => 'checkout',
+            ];
+
+            return [
+                'product' => $orderStateReturn,
+                'service' => $orderStateReturn,
+            ];
+        }
+
+        return [];
+    }
+
+    /**
+     * Save Product and services order status
+     *
+     * @param mixed $status
+     * @param string $refChannel
+     */
+    public function saveOrderStatus($status, $refChannel)
+    {
+        $config = json_decode(Configuration::get(Trustedshopseasyintegration::ORDER_STATUS_PRODUCTS_SERVICE), true);
+        if ($config === false) {
+            $config = [];
+        }
+        $config[$refChannel] = $status;
+
+        return Configuration::updateValue(
+            Trustedshopseasyintegration::ORDER_STATUS_PRODUCTS_SERVICE, json_encode($config)
+        );
     }
 
     protected function buildRequestBody(Order $order, TrustedshopsChannel $channel)
@@ -205,6 +281,8 @@ class OrderStatusService
         $customer = new Customer($order->id_customer);
         $address = new Address($order->id_address_delivery, $language->id);
         $nbDays = $this->getNbDays($order->id_carrier);
+        $module = \Module::getInstanceByName('trustedshopseasyintegration');
+        $versionModule = empty($module->version) === false ? $module->version : 'Unkwnown';
 
         $body = (new EventsModel())
             ->setCustomer(
@@ -225,32 +303,31 @@ class OrderStatusService
                     ->setReference($order->reference)
             )
             ->setEstimatedDeliveryDate(date('Y-m-d', strtotime("+$nbDays days", time())))
-            ->setSystem('PrestaShop')
-            ->setSystemVersion(_PS_VERSION_)
+            ->setSystem('TRUSTEDSHOPS__PLUGIN__PRESTASHOP')
+            ->setType(self::TYPE_EVENT_PRESTASHOP)
+            ->setSystemVersion($versionModule)
             ->setCreatedAt(date('Y-m-d\TH:i:s.000\Z', time()));
 
-        if ($channel->products_review_invites) {
-            $orderConfirmationHandler = new OrderConfirmationHandler();
-            $orderModel = $orderConfirmationHandler
-                ->setIdShop($order->id_shop)
-                ->setIdLang($order->id_lang)
-                ->handle($order->id, (bool) $channel->products_review_invites);
+        $orderConfirmationHandler = new OrderConfirmationHandler();
+        $orderModel = $orderConfirmationHandler
+            ->setIdShop($order->id_shop)
+            ->setIdLang($order->id_lang)
+            ->handle($order->id, true);
 
-            $products = $orderModel->getProducts();
-            $bodyProducts = [];
-            foreach ($products as $product) {
-                $bodyProduct = (new ProductItemModel())
-                    ->setName((string) $product->getTsCheckoutProductName())
-                    ->setUrl((string) $product->getTsCheckoutProductUrl())
-                    ->setBrand((string) $product->getTsCheckoutProductBrand())
-                    ->setGtin((string) $product->getTsCheckoutProductGTIN())
-                    ->setImageUrl((string) $product->getTsCheckoutProductImageUrl())
-                    ->setMpn((string) $product->getTsCheckoutProductMPN())
-                    ->setSku((string) $product->getTsCheckoutProductSKU());
-                $bodyProducts[] = $bodyProduct;
-            }
-            $body->setProducts($bodyProducts);
+        $products = $orderModel->getProducts();
+        $bodyProducts = [];
+        foreach ($products as $product) {
+            $bodyProduct = (new ProductItemModel())
+                ->setName((string) $product->getTsCheckoutProductName())
+                ->setUrl((string) $product->getTsCheckoutProductUrl())
+                ->setBrand((string) $product->getTsCheckoutProductBrand())
+                ->setGtin((string) $product->getTsCheckoutProductGTIN())
+                ->setImageUrl((string) $product->getTsCheckoutProductImageUrl())
+                ->setMpn((string) $product->getTsCheckoutProductMPN())
+                ->setSku((string) $product->getTsCheckoutProductSKU());
+            $bodyProducts[] = $bodyProduct;
         }
+        $body->setProducts($bodyProducts);
 
         return $body;
     }

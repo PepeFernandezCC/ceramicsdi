@@ -51,6 +51,13 @@
         {l s='Parameters' mod='sdevadeo'}
     </a><!-- /.list-group-item -->
 
+    <a class="list-group-item{if $sdevadeoAdminPage == 'filter'} active{/if}"
+        href="{Context::getContext()->link->getAdminLink('AdminSdevAdeoFilter')}"
+    >
+        <i class="icon-tasks"></i>&nbsp;
+        {l s='Products Filter' mod='sdevadeo'}
+    </a><!-- /.list-group-item -->
+
     <a class="list-group-item{if $sdevadeoAdminPage == 'categories_rules'} active{/if}"
         href="{Context::getContext()->link->getAdminLink('AdminSdevAdeoCategoriesRules')}"
     >

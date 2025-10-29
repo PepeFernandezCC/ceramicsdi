@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\Model\OrderStatusEvents;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 use JsonSerializable;
 
 class OrderStatusEventsModel implements JsonSerializable
@@ -132,6 +136,7 @@ class OrderStatusEventsModel implements JsonSerializable
         return $this;
     }
 
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return get_object_vars($this);

@@ -146,15 +146,16 @@ final class ImportOrdersAction extends AbstractAction
             return array('error' => 'addressShippingError');
         }
 
-        $carrier = new \Carrier((int)\SdevAdeoCarrierRule::findIdCarrierByMpReference($order['shipping_type_code']));
-        $id_carrier = (\Validate::isLoadedObject($carrier)
-            ? $carrier->id
-            : false
-        );
+        $orderChannelCode   = $order['channel']['code'];
+        $channels           = \SdevAdeo::$channels;
+        $countryIso         = $channels[$orderChannelCode]['iso'];
+
+        $carrier    = new \Carrier((int)\SdevAdeoCarrierRule::findIdCarrierByMpReference($order['shipping_type_code'], $countryIso));
+        $id_carrier = (\Validate::isLoadedObject($carrier) ? $carrier->id : false);
 
         if (!$id_carrier) {
             return array(
-                'error' => 'shippingError',
+                'error'         => 'shippingError',
                 'shipping_code' => $order['shipping_type_code']
             );
         }
@@ -288,11 +289,6 @@ final class ImportOrdersAction extends AbstractAction
             $newOrder->total_wrapping = 0;
             $newOrder->total_wrapping_tax_excl = 0;
             $newOrder->total_wrapping_tax_incl = 0;
-            
-            //AGREGAR REDONDEO
-            $newOrder->round_mode = 2;
-            $newOrder->round_type = 2;
-
             $newOrder->total_paid = (float)($newOrder->total_products_wt + $newOrder->total_shipping_tax_incl);
             $newOrder->total_paid_real = 0;
             $newOrder->total_paid_tax_excl = round($newOrder->total_products + $newOrder->total_shipping_tax_excl, 6);
@@ -328,6 +324,11 @@ final class ImportOrdersAction extends AbstractAction
                 }
                 $product_quantity = \Product::getRealQuantity($product_id['id_product'], $product_id['id_product_attribute'] ?: 0, $id_warehouse);
                 $quantity_in_stock = $product_quantity - $product['quantity'];
+
+                \StockAvailable::updateQuantity($product_id['id_product'], $product_id['id_product_attribute'] ?: 0, $product['quantity'] * -1);
+                if (\Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT') && \StockAvailable::dependsOnStock($product_id['id_product'])) {
+                    \StockAvailable::synchronize($product_id['id_product']);
+                }
 
                 $product_tax_coef = 1 + ($product['tax_rate'] / 100);
                 $unit_price_tax_excl = round(($product['price'] / $product['quantity']) / $product_tax_coef, 6);

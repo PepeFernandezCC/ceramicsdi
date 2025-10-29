@@ -1,0 +1,2 @@
+/*! For license information please see init.2.0.2.js.LICENSE.txt */
+(()=>{var t={669:t=>{"use strict";t.exports=jQuery}},r={};var e=function e(s){var n=r[s];if(void 0!==n)return n.exports;var o=r[s]={exports:{}};return t[s](o,o.exports,e),o.exports}(669),s=function(t){var r=document.createElement("script");r.type="text/javascript",r.src=t,e("body").append(r)};e((function(){s(window.trustedshopseasyintegration.scripts.connector),s(window.trustedshopseasyintegration.scripts.admin)}))})();

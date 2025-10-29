@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\Model\Response;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 abstract class FrontResponse implements \JsonSerializable
 {
     /**
@@ -105,6 +109,7 @@ abstract class FrontResponse implements \JsonSerializable
         return $this;
     }
 
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return get_object_vars($this);

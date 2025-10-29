@@ -30,3 +30,7 @@ services:
     arguments:
       - '@TrustedshopsAddon\Service\ChannelService'
       - '@TrustedshopsAddon\Service\CredentialsService'
+
+  TrustedshopsAddon\Service\UpgradeService:
+    public: true
+    class: TrustedshopsAddon\Service\UpgradeService

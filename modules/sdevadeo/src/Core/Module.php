@@ -39,10 +39,11 @@ final class Module
 {
     const NAME = 'sdevadeo';
     const DOCUMENTATION = array(
-        'EN' => 'https://support.marketplace.adeo.com/hc/en-150/articles/8780501182865-Prestashop-module-configuration-and-guidelines',
-        'FR' => 'https://support.marketplace.adeo.com/hc/fr/articles/8780501182865-Installation-du-module-Prestashop-et-configuration',
-        'IT' => 'https://support.marketplace.adeo.com/hc/it/articles/8780501182865-PrestaShop-configurazione-del-modulo-e-linee-guida',
-        'ES' => 'https://support.marketplace.adeo.com/hc/es/articles/8780501182865-Instalaci%C3%B3n-del-m%C3%B3dulo-prestashop-y-configuraci%C3%B3n',
+        'EN' => 'https://support.marketplace.adeo.com/hc/en-150/articles/13953425767825-Prestashop-Module-Configuration-and-Guidelines',
+        'FR' => 'https://support.marketplace.adeo.com/hc/fr/articles/13953425767825-Module-Prestashop-Configuration-et-Guide',
+        'IT' => 'https://support.marketplace.adeo.com/hc/it/articles/13953425767825-Modulo-Prestashop-Configurazione-e-guida',
+        'ES' => 'https://support.marketplace.adeo.com/hc/es/articles/13953425767825-M%C3%B3dulo-de-Prestashop-Configuraci%C3%B3n-e-instrucciones',
+        'PT' => 'https://support.marketplace.adeo.com/hc/pt-pt/articles/13953425767825-M%C3%B3dulo-Prestashop-Configura%C3%A7%C3%A3o-e-guia',
     );
     /**
      * Get the module's documentations list.

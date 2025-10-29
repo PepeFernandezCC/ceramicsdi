@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\Service;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 use TrustedshopsAddon\Handler\OrderConfirmationHandler;
 use TrustedshopsAddon\Handler\TrustbadgeHandler;
 use TrustedshopsAddon\Handler\WidgetHandler;
@@ -134,8 +138,8 @@ class HookService
     }
 
     /**
-     * @param string $idShop
-     * @param string $idLang
+     * @param int|null $idShop
+     * @param int|mixed $idLang
      * @param int $idOrder
      *
      * @return OrderModel|null
@@ -156,6 +160,6 @@ class HookService
         return $orderHandler
             ->setIdShop($idShop)
             ->setIdLang($idLang)
-            ->handle($idOrder, (bool) $channel->products_review_invites);
+            ->handle($idOrder, true);
     }
 }

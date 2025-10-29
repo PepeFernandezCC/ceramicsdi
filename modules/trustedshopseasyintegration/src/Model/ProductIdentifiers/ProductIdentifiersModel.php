@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\Model\ProductIdentifiers;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 class ProductIdentifiersModel implements \JsonSerializable
 {
     /**
@@ -80,6 +84,7 @@ class ProductIdentifiersModel implements \JsonSerializable
         return $this;
     }
 
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return $this->getProductIdentifiers();

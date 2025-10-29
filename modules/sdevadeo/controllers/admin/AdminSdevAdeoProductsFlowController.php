@@ -76,6 +76,44 @@ final class AdminSdevAdeoProductsFlowController extends AbstractModuleAdminContr
         return parent::renderList();
     }
 
+    public function ajaxProcessDeleteProductFlow()
+    {
+        try {
+            $dir = dirname(dirname(dirname(__FILE__))) . '/fluxs/products/' . str_replace('-', '_', Tools::str2url($this->context->shop->name));
+            $file_url = $dir . '/Products.csv';
+            unlink($file_url);
+        } catch (Exception $e) {
+            die(json_encode([
+                'hasError' => true,
+                'errorMessage' => [$e->getMessage()]
+            ]));
+        }
+
+        die(json_encode([
+            'hasError' => false,
+            'errorMessage' => $this->module->l('Flux successfully canceled and file has been deleted'),
+        ]));
+    }
+
+    public function ajaxProcessDeleteOfferFlow()
+    {
+        try {
+            $dir = dirname(dirname(dirname(__FILE__))) . '/fluxs/offers/' . str_replace('-', '_', Tools::str2url($this->context->shop->name));
+            $file_url = $dir . '/Offers.csv';
+            unlink($file_url);
+        } catch (Exception $e) {
+            die(json_encode([
+                'hasError' => true,
+                'errorMessage' => [$e->getMessage()]
+            ]));
+        }
+
+        die(json_encode([
+            'hasError' => false,
+            'errorMessage' => $this->module->l('Flux successfully canceled and file has been deleted'),
+        ]));
+    }
+
     public function ajaxProcessGenerateProductFlow()
     {
         // Stop if a similar action is being processed

@@ -103,8 +103,19 @@ final class RetrievesOrdersAction extends AbstractAction
             }
         }
 
-        $result['collection'][] = $orderList;
+        foreach($orderList as &$order){
+            $cms = \Db::getInstance()->getRow(
+                'SELECT id_order FROM ' . _DB_PREFIX_ . 'orders
+                    WHERE mp_order_id = \'' . $order['order_id'] . '\''
+            );
 
+            if(!empty($cms)) {
+                $order['cms_id'] = $cms['id_order'];
+            }
+        }
+
+        $result['collection'][] = $orderList;
+        
         if (Configuration::updateValue(Configuration::LAST_ORDER_UPDATE_DATE, date('d-m-Y H:i:s'))) {
             return $result;
         }

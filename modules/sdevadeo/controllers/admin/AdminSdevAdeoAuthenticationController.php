@@ -158,7 +158,8 @@ final class AdminSdevAdeoAuthenticationController extends AbstractModuleAdminCon
                     Configuration::getValue(Configuration::API_ENV)
                 )
                 ->getResponse();
-            Configuration::updateValue(Configuration::SHOP_CHANNELS, implode($response->getShop()->getChannels(), ','));
+
+            Configuration::updateValue(Configuration::SHOP_CHANNELS, implode(',', $response->getShop()->getChannels()));
             Configuration::updateValue(Configuration::LAST_SHOP_INFO_IMPORT_DATE, date('d-m-Y H:i:s'));
 
             $result['errorMessage'][] = $this->module->l('Information successfully updated !');

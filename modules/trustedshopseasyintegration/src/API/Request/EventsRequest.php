@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\API\Request;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 use TrustedshopsAddon\API\Response\EventsResponse;
 
 class EventsRequest extends AbstractRequest

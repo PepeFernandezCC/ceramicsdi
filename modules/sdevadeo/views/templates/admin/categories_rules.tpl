@@ -65,7 +65,7 @@
                 {l s='Category rules :' mod='sdevadeo'}
             </label>
 
-            <div class="col-sm-10" id="category-rules-panel">
+            <div class="col-sm-12" id="category-rules-panel">
                 <table class="table table-hover">
                     <thead>
                         <tr class="{if !empty($logisticClass)}hidden {/if}no-logistic-class">
@@ -182,19 +182,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="form-group">
-                        {* SHIPPING COST *}
-                        <label class="col-sm-2 control-label" for="category-rule-cost-adjustment">
-                            {l s='Price adjustement' mod='sdevadeo'}
-                        </label>
 
-                        <div class="col-3">
-                            <div class="input-group">
-                                <input class="form-control col-3" type="number" id="category-rule-cost-adjustment" name="category-rule-cost-adjustment">
-                                <span class="input-group-addon">{l s=' % costs calculated in the product price (incl. taxes)' mod='sdevadeo'}</span>
-                            </div>
-                        </div>
-                    </div>
                     <div class="form-group hidden">
                         <label class="col-sm-2 control-label" for="category-rule-cost-applied">
                             {l s='Adjuste the price if the product already has forced price' mod='sdevadeo'}
@@ -213,6 +201,35 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <div class="form-group  {if $use_weight == 0}hidden{/if}">
+                        {* WEIGHT MIN *}
+                        <label class="col-sm-2 control-label" for="category-rule-weight-min">
+                            {l s='Weight min' mod='sdevadeo'}
+                        </label>
+
+                        <div class="col-sm-10">
+                            <input class="form-control" type="number" id="category-rule-weight-min" name="category-rule-weight-min" placeholder="{l s='Please enter a number in kg' mod='sdevadeo'}">
+                            <p class="profile-help">
+                                {l s='Min weight to apply this rule.' mod='sdevadeo'}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="form-group {if $use_weight == 0}hidden{/if}">
+                        {* WEIGHT MAX *}
+                        <label class="col-sm-2 control-label" for="category-rule-weight-max">
+                            {l s='Weight max' mod='sdevadeo'}
+                        </label>
+
+                        <div class="col-sm-10">
+                            <input class="form-control" type="number" id="category-rule-weight-max" name="category-rule-weight-max" placeholder="{l s='Please enter a number in kg ' mod='sdevadeo'}">
+                            <p class="profile-help">
+                                {l s='Max weight to apply this rule.' mod='sdevadeo'}
+                            </p>
+                        </div>
+                    </div>
+
                     {* PRICING RULES CONFIGURATION *}
                     <fieldset class="form-group hidden">
                         <label class="col-sm-2 control-label" for="price-rule-panel">
@@ -225,6 +242,7 @@
                             <table class="table table-hover">
                                 <thead>
                                 <tr>
+                                    <th>{l s='Select the countries to apply' mod='sdevadeo'}</th>
                                     <th>{l s='Min price (included)' mod='sdevadeo'}</th>
                                     <th>{l s='Max price (excluded)' mod='sdevadeo'}</th>
                                     <th>{l s='Value' mod='sdevadeo'}</th>
@@ -240,6 +258,21 @@
                                 </tbody>
                                 <tfoot id="pricing-rule-foot" class="hidden">
                                 <tr>
+                                    <td class="form-group">
+                                        {* COUNTRY TO APPLY *}
+                                        <label class="col-sm-2 control-label" for="category-rule-logistic-class">
+                                            
+                                        </label>
+                
+                                        <div class="col-sm-10">
+                                            <select name="category-rule-countries" id="category-rule-countries" multiple>
+                                                {foreach $channels as $code => $country}
+                                                    <option value="{$code}">{$country['name']}</option>
+                                                {/foreach}
+                                            </select>
+                                            <p class="profile-help">{l s='Leave empty to apply to all' mod='sdevadeo'}.</p>
+                                        </div>
+                                    </td>
                                     <td>
                                         <div class="col-sm-10">
                                             <input class="form-control" type="number" id="min-price-rule" name="min-price-rule">

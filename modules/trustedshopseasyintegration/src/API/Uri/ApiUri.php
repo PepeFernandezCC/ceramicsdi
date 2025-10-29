@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\API\Uri;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 class ApiUri extends AbstractUri
 {
     protected $host = TS_API_URL;

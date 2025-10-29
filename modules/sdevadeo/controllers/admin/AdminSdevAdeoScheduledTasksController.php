@@ -55,7 +55,7 @@ final class AdminSdevAdeoScheduledTasksController extends AbstractModuleAdminCon
             'context' => $context,
             'module_url' => Tools::getShopDomain(true) . _MODULE_DIR_ . $this->module->name . '/',
             'token' => Configuration::getValue(Configuration::MODULE_TOKEN),
-            'shop_list' => array_reverse(Shop::getShops()),
+            'shops_list' => array_reverse(Shop::getShops()),
             'document_root' => dirname(dirname(dirname(__FILE__))).'/cron/',
         ));
 

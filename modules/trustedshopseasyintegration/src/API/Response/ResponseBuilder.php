@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\API\Response;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 use InvalidArgumentException;
 
 /**

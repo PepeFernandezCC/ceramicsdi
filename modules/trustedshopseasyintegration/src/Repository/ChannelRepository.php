@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\Repository;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 use Db;
 use DbQuery;
 use TrustedshopsChannel;
@@ -81,7 +85,7 @@ class ChannelRepository
      * @param int $idShop
      * @param int $idLang
      *
-     * @return false|string|null
+     * @return int|null
      */
     public function getChannelByClientIdLangShop($clientId, $idShop, $idLang)
     {
@@ -92,7 +96,9 @@ class ChannelRepository
             ->where('id_lang = ' . (int) $idLang)
             ->where('id_shop = ' . (int) $idShop);
 
-        return Db::getInstance()->getValue($query);
+        $idChannel = Db::getInstance()->getValue($query);
+
+        return $idChannel !== false ? (int) $idChannel : null;
     }
 
     public function getChannelsByChannelId($clientId, $channelId, $idLang = null, $idShop = null)

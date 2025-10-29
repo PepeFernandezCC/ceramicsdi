@@ -85,7 +85,8 @@ SDEVADEO.controller.admin.ordersFlow = {
                                 let orderTab = body;
                                 let trNode = document.createElement('tr');
                                 let tdNode = document.createElement('td');
-                                if (element['order_state'] !== 'WAITING_DEBIT_PAYMENT') {
+                                console.log(element['cms_id']);
+                                if (element['order_state'] !== 'WAITING_DEBIT_PAYMENT' && element['cms_id'] == undefined) {
                                     let inputNode = document.createElement('input');
                                     inputNode.setAttribute('type', 'checkbox');
                                     inputNode.classList.add('sdev-checkbox-accept-order-' + element['order_id']);
@@ -95,7 +96,7 @@ SDEVADEO.controller.admin.ordersFlow = {
 
                                 // Handle marketplace order id
                                 tdNode = document.createElement('td');
-                                tdNode.textContent = element['order_id'];
+                                tdNode.textContent = element['order_id'] +  ' (id: ' + (element['cms_id'] || '-') + ')';
                                 trNode.appendChild(tdNode);
 
                                 // Handle creation date
@@ -152,7 +153,7 @@ SDEVADEO.controller.admin.ordersFlow = {
                                         node.classList.add('success');
                                     })
                                 }
-                                trNode.setAttribute('mp_order_id', element['order_id']);
+                                trNode.setAttribute('data-mp-order-id', element['order_id']);
                                 orderTab.appendChild(trNode);
                             }
                         })
@@ -184,7 +185,7 @@ SDEVADEO.controller.admin.ordersFlow = {
         module.querySelector('#success-notification').innerHTML = "";
         let elements = [];
         module.querySelectorAll("td input[class^=\'sdev-checkbox-accept-order-\']:checked").forEach(function(element){
-            elements.push(element.parentElement.nextSibling.textContent);
+            elements.push(element.parentElement.parentElement.dataset.mpOrderId);
         });
         if (elements.length > 0) {
             $.ajax({
@@ -203,7 +204,7 @@ SDEVADEO.controller.admin.ordersFlow = {
                                 let pNode = document.createElement('p');
                                 pNode.textContent = '['+stateName['SUCCESS']+'] '+Object.keys(mpOrder)[0];
                                 module.querySelector('#success-notification').appendChild(pNode);
-                                document.querySelector('#display-orders [mp_order_id="'+Object.keys(mpOrder)[0]+'"]').remove();
+                                document.querySelector('#display-orders [data-mp-order-id="'+Object.keys(mpOrder)[0]+'"]').remove();
                             })
                         }
                         if (response['shipping']['error'] !== undefined) {
@@ -217,11 +218,11 @@ SDEVADEO.controller.admin.ordersFlow = {
                     }
                     if (response['accepted'] !== undefined) {
                         response['accepted'].forEach(function (mpOrder) {
-                            document.querySelectorAll('#display-orders [mp_order_id="'+mpOrder+'"] td').forEach(function(element){
+                            document.querySelectorAll('#display-orders [data-mp-order-id="'+mpOrder+'"] td').forEach(function(element){
                                 element.classList.remove('success');
                                 element.classList.add('info');
                             });
-                            document.querySelector('#display-orders [mp_order_id="'+mpOrder+'"] .mp_order_state').textContent = stateName['WAITING_DEBIT_PAYMENT'];
+                            document.querySelector('#display-orders [data-mp-order-id="'+mpOrder+'"] .mp_order_state').textContent = stateName['WAITING_DEBIT_PAYMENT'];
                         })
                     }
                 },

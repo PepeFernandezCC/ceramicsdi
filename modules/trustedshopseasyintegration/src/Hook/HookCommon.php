@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\Hook;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 use Context;
 use Dispatcher;
 use Media;

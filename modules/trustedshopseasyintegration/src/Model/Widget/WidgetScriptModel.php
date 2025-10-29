@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\Model\Widget;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 class WidgetScriptModel
 {
     /**

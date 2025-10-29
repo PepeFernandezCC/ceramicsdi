@@ -47,6 +47,7 @@ final class SdevAdeoPricingRule extends AbstractObjectModel
     const COLUMN_VALUE = 'value';
     const COLUMN_TYPE_PERCENT = 'typePercent';
     const COLUMN_CATEGORY_RULE = 'categoryRule';
+    const COLUMN_COUNTRIES = 'countries';
     const COLUMN_CREATION_DATE = 'creation_date';
     const COLUMN_UPDATE_DATE = 'update_date';
 
@@ -95,6 +96,13 @@ final class SdevAdeoPricingRule extends AbstractObjectModel
     public $categoryRule;
 
     /**
+     * Category that deal with the product rule
+     *
+     * @var string
+     */
+    public $countries;
+
+    /**
      * The table's definition.
      *
      * @var array
@@ -128,6 +136,11 @@ final class SdevAdeoPricingRule extends AbstractObjectModel
                 'validate' => 'isInt',
                 'required' => true,
             ),
+            self::COLUMN_COUNTRIES => array(
+                'type' => self::TYPE_STRING,
+                'validate' => 'isString',
+                'required' => false,
+            ),
             self::COLUMN_CREATION_DATE => array(
                 'type' => self::TYPE_DATE,
                 'validate' => 'isDate',
@@ -156,6 +169,7 @@ final class SdevAdeoPricingRule extends AbstractObjectModel
                 `'.self::COLUMN_VALUE.'` FLOAT NOT NULL,
                 `'.self::COLUMN_TYPE_PERCENT.'` TINYINT(1) NOT NULL,
                 `'.self::COLUMN_CATEGORY_RULE.'` INT(11) UNSIGNED NOT NULL,
+                `'.self::COLUMN_COUNTRIES.'` TEXT NULL,
                 `'.self::COLUMN_CREATION_DATE.'` TIMESTAMP DEFAULT \'0000-00-00 00:00:00\',
                 `'.self::COLUMN_UPDATE_DATE.'` TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
                 PRIMARY KEY (`'.self::COLUMN_ID.'`),
@@ -324,6 +338,30 @@ final class SdevAdeoPricingRule extends AbstractObjectModel
     public function setUpdateDate(DateTimeInterface $update_date)
     {
         $this->update_date = $update_date;
+        return $this;
+    }
+
+    /**
+     * Get category that deal with the product rule
+     *
+     * @return string
+     */ 
+    public function getCountries()
+    {
+        return $this->countries;
+    }
+
+    /**
+     * Set category that deal with the product rule
+     *
+     * @param string $countries  Category that deal with the product rule
+     *
+     * @return self
+     */ 
+    public function setCountries(string $countries)
+    {
+        $this->countries = $countries;
+
         return $this;
     }
 }

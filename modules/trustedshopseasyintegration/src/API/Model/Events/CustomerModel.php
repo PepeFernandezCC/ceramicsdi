@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\API\Model\Events;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 use InvalidArgumentException;
 use TrustedshopsAddon\API\Model\AbstractModel;
 
@@ -86,7 +90,7 @@ class CustomerModel extends AbstractModel
     protected $mobile;
 
     /**
-     * @var int
+     * @var string
      */
     protected $reference;
 
@@ -213,7 +217,7 @@ class CustomerModel extends AbstractModel
     }
 
     /**
-     * @return int
+     * @return string
      */
     public function getReference()
     {
@@ -221,18 +225,14 @@ class CustomerModel extends AbstractModel
     }
 
     /**
-     * @param int $reference
+     * @param string $reference
      *
      * @return CustomerModel
      */
     public function setReference($reference)
     {
-        if (is_string($reference) === true) {
-            $this->reference = $reference;
+        $this->reference = $reference;
 
-            return $this;
-        }
-
-        throw new InvalidArgumentException('Customer reference must be a string but ' . gettype($reference) . ' is given.');
+        return $this;
     }
 }

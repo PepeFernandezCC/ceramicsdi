@@ -44,6 +44,7 @@ final class SdevAdeoCarrierRule extends AbstractObjectModel
 
     const COLUMN_ID = 'id';
     const COLUMN_INTERNAL_CARRIER_ID = 'internalCarrierId';
+    const COLUMN_COUNTRY_ISO = 'countryIso';
     const COLUMN_MARKETPLACE_SHIPMENT = 'marketplaceShippingCode';
     const COLUMN_CREATION_DATE = 'creation_date';
     const COLUMN_UPDATE_DATE = 'update_date';
@@ -65,6 +66,13 @@ final class SdevAdeoCarrierRule extends AbstractObjectModel
     public $internalCarrierId;
 
     /**
+     * ID of the prestashop carrier linked
+     *
+     * @var string
+     */
+    public $countryIso;
+
+    /**
      * Code of the marketplace's carrier
      *
      * @var string
@@ -83,6 +91,11 @@ final class SdevAdeoCarrierRule extends AbstractObjectModel
             self::COLUMN_INTERNAL_CARRIER_ID => array(
                 'type' => self::TYPE_INT,
                 'validate' => 'isUnsignedInt',
+                'required' => true,
+            ),
+            self::COLUMN_COUNTRY_ISO => array(
+                'type' => self::TYPE_STRING,
+                'validate' => 'isString',
                 'required' => true,
             ),
             self::COLUMN_MARKETPLACE_SHIPMENT => array(
@@ -115,6 +128,7 @@ final class SdevAdeoCarrierRule extends AbstractObjectModel
                 `'.self::COLUMN_ID.'` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
                 `'.self::COLUMN_INTERNAL_CARRIER_ID.'` INT(10) UNSIGNED NOT NULL,
                 `'.self::COLUMN_MARKETPLACE_SHIPMENT.'` VARCHAR(32) NOT NULL,
+                `'.self::COLUMN_COUNTRY_ISO.'` ENUM(\'FR\',\'IT\',\'ES\',\'PT\') NOT NULL,
                 `'.self::COLUMN_CREATION_DATE.'` TIMESTAMP DEFAULT \'0000-00-00 00:00:00\',
                 `'.self::COLUMN_UPDATE_DATE.'` TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
                 PRIMARY KEY (`'.self::COLUMN_ID.'`),
@@ -164,12 +178,13 @@ final class SdevAdeoCarrierRule extends AbstractObjectModel
      * @param $reference
      * @return false|string
      */
-    public static function findIdCarrierByMpReference($reference)
+    public static function findIdCarrierByMpReference($reference, $countryIso)
     {
         $reference = Db::getInstance()->getValue((new \DbQuery())
             ->select(self::COLUMN_INTERNAL_CARRIER_ID)
             ->from(self::getTableName())
             ->where(self::COLUMN_MARKETPLACE_SHIPMENT.' = \''.pSQL($reference).'\'')
+            ->where(self::COLUMN_COUNTRY_ISO.' = \''.pSQL($countryIso).'\'')
         );
         return \Carrier::getCarrierByReference($reference)->id;
     }
@@ -225,6 +240,30 @@ final class SdevAdeoCarrierRule extends AbstractObjectModel
     public function setMarketplaceShippingCode($marketplaceShippingCode)
     {
         $this->marketplaceShippingCode = $marketplaceShippingCode;
+        return $this;
+    }
+
+    /**
+     * Get iD of the prestashop carrier linked
+     *
+     * @return string
+     */ 
+    public function getCountryIso()
+    {
+        return $this->countryIso;
+    }
+
+    /**
+     * Set iD of the prestashop carrier linked
+     *
+     * @param string $countryIso  ID of the prestashop carrier linked
+     *
+     * @return self
+     */ 
+    public function setCountryIso(string $countryIso)
+    {
+        $this->countryIso = $countryIso;
+
         return $this;
     }
 }

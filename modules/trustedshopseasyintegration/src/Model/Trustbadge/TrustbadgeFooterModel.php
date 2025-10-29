@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\Model\Trustbadge;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 class TrustbadgeFooterModel
 {
     protected $tag = 'script';

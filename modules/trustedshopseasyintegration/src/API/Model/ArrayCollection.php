@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\API\Model;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 use ArrayObject;
 
 class ArrayCollection extends ArrayObject

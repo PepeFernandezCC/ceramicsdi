@@ -23,6 +23,7 @@
  * Support: support@scaledev.fr
  */
 
+use Scaledev\Adeo\Component\Configuration;
 use Scaledev\Adeo\Core\Controller\Admin\AbstractModuleAdminController;
 use Scaledev\Adeo\Core\Tools;
 
@@ -69,6 +70,7 @@ final class AdminSdevAdeoCategoriesMappingController extends AbstractModuleAdmin
         }
         $this->context->smarty->assign(array(
             'root' => $root,
+            'use_weight' => (int)Configuration::getValue(Configuration::USE_WEIGHT),
             'rootDirectChild' => $first_level_categories,
             'category_rules' => SdevAdeoCategoryRule::findAll(),
             'category_mapping' => $categoryMapping,

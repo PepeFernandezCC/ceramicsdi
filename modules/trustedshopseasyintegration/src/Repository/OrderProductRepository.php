@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\Repository;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 use Db;
 use DbQuery;
 

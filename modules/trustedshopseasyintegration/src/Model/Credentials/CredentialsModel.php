@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\Model\Credentials;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 class CredentialsModel implements \JsonSerializable
 {
     /**
@@ -105,6 +109,7 @@ class CredentialsModel implements \JsonSerializable
         return $this;
     }
 
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return get_object_vars($this);

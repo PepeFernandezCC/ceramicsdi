@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\API\Response;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 use TrustedshopsAddon\API\Model\Error;
 
 class ErrorResponse extends AbstractResponse

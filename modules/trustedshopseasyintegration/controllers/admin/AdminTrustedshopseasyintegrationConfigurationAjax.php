@@ -50,6 +50,9 @@
  * yup                 MIT     Copyright (c) 2014 (Jason Quense)
  * zustand             MIT     Copyright (c) 2019 (Paul Henschel)
  */
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 use TrustedshopsAddon\Model\Credentials\CredentialsModel;
 use TrustedshopsAddon\Model\ExportOrders\ExportOrderModel;
@@ -64,6 +67,7 @@ use TrustedshopsAddon\Model\Trustbadge\TrustbadgeModel;
 use TrustedshopsAddon\Model\Widget\WidgetModel;
 use TrustedshopsAddon\Service\ChannelService;
 use TrustedshopsAddon\Service\CredentialsService;
+use TrustedshopsAddon\Service\OrderStatusService;
 use TrustedshopsAddon\Utils\ServiceContainer;
 
 class AdminTrustedshopseasyintegrationConfigurationAjaxController extends ModuleAdminController
@@ -83,11 +87,17 @@ class AdminTrustedshopseasyintegrationConfigurationAjaxController extends Module
      */
     protected $channelService;
 
+    /**
+     * @var OrderStatusService
+     */
+    protected $orderService;
+
     public function __construct()
     {
         parent::__construct();
         $this->credentialsService = ServiceContainer::getInstance()->get(CredentialsService::class);
         $this->channelService = ServiceContainer::getInstance()->get(ChannelService::class);
+        $this->orderService = ServiceContainer::getInstance()->get(OrderStatusService::class);
     }
 
     public function displayAjaxGetCredentials()
@@ -99,7 +109,7 @@ class AdminTrustedshopseasyintegrationConfigurationAjaxController extends Module
             $this->ajaxDie(json_encode($response));
         } catch (Exception $e) {
             $response = (new ErrorResponse())
-                ->setMessage($this->l('Failed to get credentials'));
+                ->setMessage($this->module->l('Failed to get credentials'));
             $this->ajaxDie(json_encode($response));
         }
     }
@@ -125,12 +135,12 @@ class AdminTrustedshopseasyintegrationConfigurationAjaxController extends Module
 
             $response = (new SuccessNotificationResponse())
                 ->setData($credentialModel)
-                ->setMessage($this->l('Credentials saved'));
+                ->setMessage($this->module->l('Credentials saved'));
 
             $this->ajaxDie(json_encode($response));
         } catch (Exception $e) {
             $response = (new ErrorResponse())
-                ->setMessage($this->l('Failed to save credentials'));
+                ->setMessage($this->module->l('Failed to save credentials'));
             $this->ajaxDie(json_encode($response));
         }
     }
@@ -144,7 +154,7 @@ class AdminTrustedshopseasyintegrationConfigurationAjaxController extends Module
             $this->ajaxDie(json_encode($response));
         } catch (Exception $e) {
             $response = (new ErrorResponse())
-                ->setMessage($this->l('Failed to get mapped channels'));
+                ->setMessage($this->module->l('Failed to get mapped channels'));
             $this->ajaxDie(json_encode($response));
         }
     }
@@ -158,7 +168,7 @@ class AdminTrustedshopseasyintegrationConfigurationAjaxController extends Module
             $this->ajaxDie(json_encode($response));
         } catch (Exception $e) {
             $response = (new ErrorResponse())
-                ->setMessage($this->l('Failed to get sales channels'));
+                ->setMessage($this->module->l('Failed to get sales channels'));
             $this->ajaxDie(json_encode($response));
         }
     }
@@ -185,7 +195,7 @@ class AdminTrustedshopseasyintegrationConfigurationAjaxController extends Module
             $this->ajaxDie(json_encode($response));
         } catch (Exception $e) {
             $response = (new ErrorResponse())
-                ->setMessage($this->l('Failed to load product review'));
+                ->setMessage($this->module->l('Failed to load product review'));
             $this->ajaxDie(json_encode($response));
         }
     }
@@ -209,7 +219,7 @@ class AdminTrustedshopseasyintegrationConfigurationAjaxController extends Module
             $this->ajaxDie(json_encode($response));
         } catch (Exception $e) {
             $response = (new ErrorResponse())
-                ->setMessage($this->l('Failed to load trustbadge'));
+                ->setMessage($this->module->l('Failed to load trustbadge'));
             $this->ajaxDie(json_encode($response));
         }
     }
@@ -232,11 +242,11 @@ class AdminTrustedshopseasyintegrationConfigurationAjaxController extends Module
             $trustbadgeSaveResult = $this->channelService->saveTrustbadgeConfig($trustbadgeModel);
             $response = (new SuccessNotificationResponse())
                 ->setData($trustbadgeSaveResult)
-                ->setMessage($this->l('Trustbadge configuration saved successfully'));
+                ->setMessage($this->module->l('Trustbadge configuration saved successfully'));
             $this->ajaxDie(json_encode($response));
         } catch (Exception $e) {
             $response = (new ErrorResponse())
-                ->setMessage($this->l('Failed to save trustabadge config'));
+                ->setMessage($this->module->l('Failed to save trustabadge config'));
             $this->ajaxDie(json_encode($response));
         }
     }
@@ -260,7 +270,7 @@ class AdminTrustedshopseasyintegrationConfigurationAjaxController extends Module
             $this->ajaxDie(json_encode($response));
         } catch (Exception $e) {
             $response = (new ErrorResponse())
-                ->setMessage($this->l('Failed to load widget'));
+                ->setMessage($this->module->l('Failed to load widget'));
             $this->ajaxDie(json_encode($response));
         }
     }
@@ -283,11 +293,11 @@ class AdminTrustedshopseasyintegrationConfigurationAjaxController extends Module
             $widgetModel = $this->channelService->saveWidgetConfig($widgetModel);
             $response = (new SuccessNotificationResponse())
                 ->setData($widgetModel)
-                ->setMessage($this->l('Widget configuration saved successfully'));
+                ->setMessage($this->module->l('Widget configuration saved successfully'));
             $this->ajaxDie(json_encode($response));
         } catch (Exception $e) {
             $response = (new ErrorResponse())
-                ->setMessage($this->l('Failed to save widget config'));
+                ->setMessage($this->module->l('Failed to save widget config'));
             $this->ajaxDie(json_encode($response));
         }
     }
@@ -312,13 +322,13 @@ class AdminTrustedshopseasyintegrationConfigurationAjaxController extends Module
                 ->setData($productReviewModel)
                 ->setMessage(
                     $isActive
-                        ? $this->l('Product review for channel activated')
-                        : $this->l('Product review for channel deactivated')
+                        ? $this->module->l('Product review for channel activated')
+                        : $this->module->l('Product review for channel deactivated')
                 );
             $this->ajaxDie(json_encode($response));
         } catch (Exception $e) {
             $response = (new ErrorResponse())
-                ->setMessage($this->l('Failed to save product review value'));
+                ->setMessage($this->module->l('Failed to save product review value'));
             $this->ajaxDie(json_encode($response));
         }
     }
@@ -341,12 +351,12 @@ class AdminTrustedshopseasyintegrationConfigurationAjaxController extends Module
 
             $response = (new SuccessNotificationResponse())
                 ->setData($this->channelService->getMappedChannels())
-                ->setMessage($this->l('Mapped channels saved'));
+                ->setMessage($this->module->l('Mapped channels saved'));
 
             $this->ajaxDie(json_encode($response));
         } catch (Exception $e) {
             $response = (new ErrorResponse())
-                ->setMessage($this->l('Failed to save mapped channels'));
+                ->setMessage($this->module->l('Failed to save mapped channels'));
             $this->ajaxDie(json_encode($response));
         }
     }
@@ -361,7 +371,7 @@ class AdminTrustedshopseasyintegrationConfigurationAjaxController extends Module
             $this->ajaxDie(json_encode($response));
         } catch (Exception $e) {
             $response = (new ErrorResponse())
-                ->setMessage($this->l('Failed to disconnect'));
+                ->setMessage($this->module->l('Failed to disconnect'));
             $this->ajaxDie(json_encode($response));
         }
     }
@@ -372,12 +382,14 @@ class AdminTrustedshopseasyintegrationConfigurationAjaxController extends Module
             $idChannel = Tools::getValue('idChannel', false);
             $salesChannelRef = Tools::getValue('salesChannelRef', false);
             $numberOfDays = (int) Tools::getValue('numberOfDays', 0);
+            $includeProductData = Tools::getValue('includeProductData', 'false');
 
             if (empty($idChannel) || empty($salesChannelRef)) {
                 throw new PrestaShopException('Failed to export orders');
             }
 
             $exportModel = (new ExportOrderModel())
+                ->setIncludeProductData($includeProductData === 'false' ? false : true)
                 ->setIdChannel($idChannel)
                 ->setSalesChannelRef($salesChannelRef)
                 ->setNumberOfDays($numberOfDays);
@@ -389,7 +401,7 @@ class AdminTrustedshopseasyintegrationConfigurationAjaxController extends Module
             $this->ajaxDie(json_encode($response));
         } catch (Exception $e) {
             $response = (new ErrorResponse())
-                ->setMessage($this->l('Failed to export orders'));
+                ->setMessage($this->module->l('Failed to export orders'));
             $this->ajaxDie(json_encode($response));
         }
     }
@@ -409,7 +421,48 @@ class AdminTrustedshopseasyintegrationConfigurationAjaxController extends Module
             $this->ajaxDie(json_encode($response));
         } catch (Exception $e) {
             $response = (new ErrorResponse())
-                ->setMessage($this->l('Failed to load order status events state'));
+                ->setMessage($this->module->l('Failed to load order status events state'));
+            $this->ajaxDie(json_encode($response));
+        }
+    }
+
+    public function displayAjaxGetOrderStatusEvent()
+    {
+        try {
+            $idChannel = Tools::getValue('idChannel', false);
+            $salesChannelRef = Tools::getValue('salesChannelRef', false);
+            if (empty($idChannel) || empty($salesChannelRef)) {
+                throw new PrestaShopException('Failed to load order status events state');
+            }
+
+            $orderStatusModel = $this->channelService->getOrderStatusForChannel($idChannel, $salesChannelRef);
+            $response = (new SuccessResponse())
+                ->setData($orderStatusModel->getStatus());
+
+            $this->ajaxDie(json_encode($response));
+        } catch (Exception $e) {
+            $response = (new ErrorResponse())
+                ->setMessage($this->module->l('Failed to load order status Event'));
+            $this->ajaxDie(json_encode($response));
+        }
+    }
+
+    public function displayAjaxGetUserOrderStatus()
+    {
+        try {
+            $idChannel = Tools::getValue('idChannel', false);
+            $salesChannelRef = Tools::getValue('salesChannelRef', false);
+            if (empty($idChannel) || empty($salesChannelRef)) {
+                throw new PrestaShopException('Failed to load order status events state');
+            }
+
+            $orderStatus = $this->orderService->getOrderStatus(true, $idChannel);
+
+            $response = (new SuccessResponse())->setData($orderStatus);
+            $this->ajaxDie(json_encode($response));
+        } catch (Exception $e) {
+            $response = (new ErrorResponse())
+                ->setMessage($this->module->l('Failed to load order status Event'));
             $this->ajaxDie(json_encode($response));
         }
     }
@@ -434,15 +487,62 @@ class AdminTrustedshopseasyintegrationConfigurationAjaxController extends Module
                 ->setData($orderStatusEventsModel)
                 ->setMessage(
                     $isActive
-                        ? $this->l('Order status events for channel activated')
-                        : $this->l('Order status events for channel deactivated')
+                        ? $this->module->l('Order status events for channel activated')
+                        : $this->module->l('Order status events for channel deactivated')
                 );
             $this->ajaxDie(json_encode($response));
         } catch (Exception $e) {
             $response = (new ErrorResponse())
-                ->setMessage($this->l('Failed to save order status events state'));
+                ->setMessage($this->module->l('Failed to save order status events state'));
             $this->ajaxDie(json_encode($response));
         }
+    }
+
+    public function displayAjaxSaveOrderStatusProductsServices()
+    {
+        try {
+            $idChannel = Tools::getValue('idChannel', false);
+            $salesChannelRef = Tools::getValue('salesChannelRef', false);
+            $activeStatus = Tools::getValue('activeStatus', false);
+            if (empty($idChannel) || empty($salesChannelRef)) {
+                throw new PrestaShopException('Failed to load order status events state');
+            }
+
+            $this->orderService->saveOrderStatus($activeStatus, $idChannel);
+
+            $response = (new SuccessNotificationResponse())
+                ->setData($activeStatus)
+                ->setMessage($this->module->l('Order status for product and service successfully saved'));
+
+            $this->ajaxDie(json_encode($response));
+        } catch (Exception $e) {
+            $response = (new ErrorResponse())->setMessage($this->module->l('Failed to save order status for product and service'));
+            $this->ajaxDie(json_encode($response));
+        }
+    }
+
+    public function displayAjaxSendInvite()
+    {
+        /** @var TrustedshopsAddon\Service\OrderStatusService $orderStatusService */
+        $orderStatusService = ServiceContainer::getInstance()->get(TrustedshopsAddon\Service\OrderStatusService::class);
+
+        $response = new ErrorResponse();
+        try {
+            $order = new Order(Tools::getValue('send_invite_order'));
+            if (Validate::isLoadedObject($order)) {
+                $response = new SuccessResponse();
+                $responseMessage = $orderStatusService->sendOrderStatusEvent($order, (int) $order->current_state, true);
+                $response->setData($responseMessage);
+            } else {
+                $responseMessage = sprintf($this->module->l('Order do not exist : %s'), Tools::getValue('send_invite_order'));
+            }
+        } catch (Exception $ex) {
+            $responseMessage = 'Error on launching - ' . $ex->getTraceAsString();
+        }
+        if ($response instanceof ErrorResponse) {
+            $response->setMessage($responseMessage);
+        }
+        $this->ajaxDie(json_encode($response));
     }
 
     /**
@@ -451,6 +551,11 @@ class AdminTrustedshopseasyintegrationConfigurationAjaxController extends Module
     protected function ajaxDie($value = null, $controller = null, $method = null)
     {
         header('Content-Type: application/json');
-        parent::ajaxDie($value, $controller, $method);
+        if (is_callable('parent::ajaxDie')) {
+            parent::ajaxDie($value, $controller, $method);
+        } elseif (method_exists($this, 'ajaxRender')) {
+            $this->ajaxRender($value, $controller, $method);
+            exit;
+        }
     }
 }

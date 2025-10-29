@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\API\Logger;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 
@@ -120,7 +124,7 @@ class ApiLogger
      */
     public function log($logModel)
     {
-        $this->logger->addInfo(json_encode($logModel->toArray()));
+        $this->logger->info(json_encode($logModel->toArray()));
     }
 
     /**
@@ -130,7 +134,7 @@ class ApiLogger
      */
     public function logInfo($info)
     {
-        $this->logger->addInfo($info);
+        $this->logger->info($info);
     }
 
     public static function getInstance()

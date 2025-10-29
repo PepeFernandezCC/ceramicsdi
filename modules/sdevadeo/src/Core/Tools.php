@@ -475,6 +475,28 @@ class Tools extends \ToolsCore
         }
     }
 
+    public static function getRuleByWeight($productWeight)
+    {
+        $query = (new DbQuery())
+            ->select('*')
+            ->from(
+                SdevAdeoCategoryRule::getTableName(),
+                'cr'
+            )
+            ->where(
+                'cr.weightMin < ' . (float)$productWeight . ' AND cr.weightMax > ' . (float)$productWeight
+            )
+        ;
+
+        $categoryRule = Db::getInstance()->getRow($query);
+
+        if ($categoryRule) {
+            $categoryRule['pricingRule'] = self::getPricingRule($categoryRule['id']);
+        }
+
+        return $categoryRule;
+    }
+
     /**
      * Return the pricing rule corresponding to the category rule
      *
@@ -484,7 +506,7 @@ class Tools extends \ToolsCore
     public static function getPricingRule($categoryRuleId)
     {
         $query = (new \DbQuery())
-            ->select('pr.minAmount, pr.maxAmount, pr.value as pricingRuleValue, pr.typePercent as pricingRuleTypePercent')
+            ->select('pr.minAmount, pr.maxAmount, pr.value as pricingRuleValue, pr.typePercent as pricingRuleTypePercent, pr.countries')
             ->from(\SdevAdeoPricingRule::getTableName(), 'pr')
             ->where('categoryRule = '.(int)$categoryRuleId);
         return Db::getInstance()->executeS($query);
@@ -525,6 +547,9 @@ class Tools extends \ToolsCore
                 break;
             case 205:
                 $error_msg = $module->l('Manufacturer not mapped');
+                break;
+            case 206:
+                $error_msg = $module->l('Product filtered');
                 break;
 
             // ERROR

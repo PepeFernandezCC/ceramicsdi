@@ -28,7 +28,22 @@ SDEVADEO.controller.admin.productsFlow = {
     nbProductsFiltered: 0,
     nbProductsInError: 0,
     currentProductsNb: 0,
-    generateProductFlow: function() {
+    generateProductFlow: function (url, event) {
+        const $this = this;
+        if (!event.srcElement.parentElement.classList.contains('disabled')) {
+            event.srcElement.parentElement.classList.add('disabled');
+            $this.init();
+            $this.handleProductBurst(0, 0);
+        }
+    },
+
+    cancelProductFlow: function () {
+        if (!document.querySelector('#product-flow .cancel').classList.contains('hidden')) {
+            document.querySelector('#product-flow .cancel').dataset.canceled = true;
+        }
+    },
+
+    init: function () {
         const $this = this;
         document.querySelector('[id="flux-prod-success"] .well').innerHTML = '';
         document.querySelector('[id="flux-prod-filtered"] .well').innerHTML = '';
@@ -38,22 +53,48 @@ SDEVADEO.controller.admin.productsFlow = {
         $this.nbProductsFiltered = 0;
         $this.nbProductsInError = 0;
         $this.currentProductsNb = 0;
-        SDEVADEO.handleButtons(true);
-        $this.handleProductBurst(0, 0);
+        SDEVADEO.handleButtons(false);
+        document.querySelector('#product-flow .cancel').classList.remove('hidden');
     },
 
-    handleProductBurst: function(currentProductsNb, nbProductsMax) {
+    deleteProductFlow: function () {
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                ajax: true,
+                action: 'deleteProductFlow'
+            },
+            success: function (response) {
+                if (response.hasError == false) {
+                    document.querySelector('#flux-notification-success').classList.remove('hidden');
+                    document.querySelector('#flux-notification-success').innerHTML = response.errorMessage;
+                } else {
+                    document.querySelector('#flux-notification-error').classList.remove('hidden');
+                    document.querySelector('#flux-notification-error').innerHTML = response.errorMessage;
+                }
+            },
+            error: function () {
+                console.log(response)
+            },
+        });
+    },
+
+    handleProductBurst: function (currentProductsNb, nbProductsMax) {
         const $this = this;
+        if (document.querySelector('#product-flow .cancel').dataset.canceled == 'true') {
+            $this.init();
+            $this.renderProgress();
+            $this.deleteProductFlow();
+            document.querySelector('#product-flow .disabled').classList.remove('disabled')
+            document.querySelector('#product-flow .cancel').dataset.canceled = false;
+            document.querySelector('#product-flow .cancel').classList.add('hidden');
+
+            return;
+        }
+
         $this.currentProductsNb = currentProductsNb;
-        document.querySelector('#flux-notification-error').innerHTML = '';
-        document.querySelector('#flux-notification-error').classList.add('hidden');
-        document.querySelector('#flux-notification-success').innerHTML = '';
-        document.querySelector('#flux-notification-success').classList.add('hidden');
-        let max;
-        let value;
-        let progressBar = document.querySelector('#product-flow progress');
-        let progressMessage = document.querySelector('#product-flow #nbProductsProcessed');
-        let percentProgressMessage = progressMessage.querySelector('#percent_value');
+
         $.ajax({
             type: 'POST',
             dataType: 'json',
@@ -81,22 +122,7 @@ SDEVADEO.controller.admin.productsFlow = {
                         $this.currentProductsNb += response.logs.length;
                     }
 
-                    document.querySelector('[aria-controls="flux-prod-success"] span').textContent = ($this.currentProductsNb - $this.nbProductsFiltered - $this.nbProductsInError).toString();
-                    document.querySelector('[aria-controls="flux-prod-filtered"] span').textContent = $this.nbProductsFiltered.toString();
-                    document.querySelector('[aria-controls="flux-prod-error"] span').textContent = $this.nbProductsInError.toString();
-
-                    max = $this.nbProductsMax.toString()
-                    value = $this.currentProductsNb.toString();
-                    let percent;
-                    if ((percent = ((value * 100) / max).toFixed(2)) > 100) {
-                        percent = 100;
-                    }
-                    percentProgressMessage.querySelector('span').innerHTML = percent.toString();
-                    progressMessage.querySelector('span').innerHTML = value + '/' + max;
-                    progressBar.setAttribute('max', max);
-                    progressBar.setAttribute('value', value);
-                    progressBar.classList.remove('hidden');
-                    progressMessage.classList.remove('hidden');
+                    let percent = $this.renderProgress();
 
                     if ($this.logs.length > 0) {
                         $this.logs.forEach(function (log) {
@@ -111,9 +137,11 @@ SDEVADEO.controller.admin.productsFlow = {
                         $this.handleProductBurst($this.currentProductsNb, $this.nbProductsMax);
                     } else {
                         SDEVADEO.handleButtons(false);
+                        document.querySelector('#product-flow .disabled').classList.remove('disabled')
                         document.querySelector('#product-flow button.download-flow-button').classList.remove('hidden');
                         document.querySelector('#product-logs-info').classList.remove('hidden');
                         document.querySelector('#no-product-logs-info').classList.add('hidden');
+                        document.querySelector('#product-flow .cancel').classList.add('hidden');
                     }
                 }
             },
@@ -131,7 +159,42 @@ SDEVADEO.controller.admin.productsFlow = {
         })
     },
 
-    sendProductFlow: function() {
+    renderProgress: function () {
+        const $this = this;
+        document.querySelector('#flux-notification-error').innerHTML = '';
+        document.querySelector('#flux-notification-error').classList.add('hidden');
+        document.querySelector('#flux-notification-success').innerHTML = '';
+        document.querySelector('#flux-notification-success').classList.add('hidden');
+        let max;
+        let value;
+        let progressBar = document.querySelector('#product-flow progress');
+        let progressMessage = document.querySelector('#product-flow #nbProductsProcessed');
+        let percentProgressMessage = progressMessage.querySelector('#percent_value');
+
+        document.querySelector('[aria-controls="flux-prod-success"] span').textContent = ($this.currentProductsNb - $this.nbProductsFiltered - $this.nbProductsInError).toString();
+        document.querySelector('[aria-controls="flux-prod-filtered"] span').textContent = $this.nbProductsFiltered.toString();
+        document.querySelector('[aria-controls="flux-prod-error"] span').textContent = $this.nbProductsInError.toString();
+
+        max = $this.nbProductsMax.toString()
+        value = $this.currentProductsNb.toString();
+        let percent;
+        if ((percent = ((value * 100) / max).toFixed(2)) > 100) {
+            percent = 100;
+        } else if (document.querySelector('#product-flow .cancel').dataset.canceled == 'true') {
+            percent = 0;
+        }
+
+        percentProgressMessage.querySelector('span').innerHTML = percent.toString();
+        progressMessage.querySelector('span').innerHTML = value + '/' + max;
+        progressBar.setAttribute('max', max);
+        progressBar.setAttribute('value', value);
+        progressBar.classList.remove('hidden');
+        progressMessage.classList.remove('hidden');
+
+        return percent;
+    },
+
+    sendProductFlow: function () {
         SDEVADEO.handleButtons(true);
         document.querySelector('[id="flux-prod-success"] .well').innerHTML = '';
         document.querySelector('[id="flux-prod-filtered"] .well').innerHTML = '';
@@ -156,7 +219,7 @@ SDEVADEO.controller.admin.productsFlow = {
                     notification = document.querySelector('#flux-notification-error');
                     notification.classList.remove('hidden');
                 }
-                response['errorMessage'].forEach(function(message) {
+                response['errorMessage'].forEach(function (message) {
                     let $childNode = document.createElement('p');
                     $childNode.innerHTML = message;
                     notification.appendChild($childNode);
@@ -171,8 +234,22 @@ SDEVADEO.controller.admin.productsFlow = {
         })
     },
 
-    generateOfferFlow: function ()
-    {
+    generateOfferFlow: function (url, event) {
+        const $this = this;
+        if (!event.srcElement.parentElement.classList.contains('disabled')) {
+            event.srcElement.parentElement.classList.add('disabled');
+            $this.initOfferFlow();
+            $this.handleOfferBurst(0, 0);
+        }
+    },
+
+    cancelOfferFlow: function () {
+        if (!document.querySelector('#offer-flow .cancel').classList.contains('hidden')) {
+            document.querySelector('#offer-flow .cancel').dataset.canceled = true;
+        }
+    },
+
+    initOfferFlow: function () {
         const $this = this;
         document.querySelector('[id="flux-offer-success"] .well').innerHTML = '';
         document.querySelector('[id="flux-offer-filtered"] .well').innerHTML = '';
@@ -183,13 +260,11 @@ SDEVADEO.controller.admin.productsFlow = {
         $this.nbProductsInError = 0;
         $this.currentProductsNb = 0;
         SDEVADEO.handleButtons(true);
-        $this.handleOfferBurst(0, 0);
+        document.querySelector('#offer-flow .cancel').classList.remove('hidden');
     },
 
-    handleOfferBurst: function(currentOffersNb, nbOffersMax) {
+    renderOfferFlowProgress: function () {
         const $this = this;
-        $this.currentOffersNb = currentOffersNb;
-        let flowType = document.querySelector('select[name="update-type"]').value;
         document.querySelector('#flux-notification-error').innerHTML = '';
         document.querySelector('#flux-notification-error').classList.add('hidden');
         document.querySelector('#flux-notification-success').innerHTML = '';
@@ -199,6 +274,45 @@ SDEVADEO.controller.admin.productsFlow = {
         let progressBar = document.querySelector('#offer-flow progress');
         let progressMessage = document.querySelector('#offer-flow #nbOffersProcessed');
         let percentProgressMessage = progressMessage.querySelector('#percent_value');
+
+        document.querySelector('[aria-controls="flux-offer-success"] span').textContent = ($this.currentProductsNb - $this.nbProductsFiltered - $this.nbProductsInError).toString();
+        document.querySelector('[aria-controls="flux-offer-filtered"] span').textContent = $this.nbProductsFiltered.toString();
+        document.querySelector('[aria-controls="flux-offer-error"] span').textContent = $this.nbProductsInError.toString();
+
+        max = $this.nbProductsMax.toString()
+        value = $this.currentProductsNb.toString();
+        let percent;
+        if (max === 0) {
+            percent = 100;
+        } else if ((percent = ((value * 100) / max).toFixed(2)) > 100) {
+            percent = 100;
+        }
+
+        percentProgressMessage.querySelector('span').innerHTML = percent.toString();
+        progressMessage.querySelector('span').innerHTML = value + '/' + max;
+        progressBar.setAttribute('max', max);
+        progressBar.setAttribute('value', value);
+        progressBar.classList.remove('hidden');
+        progressMessage.classList.remove('hidden');
+
+        return percent
+    },
+
+    handleOfferBurst: function (currentOffersNb, nbOffersMax) {
+        const $this = this;
+
+        if (document.querySelector('#offer-flow .cancel').dataset.canceled == 'true') {
+            $this.init();
+            $this.renderOfferFlowProgress();
+            $this.deleteOfferFlow();
+            document.querySelector('#offer-flow .disabled').classList.remove('disabled')
+            document.querySelector('#offer-flow .cancel').dataset.canceled = false;
+            document.querySelector('#offer-flow .cancel').classList.add('hidden');
+
+            return;
+        }
+        let flowType = document.querySelector('select[name="update-type"]').value;
+        $this.currentOffersNb = currentOffersNb;
         $.ajax({
             type: 'POST',
             dataType: 'json',
@@ -225,25 +339,6 @@ SDEVADEO.controller.admin.productsFlow = {
                     $this.nbProductsInError += response.nbOffersInError;
                     $this.currentProductsNb += response.logs.length;
 
-                    document.querySelector('[aria-controls="flux-offer-success"] span').textContent = ($this.currentProductsNb - $this.nbProductsFiltered - $this.nbProductsInError).toString();
-                    document.querySelector('[aria-controls="flux-offer-filtered"] span').textContent = $this.nbProductsFiltered.toString();
-                    document.querySelector('[aria-controls="flux-offer-error"] span').textContent = $this.nbProductsInError.toString();
-
-                    max = $this.nbProductsMax.toString()
-                    value = $this.currentProductsNb.toString();
-                    let percent;
-                    if (max === 0) {
-                        percent = 100;
-                    } else if ((percent = ((value * 100) / max).toFixed(2)) > 100) {
-                        percent = 100;
-                    }
-                    percentProgressMessage.querySelector('span').innerHTML = percent.toString();
-                    progressMessage.querySelector('span').innerHTML = value + '/' + max;
-                    progressBar.setAttribute('max', max);
-                    progressBar.setAttribute('value', value);
-                    progressBar.classList.remove('hidden');
-                    progressMessage.classList.remove('hidden');
-
                     if ($this.logs.length > 0) {
                         $this.logs.forEach(function (log) {
                             let flux = document.querySelector('[id="flux-offer-' + log.error_type.toLowerCase() + '"] .well');
@@ -252,14 +347,17 @@ SDEVADEO.controller.admin.productsFlow = {
                             flux.appendChild($childNode);
                         })
                     }
+                    let percent = $this.renderOfferFlowProgress();
 
                     if (percent < 100) {
                         $this.handleOfferBurst($this.currentProductsNb, $this.nbProductsMax);
                     } else {
+                        document.querySelector('#offer-flow .disabled').classList.remove('disabled')
                         SDEVADEO.handleButtons(false);
                         document.querySelector('#offer-flow button.download-flow-button').classList.remove('hidden');
                         document.querySelector('#offer-logs-info').classList.remove('hidden');
                         document.querySelector('#no-offer-logs-info').classList.add('hidden');
+                        document.querySelector('#offer-flow .cancel').classList.add('hidden');
                     }
                 }
             },
@@ -277,7 +375,30 @@ SDEVADEO.controller.admin.productsFlow = {
         });
     },
 
-    sendOfferFlow: function() {
+    deleteOfferFlow: function () {
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                ajax: true,
+                action: 'deleteOfferFlow'
+            },
+            success: function (response) {
+                if (response.hasError == false) {
+                    document.querySelector('#flux-notification-success').classList.remove('hidden');
+                    document.querySelector('#flux-notification-success').innerHTML = response.errorMessage;
+                } else {
+                    document.querySelector('#flux-notification-error').classList.remove('hidden');
+                    document.querySelector('#flux-notification-error').innerHTML = response.errorMessage;
+                }
+            },
+            error: function () {
+                console.log(response)
+            },
+        });
+    },
+
+    sendOfferFlow: function () {
         SDEVADEO.handleButtons(true);
         document.querySelector('[id="flux-offer-success"] .well').innerHTML = '';
         document.querySelector('[id="flux-offer-filtered"] .well').innerHTML = '';
@@ -306,7 +427,7 @@ SDEVADEO.controller.admin.productsFlow = {
                     notification = document.querySelector('#flux-notification-error');
                     notification.classList.remove('hidden');
                 }
-                response['errorMessage'].forEach(function(message) {
+                response['errorMessage'].forEach(function (message) {
                     let $childNode = document.createElement('p');
                     $childNode.innerHTML = message;
                     notification.appendChild($childNode);
@@ -422,14 +543,14 @@ SDEVADEO.controller.admin.productsFlow = {
                                     if (row.errorReportUrl !== undefined) {
                                         let a = document.createElement('a');
                                         a.href = row.errorReportUrl;
-                                        a.innerHTML = '<i class="fa fa-download"></i>'+'\n\n'+errorButton;
+                                        a.innerHTML = '<i class="fa fa-download"></i>' + '\n\n' + errorButton;
                                         a.classList.add('btn', 'btn-default');
                                         td.appendChild(a);
                                     }
                                     if (row.successReportUrl !== undefined) {
                                         let a = document.createElement('a');
                                         a.href = row.successReportUrl;
-                                        a.innerHTML = '<i class="fa fa-download"></i>'+'\n\n'+successButton;
+                                        a.innerHTML = '<i class="fa fa-download"></i>' + '\n\n' + successButton;
                                         a.classList.add('btn', 'btn-default');
                                         td.appendChild(a);
                                     }

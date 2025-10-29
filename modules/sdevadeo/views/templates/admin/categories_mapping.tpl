@@ -44,16 +44,18 @@
                         <strong>[ID : {$root->id|intval}] {$root->name|escape:'htmlall':'UTF-8'}</strong>
                     </span>
                     <div class="col-lg-2">
-                        <select>
-                            <option value="0">{l s='No profile' mod='sdevadeo'}</option>
-                            {if is_array($category_rules)}
-                                {foreach $category_rules as $category_rule}
-                                    <option value="{$category_rule.id|escape:'htmlall':'UTF-8'}"{if array_key_exists($root->id, $category_mapping) && $category_mapping[$root->id]['category_rule'] == $category_rule.id} selected="selected"{/if}>
-                                        {$category_rule.name|escape:'htmlall':'UTF-8'}
-                                    </option>
-                                {/foreach}
-                            {/if}
-                        </select>
+                        {if !$use_weight}
+                            <select>
+                                <option value="0">{l s='No profile' mod='sdevadeo'}</option>
+                                {if is_array($category_rules)}
+                                    {foreach $category_rules as $category_rule}
+                                        <option value="{$category_rule.id|escape:'htmlall':'UTF-8'}"{if array_key_exists($root->id, $category_mapping) && $category_mapping[$root->id]['category_rule'] == $category_rule.id} selected="selected"{/if}>
+                                            {$category_rule.name|escape:'htmlall':'UTF-8'}
+                                        </option>
+                                    {/foreach}
+                                {/if}
+                            </select>
+                        {/if}
                     </div>
                     <div class="col-lg-3">
                         <input class="checkboxCatRuleCategory" type="checkbox"
@@ -84,16 +86,18 @@
                             <strong>[ID : {$category['id_category']|intval}] {$category['name']|escape:'htmlall':'UTF-8'}</strong>
                         </span>
                         <div class="col-lg-2">
-                            <select>
-                                <option value="0">{l s='No profile' mod='sdevadeo'}</option>
-                                {if is_array($category_rules)}
-                                    {foreach $category_rules as $category_rule}
-                                        <option value="{$category_rule.id|escape:'htmlall':'UTF-8'}"{if array_key_exists($category['id_category'], $category_mapping) && $category_mapping[$category['id_category']]['category_rule'] == $category_rule.id} selected="selected"{/if}>
-                                            {$category_rule.name|escape:'htmlall':'UTF-8'}
-                                        </option>
-                                    {/foreach}
-                                {/if}
-                            </select>
+                            {if !$use_weight}
+                                <select>
+                                    <option value="0">{l s='No profile' mod='sdevadeo'}</option>
+                                    {if is_array($category_rules)}
+                                        {foreach $category_rules as $category_rule}
+                                            <option value="{$category_rule.id|escape:'htmlall':'UTF-8'}"{if array_key_exists($category['id_category'], $category_mapping) && $category_mapping[$category['id_category']]['category_rule'] == $category_rule.id} selected="selected"{/if}>
+                                                {$category_rule.name|escape:'htmlall':'UTF-8'}
+                                            </option>
+                                        {/foreach}
+                                    {/if}
+                                </select>
+                            {/if}
                         </div>
                         <div class="col-lg-3">
                             <input class="checkboxCatRuleCategory" type="checkbox"

@@ -1,5 +1,24 @@
 # CHANGELOG
 
+## Version 1.3.1 [2023-05-27]
+
+Fix :
+
+* When importing an order, retrieve the carrier's country iso-code based on the channel code (a correspondence table is used).
+* Fix AdminSdevAdeoFilter missing controller error.
+
+## Version 1.3.0 [2023-10-11]
+
+Fix & features :
+
+* You can now choose if you want to apply rules by categories or by product weight
+* You can now map you taxes per countries
+* You can now map carriers per countries
+* Additional Price as been remove of category rules as it's already present in price rule
+* Cron task are now correctly display on all prestashop version.
+* Quantity of ordered product is now decrement your store quantity
+* Product Flow and Offer Flow as been rework
+
 ## Version 1.1.7 [2023-05-31]
 
 Fix :

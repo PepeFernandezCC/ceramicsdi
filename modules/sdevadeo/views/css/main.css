@@ -155,3 +155,13 @@
 [data-module="sdevadeo"] #display-orders ul {
     padding-left: 1em;
 }
+
+[data-module="sdevadeo"] .disabled {
+    pointer-events: none;
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+[data-module="sdevadeo"] .cancel{
+    margin-right: 5px;
+}

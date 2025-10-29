@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\API\Request;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 /**
  * Trait implementing functionality common to requests and responses.
  *

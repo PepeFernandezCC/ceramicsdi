@@ -53,3 +53,45 @@
 <div id="app">
   <div id="eTrusted-connector"></div>
 </div>
+
+<div id="ts_invite_modal" role="dialog" class="modal{if isset($ts_show_modal)} show{/if}">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title">
+            <h4>{l s='Sending invite for order' mod='trustedshopseasyintegration'}
+              <button type="button" class="close close_ts_invites" data-dismiss="modal" aria-label="Fermer">
+                <span aria-hidden="true">×</span>
+              </button>
+            </h4>
+        </div>
+      </div>
+      <div class="modal-body">
+        <h4>
+          {l s='For debugging of status purpose, this section allow us to send an invite on one order' mod='trustedshopseasyintegration'}<br />
+          {l s='without moving one status on the order. We directly show the logs provided.' mod='trustedshopseasyintegration'}
+        </h4>
+        <div class="col-md-12 form-group">
+          <div>
+            <label class="control-label">{l s='ID of the order' mod='trustedshopseasyintegration'}</label>
+          </div>
+          <div><input name="ts_id_order_invite" id="ts_id_order_invite" type="text" value=0 /></div>
+        </div>
+        <hr />
+        <div class="col-md-12 form-group">
+          <label>{l s='Result:' mod='trustedshopseasyintegration'}</label><br />
+          <textarea disabled id="ts_result_order_sent" style="width:100%;min-height:100px;resize:vertical;"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+          <button class="btn btn-primary close_ts_invites" type="button" data-dismiss="modal" aria-label="Fermer">
+              <i class="process-icon-cancel"></i>{l s='Cancel' mod='trustedshopseasyintegration'}
+          </button>
+          <button id="ts_send_order_invite" class="btn btn-primary">
+              <i class="process-icon-save mr-2"></i>&nbsp;&nbsp;
+              <span>{l s='Send' mod='trustedshopseasyintegration'}</span>
+          </button>
+      </div>
+    </div>
+  </div>
+</div>

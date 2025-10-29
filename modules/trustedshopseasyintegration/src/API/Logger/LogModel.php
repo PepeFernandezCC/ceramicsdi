@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\API\Logger;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 use TrustedshopsAddon\API\Response\AbstractResponse;
 
 class LogModel
@@ -68,7 +72,7 @@ class LogModel
     protected $newOrderStatus;
 
     /**
-     * @var int
+     * @var string
      */
     protected $configuredTriggerStatus;
 
@@ -118,7 +122,7 @@ class LogModel
     }
 
     /**
-     * @return int
+     * @return string
      */
     public function getConfiguredTriggerStatus()
     {
@@ -126,7 +130,7 @@ class LogModel
     }
 
     /**
-     * @param int $configuredTriggerStatus
+     * @param string $configuredTriggerStatus
      *
      * @return LogModel
      */

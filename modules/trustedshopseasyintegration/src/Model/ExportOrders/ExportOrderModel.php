@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\Model\ExportOrders;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 class ExportOrderModel implements \JsonSerializable
 {
     /**
@@ -69,6 +73,11 @@ class ExportOrderModel implements \JsonSerializable
      * @var int
      */
     private $numberOfDays = 0;
+
+    /**
+     * @var bool
+     */
+    private $includeProductData = false;
 
     /**
      * @return string
@@ -130,6 +139,27 @@ class ExportOrderModel implements \JsonSerializable
         return $this;
     }
 
+    /**
+     * @return bool
+     */
+    public function getIncludeProductData()
+    {
+        return $this->includeProductData;
+    }
+
+    /**
+     * @param bool $includeProductData
+     *
+     * @return ExportOrderModel
+     */
+    public function setIncludeProductData($includeProductData)
+    {
+        $this->includeProductData = $includeProductData;
+
+        return $this;
+    }
+
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return get_object_vars($this);

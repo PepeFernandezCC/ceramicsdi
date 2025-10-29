@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\Model\ExportOrders;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 class OrderModel implements \JsonSerializable
 {
     /**
@@ -180,6 +184,7 @@ class OrderModel implements \JsonSerializable
         return $this;
     }
 
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return [

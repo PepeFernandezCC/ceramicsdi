@@ -1,13 +1,14 @@
 <?php
+
 /**
- * 2020 4webs
+ * 2025 4webs
  *
  * DEVELOPED By 4webs.es Prestashop Platinum Partner
  *
  * @author    4webs
- * @copyright 4webs 2019
+ * @copyright 4webs 2025
  * @license   4webs
- * @version 5.1.4
+ * @version 5.5.1
  * @category payment_gateways
  */
 
@@ -41,7 +42,6 @@ class PayPalwithFeePaymentModuleFrontController extends ModuleFrontController
 		if ($this->decimals > 2) {
 			$this->decimals = 2;
 		}
-
 
 		$gift_wrapping_fee = array();
 		$gift_wrapping = $this->context->cart->gift;
@@ -92,13 +92,13 @@ class PayPalwithFeePaymentModuleFrontController extends ModuleFrontController
 		$products_total_amount = $this->round_active ? $this->context->cart->getOrderTotal(
 			true,
 			Cart::ONLY_PRODUCTS
-		) : $this->getTotalAmount($product_list);
+		) : $this->module->getTotalAmount($product_list);
 		$products_total_amount_no_tax = $this->round_active ? $this->context->cart->getOrderTotal(
 			false,
 			Cart::ONLY_PRODUCTS
-		) : $this->getTotalAmount($product_list, false);
-		$discounts_amount = $this->getTotalDiscounts($discounts);
-		$discounts_amount_no_tax = $this->getTotalDiscounts($discounts, false);
+		) : $this->module->getTotalAmount($product_list, false);
+		$discounts_amount = $this->module->getTotalDiscounts($discounts);
+		$discounts_amount_no_tax = $this->module->getTotalDiscounts($discounts, false);
 		$shipping_amount = Tools::ps_round($this->context->cart->getTotalShippingCost(), $this->decimals);
 		$shipping_amount_no_tax = Tools::ps_round(
 			$this->context->cart->getTotalShippingCost(null, false),
@@ -181,7 +181,8 @@ class PayPalwithFeePaymentModuleFrontController extends ModuleFrontController
 		//PRODUCTS
 		foreach ($product_list as $product) {
 			$purchaseUnits['item_total'] += $this->round_active ? number_format(
-				$product['total'], $this->decimals,
+				$product['total'],
+				$this->decimals,
 				'.',
 				''
 			) : Tools::ps_round($product['total_wt'], $this->decimals);
@@ -221,12 +222,12 @@ class PayPalwithFeePaymentModuleFrontController extends ModuleFrontController
 				'',
 				number_format($product['total'], $this->decimals)
 			) : (
-					str_replace(
-						',',
-						'',
-						Tools::ps_round($product['price_wt'], $this->decimals, '.', '') * $product['quantity']
-					)
-				);
+				str_replace(
+					',',
+					'',
+					Tools::ps_round($product['price_wt'], $this->decimals, '.', '') * $product['quantity']
+				)
+			);
 		}
 
 		//WRAPPING FEES
@@ -302,6 +303,8 @@ class PayPalwithFeePaymentModuleFrontController extends ModuleFrontController
 			}
 		}
 
+		$addressObj = new Address($this->context->cart->id_address_delivery);
+
 		//Build the request
 		if (Tools::getIsset('ajax') || Tools::getIsset('paylater')) {
 			$request = $paypal->createOrder(
@@ -346,15 +349,30 @@ class PayPalwithFeePaymentModuleFrontController extends ModuleFrontController
 									"value" => $purchaseUnits['discount']
 								]
 							]
+						],
+						'shipping' =>  [
+							'name' => [
+								'full_name' => $addressObj->firstname . ' ' . $addressObj->lastname
+							],
+							'address' => [
+								'address_line_1' => $addressObj->address1,
+								'address_line_2' => $addressObj->address2 ?: '',
+								'admin_area_2' => $addressObj->city,
+								'admin_area_1' => $addressObj->id_state ? (new State($addressObj->id_state))->name : '',
+								'postal_code' => $addressObj->postcode,
+								'country_code' => (new Country($addressObj->id_country))->iso_code
+							]
 						]
 					]
 				],
 				[
 					"cancel_url" => $cancelURL,
-					"return_url" => $returnURL
+					"return_url" => $returnURL,
+					'shipping_preference' => 'SET_PROVIDED_ADDRESS'
 				]
 			);
 		} else {
+
 			$request = $paypal->createOrder(
 				[
 					[
@@ -389,12 +407,26 @@ class PayPalwithFeePaymentModuleFrontController extends ModuleFrontController
 									"value" => $purchaseUnits['discount']
 								]
 							]
+						],
+						'shipping' =>  [
+							'name' => [
+								'full_name' => $addressObj->firstname . ' ' . $addressObj->lastname
+							],
+							'address' => [
+								'address_line_1' => $addressObj->address1,
+								'address_line_2' => $addressObj->address2 ?: '',
+								'admin_area_2' => $addressObj->city,
+								'admin_area_1' => $addressObj->id_state ? (new State($addressObj->id_state))->name : '',
+								'postal_code' => $addressObj->postcode,
+								'country_code' => (new Country($addressObj->id_country))->iso_code
+							]
 						]
 					]
 				],
 				[
 					"cancel_url" => $cancelURL,
-					"return_url" => $returnURL
+					"return_url" => $returnURL,
+					'shipping_preference' => 'SET_PROVIDED_ADDRESS'
 				]
 			);
 		}
@@ -409,7 +441,7 @@ class PayPalwithFeePaymentModuleFrontController extends ModuleFrontController
 				}
 				foreach ($response['data']->result->links as $link) {
 					if ($link->rel == 'approve') {
-                        $this->module->updateCartHash();
+						$this->module->updateCartHash();
 						$this->redirectPaypal($link->href);
 						break;
 					}
@@ -430,7 +462,7 @@ class PayPalwithFeePaymentModuleFrontController extends ModuleFrontController
 				'this_path' => $this->module->getPathUri(),
 				'this_path_check' => $this->module->getPathUri(),
 				'this_path_ssl' => Tools::getShopDomainSsl(true, true) .
-				__PS_BASE_URI__ . 'modules/' . $this->module->name . '/'
+					__PS_BASE_URI__ . 'modules/' . $this->module->name . '/'
 			)
 		);
 		$paypal->logError($this->context->cart, $request, $response['data']);
@@ -458,40 +490,5 @@ class PayPalwithFeePaymentModuleFrontController extends ModuleFrontController
 		);
 
 		Tools::redirect($url);
-	}
-
-	public function getTotalAmount($products, $tax = true)
-	{
-		$total = 0;
-		if ($tax) {
-			foreach ($products as $product) {
-				$total = $total + (Tools::ps_round($product['price_wt'], $this->decimals) * $product['quantity']);
-			}
-		} else {
-			foreach ($products as $product) {
-				$total = $total + (Tools::ps_round($product['price'], $this->decimals) * $product['quantity']);
-			}
-		}
-
-		return $total;
-	}
-
-	public function getTotalDiscounts($discounts, $tax = true)
-	{
-		$total = 0;
-		if ($tax) {
-			if (count($discounts) > 0) {
-				foreach ($discounts as $discount) {
-					$total = $total + $discount['total'];
-				}
-			}
-		} else {
-			if (count($discounts) > 0) {
-				foreach ($discounts as $discount) {
-					$total = $total + $discount['total_no_tax'];
-				}
-			}
-		}
-		return $total;
 	}
 }

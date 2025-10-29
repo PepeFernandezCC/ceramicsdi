@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\Model\MappedChannel;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 class MappedChannelModel implements \JsonSerializable
 {
     /**
@@ -291,6 +295,7 @@ class MappedChannelModel implements \JsonSerializable
         return $this;
     }
 
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return get_object_vars($this);

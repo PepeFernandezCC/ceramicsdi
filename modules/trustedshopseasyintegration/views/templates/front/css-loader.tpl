@@ -50,4 +50,4 @@
  * zustand             MIT     Copyright (c) 2019 (Paul Henschel)
  *}
 
-<script type="text/javascript" src="{$jsPathCssLoader}"></script>
+<script type="text/javascript" src="{$jsPathCssLoader|escape:'htmlall':'UTF-8'}"></script>

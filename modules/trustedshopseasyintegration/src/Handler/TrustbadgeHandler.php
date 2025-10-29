@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\Handler;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 use TrustedshopsAddon\Model\Trustbadge\TrustbadgeFooterModel;
 
 class TrustbadgeHandler

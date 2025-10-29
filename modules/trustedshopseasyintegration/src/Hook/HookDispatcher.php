@@ -53,6 +53,10 @@
 
 namespace TrustedshopsAddon\Hook;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 use TrustedshopsClasslib\Hook\AbstractHookDispatcher;
 
 class HookDispatcher extends AbstractHookDispatcher
