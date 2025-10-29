@@ -1,5 +1,5 @@
 {**
- * Copyright 2025 LÍNEA GRÁFICA E.C.E S.L.
+ * Copyright 2024 LÍNEA GRÁFICA E.C.E S.L.
  *
  * @author    Línea Gráfica E.C.E. S.L.
  * @copyright Lineagrafica.es - Línea Gráfica E.C.E. S.L. all rights reserved.
@@ -19,9 +19,9 @@
  *}
 
 {if $type == 'saveredirects'}
-<a href="{$lg_path|escape:'htmlall':'UTF-8'}csv/saveredirects.csv">
+<a href="../modules/{$name|escape:'htmlall':'UTF-8'}/csv/saveredirects.csv">
 {else}
-<a href="{$lg_path|escape:'htmlall':'UTF-8'}csv/pagesnotfound.csv">
+<a href="../modules/{$name|escape:'htmlall':'UTF-8'}/csv/pagesnotfound.csv">
 {/if}
     {l s=' click here to download the CSV file' mod='lgseoredirect'}
 </a>

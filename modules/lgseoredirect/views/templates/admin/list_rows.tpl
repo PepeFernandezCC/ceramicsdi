@@ -1,5 +1,5 @@
 {**
- * Copyright 2025 LÍNEA GRÁFICA E.C.E S.L.
+ * Copyright 2024 LÍNEA GRÁFICA E.C.E S.L.
  *
  * @author    Línea Gráfica E.C.E. S.L.
  * @copyright Lineagrafica.es - Línea Gráfica E.C.E. S.L. all rights reserved.
@@ -33,7 +33,7 @@
             {* check if the old URI starts with a / *}
                 <input type="hidden" name="wrongformat{$redirect['id']|intval}" class="wrongformat{$redirect['id']|intval}" value="2">
                 <span class="toolTip1">
-                    <img src="{$lg_path|escape:'htmlall':'UTF-8'}views/img/important.png" />
+                    <img src="../modules/lgseoredirect/views/img/important.png" />
                     <p class="tooltipDesc1">{l s='Wrong format: the old URI must start with a "/"' mod='lgseoredirect'}</p>
                 </span>
             {/if}
@@ -41,7 +41,7 @@
             {if $redirect['error_checkduplicate'] > 1}
                     <input type="hidden" name="duplicate{$redirect['id']|intval}" class="duplicate{$redirect['id']|intval}" value="1">
                     <span class="toolTip2">
-                        <img src="{$lg_path|escape:'htmlall':'UTF-8'}views/img/important2.png" />
+                        <img src="../modules/lgseoredirect/views/img/important2.png" />
                         <p class="tooltipDesc2">{l s='Duplicated redirects: several redirects exist for this old URI.' mod='lgseoredirect'}</p>
                     </span>
             </div>
@@ -63,7 +63,7 @@
                 </div>
             {if $redirect['error_checkduplicate'] > 1}
                 <span class="autofilter" data-url="{$redirect['url_old']|escape:'htmlall':'UTF-8'}" style="cursor: pointer">
-                    <img src="{$lg_path|escape:'htmlall':'UTF-8'}views/img/filter.png" />
+                    <img src="../modules/lgseoredirect/views/img/filter.png" />
                     <p class="tooltipDesc2">{l s='Duplicated redirects: several redirects exist for this old URI.' mod='lgseoredirect'}</p>
                 </span>
             {/if}

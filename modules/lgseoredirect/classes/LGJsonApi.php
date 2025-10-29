@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2025 LÍNEA GRÁFICA E.C.E S.L.
+ * Copyright 2024 LÍNEA GRÁFICA E.C.E S.L.
  *
  * @author    Línea Gráfica E.C.E. S.L.
  * @copyright Lineagrafica.es - Línea Gráfica E.C.E. S.L. all rights reserved.
@@ -188,23 +188,15 @@ class LGJsonApi
 
     public static function jsonEncode($data, $options = 0, $depth = 512)
     {
-        if (version_compare(_PS_VERSION_, '8.0', '>=')) {
-            return json_encode($data, $options, $depth);
-        } else {
-            return method_exists('Tools', 'jsonEncode') ?
-                Tools::jsonEncode($data) :
-                json_encode($data, $options, $depth);
-        }
+        return method_exists('Tools', 'jsonEncode') ?
+            Tools::jsonEncode($data) :
+            json_encode($data, $options, $depth);
     }
 
     public static function jsonDecode($data, $assoc = false, $depth = 512, $options = 0)
     {
-        if (version_compare(_PS_VERSION_, '8.0', '>=')) {
-            return json_decode($data, $assoc, $depth, $options);
-        } else {
-            return method_exists('Tools', 'jsonDecode') ?
-                Tools::jsonDecode($data, $assoc) :
-                json_decode($data, $assoc, $depth, $options);
-        }
+        return method_exists('Tools', 'jsonDecode') ?
+            Tools::jsonDecode($data, $assoc) :
+            json_decode($data, $assoc, $depth, $options);
     }
 }

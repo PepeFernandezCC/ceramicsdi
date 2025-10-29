@@ -1,5 +1,5 @@
 {**
- * Copyright 2025 LÍNEA GRÁFICA E.C.E S.L.
+ * Copyright 2024 LÍNEA GRÁFICA E.C.E S.L.
  *
  * @author    Línea Gráfica E.C.E. S.L.
  * @copyright Lineagrafica.es - Línea Gráfica E.C.E. S.L. all rights reserved.
@@ -22,8 +22,8 @@
     <fieldset>
         <legend>
             {l s='Import redirects in bulk' mod='lgseoredirect'}
-            <a href="{$lg_path|escape:'htmlall':'UTF-8'}readme/readme_{l s='en' mod='lgseoredirect'}.pdf#page=6" target="_blank">
-                <img src="{$lg_path|escape:'htmlall':'UTF-8'}views/img/info.png">
+            <a href="../modules/{$module_name|escape:'htmlall':'UTF-8'}/readme/readme_{l s='en' mod='lgseoredirect'}.pdf#page=6" target="_blank">
+                <img src="../modules/{$module_name|escape:'htmlall':'UTF-8'}/views/img/info.png">
             </a>
         </legend>
         <form method="post" action="{$smarty.server.REQUEST_URI|escape:'htmlall':'UTF-8'}" enctype="multipart/form-data">
@@ -89,7 +89,7 @@
             <div class="alert alert-info">
                 - {l s='Move your mouse over the table to get more information.' mod='lgseoredirect'}<br>
                 </a>
-                - <a href="{$lg_path|escape:'htmlall':'UTF-8'}csv/redirects.csv">
+                - <a href="../modules/{$module_name|escape:'htmlall':'UTF-8'}/csv/redirects.csv">
                     {l s='Click here to download an example of CSV file' mod='lgseoredirect'}
                     {l s='(you can write your redirects directly in it)' mod='lgseoredirect'}
                 </a>

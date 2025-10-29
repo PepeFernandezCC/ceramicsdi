@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 LÍNEA GRÁFICA E.C.E S.L.
+ * Copyright 2024 LÍNEA GRÁFICA E.C.E S.L.
  *
  * @author    Línea Gráfica E.C.E. S.L.
  * @copyright Lineagrafica.es - Línea Gráfica E.C.E. S.L. all rights reserved.
@@ -79,10 +79,9 @@
 }
 .lgfloat {
     float:left;
-	margin: 0 5px;
 }
 .lgsubtitle {
-	display: block;
+		display: block;
     width: 100%;
 }
 .lgmargin {
@@ -122,8 +121,7 @@
 .lgseoredirect-tabcontent#individualredirect,
 .lgseoredirect-tabcontent#bulkredirects,
 .lgseoredirect-tabcontent#listredirects,
-.lgseoredirect-tabcontent#pagesnotfound,
-.lgseoredirect-tabcontent#generalconfiguration {
+.lgseoredirect-tabcontent#pagesnotfound {
 	padding: 0px;
 	margin-bottom: 20px;
     background-color: #fff;
@@ -134,8 +132,7 @@
 .lgseoredirect-tabcontent#individualredirect legend,
 .lgseoredirect-tabcontent#bulkredirects legend,
 .lgseoredirect-tabcontent#listredirects legend,
-.lgseoredirect-tabcontent#pagesnotfound legend,
-.lgseoredirect-tabcontent#generalconfiguration legend {
+.lgseoredirect-tabcontent#pagesnotfound legend {
     font-size: 16px;
     font-weight: 600;
     line-height: 1.5rem;
@@ -149,21 +146,4 @@
 .lgseoredirect-tabcontent#listredirects form,
 .lgseoredirect-tabcontent#pagesnotfound form {
     padding: 0 20px 20px;
-}
-.lgseoredirect-tabcontent#generalconfiguration h3 {
-    width: 100%;
-    border: 0px !important;
-}
-.lgseoredirect-tabcontent#generalconfiguration h3 > label {
-    margin: 7px 10px 10px 22px;
-}
-.lgseoredirect-tabcontent#generalconfiguration .alert.alert-info {
-	margin: 0 10px 10px;
-}
-.lgseoredirect-tabcontent#generalconfiguration button {
-	padding: 8px 16px;
-	margin: 10px;
-}
-.lgseoredirect_menubarbutton {
-	white-space: nowrap !important;
 }
