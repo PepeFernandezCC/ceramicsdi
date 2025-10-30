@@ -19,13 +19,15 @@
 *  @license   See above
 */
 
+if (!defined('_PS_VERSION_')) { exit; }
+
 function upgrade_module_1_9_9($module)
 {
     if (version_compare(_PS_VERSION_, '1.7', '>=')) {
-        $module->registerHook('displayHeader');
-        $module->registerHook('displayFooter');
         $module->unregisterHook('header');
         $module->unregisterHook('footer');
+        $module->registerHook('displayHeader');
+        $module->registerHook('displayFooter');
     }
     return $module;
 }

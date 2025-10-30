@@ -2,7 +2,7 @@
 <module>
     <name>whatsappchat</name>
     <displayName><![CDATA[WhatsApp chat - Chat en vivo con tus clientes]]></displayName>
-    <version><![CDATA[2.0.0]]></version>
+    <version><![CDATA[2.0.8]]></version>
     <description><![CDATA[Chatea con tus clientes a trav&eacute;s de WhatsApp, la aplicaci&oacute;n de mensajer&iacute;a m&aacute;s popular]]></description>
     <author><![CDATA[idnovate]]></author>
     <tab><![CDATA[front_office_features]]></tab>

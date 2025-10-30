@@ -1,24 +1,25 @@
 {**
-*
-* NOTICE OF LICENSE
-*
-* This product is licensed for one customer to use on one installation (test stores and multishop included).
-* Site developer has the right to modify this module to suit their needs, but can not redistribute the module in
-* whole or in part. Any other use of this module constitues a violation of the user agreement.
-*
-* DISCLAIMER
-*
-* NO WARRANTIES OF DATA SAFETY OR MODULE SECURITY
-* ARE EXPRESSED OR IMPLIED. USE THIS MODULE IN ACCORDANCE
-* WITH YOUR MERCHANT AGREEMENT, KNOWING THAT VIOLATIONS OF
-* PCI COMPLIANCY OR A DATA BREACH CAN COST THOUSANDS OF DOLLARS
-* IN FINES AND DAMAGE A STORES REPUTATION. USE AT YOUR OWN RISK.
-*
-*  @author    idnovate.com <info@idnovate.com>
-*  @copyright 2021 idnovate.com
-*  @license   See above
-*}
-
+ * ISC License
+ *
+ * Copyright (c) 2023 idnovate.com
+ * idnovate is a Registered Trademark & Property of idnovate.com, innovación y desarrollo SCP
+ *
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+ * REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+ * AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+ * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+ * LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
+ *
+ * @author    idnovate
+ * @copyright 2023 idnovate
+ * @license   https://www.isc.org/licenses/ https://opensource.org/licenses/ISC ISC License
+ *}
 {*module = array('name', 'id', 'description')*}
 {$modules[0]=[
     'name' => 'Promociones y descuentos - (3x2, descuentos, campañas)',
@@ -135,13 +136,6 @@
     'id' => '49385',
     'description' => "Muestra mensajes y banners en prácticamente cualquier lugar de la tienda. Puedes configurar el mensaje o banner que quieres mostrar, cuál será su audiencia y dónde será mostrado en la tienda. Puedes añadir efectos, colores, estilos y algunas variables al mensaje / banner."]
 }
-{$modules[23]=[
-    'name' => 'PayPal Plus (multi, comisión, devoluciones, tarjeta, compra ahora/paga después,...)',
-    'id' => '53135',
-    'description' => "Acepta pagos con PayPal. Puedes aplicar una comisión adicional. Gestión de devoluciones totales y parciales. Múltiples opciones de pago de PayPal (tarjeta, crédito PayPal, Sofort,...). Compatible con Compre ahora/Pague después. Configurable por grupo de clientes, transportista, país, zona, categoría, fabricante y proveedor."]
-}
-
-{capture}{$modules|@shuffle|escape:'htmlall':'UTF-8'}{/capture}
 
 <link rel="stylesheet" type="text/css" href="{$this_path|escape:'htmlall':'UTF-8'}views/css/company.css">
 
@@ -156,24 +150,17 @@
                     <div class="row util-links">
                         <div class="col-lg-12">
                             <p>
-                                <i class="icon-star"></i> <a target="_blank" title="Evalúa este módulo" href="https://addons.prestashop.com/es/ratings.php">¿Te parece útil el módulo? ¿Qué tal si nos dejas tu valoración en Addons?</a><br/><br/>
-                                {if $readme}
-                                    <i class="icon-external-link"></i> <a target="_blank" title="Documentación" href="{if isset($doc_url)}{$doc_url|escape:'htmlall':'UTF-8'}{else}{$this_path|escape:'htmlall':'UTF-8'}{$readme|escape:'htmlall':'UTF-8'}{/if}">Documentación</a><br/><br/>
-                                {/if}
-                                {if $support_id}
-                                    <i class="icon-medkit"></i> <a target="_blank" title="Soporte" href="https://addons.prestashop.com/contact-form.php?id_product={$support_id|escape:'htmlall':'UTF-8'}">¿Necesitas ayuda? Contacta con nosotros</a>
-                                {/if}
+                                <i class="icon-star"></i> <a class="nav-link" target="_blank" title="Evalúa este módulo" href="https://addons.prestashop.com/es/ratings.php">¿Te parece útil el módulo? ¿Qué tal si nos dejas tu valoración en Addons?</a><br/><br/>
+                                <i class="icon-external-link"></i> <a class="nav-link" target="_blank" title="Documentación" href="{if isset($doc_url)}{$doc_url|escape:'htmlall':'UTF-8'}{else}{$this_path|escape:'htmlall':'UTF-8'}readme_en.pdf{/if}">Documentación</a><br/><br/>
+                                <i class="icon-medkit"></i> <a class="nav-link" target="_blank" title="Soporte" href="https://addons.prestashop.com/es/Write-to-developper?id_product={$support_id|escape:'htmlall':'UTF-8'}">¿Necesitas ayuda? Contacta con nosotros</a>
                             </p>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-xs-12 developers">
-                            <p>Módulo desarrollado por</p>
-                            <a target="_blank" href="https://addons.prestashop.com/es/109_idnovate"><img src="{$this_path|escape:'htmlall':'UTF-8'}views/img/company/logo_idnovate.png"  alt="Logo idnovate.com"/></a>
-                        </div>
-                        <div class="col-xs-12 partnership">
-                            <p>¡Somos Partners PrestaShop!</p>
-                            <a target="_blank" href="https://www.prestashop.com/es/expertos/agencias-web/idnovate"><img src="{$this_path|escape:'htmlall':'UTF-8'}views/img/company/partner.png"  alt="PrestaShop Partner"/></a>
+                            <a target="_blank" href="https://addons.prestashop.com/es/109_idnovate"><img src="{$this_path|escape:'htmlall':'UTF-8'}views/img/company/logo_idnovate.png" /></a>
+                            &nbsp;&nbsp;&nbsp;
+                            <img src="{$this_path|escape:'htmlall':'UTF-8'}views/img/company/EXPERT.png" />
                         </div>
                     </div>
                 </div>
@@ -181,34 +168,46 @@
                     <div class="row">
                         <div class="col-xs-12">
                             <div class="row">
-                                {for $counter=0 to 5}
-                                    {if $modules[$counter|escape:'htmlall':'UTF-8']['id'] == $support_id}
-                                        {capture}{$counter++|escape:'htmlall':'UTF-8'}{/capture}
+                                {assign var="modulesArrayLength" value=$modules|@count}
+                                {math equation="$modulesArrayLength - 1" assign="modulesArrayLength"}
+                                {assign var="keysDisplayed" value=[]}
+                                {for $counter=0 to 2}
+                                    {math equation="rand(0, $modulesArrayLength)" assign="moduleKey"}
+                                    {if $modules[$moduleKey|escape:'htmlall':'UTF-8']['id'] == $support_id}
+                                        {math equation="rand(0, $modulesArrayLength)" assign="moduleKey"}
                                     {/if}
+
+                                    {append var=$moduleKey value=$keysDisplayed}
+                                    {if in_array($moduleKey, $keysDisplayed)}
+                                      {math equation="rand(0, $modulesArrayLength)" assign="moduleKey"}
+                                    {/if}
+
                                     <div class="col-md-4 column">
                                         <div class="module module-modules">
-                                            <a target="_blank" href="https://addons.prestashop.com/es/{$modules[$counter|escape:'htmlall':'UTF-8']['id']|escape:'htmlall':'UTF-8'}-.html" title="{$modules[$counter|escape:'htmlall':'UTF-8']['name']|escape:'htmlall':'UTF-8'}">
+                                            <a target="_blank" href="https://addons.prestashop.com/es/{$modules[$moduleKey|escape:'htmlall':'UTF-8']['id']|escape:'htmlall':'UTF-8'}-.html" title="{$modules[$moduleKey|escape:'htmlall':'UTF-8']['name']|escape:'htmlall':'UTF-8'}">
                                                 <div class="module-head">
                                                     <div class="module-image">
-                                                        <img alt="{$modules[$counter|escape:'htmlall':'UTF-8']['name']|escape:'htmlall':'UTF-8'}" height="57" width="57" src="{$this_path|escape:'htmlall':'UTF-8'}views/img/company/{$modules[$counter|escape:'htmlall':'UTF-8']['id']|escape:'htmlall':'UTF-8'}.png">
+                                                        <img alt="{$modules[$moduleKey|escape:'htmlall':'UTF-8']['name']|escape:'htmlall':'UTF-8'}" height="57" width="57" src="{$this_path|escape:'htmlall':'UTF-8'}views/img/company/{$modules[$moduleKey|escape:'htmlall':'UTF-8']['id']|escape:'htmlall':'UTF-8'}.png">
                                                     </div>
-                                                    <p class="title-block-module" title="{$modules[$counter|escape:'htmlall':'UTF-8']['name']|escape:'htmlall':'UTF-8'}">{$modules[$counter|escape:'htmlall':'UTF-8']['name']|escape:'htmlall':'UTF-8'}
+                                                    <p class="title-block-module" title="{$modules[$moduleKey|escape:'htmlall':'UTF-8']['name']|escape:'htmlall':'UTF-8'}">{$modules[$moduleKey|escape:'htmlall':'UTF-8']['name']|escape:'htmlall':'UTF-8'}
                                                     </p>
                                                 </div>
+
                                                 <div class="module-body">
                                                     <div class="module-entry clearfix">
-                                                        <p>{$modules[$counter|escape:'htmlall':'UTF-8']['description']|escape:'htmlall':'UTF-8'}</p>
+                                                        <p>{$modules[$moduleKey|escape:'htmlall':'UTF-8']['description']|escape:'htmlall':'UTF-8'}</p>
                                                     </div>
                                                 </div>
                                             </a>
                                         </div>
                                     </div>
+
                                 {/for}
                             </div>
                         </div>
                     </div>
                     <div class="col-xs-12 addons-link">
-                        <p><i class="icon-external-link"></i> <a target="_blank" href="https://addons.prestashop.com/es/109_idnovate"><strong>Echa un vistazo a todos nuestros geniales módulos en PrestaShop Addons</a></strong></p>
+                        <p><i class="icon-external-link"></i> <a class="nav-link" target="_blank" href="https://addons.prestashop.com/es/109_idnovate"><strong>Echa un vistazo a todos nuestros geniales módulos en PrestaShop Addons</a></strong></p>
                     </div>
                 </div>
             </div>

@@ -1,23 +1,30 @@
 <?php
 /**
-* NOTICE OF LICENSE
+* WhatsApp Chat
 *
-* This product is licensed for one customer to use on one installation (test stores and multishop included).
-* Site developer has the right to modify this module to suit their needs, but can not redistribute the module in
-* whole or in part. Any other use of this module constitues a violation of the user agreement.
+* ISC License
 *
-* DISCLAIMER
+* Copyright (c) 2023 idnovate.com
+* idnovate is a Registered Trademark & Property of idnovate.com, innovación y desarrollo SCP
 *
-* NO WARRANTIES OF DATA SAFETY OR MODULE SECURITY
-* ARE EXPRESSED OR IMPLIED. USE THIS MODULE IN ACCORDANCE
-* WITH YOUR MERCHANT AGREEMENT, KNOWING THAT VIOLATIONS OF
-* PCI COMPLIANCY OR A DATA BREACH CAN COST THOUSANDS OF DOLLARS
-* IN FINES AND DAMAGE A STORES REPUTATION. USE AT YOUR OWN RISK.
+* Permission to use, copy, modify, and/or distribute this software for any
+* purpose with or without fee is hereby granted, provided that the above
+* copyright notice and this permission notice appear in all copies.
 *
-*  @author    idnovate.com <info@idnovate.com>
-*  @copyright 2019 idnovate.com
-*  @license   See above
+* THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+* REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+* AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+* INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+* LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+* OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+* PERFORMANCE OF THIS SOFTWARE.
+*
+* @author    idnovate
+* @copyright 2024 idnovate
+* @license   https://www.isc.org/licenses/ https://opensource.org/licenses/ISC ISC License
 */
+
+if (!defined('_PS_VERSION_')) { exit; }
 
 class WhatsappChatBlockAgent extends ObjectModel
 {

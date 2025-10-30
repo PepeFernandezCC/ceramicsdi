@@ -2,39 +2,45 @@
 /**
 * WhatsApp Chat
 *
-* NOTICE OF LICENSE
+* ISC License
 *
-* This product is licensed for one customer to use on one installation (test stores and multishop included).
-* Site developer has the right to modify this module to suit their needs, but can not redistribute the module in
-* whole or in part. Any other use of this module constitues a violation of the user agreement.
+* Copyright (c) 2025 idnovate.com
+* idnovate is a Registered Trademark & Property of idnovate.com, innovación y desarrollo SCP
 *
-* DISCLAIMER
+* Permission to use, copy, modify, and/or distribute this software for any
+* purpose with or without fee is hereby granted, provided that the above
+* copyright notice and this permission notice appear in all copies.
 *
-* NO WARRANTIES OF DATA SAFETY OR MODULE SECURITY
-* ARE EXPRESSED OR IMPLIED. USE THIS MODULE IN ACCORDANCE
-* WITH YOUR MERCHANT AGREEMENT, KNOWING THAT VIOLATIONS OF
-* PCI COMPLIANCY OR A DATA BREACH CAN COST THOUSANDS OF DOLLARS
-* IN FINES AND DAMAGE A STORES REPUTATION. USE AT YOUR OWN RISK.
+* THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+* REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+* AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+* INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+* LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+* OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+* PERFORMANCE OF THIS SOFTWARE.
 *
-*  @author    idnovate
-*  @copyright 2023 idnovate
-*  @license   See above
+* @author    idnovate
+* @copyright 2025 idnovate
+* @license   https://www.isc.org/licenses/ https://opensource.org/licenses/ISC ISC License
 */
+
+if (!defined('_PS_VERSION_')) { exit; }
 
 include_once(_PS_MODULE_DIR_.'whatsappchat/classes/WhatsappChatBlock.php');
 include_once(_PS_MODULE_DIR_.'whatsappchat/classes/WhatsappChatBlockAgent.php');
 
 class WhatsAppChat extends Module
 {
+    public $addons_id_product;
+    
     public function __construct()
     {
         $this->name = 'whatsappchat';
         $this->tab = 'front_office_features';
-        $this->version = '2.0.0';
+        $this->version = '2.0.8';
         $this->author = 'idnovate';
         $this->bootstrap = true;
         $this->module_key = 'fb00ab599d53a30abdaeae23c95fc2a7';
-        //$this->author_address = '0xd89bcCAeb29b2E6342a74Bc0e9C82718Ac702160';
         $this->addons_id_product = '26395';
 
         parent::__construct();
@@ -42,6 +48,8 @@ class WhatsAppChat extends Module
         $this->displayName = $this->l('WhatsApp Chat - Live chat with your customers');
         $this->description = $this->l('Chat with your customers through WhatsApp, the most popular messaging app');
         $this->confirmUninstall = $this->l('Are you sure you want to uninstall module?');
+
+        $this->ps_versions_compliancy = array('min' => '1.4', 'max' => _PS_VERSION_);
 
         $this->tabs[] = array(
             'class_name' => 'AdminWhatsappChat',
@@ -55,21 +63,21 @@ class WhatsAppChat extends Module
             'visible' => false
         );
 
-        /* Backward compatibility */
-        if (version_compare(_PS_VERSION_, '1.5', '<')) {
-            require(_PS_MODULE_DIR_.$this->name.'/backward_compatibility/backward.php');
-            $this->local_path = _PS_MODULE_DIR_.$this->name.'/';
-        }
-
         /* Mobile detect library */
-        if (!class_exists('Mobile_Detect')) {
+        if (!class_exists('Mobile_Detect') && !defined('_TB_VERSION_')) {
             if (version_compare(_PS_VERSION_, '1.5', '<')) {
                 include_once(_PS_MODULE_DIR_.$this->name.'/backward_compatibility/Mobile_Detect.php');
+            } elseif (version_compare(_PS_VERSION_, '9', '>=')) {
+                include_once(_PS_VENDOR_DIR_.'mobiledetect/mobiledetectlib/src/MobileDetect.php');
             } elseif (version_compare(_PS_VERSION_, '1.7', '>=')) {
                 include_once(_PS_VENDOR_DIR_.'mobiledetect/mobiledetectlib/Mobile_Detect.php');
             } else {
                 include_once(_PS_TOOL_DIR_.'mobile_Detect/Mobile_Detect.php');
             }
+        }
+
+        if (!class_exists('MobileDetect') && defined('_TB_VERSION_')) {
+            include_once(_PS_VENDOR_DIR_.'mobiledetect/mobiledetectlib/src/MobileDetect.php');
         }
 
         $this->warning = $this->getWarnings(false);
@@ -80,25 +88,15 @@ class WhatsAppChat extends Module
         $result = true;
 
         $result &= parent::install()
-            && $this->createDb()
-            && $this->registerHook('leftColumn')
-            && $this->registerHook('rightColumn')
-            && $this->registerHook('top')
-            && $this->registerHook('home')
-            && $this->registerHook('shoppingCart')
-            && $this->registerHook('shoppingCartExtra')
-            && $this->registerHook('paymentTop')
-            && $this->registerHook('beforeCarrier')
-            && $this->registerHook('customerAccount')
-            && $this->registerHook('myAccountBlock')
-            && $this->registerHook('orderConfirmation')
-            && $this->registerHook('backOfficeHeader')
-            && $this->registerHook('displayProductAdditionalInfo')
-            && $this->registerHook('displayWhatsAppChat');
+            && $this->createDb();
 
         if (version_compare(_PS_VERSION_, '1.5', '>=')) {
             $result &= $this->installTabs()
+                && $this->registerHook('displayHome')
                 && $this->registerHook('displayHeader')
+                && $this->registerHook('displayLeftColumn')
+                && $this->registerHook('displayRightColumn')
+                && $this->registerHook('displayTop')
                 && $this->registerHook('displayFooter')
                 && $this->registerHook('displayBackOfficeHeader')
                 && $this->registerHook('displayBanner')
@@ -111,24 +109,46 @@ class WhatsAppChat extends Module
                 && $this->registerHook('displayWhatsAppProductSocialButtons')
                 && $this->registerHook('displayLeftColumnProduct')
                 && $this->registerHook('displayRightColumnProduct')
+                && $this->registerHook('displayProductAdditionalInfo')
                 && $this->registerHook('displayFooterProduct')
                 && $this->registerHook('displayShoppingCartFooter')
+                && $this->registerHook('displayCustomerAccount')
+                && $this->registerHook('displayMyAccountBlock')
                 && $this->registerHook('displayCustomerAccountForm')
                 && $this->registerHook('displayCustomerAccountFormTop')
                 && $this->registerHook('displayCustomerIdentityForm')
+                && $this->registerHook('displayShoppingCart')
+                && $this->registerHook('displayShoppingCartExtra')
+                && $this->registerHook('displayBeforeCarrier')
+                && $this->registerHook('displayPaymentTop')
+                && $this->registerHook('displayOrderConfirmation')
                 && $this->registerHook('displayWrapperBottom')
+                && $this->registerHook('displayWhatsAppChat')
                 && $this->registerHook('displayMaintenance');
         } else {
             $result &= $this->registerHook('extraLeft')
+                && $this->registerHook('customerAccount')
+                && $this->registerHook('myAccountBlock')
+                && $this->registerHook('leftColumn')
+                && $this->registerHook('rightColumn')
+                && $this->registerHook('backOfficeHeader')
+                && $this->registerHook('top')
+                && $this->registerHook('home')
                 && $this->registerHook('header')
                 && $this->registerHook('footer')
+                && $this->registerHook('beforeCarrier')
+                && $this->registerHook('paymentTop')
+                && $this->registerHook('shoppingCart')
+                && $this->registerHook('shoppingCartExtra')
+                && $this->registerHook('orderConfirmation')
                 && $this->registerHook('extraRight')
                 && $this->registerHook('productActions')
                 && $this->registerHook('productfooter');
         }
 
         if (version_compare(_PS_VERSION_, '1.7', '>=')) {
-            $result &= $this->registerHook('displayBeforeBodyClosingTag');
+            $result &= $this->registerHook('displayBeforeBodyClosingTag')
+            && $this->registerHook('displayAfterBodyOpeningTag');
         }
 
         return $result ? true : false;
@@ -297,12 +317,6 @@ class WhatsAppChat extends Module
             }
         }
         $html = '';
-        /*if (version_compare(_PS_VERSION_, '1.7', '<')) {
-            $html .= $this->displayBlock('badge');
-            $html .= $this->displayBlock('topWidth');
-            $html .= $this->displayBlock('floating');
-            $html .= $this->displayBlock('topWidthSticky');
-        }*/
         return $html.$this->displayBlock(__FUNCTION__);
     }
 
@@ -331,48 +345,52 @@ class WhatsAppChat extends Module
 
     public function hookDisplayBanner()
     {
-        $html = '';
-        /*if (version_compare(_PS_VERSION_, '1.7', '<')) {
-            $html .= $this->displayBlock('badge');
-            $html .= $this->displayBlock('topWidth');
-            $html .= $this->displayBlock('floating');
-            $html .= $this->displayBlock('topWidthSticky');
-        }*/
-        return $html.$this->displayBlock(__FUNCTION__);
+        return $this->displayBlock(__FUNCTION__);
     }
 
     public function hookLeftColumn()
     {
-        return $this->displayBlock('leftcolumn');
+        return $this->hookDisplayLeftColumn();
     }
 
     public function hookRightColumn()
+    {
+        return $this->hookDisplayRightColumn();
+    }
+
+    public function hookDisplayLeftColumn()
+    {
+        return $this->displayBlock('leftcolumn');
+    }
+
+    public function hookDisplayRightColumn()
     {
         return $this->displayBlock('rightcolumn');
     }
 
     public function hookDisplayTopColumn()
     {
-    	$html = '';
-        /*if (version_compare(_PS_VERSION_, '1.7', '<')) {
-            $html .= $this->displayBlock('badge');
-            $html .= $this->displayBlock('topWidth');
-            $html .= $this->displayBlock('floating');
-            $html .= $this->displayBlock('topWidthSticky');
-        }*/
-        return $html.$this->displayBlock(__FUNCTION__);
+        return $this->displayBlock(__FUNCTION__);
     }
 
     public function hookTop()
     {
+        return $this->hookDisplayTop();
+    }
+
+    public function hookDisplayTop()
+    {
+        return $this->displayBlock('top');
+    }
+
+    public function hookDisplayAfterBodyOpeningTag()
+    {
         $html = '';
-        /*if (version_compare(_PS_VERSION_, '1.7', '<')) {
-            $html .= $this->displayBlock('badge');
+        if (version_compare(_PS_VERSION_, '1.7', '>=')) {
             $html .= $this->displayBlock('topWidth');
-            $html .= $this->displayBlock('floating');
             $html .= $this->displayBlock('topWidthSticky');
-        }*/
-        return $html.$this->displayBlock('top');
+        }
+        return $html.$this->displayBlock(__FUNCTION__);
     }
 
     public function hookDisplayBeforeBodyClosingTag()
@@ -380,11 +398,8 @@ class WhatsAppChat extends Module
         $html = '';
         if (version_compare(_PS_VERSION_, '1.7', '>=')) {
             $html .= $this->displayBlock('badge');
-            $html .= $this->displayBlock('topWidth');
             $html .= $this->displayBlock('floating');
-            $html .= $this->displayBlock('topWidthSticky');
         }
-        //$html .= $this->displayBlock('bottomWidth');
         return $html.$this->displayBlock(__FUNCTION__);
     }
 
@@ -405,6 +420,11 @@ class WhatsAppChat extends Module
     }
 
     public function hookHome()
+    {
+        return $this->hookDisplayHome();
+    }
+
+    public function hookDisplayHome()
     {
         return $this->displayBlock('home');
     }
@@ -456,12 +476,32 @@ class WhatsAppChat extends Module
         return $this->displayBlock('shoppingcartextra');
     }
 
+    public function hookDisplayShoppingCart()
+    {
+        return $this->displayBlock('shoppingcart');
+    }
+
+    public function hookDisplayShoppingCartExtra()
+    {
+        return $this->displayBlock('shoppingcartextra');
+    }
+
     public function hookPaymentTop()
     {
         return $this->displayBlock('paymenttop');
     }
 
+    public function hookDisplayPaymentTop()
+    {
+        return $this->displayBlock('paymenttop');
+    }
+
     public function hookBeforeCarrier()
+    {
+        return $this->displayBlock('beforecarrier');
+    }
+
+    public function hookDisplayBeforeCarrier()
     {
         return $this->displayBlock('beforecarrier');
     }
@@ -472,8 +512,18 @@ class WhatsAppChat extends Module
         return $this->displayBlock('orderconfirmation');
     }
 
+    public function hookDisplayOrderConfirmation()
+    {
+        return $this->displayBlock('orderconfirmation');
+    }
+
     /* Customer account */
     public function hookCustomerAccount()
+    {
+        return $this->displayBlock('customeraccount');
+    }
+
+    public function hookDisplayCustomerAccount()
     {
         return $this->displayBlock('customeraccount');
     }
@@ -503,6 +553,11 @@ class WhatsAppChat extends Module
         return $this->displayBlock('myaccountblock');
     }
 
+    public function hookDisplayMyAccountBlock()
+    {
+        return $this->displayBlock('myaccountblock');
+    }
+
      /* Maintenance */
     public function hookDisplayMaintenance()
     {
@@ -513,7 +568,12 @@ class WhatsAppChat extends Module
     /* Free */
     public function hookDisplayWhatsAppChat($params)
     {
-        return $this->displayBlock('hookDisplayWhatsAppChat', false, false, $params['id_whatsappchat']);
+        if (!isset($params['id_whatsappchat'])) {
+            $id_whatsappchat = false;
+        } else {
+            $id_whatsappchat = $params['id_whatsappchat'];
+        }
+        return $this->displayBlock('hookDisplayWhatsAppChat', false, false, $id_whatsappchat);
     }
 
     /* 1.4 */
@@ -575,7 +635,15 @@ class WhatsAppChat extends Module
                     if ($message['mobile_phone'] == '' && $message['message'] == '' && ($message['share_option'] == '0' || $message['share_option'] == '')) {
                         continue;
                     }
-                    $mobile = new Mobile_Detect();
+                    if (defined('_TB_VERSION_')) {
+                        $mobile = new MobileDetect();
+                    } else {
+                        if (version_compare(_PS_VERSION_, '9', '>=')) {
+                            $mobile = new Detection\MobileDetect();
+                        } else {
+                            $mobile = new Mobile_Detect();
+                        }
+                    }
                     if ($message['only_mobile'] != '1' && $mobile->isMobile() && !$mobile->isTablet() && $from_bo == false) {
                         continue;
                     }
@@ -631,14 +699,17 @@ class WhatsAppChat extends Module
                     } else {
                         $whatsapp_action = 0;
                     }
-	                $button_text = $message['message'];
-					$button_text = Tools::str_replace_once('&lt;WHATSAPP_LINK&gt;', '<a href="'.$url.'" target="_blank">', $button_text);
-					$button_text = Tools::str_replace_once('&lt;/WHATSAPP_LINK&gt;', '</a>', $button_text);
+                    $button_text = $message['message'];
+                    $button_text = Tools::str_replace_once('&lt;WHATSAPP_LINK&gt;', '<a href="'.$url.'" target="_blank">', $button_text);
+                    $button_text = Tools::str_replace_once('&lt;/WHATSAPP_LINK&gt;', '</a>', $button_text);
+                    if (version_compare(_PS_VERSION_, '1.6', '>=') && class_exists('HTMLPurifier')) {
+                        $purifier = new HTMLPurifier();
+                    }
                     $this->context->smarty->assign(array(
                         'whatsapp_action' => $whatsapp_action,
                         'font_awesome'    => ($hook == 'hookDisplayMaintenance' ? false : Configuration::get('WA_FONT_AWESOME')),
                         'whatsappchat_id' => $message['id_whatsappchatblock'],
-                        'button_text'     => $button_text,
+                        'button_text'     => (version_compare(_PS_VERSION_, '1.6', '>=') && class_exists('HTMLPurifier') ? $purifier->purify($button_text) : $button_text),
                         'offline_message' => $offline_message,
                         'offline_link'    => $offline_link,
                         'whatsapp_theme'  => version_compare(_PS_VERSION_, '1.7', '>=') ? $this->context->shop->theme->getName() : $this->context->shop->theme_name,
@@ -648,7 +719,7 @@ class WhatsAppChat extends Module
                         'mobile_phone'    => $mobile_phone,
                         'color'           => $color,
                         'custom_css'      => $message['custom_css'],
-                        'custom_js'       => $message['custom_js'],
+                        'custom_js'       => (version_compare(_PS_VERSION_, '1.6', '>=') && class_exists('HTMLPurifier') ? $purifier->purify($message['custom_js']) : $message['custom_js']),
                         'url'             => $url,
                         'agents'          => count($agents) <= 0 ? false : $agents,
                         'agents_img_src'  => __PS_BASE_URI__.'modules/'.$this->name.'/views/img/agent/',
@@ -713,7 +784,7 @@ class WhatsAppChat extends Module
             }
             return '';
         }
-        if ((version_compare(_PS_VERSION_, '1.5', '>=') && (Tools::strtolower(Dispatcher::getInstance()->getController()) == 'admincustomers') || Tools::strtolower(Dispatcher::getInstance()->getController()) == 'adminorders') ||
+        if ((version_compare(_PS_VERSION_, '1.5', '>=') && (Tools::strtolower(Dispatcher::getInstance()->getController()) == 'admincustomers') || Tools::strtolower(Dispatcher::getInstance()->getController()) == 'adminorders') || Tools::strtolower(Dispatcher::getInstance()->getController()) == 'admincarts' ||
                 (version_compare(_PS_VERSION_, '1.5', '<') && Tools::strtolower(Tools::getValue('tab')) == 'admincustomers')
         ) {
             $this->context->controller->addCSS($this->_path.'views/css/whatsapp.css', 'all');
@@ -745,6 +816,14 @@ class WhatsAppChat extends Module
                     $this->context->smarty->assign(array(
                         'wa_id_order' => $order->id
                     ));
+                } else if ((Tools::getIsset('viewcart') && Tools::getValue('id_cart') > 0) ||
+                    (version_compare(_PS_VERSION_, '9.0.0', '>=') && Tools::getValue('id_cart') > 0)
+                ) {
+                    $cart = new Cart((int)Tools::getValue('id_cart'));
+                    $id_customer = $cart->id_customer;
+                    $this->context->smarty->assign(array(
+                        'wa_id_cart' => $cart->id
+                    ));
                 } else {
                     if (isset($this->context->customer->id) && $this->context->customer->id > 0) {
                         $id_customer = $this->context->customer->id;
@@ -755,33 +834,39 @@ class WhatsAppChat extends Module
                 $this->context->smarty->assign(array(
                     'wa_id_customer' => $id_customer
                 ));
-                $address_id = Address::getFirstCustomerAddressId((int)$id_customer, true);
-                if ($address_id > 0) {
-                    $address = new Address((int)$address_id);
-                    $phone = $address->phone_mobile;
-                    /*
-                    if (!Validate::isPhoneNumber($phone) || $phone == '' || (int)$phone == 0) {
-                        $phone = $address->phone;
-                        if (!Validate::isPhoneNumber($phone) || $phone == '') {
-                            $this->context->smarty->assign(array(
-                                'show_button' => false
-                            ));
+                try {
+                    $address_id = $this->getFirstCustomerAddressId((int)$id_customer, true);
+                    if ($address_id > 0) {
+                        $address = new Address((int)$address_id);
+                        $phone = $address->phone_mobile;
+                        /*
+                        if (!Validate::isPhoneNumber($phone) || $phone == '' || (int)$phone == 0) {
+                            $phone = $address->phone;
+                            if (!Validate::isPhoneNumber($phone) || $phone == '') {
+                                $this->context->smarty->assign(array(
+                                    'show_button' => false
+                                ));
+                            }
                         }
-                    }
-                    */
-                    if (!Validate::isPhoneNumber($phone) || $phone == '') {
-                        $phone = $address->phone;
+                        */
                         if (!Validate::isPhoneNumber($phone) || $phone == '') {
-                            $this->context->smarty->assign(array(
-                                'show_button' => false
-                            ));
+                            $phone = $address->phone;
+                            if (!Validate::isPhoneNumber($phone) || $phone == '') {
+                                $this->context->smarty->assign(array(
+                                    'show_button' => false
+                                ));
+                            }
                         }
+                        $phone = $this->formatMobilePhoneForWhatsapp($phone, $address->id_country);
+                        $this->context->smarty->assign(array(
+                            'url' => $this->getWhatsappUrl($phone)
+                        ));
+                    } else {
+                        $this->context->smarty->assign(array(
+                            'show_button' => false
+                        ));
                     }
-                    $phone = $this->formatMobilePhoneForWhatsapp($phone, $address->id_country);
-                    $this->context->smarty->assign(array(
-                        'url' => $this->getWhatsappUrl($phone)
-                    ));
-                } else {
+                } catch (Exception $e) {
                     $this->context->smarty->assign(array(
                         'show_button' => false
                     ));
@@ -789,6 +874,8 @@ class WhatsAppChat extends Module
             }
             if (Tools::strtolower(Dispatcher::getInstance()->getController()) == 'adminorders') {
                 return $this->display(__FILE__, 'bo_orders_grid_action.tpl');
+            } else if (Tools::strtolower(Dispatcher::getInstance()->getController()) == 'admincarts') {
+                return $this->display(__FILE__, 'bo_carts_grid_action.tpl');
             } else {
                 return $this->display(__FILE__, 'bo_customers_grid_action.tpl');
             }
@@ -798,801 +885,11 @@ class WhatsAppChat extends Module
 
     public function getContent()
     {
-        if (version_compare(_PS_VERSION_, '1.5', '<')) {
-            $html = '';
-
-            if (((bool)Tools::isSubmit('submitwhatsappchatModule')) == true) {
-                $html .= $this->postProcess();
-            }
-
-            if ($warnings = $this->getWarnings(false)) {
-                $html .= $this->displayError($warnings);
-            }
-
-            return $html.$this->renderForm14();
-        }
-
         if ((version_compare(_PS_VERSION_, '1.5.0.13', '<') && Module::isInstalled('whatsappchat'))
             || (version_compare(_PS_VERSION_, '1.5.0.13', '>=') && Module::isEnabled('whatsappchat'))) {
             $this->installTabs();
         }
         Tools::redirectAdmin('index.php?controller='.$this->tabs[0]['class_name'].'&token='.Tools::getAdminTokenLite($this->tabs[0]['class_name']));
-    }
-
-    protected function renderForm()
-    {
-        $html = '';
-
-        $helper = new HelperForm();
-
-        $helper->show_toolbar = false;
-        $helper->table = $this->table;
-        $helper->module = $this;
-        $helper->default_form_language = $this->context->language->id;
-        $helper->allow_employee_form_lang = Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG', 0);
-
-        $helper->identifier = $this->identifier;
-        $helper->submit_action = 'submitwhatsappchatModule';
-        $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false)
-            .'&configure='.$this->name.'&tab_module='.$this->tab.'&module_name='.$this->name;
-        $helper->token = Tools::getAdminTokenLite('AdminModules');
-
-        $helper->tpl_vars = array(
-            'fields_value' => $this->getConfigFormValues(),
-            'languages'     => $this->context->controller->getLanguages(),
-            'id_language'   => $this->context->language->id,
-        );
-
-        $html .= $helper->generateForm($this->getConfigForm());
-
-        if (version_compare(_PS_VERSION_, '1.6', '>=')) {
-            $this->context->smarty->assign(array(
-                'this_path'     => $this->_path,
-                'support_id'    => $this->addons_id_product
-            ));
-            $available_iso_codes = array('en', 'es');
-            $default_iso_code = 'en';
-            $template_iso_suffix = in_array($this->context->language->iso_code, $available_iso_codes) ? $this->context->language->iso_code : $default_iso_code;
-            $html .= $this->context->smarty->fetch($this->local_path.'views/templates/admin/company/information_'.$template_iso_suffix.'.tpl');
-        }
-
-        return $html;
-    }
-
-    protected function renderForm14()
-    {
-        $html = '';
-
-        $helper = new Helper();
-
-        $helper->tpl_vars = array(
-            'fields_value' => $this->getConfigFormValues(),
-            'languages' => Language::getLanguages(false),
-            'id_language' => $this->context->language->id,
-            'THEME_LANG_DIR' => _PS_IMG_.'l/'
-        );
-
-        $html .= $helper->generateForm($this->getConfigForm());
-
-        return $html;
-    }
-
-    protected function postProcess()
-    {
-        $form_values = $this->getConfigFormValues();
-
-        foreach (array_keys($form_values) as $key) {
-            Configuration::updateValue($key, $form_values[$key]);
-        }
-
-        return $this->displayConfirmation($this->l('Configuration saved successfully.'));
-    }
-
-    protected function getConfigForm()
-    {
-        $fields = array();
-
-        $fields[]['form'] = array(
-            'legend' => array(
-                'title' => $this->l('General configuration'),
-                'icon' => 'icon-cogs',
-            ),
-            'input' => array(
-                array(
-                    'type'  => 'text',
-                    'label' => $this->l('Mobile phone number'),
-                    'name'  => 'WA_CHAT_MOBILE',
-                    'desc' => $this->l('Introduce mobile phone number with the international country code, without "+" character.').'<br />'.$this->l('Example: Introduce 341234567 for (+34) 1234567.'),
-                    'col'   => 2,
-                    'class' => 't',
-                ),
-                array(
-                    'type'  => 'text',
-                    'label' => $this->l('Default chat message'),
-                    'name'  => 'WA_CHAT_MESSAGE',
-                    'lang'  => true,
-                    'col'   => 4,
-                    'class' => 't',
-                ),
-            )
-        );
-
-        $fields[]['form'] = array(
-            'legend' => array(
-                'title' => $this->l('Badge configuration'),
-                'icon' => 'icon-cogs',
-            ),
-            'input' => array(
-                array(
-                    'type' => 'radio',
-                    'label' => $this->l('Display badge?'),
-                    'name' => 'WA_BADGE_ENABLE',
-                    'is_bool' => true,
-                    'class' => 't',
-                    'values' => array(
-                        array(
-                            'id' => 'WA_BADGE_ENABLE_on',
-                            'value' => 1,
-                            'label' => $this->l('Yes')),
-                        array(
-                            'id' => 'WA_BADGE_ENABLE_off',
-                            'value' => 0,
-                            'label' => $this->l('No')),
-                    ),
-                ),
-                array(
-                    'type'  => 'text',
-                    'label' => $this->l('Badge message'),
-                    'name'  => 'WA_BADGE_MESSAGE',
-                    'lang'  => true,
-                    'col'   => 4,
-                    'class' => 't',
-                ),
-                array(
-                    'type' => 'select',
-                    'label' => $this->l('Badge position'),
-                    'name' => 'WA_BADGE_POSITION',
-                    'class' => 't',
-                    'options' => array(
-                        'query' => array(
-                            array(
-                                'id' => 'bottom-left',
-                                'name' => $this->l('Bottom left')
-                            ),
-                            array(
-                                'id' => 'bottom-right',
-                                'name' => $this->l('Bottom right'),
-                            )
-                        ),
-                        'id' => 'id',
-                        'name' => 'name'
-                    ),
-                ),
-                array(
-                    'type' => 'radio',
-                    'label' => $this->l('Open chat in a new window?'),
-                    'name' => 'WA_BADGE_CHAT',
-                    'is_bool' => true,
-                    'class' => 't',
-                    'values' => array(
-                        array(
-                            'id' => 'WA_BADGE_CHAT_on',
-                            'value' => 1,
-                            'label' => $this->l('Yes')),
-                        array(
-                            'id' => 'WA_BADGE_CHAT_off',
-                            'value' => 0,
-                            'label' => $this->l('No')),
-                    ),
-                ),
-            ),
-            'submit' => array(
-                'title' => $this->l('Save'),
-                'type' => 'submit',
-                'name' => 'submitwhatsappchatModule',
-            ),
-        );
-
-        $positions = array(
-            array(
-                'id' => 'HEADER',
-                'name' => 'header'
-            ),
-            array(
-                'id' => 'TOP',
-                'name' => 'top'
-            ),
-            array(
-                'id' => 'LEFTCOLUMN',
-                'name' => 'left column'
-            ),
-            array(
-                'id' => 'RIGHTCOLUMN',
-                'name' => 'right column'
-            ),
-            array(
-                'id' => 'FOOTER',
-                'name' => 'footer'
-            )
-        );
-
-        $sectionFields = array();
-        foreach ($positions as $position) {
-            $sectionFields = array_merge($sectionFields, array(
-                array(
-                    'type'          => 'html',
-                    'html_content'  => '<hr>',
-                ),
-                array(
-                    'type' => 'radio',
-                    'label' => $this->l('Display block in').' '.$position['name'].'?',
-                    'name' => 'WA_'.$position['id'].'_ENABLE',
-                    'is_bool' => true,
-                    'class' => 't',
-                    'values' => array(
-                        array(
-                            'id' => 'WA_'.$position['id'].'_ENABLE_on',
-                            'value' => 1,
-                            'label' => $this->l('Yes')),
-                        array(
-                            'id' => 'WA_'.$position['id'].'_ENABLE_off',
-                            'value' => 0,
-                            'label' => $this->l('No')),
-                    ),
-                ),
-                array(
-                    'type'  => 'text',
-                    'label' => $this->l('Block message'),
-                    'name'  => 'WA_'.$position['id'].'_MESSAGE',
-                    'lang'  => true,
-                    'col'   => 4,
-                    'class' => 't',
-                ),
-                array(
-                    'type' => 'select',
-                    'label' => $this->l('Position'),
-                    'name' => 'WA_'.$position['id'].'_POSITION',
-                    'class' => 't',
-                    'options' => array(
-                        'query' => array(
-                            array(
-                                'id' => 'left',
-                                'name' => $this->l('Left')
-                            ),
-                            array(
-                                'id' => 'center',
-                                'name' => $this->l('Center'),
-                            ),
-                            array(
-                                'id' => 'right',
-                                'name' => $this->l('Right'),
-                            )
-                        ),
-                        'id' => 'id',
-                        'name' => 'name'
-                    ),
-                ),
-                array(
-                    'type' => 'radio',
-                    'label' => $this->l('Open chat in a new window?'),
-                    'name' => 'WA_'.$position['id'].'_CHAT',
-                    'is_bool' => true,
-                    'class' => 't',
-                    'values' => array(
-                        array(
-                            'id' => 'WA_'.$position['id'].'_CHAT_on',
-                            'value' => 1,
-                            'label' => $this->l('Yes')),
-                        array(
-                            'id' => 'WA_'.$position['id'].'_CHAT_off',
-                            'value' => 0,
-                            'label' => $this->l('No')),
-                    ),
-                )
-            ));
-        }
-
-        $sectionFields = array_merge(
-            array(array(
-                'type'  => 'html',
-                'html_content'  => '<div style="text-align:center; font-weight:bold"><a target="_blank" href="'.$this->_path.'views/img/allpages_14.png">'.$this->l('View hook position 🔗').'</a></div><br />',
-            )),
-            $sectionFields
-        );
-
-        $fields[]['form'] = array(
-            'legend' => array(
-                'title' => $this->l('All pages configuration'),
-                'icon' => 'icon-cogs',
-            ),
-            'input' => $sectionFields,
-            'submit' => array(
-                'title' => $this->l('Save'),
-                'type' => 'submit',
-                'name' => 'submitwhatsappchatModule',
-            ),
-        );
-
-        $fields[]['form'] = array(
-            'legend' => array(
-                'title' => $this->l('Home configuration'),
-                'icon' => 'icon-cogs',
-            ),
-            'input' => array(
-                array(
-                    'type'  => 'html',
-                    'html_content'  => '<div style="text-align:center; font-weight:bold"><a target="_blank" href="'.$this->_path.'views/img/home_14.png">'.$this->l('View hook position 🔗').'</a></div><br />',
-                ),
-                array(
-                    'type' => 'radio',
-                    'label' => $this->l('Display block in home?'),
-                    'name' => 'WA_HOME_ENABLE',
-                    'is_bool' => true,
-                    'class' => 't',
-                    'values' => array(
-                        array(
-                            'id' => 'WA_HOME_ENABLE_on',
-                            'value' => 1,
-                            'label' => $this->l('Yes')),
-                        array(
-                            'id' => 'WA_HOME_ENABLE_off',
-                            'value' => 0,
-                            'label' => $this->l('No')),
-                    ),
-                ),
-                array(
-                    'type'  => 'text',
-                    'label' => $this->l('Block message'),
-                    'name'  => 'WA_HOME_MESSAGE',
-                    'lang'  => true,
-                    'col'   => 4,
-                    'class' => 't',
-                ),
-                array(
-                    'type' => 'select',
-                    'label' => $this->l('Position'),
-                    'name' => 'WA_HOME_POSITION',
-                    'class' => 't',
-                    'options' => array(
-                        'query' => array(
-                            array(
-                                'id' => 'left',
-                                'name' => $this->l('Left')
-                            ),
-                            array(
-                                'id' => 'center',
-                                'name' => $this->l('Center'),
-                            ),
-                            array(
-                                'id' => 'right',
-                                'name' => $this->l('Right'),
-                            )
-                        ),
-                        'id' => 'id',
-                        'name' => 'name'
-                    ),
-                ),
-                array(
-                    'type' => 'radio',
-                    'label' => $this->l('Open chat in a new window?'),
-                    'name' => 'WA_HOME_CHAT',
-                    'is_bool' => true,
-                    'class' => 't',
-                    'values' => array(
-                        array(
-                            'id' => 'WA_HOME_CHAT_on',
-                            'value' => 1,
-                            'label' => $this->l('Yes')),
-                        array(
-                            'id' => 'WA_HOME_CHAT_off',
-                            'value' => 0,
-                            'label' => $this->l('No')),
-                    ),
-                ),
-            ),
-            'submit' => array(
-                'title' => $this->l('Save'),
-                'type' => 'submit',
-                'name' => 'submitwhatsappchatModule',
-            ),
-        );
-
-        $positions = array(
-            array(
-                'id' => 'EXTRALEFT',
-                'name' => 'left column'
-            ),
-            array(
-                'id' => 'EXTRARIGHT',
-                'name' => 'right column'
-            ),
-            array(
-                'id' => 'PRODUCTACTIONS',
-                'name' => 'product actions'
-            ),
-            array(
-                'id' => 'PRODUCTFOOTER',
-                'name' => 'product footer'
-            ),
-        );
-
-        $sectionFields = array();
-        foreach ($positions as $position) {
-            $sectionFields = array_merge($sectionFields, array(
-                array(
-                    'type' => 'radio',
-                    'label' => $this->l('Display block in').' '.$position['name'].'?',
-                    'name' => 'WA_'.$position['id'].'_ENABLE',
-                    'is_bool' => true,
-                    'class' => 't',
-                    'values' => array(
-                        array(
-                            'id' => 'WA_'.$position['id'].'_ENABLE_on',
-                            'value' => 1,
-                            'label' => $this->l('Yes')),
-                        array(
-                            'id' => 'WA_'.$position['id'].'_ENABLE_off',
-                            'value' => 0,
-                            'label' => $this->l('No')),
-                    ),
-                ),
-                array(
-                    'type'  => 'text',
-                    'label' => $this->l('Block message'),
-                    'name'  => 'WA_'.$position['id'].'_MESSAGE',
-                    'lang'  => true,
-                    'col'   => 4,
-                    'class' => 't',
-                ),
-                array(
-                    'type' => 'select',
-                    'label' => $this->l('Position'),
-                    'name' => 'WA_'.$position['id'].'_POSITION',
-                    'class' => 't',
-                    'options' => array(
-                        'query' => array(
-                            array(
-                                'id' => 'left',
-                                'name' => $this->l('Left')
-                            ),
-                            array(
-                                'id' => 'center',
-                                'name' => $this->l('Center'),
-                            ),
-                            array(
-                                'id' => 'right',
-                                'name' => $this->l('Right'),
-                            )
-                        ),
-                        'id' => 'id',
-                        'name' => 'name'
-                    ),
-                ),
-                array(
-                    'type' => 'radio',
-                    'label' => $this->l('Open chat in a new window?'),
-                    'name' => 'WA_'.$position['id'].'_CHAT',
-                    'is_bool' => true,
-                    'class' => 't',
-                    'values' => array(
-                        array(
-                            'id' => 'WA_'.$position['id'].'_CHAT_on',
-                            'value' => 1,
-                            'label' => $this->l('Yes')),
-                        array(
-                            'id' => 'WA_'.$position['id'].'_CHAT_off',
-                            'value' => 0,
-                            'label' => $this->l('No')),
-                    ),
-                ),
-                array(
-                    'type'          => 'html',
-                    'html_content'  => '<hr>',
-                ),
-            ));
-        }
-
-        $sectionFields = array_merge(
-            array(array(
-                'type'  => 'html',
-                'html_content'  => '<div style="text-align:center; font-weight:bold"><a target="_blank" href="'.$this->_path.'views/img/product_14.png">'.$this->l('View hook position 🔗').'</a></div><br />',
-            )),
-            $sectionFields
-        );
-
-        $fields[]['form'] = array(
-            'legend' => array(
-                'title' => $this->l('Product page configuration'),
-                'icon' => 'icon-cogs',
-            ),
-            'input' => $sectionFields,
-            'submit' => array(
-                'title' => $this->l('Save'),
-                'type' => 'submit',
-                'name' => 'submitwhatsappchatModule',
-            ),
-        );
-
-        $positions = array(
-            array(
-                'id' => 'SHOPPINGCART',
-                'name' => 'shopping cart'
-            ),
-            array(
-                'id' => 'SHOPPINGCARTEXTRA',
-                'name' => 'shopping cart extra'
-            ),
-            array(
-                'id' => 'PAYMENTTOP',
-                'name' => 'payment top'
-            ),
-            array(
-                'id' => 'BEFORECARRIER',
-                'name' => 'before carrier'
-            ),
-            array(
-                'id' => 'ORDERCONFIRMATION',
-                'name' => 'order confirmation'
-            ),
-        );
-
-        $sectionFields = array();
-        foreach ($positions as $position) {
-            $sectionFields = array_merge($sectionFields, array(
-                array(
-                    'type'          => 'html',
-                    'html_content'  => '<hr>',
-                ),
-                array(
-                    'type' => 'radio',
-                    'label' => $this->l('Display block in').' '.$position['name'].'?',
-                    'name' => 'WA_'.$position['id'].'_ENABLE',
-                    'is_bool' => true,
-                    'class' => 't',
-                    'values' => array(
-                        array(
-                            'id' => 'WA_'.$position['id'].'_ENABLE_on',
-                            'value' => 1,
-                            'label' => $this->l('Yes')),
-                        array(
-                            'id' => 'WA_'.$position['id'].'_ENABLE_off',
-                            'value' => 0,
-                            'label' => $this->l('No')),
-                    ),
-                ),
-                array(
-                    'type'  => 'text',
-                    'label' => $this->l('Block message'),
-                    'name'  => 'WA_'.$position['id'].'_MESSAGE',
-                    'lang'  => true,
-                    'col'   => 4,
-                    'class' => 't',
-                ),
-                array(
-                    'type' => 'select',
-                    'label' => $this->l('Position'),
-                    'name' => 'WA_'.$position['id'].'_POSITION',
-                    'class' => 't',
-                    'options' => array(
-                        'query' => array(
-                            array(
-                                'id' => 'left',
-                                'name' => $this->l('Left')
-                            ),
-                            array(
-                                'id' => 'center',
-                                'name' => $this->l('Center'),
-                            ),
-                            array(
-                                'id' => 'right',
-                                'name' => $this->l('Right'),
-                            )
-                        ),
-                        'id' => 'id',
-                        'name' => 'name'
-                    ),
-                ),
-                array(
-                    'type' => 'radio',
-                    'label' => $this->l('Open chat in a new window?'),
-                    'name' => 'WA_'.$position['id'].'_CHAT',
-                    'is_bool' => true,
-                    'class' => 't',
-                    'values' => array(
-                        array(
-                            'id' => 'WA_'.$position['id'].'_CHAT_on',
-                            'value' => 1,
-                            'label' => $this->l('Yes')),
-                        array(
-                            'id' => 'WA_'.$position['id'].'_CHAT_off',
-                            'value' => 0,
-                            'label' => $this->l('No')),
-                    ),
-                )
-            ));
-        }
-
-        $sectionFields = array_merge(
-            array(array(
-                'type'  => 'html',
-                'html_content'  => '<div style="text-align:center; font-weight:bold"><a target="_blank" href="'.$this->_path.'views/img/shoppingcart_14.png">'.$this->l('View hook position 🔗').'</a></div><br />',
-            )),
-            $sectionFields
-        );
-
-        $fields[]['form'] = array(
-            'legend' => array(
-                'title' => $this->l('Checkout/Order configuration'),
-                'icon' => 'icon-cogs',
-            ),
-            'input' => $sectionFields,
-            'submit' => array(
-                'title' => $this->l('Save'),
-                'type' => 'submit',
-                'name' => 'submitwhatsappchatModule',
-            ),
-        );
-
-        $positions = array(
-            array(
-                'id' => 'CUSTOMERACCOUNT',
-                'name' => 'customer account'
-            ),
-            array(
-                'id' => 'MYACCOUNTBLOCK',
-                'name' => 'my account'
-            ),
-        );
-
-        $sectionFields = array();
-        foreach ($positions as $position) {
-            $sectionFields = array_merge($sectionFields, array(
-                array(
-                    'type'          => 'html',
-                    'html_content'  => '<hr>',
-                ),
-                array(
-                    'type' => 'radio',
-                    'label' => $this->l('Display block in').' '.$position['name'].'?',
-                    'name' => 'WA_'.$position['id'].'_ENABLE',
-                    'is_bool' => true,
-                    'class' => 't',
-                    'values' => array(
-                        array(
-                            'id' => 'WA_'.$position['id'].'_ENABLE_on',
-                            'value' => 1,
-                            'label' => $this->l('Yes')),
-                        array(
-                            'id' => 'WA_'.$position['id'].'_ENABLE_off',
-                            'value' => 0,
-                            'label' => $this->l('No')),
-                    ),
-                ),
-                array(
-                    'type'  => 'text',
-                    'label' => $this->l('Block message'),
-                    'name'  => 'WA_'.$position['id'].'_MESSAGE',
-                    'lang'  => true,
-                    'col'   => 4,
-                    'class' => 't',
-                ),
-                array(
-                    'type' => 'select',
-                    'label' => $this->l('Position'),
-                    'name' => 'WA_'.$position['id'].'_POSITION',
-                    'class' => 't',
-                    'options' => array(
-                        'query' => array(
-                            array(
-                                'id' => 'left',
-                                'name' => $this->l('Left')
-                            ),
-                            array(
-                                'id' => 'center',
-                                'name' => $this->l('Center'),
-                            ),
-                            array(
-                                'id' => 'right',
-                                'name' => $this->l('Right'),
-                            )
-                        ),
-                        'id' => 'id',
-                        'name' => 'name'
-                    ),
-                ),
-                array(
-                    'type' => 'radio',
-                    'label' => $this->l('Open chat in a new window?'),
-                    'name' => 'WA_'.$position['id'].'_CHAT',
-                    'is_bool' => true,
-                    'class' => 't',
-                    'values' => array(
-                        array(
-                            'id' => 'WA_'.$position['id'].'_CHAT_on',
-                            'value' => 1,
-                            'label' => $this->l('Yes')),
-                        array(
-                            'id' => 'WA_'.$position['id'].'_CHAT_off',
-                            'value' => 0,
-                            'label' => $this->l('No')),
-                    ),
-                )
-            ));
-        }
-
-        $sectionFields = array_merge(
-            array(array(
-                'type'  => 'html',
-                'html_content'  => '<div style="text-align:center; font-weight:bold"><a target="_blank" href="'.$this->_path.'views/img/shoppingcart_14.png">'.$this->l('View hook position 🔗').'</a></div><br />',
-            )),
-            $sectionFields
-        );
-
-        $fields[]['form'] = array(
-            'legend' => array(
-                'title' => $this->l('My account configuration'),
-                'icon' => 'icon-cogs',
-            ),
-            'input' => $sectionFields,
-            'submit' => array(
-                'title' => $this->l('Save'),
-                'type' => 'submit',
-                'name' => 'submitwhatsappchatModule',
-            ),
-        );
-
-        return $fields;
-    }
-
-    protected function getConfigFormValues()
-    {
-        $fields = array();
-
-        $fields['WA_CHAT_MOBILE'] = Tools::getValue(
-            'WA_CHAT_MOBILE',
-            Configuration::get('WA_CHAT_MOBILE')
-        );
-
-        $fields['WA_FONT_AWESOME'] = Tools::getValue(
-            'WA_FONT_AWESOME',
-            Configuration::get('WA_FONT_AWESOME')
-        );
-
-        $positions = array('BADGE', 'HEADER', 'FOOTER', 'LEFTCOLUMN', 'RIGHTCOLUMN', 'TOP', 'HOME', 'EXTRALEFT', 'EXTRARIGHT', 'PRODUCTACTIONS', 'PRODUCTFOOTER', 'SHOPPINGCART', 'SHOPPINGCARTEXTRA', 'PAYMENTTOP', 'BEFORECARRIER', 'ORDERCONFIRMATION', 'CUSTOMERACCOUNT', 'MYACCOUNTBLOCK', 'TOPWIDTH', 'TOPWIDTHSTICKY', 'BOTTOMWIDTH');
-
-        foreach ($positions as $position) {
-            $fields['WA_'.$position.'_ENABLE'] = Tools::getValue(
-                'WA_'.$position.'_ENABLE',
-                Configuration::get('WA_'.$position.'_ENABLE')
-            );
-
-            $fields['WA_'.$position.'_POSITION'] = Tools::getValue(
-                'WA_'.$position.'_POSITION',
-                Configuration::get('WA_'.$position.'_POSITION')
-            );
-
-            $fields['WA_'.$position.'_CHAT'] = Tools::getValue(
-                'WA_'.$position.'_CHAT',
-                Configuration::get('WA_'.$position.'_CHAT')
-            );
-        }
-
-        $languages = Language::getLanguages(false);
-        foreach ($languages as $lang) {
-            $fields['WA_CHAT_MESSAGE'][$lang['id_lang']] = Tools::getValue(
-                'WA_CHAT_MESSAGE_'.$lang['id_lang'],
-                Configuration::get('WA_CHAT_MESSAGE', $lang['id_lang'])
-            );
-
-            foreach ($positions as $position) {
-                $fields['WA_'.$position.'_MESSAGE'][$lang['id_lang']] = Tools::getValue(
-                    'WA_'.$position.'_MESSAGE_'.$lang['id_lang'],
-                    Configuration::get('WA_'.$position.'_MESSAGE', $lang['id_lang'])
-                );
-            }
-        }
-
-        return $fields;
     }
 
     public function getWarnings($getAll = true)
@@ -1849,7 +1146,11 @@ class WhatsAppChat extends Module
 
     public function getWhatsappUrl($phone = false, $text = false, $chat_group = '')
     {
-        $mobile = new Mobile_Detect();
+        if (version_compare(_PS_VERSION_, '9', '>=')) {
+            $mobile = new Detection\MobileDetect();
+        } else {
+            $mobile = new Mobile_Detect();
+        }
         if ($mobile->isMobile() || $mobile->isTablet()) {
             if ($mobile->is('AndroidOS')) {
                 if ($this->isFacebookInstagramInAppBrowser() || $this->isFirefoxBrowser()) {
@@ -1863,15 +1164,18 @@ class WhatsAppChat extends Module
                 return 'intent://send/'.($phone ? '&phone='.$phone : '').'#Intent;scheme=smsto;package=com.whatsapp;action=android.intent.action.SENDTO;end';
             }
             //$url = 'https://api.whatsapp.com/';
-            $url = 'https://wa.me/';
             //$url = 'whatsapp://';
+            $url = 'https://wa.me/';
         } else {
             $url = 'https://web.whatsapp.com/';
+            if (trim($text) == '' || !$text || $text == ' ') {
+                $url = 'https://wa.me/';
+            }
         }
         if ($chat_group != '') {
             return 'https://chat.whatsapp.com/'.$chat_group;
         }
-        if (Tools::strpos('https://wa.me/', $url) !== false) {
+        if (strpos('https://wa.me/', $url) !== false) {
             return trim($url.$phone.'/?l='.$this->context->language->iso_code.($text ? '&text='.$text : ''));
         } else {
             return trim($url.'send?l='.$this->context->language->iso_code.($phone ? '&phone='.$phone : '').($text ? '&text='.$text : ''));
@@ -2069,7 +1373,7 @@ class WhatsAppChat extends Module
             return array();
         }
         $context = Context::getContext();
-        $module = new WhatsappChat();
+        $module = new WhatsAppChat();
         switch ($entity) {
             case '2': //Products
                 $products_array = array();
@@ -2146,6 +1450,27 @@ class WhatsAppChat extends Module
                ($only_active ? ' AND product_shop.`active` = 1' : '');
         $rq = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
         return ($rq);
+    }
+
+    public static function getFirstCustomerAddressId($id_customer, $active = true)
+    {
+        if (!$id_customer) {
+            return false;
+        }
+        $cache_id = 'Address::getFirstCustomerAddressId_' . (int) $id_customer . '-' . (bool) $active;
+        if (!Cache::isStored($cache_id)) {
+            $result = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                '
+                SELECT `id_address`
+                FROM `' . _DB_PREFIX_ . 'address`
+                WHERE `id_customer` = ' . (int) $id_customer . ' AND `deleted` = 0' . ($active ? ' AND `active` = 1' : '')
+            );
+            Cache::store($cache_id, $result);
+
+            return $result;
+        }
+
+        return Cache::retrieve($cache_id);
     }
 
     protected function getProtocolUrl()

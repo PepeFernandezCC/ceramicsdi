@@ -1,30 +1,41 @@
 <?php
 /**
- * WhatsApp Chat
- *
- * NOTICE OF LICENSE
- *
- * This product is licensed for one customer to use on one installation (test stores and multishop included).
- * Site developer has the right to modify this module to suit their needs, but can not redistribute the module in
- * whole or in part. Any other use of this module constitues a violation of the user agreement.
- *
- * DISCLAIMER
- *
- * NO WARRANTIES OF DATA SAFETY OR MODULE SECURITY
- * ARE EXPRESSED OR IMPLIED. USE THIS MODULE IN ACCORDANCE
- * WITH YOUR MERCHANT AGREEMENT, KNOWING THAT VIOLATIONS OF
- * PCI COMPLIANCY OR A DATA BREACH CAN COST THOUSANDS OF DOLLARS
- * IN FINES AND DAMAGE A STORES REPUTATION. USE AT YOUR OWN RISK.
- *
- *  @author    idnovate
- *  @copyright 2023 idnovate
- *  @license   See above
+* WhatsApp Chat
+*
+* ISC License
+*
+* Copyright (c) 2025 idnovate.com
+* idnovate is a Registered Trademark & Property of idnovate.com, innovación y desarrollo SCP
+*
+* Permission to use, copy, modify, and/or distribute this software for any
+* purpose with or without fee is hereby granted, provided that the above
+* copyright notice and this permission notice appear in all copies.
+*
+* THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+* REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+* AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+* INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+* LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+* OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+* PERFORMANCE OF THIS SOFTWARE.
+*
+* @author    idnovate
+* @copyright 2025 idnovate
+* @license   https://www.isc.org/licenses/ https://opensource.org/licenses/ISC ISC License
 */
+
+if (!defined('_PS_VERSION_')) { exit; }
 
 include_once(_PS_MODULE_DIR_.'whatsappchat/classes/array_column.php');
 
 class AdminWhatsappChatController extends ModuleAdminController
 {
+    public $className;
+    public $tabClassName;
+    public $module_name;
+    public $allow_duplicate;
+    public $tpl_vars;
+    public $addons_id_product;
     protected $delete_mode;
     protected $is_multishop_selected = true;
     protected $_defaultOrderBy = 'id_whatsappchatblock';
@@ -196,45 +207,58 @@ class AdminWhatsappChatController extends ModuleAdminController
         if (Tools::isSubmit('method')) {
             switch (Tools::getValue('method')) {
                 case 'getCustomerMobilePhone':
-                    if (Tools::getIsset('id_order') && $id_order = Tools::getValue('id_order')) {
-                        $order = new Order((int)$id_order);
-                        $id_customer = $order->id_customer;
-                        $address_id = $order->id_address_delivery;
-                    } else {
-                        $id_customer = Tools::getValue('id_customer');
-                        $address_id = Address::getFirstCustomerAddressId((int)$id_customer, true);
-                    }
-                    if ($address_id > 0) {
-                        $address = new Address((int)$address_id);
-                        $phone = $address->phone_mobile;
-                        if (!Validate::isPhoneNumber($phone) || $phone == '') {
-                            $phone = $address->phone;
+                    try {
+                        if (Tools::getIsset('id_order') && $id_order = Tools::getValue('id_order')) {
+                            $order = new Order((int)$id_order);
+                            $id_customer = $order->id_customer;
+                            $address_id = $order->id_address_delivery;
+                        } else if (Tools::getIsset('id_cart') && $id_cart = Tools::getValue('id_cart')) {
+                            $cart = new Cart((int)$id_cart);
+                            $id_customer = $cart->id_customer;
+                            $address_id = $cart->id_address_delivery;
+                        } else {
+                            $id_customer = Tools::getValue('id_customer');
+                            $address_id = Address::getFirstCustomerAddressId((int)$id_customer, true);
+                        }
+                        if ($address_id > 0) {
+                            $address = new Address((int)$address_id);
+                            $phone = $address->phone_mobile;
                             if (!Validate::isPhoneNumber($phone) || $phone == '') {
-                                $address_id = Address::getFirstCustomerAddressId((int)$id_customer, true);
-                                $address = new Address((int)$address_id);
-                                $phone = $address->phone_mobile;
+                                $phone = $address->phone;
                                 if (!Validate::isPhoneNumber($phone) || $phone == '') {
-                                    $phone = $address->phone;
-                                }
-                                if (!Validate::isPhoneNumber($phone) || $phone == '') {
-                                    die(json_encode(array('whatsappchat_response' => array(
-                                        'code' => 'NOK',
-                                        'url'  => '',
-                                        'msg'  => Translate::getModuleTranslation($this->module_name, 'Not a valid phone number or this customer has no mobile phone.', $this->tabClassName)
-                                    )
-                                    )));
+                                    $address_id = Address::getFirstCustomerAddressId((int)$id_customer, true);
+                                    $address = new Address((int)$address_id);
+                                    $phone = $address->phone_mobile;
+                                    if (!Validate::isPhoneNumber($phone) || $phone == '') {
+                                        $phone = $address->phone;
+                                    }
+                                    if (!Validate::isPhoneNumber($phone) || $phone == '') {
+                                        die(json_encode(array('whatsappchat_response' => array(
+                                            'code' => 'NOK',
+                                            'url'  => '',
+                                            'msg'  => Translate::getModuleTranslation($this->module_name, 'Not a valid phone number or this customer has no mobile phone.', $this->tabClassName)
+                                        )
+                                        )));
+                                    }
                                 }
                             }
+                            $module = new WhatsAppChat();
+                            $phone = $module->formatMobilePhoneForWhatsapp($phone, $address->id_country);
+                            die(json_encode(array('whatsappchat_response' => array(
+                                'code' => 'OK',
+                                'url'  => $module->getWhatsappUrl($phone),
+                                'msg'  => ''
+                            )
+                            )));
+                        } else {
+                            die(json_encode(array('whatsappchat_response' => array(
+                                'code' => 'NOK',
+                                'url'  => '',
+                                'msg'  => Translate::getModuleTranslation($this->module_name, 'Not a valid phone number or this customer has no mobile phone.', $this->tabClassName)
+                            )
+                            )));
                         }
-                        $module = new WhatsAppChat();
-                        $phone = $module->formatMobilePhoneForWhatsapp($phone, $address->id_country);
-                        die(json_encode(array('whatsappchat_response' => array(
-                            'code' => 'OK',
-                            'url'  => $module->getWhatsappUrl($phone),
-                            'msg'  => ''
-                        )
-                        )));
-                    } else {
+                    } catch (Exception $e) {
                         die(json_encode(array('whatsappchat_response' => array(
                             'code' => 'NOK',
                             'url'  => '',
@@ -242,7 +266,6 @@ class AdminWhatsappChatController extends ModuleAdminController
                         )
                         )));
                     }
-                    break;
                 case 'entity':
                     if (is_numeric(Tools::getValue('entity'))) {
                         die(json_encode(WhatsAppChat::getDisplayOnSelection(Tools::getValue('entity'))));
@@ -279,7 +302,7 @@ class AdminWhatsappChatController extends ModuleAdminController
 
     public function printHookTranslation($value)
     {
-        $whatsappchat = new WhatsappChat();
+        $whatsappchat = new WhatsAppChat();
         $hooks = $whatsappchat->getAvailableHooks();
         $key = array_search($value, array_column($hooks, 'id'));
         return $hooks[$key]['name'];
@@ -393,7 +416,7 @@ class AdminWhatsappChatController extends ModuleAdminController
             return $value;
         }
         $module = new WhatsAppChat();
-        if (!$module->isShowableBySchedule($conf) && trim($conf['offline_message'] == '')) {
+        if (!$module->isShowableBySchedule($conf) && trim($conf['offline_message']) == '') {
             return '<span style="color:#fff;background-color: red;padding: 4px;border-radius: 5px;font-size: larger;">'.$this->l('Button offline').'</span>';
         }
         return $module->displayBlock($conf['id_hook'], true, $conf['id_whatsappchatblock']);
@@ -521,7 +544,7 @@ class AdminWhatsappChatController extends ModuleAdminController
         if (version_compare(_PS_VERSION_, '1.6', '>=')) {
             $module = $this->module; //$this
             $default_iso_code = 'en';
-            $local_path = $module->getLocalPath();
+            $local_path = $this->module->getLocalPath();
             $readme = null;
             if (file_exists($local_path.'/readme_'.$this->context->language->iso_code.'.pdf')) {
                 $readme = 'readme_'.$this->context->language->iso_code.'.pdf';
@@ -572,11 +595,17 @@ class AdminWhatsappChatController extends ModuleAdminController
                 'icon' => 'process-icon-flag'
             );
 
-            $this->page_header_toolbar_btn['desc-module-hook'] = array(
-                'href' => 'index.php?tab=AdminModulesPositions&token='.Tools::getAdminTokenLite('AdminModulesPositions').'&show_modules='.Module::getModuleIdByName('whatsappchat'),
+            $mng_hooks_lnk = 'index.php?tab=AdminModulesPositions&token='.Tools::getAdminTokenLite('AdminModulesPositions').'&show_modules='.Module::getModuleIdByName($this->module_name);
+            if (version_compare(_PS_VERSION_, '1.7.7', '>=')) {
+                $mng_hooks_lnk = Context::getContext()->link->getAdminLink('AdminModulesPositions', true, [], [
+                    'show_modules' => Module::getModuleIdByName($this->module_name),
+                ]);
+            }
+            $this->page_header_toolbar_btn['desc-module-hook'] = [
+                'href' => $mng_hooks_lnk,
                 'desc' => $this->l('Manage hooks'),
-                'icon' => 'process-icon-anchor'
-            );
+                'icon' => 'process-icon-anchor',
+            ];
         }
 
         if (!$this->is_multishop_selected) {
@@ -620,14 +649,14 @@ class AdminWhatsappChatController extends ModuleAdminController
             'translateLinks' => $translateLinks,
         ));
 
-        $modal_content = $this->context->smarty->fetch('controllers/modules/modal_translation.tpl');
+        $modal_content = $this->context->smarty->fetch($this->module->getLocalPath().'views/templates/admin/modal_translation.tpl');
 
-        $this->modals[] = array(
+        $this->modals[] = [
             'modal_id' => 'moduleTradLangSelect',
             'modal_class' => 'modal-sm',
             'modal_title' => $this->l('Translate this module'),
-            'modal_content' => $modal_content
-        );
+            'modal_content' => $modal_content,
+        ];
     }
 
     public function setMedia($isNewTheme = false)
@@ -718,7 +747,7 @@ class AdminWhatsappChatController extends ModuleAdminController
                 $this->errors[] = Tools::displayError('An error occurred while duplicating WhatsApp configuration #'.$id_conf);
             } else {
                 $this->confirmations[] = sprintf($this->l('WhatsApp configuration #%1s successfully duplicated.'), $id_conf);
-                $this->afterUpdate($conf, $conf->id);
+                $this->afterUpdate($conf);
                 if (version_compare(_PS_VERSION_, '1.6', '<')) {
                     Tools::redirectAdmin('index.php?tab='.$this->tabClassName.'&token='.Tools::getAdminTokenLite($this->tabClassName));
                 } else {
@@ -942,11 +971,13 @@ class AdminWhatsappChatController extends ModuleAdminController
                         $this->context->smarty->fetch($this->module->getLocalPath().'views/templates/admin/positions_help.tpl')
                     ),
                 ),
+                /*
                 array(
                     'col' => 9,
                     'type' => 'free',
                     'name' => 'hook_position',
                 ),
+                */
                 array(
                     'type' => 'select',
                     'label' => $this->l('Horizontal position'),
@@ -1399,6 +1430,18 @@ class AdminWhatsappChatController extends ModuleAdminController
                 '.($front ? ' AND product_shop.`visibility` IN ("both", "catalog")' : '').'
                 ORDER BY p.`id_product` DESC';
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+    }
+
+    public function l($string, $specific = null, $locale = false, $htmlentities = true)
+    {
+        if (is_null($specific)) {
+            $specific = get_class($this);
+        }
+        if (version_compare(_PS_VERSION_, '1.7', '>=')) {
+            return $this->module->l($string, $specific);
+        } else {
+            return parent::l($string, $specific, $locale, $htmlentities);
+        }
     }
 
     private function isBoLogged()

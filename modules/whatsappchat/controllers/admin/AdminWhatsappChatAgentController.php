@@ -1,26 +1,39 @@
 <?php
 /**
-* NOTICE OF LICENSE
+* WhatsApp Chat
 *
-* This product is licensed for one customer to use on one installation (test stores and multishop included).
-* Site developer has the right to modify this module to suit their needs, but can not redistribute the module in
-* whole or in part. Any other use of this module constitues a violation of the user agreement.
+* ISC License
 *
-* DISCLAIMER
+* Copyright (c) 2025 idnovate.com
+* idnovate is a Registered Trademark & Property of idnovate.com, innovación y desarrollo SCP
 *
-* NO WARRANTIES OF DATA SAFETY OR MODULE SECURITY
-* ARE EXPRESSED OR IMPLIED. USE THIS MODULE IN ACCORDANCE
-* WITH YOUR MERCHANT AGREEMENT, KNOWING THAT VIOLATIONS OF
-* PCI COMPLIANCY OR A DATA BREACH CAN COST THOUSANDS OF DOLLARS
-* IN FINES AND DAMAGE A STORES REPUTATION. USE AT YOUR OWN RISK.
+* Permission to use, copy, modify, and/or distribute this software for any
+* purpose with or without fee is hereby granted, provided that the above
+* copyright notice and this permission notice appear in all copies.
 *
-*  @author    idnovate.com <info@idnovate.com>
-*  @copyright 2019 idnovate.com
-*  @license   See above
+* THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+* REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+* AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+* INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+* LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+* OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+* PERFORMANCE OF THIS SOFTWARE.
+*
+* @author    idnovate
+* @copyright 2025 idnovate
+* @license   https://www.isc.org/licenses/ https://opensource.org/licenses/ISC ISC License
 */
+
+if (!defined('_PS_VERSION_')) { exit; }
 
 class AdminWhatsappChatAgentController extends ModuleAdminController
 {
+    public $mainClassName;
+    public $mainTabClassName;
+    public $className;
+    public $tabClassName;
+    public $module_name;
+    public $tpl_vars;
     protected $delete_mode;
     protected $_defaultOrderBy = 'position';
     protected $_defaultOrderWay = 'ASC';
@@ -237,14 +250,14 @@ class AdminWhatsappChatAgentController extends ModuleAdminController
             'translateLinks' => $translateLinks,
         ));
 
-        $modal_content = $this->context->smarty->fetch('controllers/modules/modal_translation.tpl');
+        $modal_content = $this->context->smarty->fetch($this->module->getLocalPath().'views/templates/admin/modal_translation.tpl');
 
-        $this->modals[] = array(
+        $this->modals[] = [
             'modal_id' => 'moduleTradLangSelect',
             'modal_class' => 'modal-sm',
             'modal_title' => $this->l('Translate this module'),
-            'modal_content' => $modal_content
-        );
+            'modal_content' => $modal_content,
+        ];
     }
 
     public function setMedia($isNewTheme = false)
@@ -258,7 +271,7 @@ class AdminWhatsappChatAgentController extends ModuleAdminController
     public function processAdd()
     {
         if (Tools::getValue('submitFormAjax')) {
-            $this->redirect_after = false;
+            $this->redirect_after = null;
         }
         if (Tools::substr(Tools::getValue('image'), 0, 1) == '_') {
             $_POST['image'] = Tools::substr(Tools::getValue('image'), 1);
@@ -349,7 +362,7 @@ class AdminWhatsappChatAgentController extends ModuleAdminController
     public function renderForm()
     {
         if (!($object = $this->loadObject(true))) {
-            return false;
+            return '';
         }
 
         $id_lang = (int)$this->context->language->id;
@@ -496,9 +509,21 @@ class AdminWhatsappChatAgentController extends ModuleAdminController
         return $module->displayBlock($whatsappchat->id_hook, true, $conf['id_whatsappchatblock']);
     }
 
+    public function l($string, $specific = null, $locale = false, $htmlentities = true)
+    {
+        if (is_null($specific)) {
+            $specific = get_class($this);
+        }
+        if (version_compare(_PS_VERSION_, '1.7', '>=')) {
+            return $this->module->l($string, $specific);
+        } else {
+            return parent::l($string, $specific, $locale, $htmlentities);
+        }
+    }
+
     private function buttonPreview($object)
     {
-        $module = new WhatsappChat();
+        $module = new WhatsAppChat();
         return $module->displayBlock($object->id_hook, true, $object->id_whatsappchatblock);
     }
 

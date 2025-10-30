@@ -19,6 +19,8 @@
 *  @license   See above
 */
 
+if (!defined('_PS_VERSION_')) { exit; }
+
 function upgrade_module_1_1_0($module)
 {
     try {
@@ -29,16 +31,6 @@ function upgrade_module_1_1_0($module)
             'ALTER TABLE `'._DB_PREFIX_.'whatsappchatblock_lang`
             ADD `mobile_phone` varchar(15) COLLATE "utf8_general_ci" NULL DEFAULT "";'
         );
-        $languages = Language::getLanguages(false);
-        foreach ($blocks as $block) {
-            foreach ($languages as $lang) {
-                Db::getInstance()->execute(
-                    "UPDATE `"._DB_PREFIX_."whatsappchatblock_lang` SET `mobile_phone` = '".pSQL($block['mobile_phone'])."'
-                    WHERE `id_whatsappchatblock` = ".(int)$block['id_whatsappchatblock']."
-                    AND `id_lang` = ".(int)$lang['id_lang'].";"
-                );
-            }
-        }
         Db::getInstance()->execute(
             'ALTER TABLE `'._DB_PREFIX_.'whatsappchatblock`
             ADD `customer_groups` varchar(60) COLLATE "utf8_general_ci" NULL DEFAULT "all",

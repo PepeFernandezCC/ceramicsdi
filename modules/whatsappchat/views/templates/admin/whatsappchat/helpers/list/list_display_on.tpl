@@ -1,28 +1,31 @@
 {**
 * WhatsApp Chat
 *
-* NOTICE OF LICENSE
+* ISC License
 *
-* This product is licensed for one customer to use on one installation (test stores and multishop included).
-* Site developer has the right to modify this module to suit their needs, but can not redistribute the module in
-* whole or in part. Any other use of this module constitutes a violation of the user agreement.
+* Copyright (c) 2023 idnovate.com
+* idnovate is a Registered Trademark & Property of idnovate.com, innovación y desarrollo SCP
 *
-* DISCLAIMER
+* Permission to use, copy, modify, and/or distribute this software for any
+* purpose with or without fee is hereby granted, provided that the above
+* copyright notice and this permission notice appear in all copies.
 *
-* NO WARRANTIES OF DATA SAFETY OR MODULE SECURITY
-* ARE EXPRESSED OR IMPLIED. USE THIS MODULE IN ACCORDANCE
-* WITH YOUR MERCHANT AGREEMENT, KNOWING THAT VIOLATIONS OF
-* PCI COMPLIANCY OR A DATA BREACH CAN COST THOUSANDS OF DOLLARS
-* IN FINES AND DAMAGE A STORES REPUTATION. USE AT YOUR OWN RISK.
+* THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+* REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+* AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+* INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+* LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+* OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+* PERFORMANCE OF THIS SOFTWARE.
 *
-*  @author    idnovate
-*  @copyright 2019 idnovate
-*  @license   See above
+* @author    idnovate
+* @copyright 2024 idnovate
+* @license   https://www.isc.org/licenses/ https://opensource.org/licenses/ISC ISC License
 *}
 <div class="input-group whatsappchat-display-on">
     <span title="" data-toggle="tooltip" class="label-tooltip" data-original-title="{$display_on_selection_all|escape:'html':'UTF-8'}" data-html="true" data-placement="top">
         {if $entity == '11'}
-            {$display_on_selection nofilter}
+            {$display_on_selection|escape:'javascript':'UTF-8'}
         {else}
             {$display_on.name|escape:'html':'UTF-8'}
             {if $entity == '2' || $entity == '4' || $entity == '6' || $entity == '8' || $entity == '10'}

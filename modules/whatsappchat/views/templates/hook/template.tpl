@@ -1,21 +1,26 @@
 {**
-* NOTICE OF LICENSE
+* WhatsApp Chat
 *
-* This product is licensed for one customer to use on one installation (test stores and multishop included).
-* Site developer has the right to modify this module to suit their needs, but can not redistribute the module in
-* whole or in part. Any other use of this module constitues a violation of the user agreement.
+* ISC License
 *
-* DISCLAIMER
+* Copyright (c) 2025 idnovate.com
+* idnovate is a Registered Trademark & Property of idnovate.com, innovación y desarrollo SCP
 *
-* NO WARRANTIES OF DATA SAFETY OR MODULE SECURITY
-* ARE EXPRESSED OR IMPLIED. USE THIS MODULE IN ACCORDANCE
-* WITH YOUR MERCHANT AGREEMENT, KNOWING THAT VIOLATIONS OF
-* PCI COMPLIANCY OR A DATA BREACH CAN COST THOUSANDS OF DOLLARS
-* IN FINES AND DAMAGE A STORES REPUTATION. USE AT YOUR OWN RISK.
+* Permission to use, copy, modify, and/or distribute this software for any
+* purpose with or without fee is hereby granted, provided that the above
+* copyright notice and this permission notice appear in all copies.
 *
-*  @author    idnovate.com <info@idnovate.com>
-*  @copyright 2022 idnovate.com
-*  @license   See above
+* THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+* REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+* AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+* INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+* LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+* OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+* PERFORMANCE OF THIS SOFTWARE.
+*
+* @author    idnovate
+* @copyright 2025 idnovate
+* @license   https://www.isc.org/licenses/ https://opensource.org/licenses/ISC ISC License
 *}
 
 {if ($custom_js != '' && $from_bo != '1')}
@@ -24,7 +29,7 @@
 </script>
 {/if}
 {if ($custom_css != '' && $from_bo != '1')}
-<style id="whatsappchat_custom_css" type="text/css">
+<style id="whatsappchat_custom_css">
     {$custom_css nofilter}
 </style>
 {/if}
@@ -43,16 +48,23 @@
 {if $agents !== false && $from_bo != '1' && $offline_message == ''}
     <script>
         {if ($whatsapp_action === 'quickview' || $whatsapp_action === 1)}
-            $('.jBox-wrapper').each(function(){
-                $(this).remove();
-            });
-            $('.whatsappchat-agents-container').last().remove();
-            setAgentsBox("{$whatsappchat_id|escape:'html':'UTF-8'}");
-            $('#whatsappchat-agents{$whatsappchat_id|escape:'html':'UTF-8'}{if ($whatsapp_action === 'quickview' || $whatsapp_action === 1)}quickview{/if}').click(function(){
-                if ($('.jBox-wrapper').size() > 1) {
-                    $('.jBox-wrapper').last().remove();
-                }
-            });
+            if (typeof prestashop !== 'undefined' && prestashop.page.page_name === 'product' && $('#whatsappchat-agents{$whatsappchat_id|escape:'html':'UTF-8'}quickview').length == 0) {
+                $('.jBox-wrapper').each(function(){
+                    $(this).remove();
+                });
+                $('.whatsappchat-agents-container').last().remove();
+                setAgentsBox("{$whatsappchat_id|escape:'html':'UTF-8'}");
+                $('#whatsappchat-agents{$whatsappchat_id|escape:'html':'UTF-8'}{if ($whatsapp_action === 'quickview' || $whatsapp_action === 1)}quickview{/if}').click(function(){
+                    if ($('.jBox-wrapper').size() > 1) {
+                        $('.jBox-wrapper').last().remove();
+                    }
+                });
+            } else {
+                $('.jBox-wrapper').each(function(){
+                    $(this).remove();
+                });
+                setAgentsBox("{$whatsappchat_id|escape:'html':'UTF-8'}");
+            }
         {else}
             {if version_compare($smarty.const._PS_VERSION_,'1.7','>=')}
                 if (document.addEventListener) {
@@ -69,8 +81,31 @@
         {literal}
         function setAgentsBox() {
             var whatsappchat_id = "{/literal}{$whatsappchat_id|escape:'html':'UTF-8'}{literal}";
+            var checkSetAgentsBox = setInterval(function() {
+                $('.whatsappchat-agents-container' + whatsappchat_id + ':not(:first)').css('display', 'none');
+                var events = 'undefined';
+                if ($('#whatsappchat-agents' + whatsappchat_id).get().length > 0) {
+                    events = $._data($('#whatsappchat-agents' + whatsappchat_id).get(0), 'events');
+                }
+                if (events === 'undefined' || typeof events === 'undefined') {
+                    setAgentsJBox(whatsappchat_id);
+                } else {
+                    $.each(events, function(i, o) {
+                        if (o[0].namespace != 'jBox-attach-agent_box_' + whatsappchat_id) {
+                            setAgentsJBox(whatsappchat_id);
+                            //clearInterval(checkSetAgentsBox);
+                        } else if ($('#whatsappchat-agents' + whatsappchat_id + 'quickview').length > 0) {
+                            setAgentsJBox(whatsappchat_id);
+                            //clearInterval(checkSetAgentsBox);
+                        }
+                    });
+                }
+                $('.whatsappchat-agents-container' + whatsappchat_id + ':not(:first)').remove();
+            }, 500);
+        }
+        function setAgentsJBox(whatsappchat_id) {
             var test = new jBox('Tooltip', {
-                id: 'agent_box_' + whatsappchat_id,
+                id: 'agent_box_' + whatsappchat_id + '{/literal}{if ($whatsapp_action === 'quickview' || $whatsapp_action === 1)}quickview{/if}{literal}',
                 attach: '#whatsappchat-agents' + whatsappchat_id + '{/literal}{if ($whatsapp_action === 'quickview' || $whatsapp_action === 1)}quickview{/if}{literal}',
                 position: {
                     x: 'center',
@@ -88,6 +123,7 @@
                 zIndex: 8000,
                 preventDefault: true
             });
+            $('.whatsappchat-agents-container' + whatsappchat_id + ':not(:first)').css('display', 'none');
         }
         {/literal}
     </script>
@@ -95,7 +131,7 @@
         <div class="whatsappchat-agents-title{if version_compare($smarty.const._PS_VERSION_,'1.7','>=')} whatsappchat-agents-title17{/if}" style="background-color: {$color|escape:'html':'UTF-8'}">{l s="Hi! Click one of our agents below and we will get back to you as soon as possible." mod='whatsappchat'}</div>
         <div class="whatsappchat-agents-content">
             {foreach $agents as $agent}
-                <a href="{$agent.url|escape:'quotes'}" target="_blank" class="whatsappchat-agents-content-agent" rel="noopener noreferrer">
+                <a href="{$agent.url|escape:'quotes':'UTF-8'}" target="_blank" class="whatsappchat-agents-content-agent" rel="noopener noreferrer">
                     <div class="whatsappchat-agents-content-image">
                         <img src="{$agents_img_src|escape:'html':'UTF-8'}{$agent.image|escape:'html':'UTF-8'}" alt="{$agent.department|escape:'html':'UTF-8'} - {$agent.name|escape:'html':'UTF-8'}" referrerpolicy="no-referrer">
                     </div>
@@ -123,7 +159,7 @@
     {if $open_chat && $from_bo != '1' && $offline_link != ''}</a>{/if}
 {else}
     {if $open_chat && $from_bo != '1' && $offline_message == ''}
-        <a{if $agents !== false && $from_bo != '1'} id="whatsappchat-agents{$whatsappchat_id|escape:'html':'UTF-8'}{if ($whatsapp_action === 'quickview' || $whatsapp_action === 1)}quickview{/if}"{/if} target="_blank" href="{$url|escape:'html':'UTF-8'}" class="float {$whatsapp_theme|escape:'html':'UTF-8'} whatsapp_{$whatsappchat_id|escape:'html':'UTF-8'} float-{$position|escape:'html':'UTF-8'} float-{$whatsapp_class|escape:'html':'UTF-8'}{if $offline_message != ''} whatsapp-offline{/if}" style="background-color: {$color|escape:'html':'UTF-8'}" rel="noopener noreferrer">
+        <a{if $agents !== false && $from_bo != '1'} id="whatsappchat-agents{$whatsappchat_id|escape:'html':'UTF-8'}{if ($whatsapp_action === 'quickview' || $whatsapp_action === 1)}quickview{/if}"{/if} target="_blank" href="{if $agents !== false}javascript:void(0);{else}{$url|escape:'html':'UTF-8'}{/if}" class="float {$whatsapp_theme|escape:'html':'UTF-8'} whatsapp_{$whatsappchat_id|escape:'html':'UTF-8'} float-{$position|escape:'html':'UTF-8'} float-{$whatsapp_class|escape:'html':'UTF-8'}{if $offline_message != ''} whatsapp-offline{/if}" style="background-color: {$color|escape:'html':'UTF-8'}" rel="noopener noreferrer">
     {/if}
     {if $open_chat && $from_bo != '1' && $offline_message != ''}
         <a class="float {$whatsapp_theme|escape:'html':'UTF-8'} float-{$position|escape:'html':'UTF-8'} float-{$whatsapp_class|escape:'html':'UTF-8'}{if $offline_message != ''} whatsapp-offline{/if}" {if $offline_link != ''}href="{$offline_link|escape:'html':'UTF-8'}"{/if} style="background-color: {$color|escape:'html':'UTF-8'}">
@@ -156,18 +192,39 @@
     }
 </style>
 <script>
-if (document.addEventListener) {
-    window.addEventListener('load', setWhatsAppSocialButton, false);
-} else {
-    window.attachEvent('onload', setWhatsAppSocialButton);
-}
+{if ($whatsapp_action === 'quickview' || $whatsapp_action === 1)}
+$(document).ready(function() {
+    setWhatsAppSocialButton();
+});
+{else}
+document.addEventListener("DOMContentLoaded", function(event) {
+    setWhatsAppSocialButton();
+});
+{/if}
 function setWhatsAppSocialButton() {
+    var whatsappchat_id = "{$whatsappchat_id|escape:'html':'UTF-8'}";
     {if version_compare($smarty.const._PS_VERSION_,'1.7','>=')}
         if ($('li.whatsapp-social').length > 0) {
             return false;
         }
+        {if ($whatsapp_action === 'quickview' || $whatsapp_action === 1)}
+        var element_to_copy = $('.quickview div.social-sharing ul li').first().clone();
+        var customSocialButtons = false;
+        var parentSocialButtonsElement = '';
+        if (element_to_copy.length == 0) {
+            element_to_copy = $('.quickview div.innovatorySocial-sharing ul li').first().clone();
+            parentSocialButtonsElement = '.quickview div.innovatorySocial-sharing ul';
+            customSocialButtons = true;
+        }
+        if (element_to_copy.length == 0) {
+            element_to_copy = $('.quickview div.social-icon ul li').first().clone();
+            parentSocialButtonsElement = '.quickview div.social-icon ul';
+            customSocialButtons = true;
+        }
+        {else}
         var element_to_copy = $('div.social-sharing ul li').first().clone();
         var customSocialButtons = false;
+        var parentSocialButtonsElement = '';
         if (element_to_copy.length == 0) {
             element_to_copy = $('div.innovatorySocial-sharing ul li').first().clone();
             parentSocialButtonsElement = 'div.innovatorySocial-sharing ul';
@@ -178,6 +235,7 @@ function setWhatsAppSocialButton() {
             parentSocialButtonsElement = 'div.social-icon ul';
             customSocialButtons = true;
         }
+        {/if}
         var custom_style = 'max-width: 24px;max-height: 24px;vertical-align: sub;';
         var whatsapp_svg = '<svg aria-hidden="true" focusable="false" data-prefix="fab" data-icon="whatsapp" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="svg-inline--fa fa-whatsapp fa-w-14 fa-lg" style="width: inherit;height: inherit;"><path fill="currentColor" d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z" class=""></path></svg>';
         var whatsapp_svg_width = element_to_copy.width();
@@ -192,7 +250,7 @@ function setWhatsAppSocialButton() {
             } else {
                 element_to_copy.addClass('whatsapp_{$whatsappchat_id|escape:'html':'UTF-8'}');
             }
-            element_to_copy.children().attr('href', "{$url nofilter}").attr('title', 'WhatsApp');
+            element_to_copy.children().attr('href', "{$url|escape:'javascript':'UTF-8'}").attr('title', 'WhatsApp');
             if ($('.whatsapp-social-button').length === 0) {
                 if (customSocialButtons === false) {
                     $(element_to_copy).appendTo('div.social-sharing ul');
@@ -212,13 +270,42 @@ function setWhatsAppSocialButton() {
                 $('.fa-whatsapp.icon-gray.whatsapp-social-button').removeClass('fa-whatsapp').removeClass('whatsapp-social-button');
             }
         }
+        var element_to_copy = $('li.whatsapp_' + whatsappchat_id).clone();
+        var checkSocialIconExists = setInterval(function() {
+            if ($('li.whatsapp_' + whatsappchat_id).length == 0 && element_to_copy.length > 0) {
+                if (customSocialButtons === false) {
+                    $(element_to_copy).appendTo('div.social-sharing ul');
+                    $(element_to_copy).appendTo('div.social-icon ul');
+                } else {
+                    $(element_to_copy).appendTo(parentSocialButtonsElement);
+                }
+                //clearInterval(checkSocialIconExists);
+            }
+            if ($('.quickview li.whatsapp_' + whatsappchat_id).length == 0 && element_to_copy.length > 0) {
+                if (customSocialButtons === false) {
+                    $(element_to_copy).appendTo('.quickview div.social-sharing ul');
+                    $(element_to_copy).appendTo('.quickview div.social-icon ul');
+                } else {
+                    $(element_to_copy).appendTo('.quickview div.social-icon ul');
+                    //$(element_to_copy).appendTo(parentSocialButtonsElement);
+                }
+                //clearInterval(checkSocialIconExists);
+            }
+            $('.quickview li.whatsapp_' + whatsappchat_id + ':not(:first)').remove();
+            $('.quickview .product-additional-info .social-icon li a').last().addClass('whatsapp-icon').parent().removeClass('facebook');
+            $('.quickview .product-additional-info .social-icon li a').last().css('background-position', '12px 6px').css('background-size', '17px');
+        }, 500);
+        {if ($whatsapp_action === 'quickview' || $whatsapp_action === 1)}
+            $('.quickview .product-additional-info .social-icon li a').last().addClass('whatsapp-icon').parent().removeClass('facebook');
+            $('.quickview .product-additional-info .social-icon li a').last().css('background-position', '12px 6px').css('background-size', '17px');
+        {/if}
     {else}
         var element_to_copy16 = $('p.socialsharing_product button').first().clone();
         if (typeof element_to_copy16 === 'undefined') {
             $('.whatsapp-hookDisplayWhatsAppProductSocialButtons').show();
         } else {
             element_to_copy16.addClass('whatsapp-social-button');
-            element_to_copy.children().attr('href', "{$url nofilter}").attr('title', 'WhatsApp');
+            element_to_copy.children().attr('href', "{$url|escape:'javascript':'UTF-8'}").attr('title', 'WhatsApp');
             $(element_to_copy16).appendTo('p.socialsharing_product');
         }
     {/if}

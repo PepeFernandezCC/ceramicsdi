@@ -33,6 +33,11 @@
     font-weight: bold;
 }
 
+#idnovate .developers a,
+#idnovate .partnership a {
+    display: inline-block;
+}
+
 #idnovate .addons-link {
     text-align: center;
 }
@@ -46,6 +51,12 @@
     padding-left: 0.9375rem;
     padding-right: 0.9375rem;
     float: left;
+}
+
+@media (max-width: 992px) {
+    .bootstrap .col-md-4 {
+        width: 100%;
+    }
 }
 
 #idnovate .module {
@@ -68,7 +79,7 @@
     padding: 15px;
     color: #353535;
     outline: none;
-    text-decoration: none;
+    text-decoration: none!important;
 }
 
 #idnovate .module a .icon-certified {

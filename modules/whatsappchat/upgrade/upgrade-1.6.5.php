@@ -19,6 +19,8 @@
 *  @license   See above
 */
 
+if (!defined('_PS_VERSION_')) { exit; }
+
 function upgrade_module_1_6_5($module)
 {
     return $module;

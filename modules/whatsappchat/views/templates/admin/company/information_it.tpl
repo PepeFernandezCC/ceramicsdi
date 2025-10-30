@@ -1,24 +1,25 @@
 {**
-*
-* NOTICE OF LICENSE
-*
-* This product is licensed for one customer to use on one installation (test stores and multishop included).
-* Site developer has the right to modify this module to suit their needs, but can not redistribute the module in
-* whole or in part. Any other use of this module constitues a violation of the user agreement.
-*
-* DISCLAIMER
-*
-* NO WARRANTIES OF DATA SAFETY OR MODULE SECURITY
-* ARE EXPRESSED OR IMPLIED. USE THIS MODULE IN ACCORDANCE
-* WITH YOUR MERCHANT AGREEMENT, KNOWING THAT VIOLATIONS OF
-* PCI COMPLIANCY OR A DATA BREACH CAN COST THOUSANDS OF DOLLARS
-* IN FINES AND DAMAGE A STORES REPUTATION. USE AT YOUR OWN RISK.
-*
-*  @author    idnovate.com <info@idnovate.com>
-*  @copyright 2021 idnovate.com
-*  @license   See above
-*}
-
+ * ISC License
+ *
+ * Copyright (c) 2023 idnovate.com
+ * idnovate is a Registered Trademark & Property of idnovate.com, innovación y desarrollo SCP
+ *
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+ * REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+ * AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+ * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+ * LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
+ *
+ * @author    idnovate
+ * @copyright 2023 idnovate
+ * @license   https://www.isc.org/licenses/ https://opensource.org/licenses/ISC ISC License
+ *}
 {*module = array('name', 'id', 'description')*}
 {$modules[0]=[
     'name' => 'Promotions and discounts - (3x2, reductions, campaigns)',
@@ -125,23 +126,6 @@
     'id' => '39351',
     'description' => "You can now edit, visually and easily, any specific price of your shop without the need to delete it before."]
 }
-{$modules[21]=[
-    'name' => 'Show products everywhere',
-    'id' => '45104',
-    'description' => "Show products everywhere in your shop. You can configure which products do you want to show, what will be his audience and where will be shown them in the shop."]
-}
-{$modules[22]=[
-    'name' => 'Messages and banners anywhere',
-    'id' => '49385',
-    'description' => "Show messages and banners anywhere in your shop. You can configure the message or banner do you want to show, what will be his audience and where will be shown it in the shop. You can add effects, colors and styles to the message / banner."]
-}
-{$modules[23]=[
-    'name' => 'PayPal Plus (multi, fees, refunds, card, buy now / pay later,...)',
-    'id' => '53135',
-    'description' => "Accept PayPal payments. You can apply an extra fee. Full and partial refunds management. Multiple PayPal payment options (card, PayPal credit, Sofort,...). Buy now / Pay Later compatible. Configurable by customer group, carrier, country, zone, category, manufacturer and supplier."]
-}
-
-{capture}{$modules|@shuffle|escape:'htmlall':'UTF-8'}{/capture}
 
 <link rel="stylesheet" type="text/css" href="{$this_path|escape:'htmlall':'UTF-8'}views/css/company.css">
 
@@ -156,47 +140,52 @@
                     <div class="row util-links">
                         <div class="col-lg-12">
                             <p>
-                                <i class="icon-star"></i> <a target="_blank" title="Valuta questo modulo" href="http://addons.prestashop.com/it/ratings.php">Ti sembra utile il modulo? Ti va di lasciarci la tua opinione su Addons?</a><br/><br/>
-                                {if $readme}
-                                    <i class="icon-external-link"></i> <a target="_blank" title="Documentazione" href="{if isset($doc_url)}{$doc_url|escape:'htmlall':'UTF-8'}{else}{$this_path|escape:'htmlall':'UTF-8'}{$readme|escape:'htmlall':'UTF-8'}{/if}">Documentazione</a><br/><br/>
-                                {/if}
-                                {if $support_id}
-                                    <i class="icon-medkit"></i> <a target="_blank" title="Contatto" href="https://addons.prestashop.com/contact-form.php?id_product={$support_id|escape:'htmlall':'UTF-8'}">Hai bisogno di aiuto? Contattaci</a><br/><br/>
-                                {/if}
+                                <i class="icon-star"></i> <a class="nav-link" target="_blank" title="Valuta questo modulo" href="http://addons.prestashop.com/it/ratings.php">Ti sembra utile il modulo? Ti va di lasciarci la tua opinione su Addons?</a><br/><br/>
+                                <i class="icon-external-link"></i> <a class="nav-link" target="_blank" title="Documentazione" href="{if isset($doc_url)}{$doc_url|escape:'htmlall':'UTF-8'}{else}{$this_path|escape:'htmlall':'UTF-8'}readme_it.pdf{/if}">Documentazione</a><br/><br/>
+                                <i class="icon-medkit"></i> <a class="nav-link" target="_blank" title="Contatto" href="https://addons.prestashop.com/it/Write-to-developper?id_product={$support_id|escape:'htmlall':'UTF-8'}">Hai bisogno di aiuto? Contattaci</a><br/><br/>
                             </p>
                         </div>
                     </div>
                     <div class="col-xs-12 developers">
-                        <p>Modulo sviluppato da</p>
-                        <a target="_blank" href="http://addons.prestashop.com/it/109_idnovate"><img src="{$this_path|escape:'htmlall':'UTF-8'}views/img/company/logo_idnovate.png"  alt="Logo idnovate.com"/></a><br /><br />
-                    </div>
-                    <div class="col-xs-12 partnership">
-                        <p>Siamo partner di PrestaShop!</p>
-                        <a target="_blank" href="https://www.prestashop.com/en/experts/web-agencies/idnovate"><img src="{$this_path|escape:'htmlall':'UTF-8'}views/img/company/partner.png"  alt="PrestaShop Partner"/></a>
+                        <a target="_blank" href="http://addons.prestashop.com/it/109_idnovate"><img src="{$this_path|escape:'htmlall':'UTF-8'}views/img/company/logo_idnovate.png" /></a>
+                        &nbsp;&nbsp;&nbsp;
+                        <img src="{$this_path|escape:'htmlall':'UTF-8'}views/img/company/EXPERT.png" />
                     </div>
                 </div>
                 <div class="col-lg-8 module-list">
                     <div class="row">
                         <div class="col-lg-12">
-                            {for $counter=0 to 5}
-                                {if $modules[$counter|escape:'htmlall':'UTF-8']['id'] == $support_id}
+                            {assign var="modulesArrayLength" value=$modules|@count}
+                            {math equation="$modulesArrayLength - 1" assign="modulesArrayLength"}
+                            {assign var="keysDisplayed" value=[]}
+                            {for $counter=0 to 2}
+                                {math equation="rand(0, $modulesArrayLength)" assign="moduleKey"}
+                                {if $modules[$moduleKey|escape:'htmlall':'UTF-8']['id'] == $support_id}
+                                    {math equation="rand(0, $modulesArrayLength)" assign="moduleKey"}
+                                {/if}
+
+                                {append var=$moduleKey value=$keysDisplayed}
+                                {if in_array($moduleKey, $keysDisplayed)}
+                                  {math equation="rand(0, $modulesArrayLength)" assign="moduleKey"}
+                                {/if}
+                                {if $modules[$moduleKey|escape:'htmlall':'UTF-8']['id'] == $support_id}
                                     {capture}{$counter++|escape:'htmlall':'UTF-8'}{/capture}
                                 {/if}
 
                                 <div class="col-md-4 column">
                                     <div class="module module-modules">
-                                        <a target="_blank" href="https://addons.prestashop.com/it/{$modules[$counter|escape:'htmlall':'UTF-8']['id']|escape:'htmlall':'UTF-8'}-.html" title="{$modules[$counter|escape:'htmlall':'UTF-8']['name']|escape:'htmlall':'UTF-8'}">
+                                        <a class="nav-link" target="_blank" href="https://addons.prestashop.com/it/{$modules[$moduleKey|escape:'htmlall':'UTF-8']['id']|escape:'htmlall':'UTF-8'}-.html" title="{$modules[$moduleKey|escape:'htmlall':'UTF-8']['name']|escape:'htmlall':'UTF-8'}">
                                             <div class="module-head">
                                                 <div class="module-image">
-                                                    <img alt="{$modules[$counter|escape:'htmlall':'UTF-8']['name']|escape:'htmlall':'UTF-8'}" height="57" width="57" src="{$this_path|escape:'htmlall':'UTF-8'}views/img/company/{$modules[$counter|escape:'htmlall':'UTF-8']['id']|escape:'htmlall':'UTF-8'}.png">
+                                                    <img alt="{$modules[$moduleKey|escape:'htmlall':'UTF-8']['name']|escape:'htmlall':'UTF-8'}" height="57" width="57" src="{$this_path|escape:'htmlall':'UTF-8'}views/img/company/{$modules[$moduleKey|escape:'htmlall':'UTF-8']['id']|escape:'htmlall':'UTF-8'}.png">
                                                 </div>
-                                                <p class="title-block-module" title="{$modules[$counter|escape:'htmlall':'UTF-8']['name']|escape:'htmlall':'UTF-8'}">{$modules[$counter|escape:'htmlall':'UTF-8']['name']|escape:'htmlall':'UTF-8'}
+                                                <p class="title-block-module" title="{$modules[$moduleKey|escape:'htmlall':'UTF-8']['name']|escape:'htmlall':'UTF-8'}">{$modules[$moduleKey|escape:'htmlall':'UTF-8']['name']|escape:'htmlall':'UTF-8'}
                                                 </p>
                                             </div>
 
                                             <div class="module-body">
                                                 <div class="module-entry clearfix">
-                                                    <p>{$modules[$counter|escape:'htmlall':'UTF-8']['description']|escape:'htmlall':'UTF-8'}</p>
+                                                    <p>{$modules[$moduleKey|escape:'htmlall':'UTF-8']['description']|escape:'htmlall':'UTF-8'}</p>
                                                 </div>
                                             </div>
                                         </a>
@@ -207,7 +196,7 @@
                         </div>
                     </div>
                     <div class="col-xs-12 addons-link">
-                        <p><i class="icon-external-link"></i> <a target="_blank" href="http://addons.prestashop.com/it/109_idnovate"><strong>Scopri tutti i nostri fantastici moduli su Addons PrestaShop</a></strong></p>
+                        <p><i class="icon-external-link"></i> <a class="nav-link" target="_blank" href="http://addons.prestashop.com/it/109_idnovate"><strong>Scopri tutti i nostri fantastici moduli su Addons PrestaShop</a></strong></p>
                     </div>
                 </div>
             </div>
