@@ -4,13 +4,14 @@
  * https://creativeslider.webshopworks.com
  *
  * @author    WebshopWorks <info@webshopworks.com>
- * @copyright 2015-2020 WebshopWorks
+ * @copyright 2015-2025 WebshopWorks
  * @license   One Domain Licence
  *
  * Not allowed to resell or redistribute this software
  */
-
-defined('_PS_VERSION_') or exit;
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 ?>
 <script type="text/html" id="tmpl-importing">
     <div id="ls-importing-modal-window">

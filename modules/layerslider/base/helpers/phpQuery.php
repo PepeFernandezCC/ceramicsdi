@@ -4,13 +4,14 @@
  * https://creativeslider.webshopworks.com
  *
  * @author    WebshopWorks <info@webshopworks.com>
- * @copyright 2015-2020 WebshopWorks
+ * @copyright 2015-2025 WebshopWorks
  * @license   One Domain Licence
  *
  * Not allowed to resell or redistribute this software
  */
-
-defined('_PS_VERSION_') or exit;
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 defined('LS_PHPQUERY') or define('LS_PHPQUERY', true);
 
 class LsQuery
@@ -24,7 +25,7 @@ class LsQuery
             $this->dom = new DOMDocument();
             $this->dom->encoding = 'utf-8';
             $this->dom->loadHTML(self::utf8Decode(
-                preg_replace('~>\s+<~', '><', trim($html))
+                preg_replace('`>\s+<`', '><', trim($html))
             ));
             $body = isset($this->dom->documentElement) ? $this->dom->documentElement->lastChild : $this->dom->getElementsByTagName('body')->item(0);
             $this->nodes = $body->childNodes;
@@ -33,14 +34,14 @@ class LsQuery
 
     public function __get($prop)
     {
-        if ('length' == $prop) {
+        if ('length' === $prop) {
             return $this->nodes ? $this->nodes->length : 0;
         }
     }
 
     public function children()
     {
-        if ($this->length) {
+        if ($this->__get('length')) {
             $item = $this->nodes->item(0);
             $length = $item->childNodes->length;
             foreach ($item->childNodes as $child) {
@@ -53,15 +54,17 @@ class LsQuery
                 $doc = new self();
                 $doc->dom = &$this->dom;
                 $doc->nodes = &$item->childNodes;
+
                 return $doc;
             }
         }
+
         return $this;
     }
 
     public function addClass($class)
     {
-        $i = $this->length;
+        $i = $this->__get('length');
         while ($i--) {
             $node = $this->nodes->item($i);
             if ($node instanceof DOMElement) {
@@ -69,20 +72,21 @@ class LsQuery
                 $node->setAttribute('class', $classes ? "$classes $class" : $class);
             }
         }
+
         return $this;
     }
 
     public function attr($attr, $value = null)
     {
         // getter
-        if (is_string($attr) && $value === null) {
-            return $this->length && ($node = $this->nodes->item(0)) instanceof DOMElement ? $node->getAttribute($attr) : '';
+        if (is_string($attr) && null === $value) {
+            return $this->__get('length') && ($node = $this->nodes->item(0)) instanceof DOMElement ? $node->getAttribute($attr) : '';
         }
         // setter
         if (is_string($attr)) {
-            $attr = array($attr => $value);
+            $attr = [$attr => $value];
         }
-        $i = $this->length;
+        $i = $this->__get('length');
         while ($i--) {
             $item = $this->nodes->item($i);
             if ($item instanceof DOMElement) {
@@ -93,18 +97,20 @@ class LsQuery
                 }
             }
         }
+
         return $this;
     }
 
     public function removeAttr($attr)
     {
-        $i = $this->length;
+        $i = $this->__get('length');
         while ($i--) {
             $node = $this->nodes->item($i);
             if ($node instanceof DOMElement) {
                 $node->removeAttribute($attr);
             }
         }
+
         return $this;
     }
 
@@ -115,10 +121,11 @@ class LsQuery
 
     public function html($html)
     {
-        $i = $this->length;
+        $i = $this->__get('length');
         while ($i--) {
             $this->nodes->item($i)->nodeValue = '';
         }
+
         return $this->append($html);
     }
 
@@ -127,16 +134,17 @@ class LsQuery
         $doc = new DOMDocument();
         $doc->encoding = 'utf-8';
         $doc->loadHTML(self::utf8Decode(
-            '<div>'.preg_replace('~>\s+<~', '><', trim($html)).'</div>'
+            '<div>' . preg_replace('`>\s+<`', '><', trim($html)) . '</div>'
         ));
         $body = isset($doc->documentElement) ? $doc->documentElement->lastChild : $doc->getElementsByTagName('body')->item(0);
-        $i = $this->length;
+        $i = $this->__get('length');
         while ($i--) {
             $item = $this->nodes->item($i);
             foreach ($body->firstChild->childNodes as $node) {
                 $item->appendChild($this->dom->importNode($node, true));
             }
         }
+
         return $this;
     }
 
@@ -151,12 +159,14 @@ class LsQuery
         $doc = new self();
         $doc->dom = &$this->dom;
         $doc->nodes = &$nodes;
+
         return $doc;
     }
 
     public function __toString()
     {
         preg_match('/<body>(.*)<\/body>/s', $this->dom->saveHTML(), $html);
+
         return isset($html[1]) ? $html[1] : '';
     }
 
@@ -165,13 +175,8 @@ class LsQuery
         if (function_exists('mb_convert_encoding')) {
             return mb_convert_encoding($str, 'HTML-ENTITIES', 'UTF-8');
         } else {
-            return htmlspecialchars_decode(utf8_decode(htmlentities($str, ENT_COMPAT, 'utf-8', false)));
+            return htmlspecialchars_decode(call_user_func('utf8_decode', htmlentities($str, ENT_COMPAT, 'utf-8', false)));
         }
-    }
-
-    public static function newDocument($html)
-    {
-        return new self($html);
     }
 
     public static function newDocumentHTML($html)

@@ -4,21 +4,19 @@
  * https://creativeslider.webshopworks.com
  *
  * @author    WebshopWorks <info@webshopworks.com>
- * @copyright 2015-2020 WebshopWorks
+ * @copyright 2015-2025 WebshopWorks
  * @license   One Domain Licence
  *
  * Not allowed to resell or redistribute this software
  */
-
-defined('_PS_VERSION_') or exit;
-
-if (defined('LS_INCLUDE')) {
-    $slides = null;
-    $lsDefaults = null;
-    $embed = null;
+if (!defined('_PS_VERSION_')) {
+    exit;
 }
 
-$slider = array();
+$embed = &$embed;
+$slider = &$slider;
+$slides = &$slides;
+$lsDefaults = &$lsDefaults;
 
 // Filter to override the defaults
 if (ls_has_filter('layerslider_override_defaults')) {
@@ -56,8 +54,7 @@ if (isset($slides['properties']['autoPauseSlideshow'])) {
 }
 
 if (!empty($slides['properties']['props']['globalBGImageId'])) {
-    $tempSrc = ls_get_attachment_image_src($slides['properties']['props']['globalBGImageId'], 'full');
-    $slides['properties']['attrs']['globalBGImage'] = $tempSrc[0];
+    $slides['properties']['attrs']['globalBGImage'] = null;
 }
 
 // Old and without type
@@ -72,7 +69,7 @@ if (empty($slides['properties']['attrs']['sliderVersion']) && empty($slides['pro
 }
 
 // Override firstSlide if it is specified in embed params
-if (! empty($embed['firstslide'])) {
+if (!empty($embed['firstslide'])) {
     $slides['properties']['attrs']['firstSlide'] = '[firstSlide]';
 }
 
@@ -92,27 +89,27 @@ if (isset($slides['layers']) && is_array($slides['layers'])) {
         }
         if (isset($slide['sublayers']) && is_array($slide['sublayers'])) {
             foreach ($slide['sublayers'] as $layerkey => $layer) {
-                $layer['styles'] = Tools::stripslashes($layer['styles']);
-                $layer['transition'] = Tools::stripslashes($layer['transition']);
+                $layer['styles'] = stripslashes($layer['styles']);
+                $layer['transition'] = stripslashes($layer['transition']);
 
-                if (! empty($layer['transition'])) {
-                    $layer = array_merge($layer, Tools::jsonDecode(_ss($layer['transition']), true));
+                if (!empty($layer['transition'])) {
+                    $layer = array_merge($layer, json_decode(stripslashes($layer['transition']), true));
                 }
 
-                if (! empty($layer['styles'])) {
-                    $layerStyles = Tools::jsonDecode($layer['styles'], true);
-                    if ($layerStyles === null) {
-                        $layerStyles = Tools::jsonDecode(_ss($layer['styles']), true);
+                if (!empty($layer['styles'])) {
+                    $layerStyles = json_decode($layer['styles'], true);
+                    if (null === $layerStyles) {
+                        $layerStyles = json_decode(stripslashes($layer['styles']), true);
                     }
                     $layer['styles'] = $layerStyles;
                 }
 
-                if (! empty($layer['top'])) {
-                    $layer['styles']['top']  = $layer['top'];
+                if (!empty($layer['top'])) {
+                    $layer['styles']['top'] = $layer['top'];
                 }
 
-                if (! empty($layer['left'])) {
-                    $layer['styles']['left']  = $layer['left'];
+                if (!empty($layer['left'])) {
+                    $layer['styles']['left'] = $layer['left'];
                 }
 
                 // v6.5.6: Compatibility mode for media layers that used the

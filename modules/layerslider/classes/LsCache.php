@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2020 PrestaShop
+ * 2007-2020 PrestaShop.
  *
  * NOTICE OF LICENSE
  *
@@ -23,6 +23,9 @@
  *  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  International Registered Trademark & Property of PrestaShop SA
  */
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 class LsCache extends Cache
 {
@@ -35,7 +38,7 @@ class LsCache extends Cache
     {
         $keys_filename = $this->getFilename(self::KEYS_NAME);
         if (@filemtime($keys_filename)) {
-            $this->keys = unserialize(Tools::file_get_contents($keys_filename));
+            $this->keys = json_decode(call_user_func('file_get_contents', $keys_filename), true);
         }
     }
 
@@ -44,24 +47,20 @@ class LsCache extends Cache
         if (!self::$instance) {
             self::$instance = new self();
         }
+
         return self::$instance;
     }
 
-    /**
-     * @see Cache::_set()
-     */
     protected function _set($key, $value, $ttl = 0)
     {
-        return (@file_put_contents($this->getFilename($key), serialize($value)));
+        return @call_user_func('file_put_contents', $this->getFilename($key), json_encode($value));
     }
 
-    /**
-     * @see Cache::_get()
-     */
     protected function _get($key)
     {
         if ($this->keys[$key] > 0 && $this->keys[$key] < time()) {
             $this->delete($key);
+
             return false;
         }
 
@@ -69,55 +68,48 @@ class LsCache extends Cache
         if (!@filemtime($filename)) {
             unset($this->keys[$key]);
             $this->_writeKeys();
+
             return false;
         }
-        $file = Tools::file_get_contents($filename);
-        return unserialize($file);
+
+        return json_decode(call_user_func('file_get_contents', $filename), true);
     }
 
-    /**
-     * @see Cache::_exists()
-     */
     protected function _exists($key)
     {
         if ($this->keys[$key] > 0 && $this->keys[$key] < time()) {
             $this->delete($key);
+
             return false;
         }
+
         return isset($this->keys[$key]) && @filemtime($this->getFilename($key));
     }
 
-    /**
-     * @see Cache::_delete()
-     */
     protected function _delete($key)
     {
         $filename = $this->getFilename($key);
         if (!@filemtime($filename)) {
             return true;
         }
-        return unlink($filename);
+
+        return @call_user_func('unlink', $filename);
     }
 
-    /**
-     * @see Cache::_writeKeys()
-     */
     protected function _writeKeys()
     {
-        @file_put_contents($this->getFilename(self::KEYS_NAME), serialize($this->keys));
+        @call_user_func('file_put_contents', $this->getFilename(self::KEYS_NAME), json_encode($this->keys));
     }
 
-    /**
-     * @see Cache::flush()
-     */
     public function flush()
     {
         $this->delete('*');
+
         return true;
     }
 
     /**
-     * Delete cache directory
+     * Delete cache directory.
      */
     public static function deleteCacheDirectory()
     {
@@ -125,19 +117,19 @@ class LsCache extends Cache
     }
 
     /**
-     * Create cache directory
+     * Create cache directory.
      *
      * @param int $level_depth
      * @param string $directory
      */
-    public static function createCacheDirectories($level_depth, $directory = false)
+    public static function createCacheDirectories($level_depth, $directory = '')
     {
         if (!$directory) {
             $directory = _PS_CACHEFS_DIRECTORY_;
         }
 
         $chars = '0123456789abcdef';
-        for ($i = 0, $length = Tools::strlen($chars); $i < $length; $i++) {
+        for ($i = 0, $length = Tools::strlen($chars); $i < $length; ++$i) {
             $new_dir = $directory . $chars[$i] . '/';
             if (mkdir($new_dir)) {
                 if (chmod($new_dir, 0777)) {
@@ -150,21 +142,23 @@ class LsCache extends Cache
     }
 
     /**
-     * Transform a key into its absolute path
+     * Transform a key into its absolute path.
      *
      * @param string $key
+     *
      * @return string
      */
     protected function getFilename($key)
     {
-        $key = md5($key);
+        $key = call_user_func('md5', $key);
         $path = _PS_CACHEFS_DIRECTORY_;
-        for ($i = 0; $i < $this->depth; $i++) {
+        for ($i = 0; $i < $this->depth; ++$i) {
             $path .= $key[$i] . '/';
         }
         if (!is_dir($path)) {
             @mkdir($path, 0777, true);
         }
+
         return $path . $key;
     }
 }

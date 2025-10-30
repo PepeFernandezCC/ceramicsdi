@@ -4,690 +4,672 @@
  * https://creativeslider.webshopworks.com
  *
  * @author    WebshopWorks <info@webshopworks.com>
- * @copyright 2015-2020 WebshopWorks
+ * @copyright 2015-2025 WebshopWorks
  * @license   One Domain Licence
  *
  * Not allowed to resell or redistribute this software
  */
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
-defined('_PS_VERSION_') or exit;
+require_once _PS_MODULE_DIR_ . 'layerslider/classes/PSOpts.php';
 
-require_once _PS_MODULE_DIR_.'layerslider/classes/PSOpts.php';
-
-$lsDefaults = array(
-
-    'slider' => array(
-
-        'createdWith' => array(
+$lsDefaults = [
+    'slider' => [
+        'createdWith' => [
             'value' => '',
-            'keys' => 'createdWith'
-        ),
+            'keys' => 'createdWith',
+        ],
 
-        'sliderVersion' => array(
+        'sliderVersion' => [
             'value' => '',
             'keys' => 'sliderVersion',
-            'props' => array(
-                'forceoutput' => true
-            )
-        ),
+            'props' => [
+                'forceoutput' => true,
+            ],
+        ],
 
-        'status' => array(
+        'status' => [
             'value' => true,
-            'name' => ls__('Status', 'LayerSlider'),
+            'name' => ls__('Status'),
             'keys' => 'status',
-            'desc' => ls__('Unpublished sliders will not be visible for your visitors until you re-enable this option. This also applies to scheduled sliders, thus leaving this option enabled is recommended in most cases.', 'LayerSlider'),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'desc' => ls__('Unpublished sliders will not be visible for your visitors until you re-enable this option. This also applies to scheduled sliders, thus leaving this option enabled is recommended in most cases.'),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'scheduleStart' => array(
+        'scheduleStart' => [
             'value' => '',
-            'name' => ls__('Schedule From', 'LayerSlider'),
+            'name' => ls__('Schedule From'),
             'keys' => 'schedule_start',
-            'desc' => ls__("<ul>
-    <li>Scheduled sliders will only be visible to your visitors between the time period you set here.</li>
-    <li>We're using international date and time format to avoid ambiguity.</li>
-    <li>Clear the text field above and left it empty if you want to cancel the schedule.</li>
-</ul>
+            'desc' => '<ul>' .
+                '<li>' . ls__('Scheduled sliders will only be visible to your visitors between the time period you set here.') . '</li>' .
+                '<li>' . ls__("We're using international date and time format to avoid ambiguity.") . '</li>' .
+                '<li>' . ls__('Clear the text field above and left it empty if you want to cancel the schedule.') . '</li>' .
+                '</ul><span>' . ls__('IMPORTANT:') . '</span><ul>' .
+                '<li>' . ls__('You will still need to set the slider status as published,') . '</li>' .
+                '<li>' . ls__('and insert the slider to the target page with one of the methods described in the <a href="http://docs.webshopworks.com/creative-slider/56-place-slider-on-the-site/" target="_blank">documentation</a>.') . '</li>' .
+                '</ul>',
+            'attrs' => [
+                'placeholder' => ls__('No schedule'),
+            ],
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-<span>IMPORTANT:</span>
-<ul>
-    <li>You will still need to set the slider status as published,</li>
-    <li>and insert the slider to the target page with one of the methods described in the <a href=\"http://docs.webshopworks.com/creative-slider/56-place-slider-on-the-site/\" target=\"_blank\">documentation</a>.</li>
-</ul>", 'LayerSlider'),
-            'attrs' => array(
-                'placeholder' => ls__('No schedule', 'LayerSlider')
-            ),
-            'props' => array(
-                'meta' => true
-            )
-        ),
-
-
-        'scheduleEnd' => array(
+        'scheduleEnd' => [
             'value' => '',
-            'name' => ls__('Schedule Until', 'LayerSlider'),
+            'name' => ls__('Schedule Until'),
             'keys' => 'schedule_end',
             'desc' => '',
-            'attrs' => array(
-                'placeholder' => ls__('No schedule', 'LayerSlider')
-            ),
-            'props' => array(
-                'meta' => true
-            )
-        ),
-
+            'attrs' => [
+                'placeholder' => ls__('No schedule'),
+            ],
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
         // ============= //
         // |   Layout  | //
         // ============= //
 
-        'hook' => array(
+        'hook' => [
             'value' => '',
             'name' => ls__('Module Position'),
             'keys' => 'hook',
             'desc' => ls__('Slider will appear on the selected position.'),
-            'props' => array('meta' => true),
-            'attrs' => array(
+            'props' => ['meta' => true],
+            'attrs' => [
                 'type' => 'text',
                 'placeholder' => ls__('- None -'),
-                'data-options' => ls_get_hook_list()
-            )
-        ),
+                'data-options' => ls_get_hook_list(),
+            ],
+        ],
 
         // responsive | fullwidth | fullsize | fixedsize
-        'type' => array(
+        'type' => [
             'value' => 'responsive',
-            'name' => ls__('Slider type', 'LayerSlider'),
+            'name' => ls__('Slider type'),
             'keys' => 'type',
             'desc' => '',
-            'attrs' => array(
-                'type' => 'hidden'
-            )
-
-        ),
+            'attrs' => [
+                'type' => 'hidden',
+            ],
+        ],
 
         // The width of a new slider.
-        'width' => array(
+        'width' => [
             'value' => 1280,
-            'name' => ls__('Canvas width', 'LayerSlider'),
+            'name' => ls__('Canvas width'),
             'keys' => 'width',
-            'desc' => ls__('The width of the slider canvas in pixels.', 'LayerSlider'),
-            'attrs' => array(
+            'desc' => ls__('The width of the slider canvas in pixels.'),
+            'attrs' => [
                 'type' => 'text',
-                'placeholder' => 1280
-            ),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+                'placeholder' => 1280,
+            ],
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
         // The height of a new slider.
-        'height' => array(
+        'height' => [
             'value' => 720,
-            'name' => ls__('Canvas height', 'LayerSlider'),
+            'name' => ls__('Canvas height'),
             'keys' => 'height',
-            'desc' => ls__('The height of the slider canvas in pixels.', 'LayerSlider'),
-            'attrs' => array(
+            'desc' => ls__('The height of the slider canvas in pixels.'),
+            'attrs' => [
                 'type' => 'text',
-                'placeholder' => 720
-            ),
-            'props' => array(
-                'meta' => true
-            )
-        ),
-
+                'placeholder' => 720,
+            ],
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
         // The maximum width that the slider can get in responsive mode.
-        'maxWidth' => array(
+        'maxWidth' => [
             'value' => '',
-            'name' => ls__('Max-width', 'LayerSlider'),
+            'name' => ls__('Max-width'),
             'keys' => 'maxwidth',
-            'desc' => ls__('The maximum width your slider can take in pixels when responsive mode is enabled.', 'LayerSlider'),
-            'attrs' => array(
+            'desc' => ls__('The maximum width your slider can take in pixels when responsive mode is enabled.'),
+            'attrs' => [
                 'type' => 'number',
                 'min' => 0,
-                'placeholder' => '100%'
-            ),
-            'props' => array(
-                'meta' => true
-            )
-        ),
-
+                'placeholder' => '100%',
+            ],
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
         // Turn on responsiveness under a given width of the slider.
         // Depends on: enabled fullWidth option. Defaults to: 0
-        'responsiveUnder' => array(
+        'responsiveUnder' => [
             'value' => '',
-            'name' => ls__('Responsive under', 'LayerSlider'),
-            'keys' => array('responsiveunder', 'responsiveUnder'),
-            'desc' => ls__('Turns on responsive mode in a full-width slider under the specified value in pixels. Can only be used with full-width mode.', 'LayerSlider'),
+            'name' => ls__('Responsive under'),
+            'keys' => ['responsiveunder', 'responsiveUnder'],
+            'desc' => ls__('Turns on responsive mode in a full-width slider under the specified value in pixels. Can only be used with full-width mode.'),
             'advanced' => true,
-            'attrs' => array(
+            'attrs' => [
                 'type' => 'number',
                 'min' => 0,
-                'placeholder' => ls__('Canvas width', 'LayerSlider')
-            )
-        ),
+                'placeholder' => ls__('Canvas width'),
+            ],
+        ],
 
-        'layersContrainer' => array(
+        'layersContrainer' => [
             'value' => '',
-            'keys' => array('sublayercontainer', 'layersContainer')
-        ),
+            'keys' => ['sublayercontainer', 'layersContainer'],
+        ],
 
-
-        'fullSizeMode' => array(
+        'fullSizeMode' => [
             'value' => 'normal',
-            'name' => ls__('Mode', 'LayerSlider'),
+            'name' => ls__('Mode'),
             'keys' => 'fullSizeMode',
-            'desc' => ls__('Select the sizing behavior of your full size sliders (e.g. hero scene).', 'LayerSlider'),
-            'options' => array(
-                'normal' => ls__('Normal', 'LayerSlider'),
-                'hero' => ls__('Hero scene', 'LayerSlider'),
-                'fitheight' => ls__('Fit to parent height', 'LayerSlider')
-            ),
-            'attrs' => array(
-                'min' => 0
-            )
-        ),
+            'desc' => ls__('Select the sizing behavior of your full size sliders (e.g. hero scene).'),
+            'options' => [
+                'normal' => ls__('Normal'),
+                'hero' => ls__('Hero scene'),
+                'fitheight' => ls__('Fit to parent height'),
+            ],
+            'attrs' => [
+                'min' => 0,
+            ],
+        ],
 
-        'allowFullscreen' => array(
+        'allowFullscreen' => [
             'value' => false,
-            'name' => ls__('Allow fullscreen mode', 'LayerSlider'),
+            'name' => ls__('Allow fullscreen mode'),
             'keys' => 'allowFullscreen',
-            'desc' => ls__('Visitors can enter OS native full-screen mode when double clicking on the slider.', 'LayerSlider')
-        ),
+            'desc' => ls__('Visitors can enter OS native full-screen mode when double clicking on the slider.'),
+        ],
 
-        'maxRatio' => array(
+        'maxRatio' => [
             'value' => '',
-            'name' => ls__('Maximum responsive ratio', 'LayerSlider'),
+            'name' => ls__('Maximum responsive ratio'),
             'keys' => 'maxRatio',
-            'desc' => ls__('The slider will not enlarge your layers above the target ratio. The value 1 will keep your layers in their initial size, without any upscaling.', 'LayerSlider'),
-            'advanced' => true
-        ),
+            'desc' => ls__('The slider will not enlarge your layers above the target ratio. The value 1 will keep your layers in their initial size, without any upscaling.'),
+            'advanced' => true,
+        ],
 
-        'fitScreenWidth' => array(
+        'fitScreenWidth' => [
             'value' => true,
-            'name' => ls__('Fit to screen width', 'LayerSlider'),
+            'name' => ls__('Fit to screen width'),
             'keys' => 'fitScreenWidth',
-            'desc' => ls__('If enabled, the slider will always have the same width as the viewport, even if a theme uses a boxed layout, unless you choose the "Fit to parent height" full size mode.', 'LayerSlider'),
-            'advanced' => true
-        ),
+            'desc' => ls__('If enabled, the slider will always have the same width as the viewport, even if a theme uses a boxed layout, unless you choose the "Fit to parent height" full size mode.'),
+            'advanced' => true,
+        ],
 
-        'preventSliderClip' => array(
+        'preventSliderClip' => [
             'value' => true,
-            'name' => ls__('Prevent slider clipping', 'LayerSlider'),
+            'name' => ls__('Prevent slider clipping'),
             'keys' => 'preventSliderClip',
-            'desc' => ls__('Ensures that the theme cannot clip parts of the slider when used in a boxed layout.', 'LayerSlider'),
-            'advanced' => true
-        ),
+            'desc' => ls__('Ensures that the theme cannot clip parts of the slider when used in a boxed layout.'),
+            'advanced' => true,
+        ],
 
-
-        'insertMethod' => array(
+        'insertMethod' => [
             'value' => 'prependTo',
-            'name' => ls__('Move the slider by', 'LayerSlider'),
+            'name' => ls__('Move the slider by'),
             'keys' => 'insertMethod',
-            'desc' => ls__('Move your slider to a different part of the page by providing a jQuery DOM manipulation method & selector for the target destination.', 'LayerSlider'),
-            'options' => array(
+            'desc' => ls__('Move your slider to a different part of the page by providing a jQuery DOM manipulation method & selector for the target destination.'),
+            'options' => [
                 'prependTo' => 'prepending to',
                 'appendTo' => 'appending to',
                 'insertBefore' => 'inserting before',
-                'insertAfter' => 'inserting after'
-            )
-        ),
+                'insertAfter' => 'inserting after',
+            ],
+        ],
 
-        'insertSelector' => array(
+        'insertSelector' => [
             'value' => '',
             'keys' => 'insertSelector',
-            'attrs' => array(
+            'attrs' => [
                 'placeholder' => '#id, .class',
-            )
-        ),
+            ],
+        ],
 
-        'clipSlideTransition' => array(
+        'clipSlideTransition' => [
             'value' => 'disabled',
-            'name' => ls__('Clip slide transition', 'LayerSlider'),
+            'name' => ls__('Clip slide transition'),
             'keys' => 'clipSlideTransition',
-            'desc' => ls__('Choose on which axis (if any) you want to clip the overflowing content (i.e. that breaks outside of the slider bounds).', 'LayerSlider'),
+            'desc' => ls__('Choose on which axis (if any) you want to clip the overflowing content (i.e. that breaks outside of the slider bounds).'),
             'advanced' => true,
-            'options' => array(
-                'disabled' => ls__('Do not hide', 'LayerSlider'),
-                'enabled' => ls__('Hide on both axis', 'LayerSlider'),
-                'x' => ls__('X Axis', 'LayerSlider'),
-                'y' => ls__('Y Axis', 'LayerSlider')
-            )
-        ),
+            'options' => [
+                'disabled' => ls__('Do not hide'),
+                'enabled' => ls__('Hide on both axis'),
+                'x' => ls__('X Axis'),
+                'y' => ls__('Y Axis'),
+            ],
+        ],
 
         // == COMPATIBILITY ==
 
-        'responsiveness' => array(
+        'responsiveness' => [
             'value' => true,
             'keys' => 'responsive',
-            'props' => array(
+            'props' => [
                 'meta' => true,
-                'output' => true
-            )
-        ),
-        'fullWidth' => array(
+                'output' => true,
+            ],
+        ],
+        'fullWidth' => [
             'value' => false,
             'keys' => 'forceresponsive',
-            'props' => array(
+            'props' => [
                 'meta' => true,
-                'output' => true
-            )
-        ),
+                'output' => true,
+            ],
+        ],
 
         // == END OF COMPATIBILITY ==
 
-        'slideBGSize' => array(
+        'slideBGSize' => [
             'value' => 'cover',
-            'name' => ls__('Background size', 'LayerSlider'),
+            'name' => ls__('Background size'),
             'keys' => 'slideBGSize',
-            'desc' => ls__('This will be used as a default on all slides, unless you choose to explicitly override it on a per slide basis.', 'LayerSlider'),
-            'options' => array(
-                'auto' => ls__('Auto', 'LayerSlider'),
-                'cover' => ls__('Cover', 'LayerSlider'),
-                'contain' => ls__('Contain', 'LayerSlider'),
-                '100% 100%' => ls__('Stretch', 'LayerSlider')
-            )
-        ),
+            'desc' => ls__('This will be used as a default on all slides, unless you choose to explicitly override it on a per slide basis.'),
+            'options' => [
+                'auto' => ls__('Auto'),
+                'cover' => ls__('Cover'),
+                'contain' => ls__('Contain'),
+                '100% 100%' => ls__('Stretch'),
+            ],
+        ],
 
-        'slideBGPosition' => array(
+        'slideBGPosition' => [
             'value' => '50% 50%',
-            'name' => ls__('Background position', 'LayerSlider'),
+            'name' => ls__('Background position'),
             'keys' => 'slideBGPosition',
-            'desc' => ls__('This will be used as a default on all slides, unless you choose the explicitly override it on a per slide basis.', 'LayerSlider'),
-            'options' => array(
-                '0% 0%' => ls__('left top', 'LayerSlider'),
-                '0% 50%' => ls__('left center', 'LayerSlider'),
-                '0% 100%' => ls__('left bottom', 'LayerSlider'),
-                '50% 0%' => ls__('center top', 'LayerSlider'),
-                '50% 50%' => ls__('center center', 'LayerSlider'),
-                '50% 100%' => ls__('center bottom', 'LayerSlider'),
-                '100% 0%' => ls__('right top', 'LayerSlider'),
-                '100% 50%' => ls__('right center', 'LayerSlider'),
-                '100% 100%' => ls__('right bottom', 'LayerSlider')
-            )
-        ),
+            'desc' => ls__('This will be used as a default on all slides, unless you choose the explicitly override it on a per slide basis.'),
+            'options' => [
+                '0% 0%' => ls__('left top'),
+                '0% 50%' => ls__('left center'),
+                '0% 100%' => ls__('left bottom'),
+                '50% 0%' => ls__('center top'),
+                '50% 50%' => ls__('center center'),
+                '50% 100%' => ls__('center bottom'),
+                '100% 0%' => ls__('right top'),
+                '100% 50%' => ls__('right center'),
+                '100% 100%' => ls__('right bottom'),
+            ],
+        ],
 
-
-        'parallaxSensitivity' => array(
+        'parallaxSensitivity' => [
             'value' => 10,
-            'name' => ls__('Parallax sensitivity', 'LayerSlider'),
+            'name' => ls__('Parallax sensitivity'),
             'keys' => 'parallaxSensitivity',
-            'desc' => ls__('Increase or decrease the sensitivity of parallax content when moving your mouse cursor or tilting your mobile device.', 'LayerSlider')
-        ),
+            'desc' => ls__('Increase or decrease the sensitivity of parallax content when moving your mouse cursor or tilting your mobile device.'),
+        ],
 
-
-        'parallaxCenterLayers' => array(
+        'parallaxCenterLayers' => [
             'value' => 'center',
-            'name' => ls__('Parallax center layers', 'LayerSlider'),
+            'name' => ls__('Parallax center layers'),
             'keys' => 'parallaxCenterLayers',
-            'desc' => ls__('Choose a center point for parallax content where all layers will be aligned perfectly according to their original position.', 'LayerSlider'),
-            'options' => array(
-                'center' => ls__('At center of the viewport', 'LayerSlider'),
-                'top' => ls__('At the top of the viewport', 'LayerSlider')
-            )
-        ),
+            'desc' => ls__('Choose a center point for parallax content where all layers will be aligned perfectly according to their original position.'),
+            'options' => [
+                'center' => ls__('At center of the viewport'),
+                'top' => ls__('At the top of the viewport'),
+            ],
+        ],
 
-        'parallaxCenterDegree' => array(
+        'parallaxCenterDegree' => [
             'value' => 40,
-            'name' => ls__('Parallax center degree', 'LayerSlider'),
+            'name' => ls__('Parallax center degree'),
             'keys' => 'parallaxCenterDegree',
-            'desc' => ls__('Provide a comfortable holding position (in degrees) for mobile devices, which should be the center point for parallax content where all layers should align perfectly.', 'LayerSlider')
-        ),
+            'desc' => ls__('Provide a comfortable holding position (in degrees) for mobile devices, which should be the center point for parallax content where all layers should align perfectly.'),
+        ],
 
-        'parallaxScrollReverse' => array(
+        'parallaxScrollReverse' => [
             'value' => false,
             'name' => 'Reverse scroll direction',
             'keys' => 'parallaxScrollReverse',
-            'desc' => ls__('Your parallax layers will move to the opposite direction when scrolling the page.', 'LayerSlider')
-        ),
-
+            'desc' => ls__('Your parallax layers will move to the opposite direction when scrolling the page.'),
+        ],
 
         // ================= //
         // |    Mobile    | //
         // ================= //
 
-        'optimizeForMobile' => array(
+        'optimizeForMobile' => [
             'value' => true,
-            'name' => ls__('Optimize for mobile', 'LayerSlider'),
+            'name' => ls__('Optimize for mobile'),
             'keys' => 'optimizeForMobile',
             'advanced' => true,
-            'desc' => ls__('Enable optimizations on mobile devices to avoid performance issues (e.g. fewer tiles in slide transitions, reducing performance-heavy effects with very similar results, etc).', 'LayerSlider')
-        ),
-
+            'desc' => ls__('Enable optimizations on mobile devices to avoid performance issues (e.g. fewer tiles in slide transitions, reducing performance-heavy effects with very similar results, etc).'),
+        ],
 
         // Disable the slider on mobile devices.
         // Defaults to: false
-        'disableOnMobile' => array(
+        'disableOnMobile' => [
             'value' => false,
-            'name' => ls__('Disable on mobile', 'LayerSlider'),
+            'name' => ls__('Disable on mobile'),
             'keys' => 'disableonmobile',
-            'desc' => ls__('Disable the slider on mobile devices.', 'LayerSlider'),
-            'props' => array('meta' => true)
-        ),
+            'desc' => ls__('Disable the slider on mobile devices.'),
+            'props' => ['meta' => true],
+        ],
 
         // Disable the slider on tablet devices.
         // Defaults to: false
-        'disableOnTablet' => array(
+        'disableOnTablet' => [
             'value' => false,
-            'name' => ls__('Disable on tablet', 'LayerSlider'),
+            'name' => ls__('Disable on tablet'),
             'keys' => 'disableontablet',
-            'desc' => ls__('Disable the slider on tablet devices.', 'LayerSlider'),
-            'props' => array('meta' => true)
-        ),
+            'desc' => ls__('Disable the slider on tablet devices.'),
+            'props' => ['meta' => true],
+        ],
 
         // Disable the slider on desktop devices.
         // Defaults to: false
-        'disableOnDesktop' => array(
+        'disableOnDesktop' => [
             'value' => false,
-            'name' => ls__('Disable on desktop', 'LayerSlider'),
+            'name' => ls__('Disable on desktop'),
             'keys' => 'disableondesktop',
-            'desc' => ls__('Disable the slider on desktop devices.', 'LayerSlider'),
-            'props' => array('meta' => true)
-        ),
+            'desc' => ls__('Disable the slider on desktop devices.'),
+            'props' => ['meta' => true],
+        ],
 
         // Hides the slider under the given value of browser width in pixels.
         // Defaults to: 0
-        'hideUnder' => array(
+        'hideUnder' => [
             'value' => '',
-            'name' => ls__('Hide under', 'LayerSlider'),
-            'keys' => array('hideunder', 'hideUnder'),
-            'desc' => ls__('Hides the slider when the viewport width goes under the specified value.', 'LayerSlider'),
-            'attrs' => array(
+            'name' => ls__('Hide under'),
+            'keys' => ['hideunder', 'hideUnder'],
+            'desc' => ls__('Hides the slider when the viewport width goes under the specified value.'),
+            'attrs' => [
                 'type' => 'number',
-                'min' => -1
-            )
-        ),
+                'min' => -1,
+            ],
+        ],
 
         // Hides the slider over the given value of browser width in pixel.
         // Defaults to: 100000
-        'hideOver' => array(
+        'hideOver' => [
             'value' => '',
-            'name' => ls__('Hide over', 'LayerSlider'),
-            'keys' => array('hideover', 'hideOver'),
-            'desc' => ls__('Hides the slider when the viewport becomes wider than the specified value.', 'LayerSlider'),
-            'attrs' => array(
+            'name' => ls__('Hide over'),
+            'keys' => ['hideover', 'hideOver'],
+            'desc' => ls__('Hides the slider when the viewport becomes wider than the specified value.'),
+            'attrs' => [
                 'type' => 'number',
-                'min' => -1
-            )
-        ),
+                'min' => -1,
+            ],
+        ],
 
-        'slideOnSwipe' => array(
+        'slideOnSwipe' => [
             'value' => true,
-            'name' => ls__('Use slide effect when swiping', 'LayerSlider'),
+            'name' => ls__('Use slide effect when swiping'),
             'keys' => 'slideOnSwipe',
-            'desc' => ls__('Ignore selected slide transitions and use sliding effects only when users are changing slides with a swipe gesture on mobile devices.', 'LayerSlider')
-        ),
+            'desc' => ls__('Ignore selected slide transitions and use sliding effects only when users are changing slides with a swipe gesture on mobile devices.'),
+        ],
 
         // ================ //
         // |   Slideshow  | //
         // ================ //
 
         // Automatically start slideshow.
-        'autoStart' => array(
+        'autoStart' => [
             'value' => true,
-            'name' => ls__('Auto-start slideshow', 'LayerSlider'),
-            'keys' => array('autostart', 'autoStart'),
-            'desc' => ls__('Slideshow will automatically start after page load.', 'LayerSlider')
-        ),
+            'name' => ls__('Auto-start slideshow'),
+            'keys' => ['autostart', 'autoStart'],
+            'desc' => ls__('Slideshow will automatically start after page load.'),
+        ],
 
-        'startInViewport' => array(
+        'startInViewport' => [
             'value' => true,
-            'name' => ls__('Start only in viewport', 'LayerSlider'),
-            'keys' => array('startinviewport', 'startInViewport'),
-            'desc' => ls__('The slider will not start until it becomes visible.', 'LayerSlider')
-        ),
+            'name' => ls__('Start only in viewport'),
+            'keys' => ['startinviewport', 'startInViewport'],
+            'desc' => ls__('The slider will not start until it becomes visible.'),
+        ],
 
-        'hashChange' => array(
+        'hashChange' => [
             'value' => false,
-            'name' => ls__('Change URL hash', 'LayerSlider'),
+            'name' => ls__('Change URL hash'),
             'keys' => 'hashChange',
-            'desc' => ls__('Updates the hash in the page URL when changing slides based on the deeplinks you’ve set to your slides. This makes it possible to share URLs that will start the slider with the currently visible slide.', 'LayerSlider'),
-            'advanced' => true
-        ),
+            'desc' => ls__('Updates the hash in the page URL when changing slides based on the deeplinks you’ve set to your slides. This makes it possible to share URLs that will start the slider with the currently visible slide.'),
+            'advanced' => true,
+        ],
 
-        'pauseLayers' => array(
+        'pauseLayers' => [
             'value' => false,
-            'name' => ls__('Pause layers', 'LayerSlider'),
+            'name' => ls__('Pause layers'),
             'keys' => 'pauseLayers',
-            'desc' => ls__('If you enable this option, layer transitions will not start playing as long the slideshow is in a paused state.', 'LayerSlider'),
-            'advanced' => true
-        ),
+            'desc' => ls__('If you enable this option, layer transitions will not start playing as long the slideshow is in a paused state.'),
+            'advanced' => true,
+        ],
 
-        'pauseOnHover' => array(
+        'pauseOnHover' => [
             'value' => 'enabled',
-            'name' => ls__('Pause on hover', 'LayerSlider'),
-            'keys' => array('pauseonhover', 'pauseOnHover'),
-            'options' => array(
-                'disabled' => ls__('Do nothing', 'LayerSlider'),
-                'enabled' => ls__('Pause slideshow', 'LayerSlider'),
-                'layers' => ls__('Pause slideshow and layer transitions', 'LayerSlider'),
-                'looplayers' => ls__('Pause slideshow and layer transitions, including loops', 'LayerSlider')
-            ),
-            'desc' => ls__('Decide what should happen when you move your mouse cursor over the slider.', 'LayerSlider')
-        ),
+            'name' => ls__('Pause on hover'),
+            'keys' => ['pauseonhover', 'pauseOnHover'],
+            'options' => [
+                'disabled' => ls__('Do nothing'),
+                'enabled' => ls__('Pause slideshow'),
+                'layers' => ls__('Pause slideshow and layer transitions'),
+                'looplayers' => ls__('Pause slideshow and layer transitions, including loops'),
+            ],
+            'desc' => ls__('Decide what should happen when you move your mouse cursor over the slider.'),
+        ],
 
         // The starting slide of a slider. Non-index value, starts with 1.
-        'firstSlide' => array(
+        'firstSlide' => [
             'value' => 1,
-            'name' => ls__('Start with slide', 'LayerSlider'),
-            'keys' => array('firstlayer', 'firstSlide'),
-            'desc' => ls__('The slider will start with the specified slide. You can also use the value "random".', 'LayerSlider'),
-            'attrs' => array('type' => 'text', 'data-options' => '["random"]')
-        ),
+            'name' => ls__('Start with slide'),
+            'keys' => ['firstlayer', 'firstSlide'],
+            'desc' => ls__('The slider will start with the specified slide. You can also use the value "random".'),
+            'attrs' => ['type' => 'text', 'data-options' => '["random"]'],
+        ],
 
         // Use global shortcuts to control the slider.
-        'keybNavigation' => array(
+        'keybNavigation' => [
             'value' => true,
-            'name' => ls__('Keyboard navigation', 'LayerSlider'),
-            'keys' => array('keybnav', 'keybNav'),
-            'desc' => ls__('You can navigate through slides with the left and right arrow keys.', 'LayerSlider')
-        ),
+            'name' => ls__('Keyboard navigation'),
+            'keys' => ['keybnav', 'keybNav'],
+            'desc' => ls__('You can navigate through slides with the left and right arrow keys.'),
+        ],
 
         // Accepts touch gestures if enabled.
-        'touchNavigation' => array(
+        'touchNavigation' => [
             'value' => true,
-            'name' => ls__('Touch navigation', 'LayerSlider'),
-            'keys' => array('touchnav', 'touchNav'),
-            'desc' => ls__('Gesture-based navigation when swiping on touch-enabled devices.', 'LayerSlider')
-        ),
+            'name' => ls__('Touch navigation'),
+            'keys' => ['touchnav', 'touchNav'],
+            'desc' => ls__('Gesture-based navigation when swiping on touch-enabled devices.'),
+        ],
 
-        'playByScroll' => array(
+        'playByScroll' => [
             'value' => false,
-            'name' => ls__('Play By Scroll', 'LayerSlider'),
+            'name' => ls__('Play By Scroll'),
             'keys' => 'playByScroll',
-            'desc' => ls__('Play the slider by scrolling the web page. <a href="https://creativeslider.webshopworks.com/play-by-scroll-26" target="_blank">Click here</a> to see a live example.', 'LayerSlider'),
-            'premium' => true
-        ),
+            'desc' => ls__('Play the slider by scrolling the web page. <a href="https://creativeslider.webshopworks.com/play-by-scroll-26" target="_blank">Click here</a> to see a live example.'),
+            'premium' => true,
+        ],
 
-
-        'playByScrollSpeed' => array(
+        'playByScrollSpeed' => [
             'value' => 1,
-            'name' => ls__('Play By Scroll Speed', 'LayerSlider'),
+            'name' => ls__('Play By Scroll Speed'),
             'keys' => 'playByScrollSpeed',
-            'desc' => ls__('Play By Scroll speed multiplier.', 'LayerSlider'),
-            'premium' => true
-        ),
+            'desc' => ls__('Play By Scroll speed multiplier.'),
+            'premium' => true,
+        ],
 
-        'playByScrollStart' => array(
+        'playByScrollStart' => [
             'value' => false,
-            'name' => ls__('Start immediately', 'LayerSlider'),
+            'name' => ls__('Start immediately'),
             'keys' => 'playByScrollStart',
-            'desc' => ls__('Instead of freezing the slider until visitors start scrolling, the slider will automatically start playback and will only pause at the first keyframe.', 'LayerSlider'),
-            'premium' => true
-        ),
+            'desc' => ls__('Instead of freezing the slider until visitors start scrolling, the slider will automatically start playback and will only pause at the first keyframe.'),
+            'premium' => true,
+        ],
 
         // Number of loops taking by the slideshow.
         // Depends on: shuffle. Defaults to: 0 => infinite
-        'loops' => array(
+        'loops' => [
             'value' => 0,
-            'name' => ls__('Cycles', 'LayerSlider'),
-            'keys' => array('loops', 'cycles'),
-            'desc' => ls__('Number of cycles if slideshow is enabled.', 'LayerSlider'),
-            'attrs' => array(
+            'name' => ls__('Cycles'),
+            'keys' => ['loops', 'cycles'],
+            'desc' => ls__('Number of cycles if slideshow is enabled.'),
+            'attrs' => [
                 'type' => 'number',
-                'min' => 0
-            )
-        ),
+                'min' => 0,
+            ],
+        ],
 
         // The slideshow will always stop at the given number of
         // loops, even when the user restarts slideshow.
         // Depends on: loop. Defaults to: true
-        'forceLoopNumber' => array(
+        'forceLoopNumber' => [
             'value' => true,
-            'name' => ls__('Force number of cycles', 'LayerSlider'),
-            'keys' => array('forceloopnum', 'forceCycles'),
+            'name' => ls__('Force number of cycles'),
+            'keys' => ['forceloopnum', 'forceCycles'],
             'advanced' => true,
-            'desc' => ls__('The slider will always stop at the given number of cycles, even if the slideshow restarts.', 'LayerSlider')
-        ),
+            'desc' => ls__('The slider will always stop at the given number of cycles, even if the slideshow restarts.'),
+        ],
 
         // The slideshow will change slides in random order.
-        'shuffle' => array(
+        'shuffle' => [
             'value' => false,
-            'name' => ls__('Shuffle mode', 'LayerSlider'),
-            'keys' => array('randomslideshow', 'shuffleSlideshow'),
-            'desc' => ls__('Slideshow will proceed in random order. This feature does not work with looping.', 'LayerSlider')
-        ),
+            'name' => ls__('Shuffle mode'),
+            'keys' => ['randomslideshow', 'shuffleSlideshow'],
+            'desc' => ls__('Slideshow will proceed in random order. This feature does not work with looping.'),
+        ],
 
         // Whether slideshow should goind backwards or not
         // when you switch to a previous slide.
-        'twoWaySlideshow' => array(
+        'twoWaySlideshow' => [
             'value' => false,
-            'name' => ls__('Two way slideshow', 'LayerSlider'),
-            'keys' => array('twowayslideshow', 'twoWaySlideshow'),
+            'name' => ls__('Two way slideshow'),
+            'keys' => ['twowayslideshow', 'twoWaySlideshow'],
             'advanced' => true,
-            'desc' => ls__('Slideshow can go backwards if someone switches to a previous slide.', 'LayerSlider')
-        ),
+            'desc' => ls__('Slideshow can go backwards if someone switches to a previous slide.'),
+        ],
 
-        'forceLayersOutDuration' => array(
+        'forceLayersOutDuration' => [
             'value' => 750,
-            'name' => ls__('Forced animation duration', 'LayerSlider'),
+            'name' => ls__('Forced animation duration'),
             'keys' => 'forceLayersOutDuration',
             'advanced' => true,
-            'desc' => ls__('The animation speed in milliseconds when the slider forces remaining layers out of scene before swapping slides.', 'LayerSlider'),
-            'attrs' => array(
-                'min' => 0
-            )
-        ),
+            'desc' => ls__('The animation speed in milliseconds when the slider forces remaining layers out of scene before swapping slides.'),
+            'attrs' => [
+                'min' => 0,
+            ],
+        ],
 
         // ================= //
         // |   Appearance  | //
         // ================= //
 
         // The default skin.
-        'skin' => array(
+        'skin' => [
             'value' => 'v6',
-            'name' => ls__('Skin', 'LayerSlider'),
+            'name' => ls__('Skin'),
             'keys' => 'skin',
-            'desc' => ls__("The skin used for this slider. The 'noskin' skin is a border- and buttonless skin. Your custom skins will appear in the list when you create their folders.", "LayerSlider"),
-            'props' => array(
-                'output' => true
-            )
-        ),
+            'desc' => ls__("The skin used for this slider. The 'noskin' skin is a border- and buttonless skin. Your custom skins will appear in the list when you create their folders."),
+            'props' => [
+                'output' => true,
+            ],
+        ],
 
-
-        'sliderFadeInDuration' => array(
+        'sliderFadeInDuration' => [
             'value' => 350,
-            'name' => ls__('Initial fade duration', 'LayerSlider'),
-            'keys' => array('sliderfadeinduration', 'sliderFadeInDuration'),
+            'name' => ls__('Initial fade duration'),
+            'keys' => ['sliderfadeinduration', 'sliderFadeInDuration'],
             'advanced' => true,
-            'desc' => ls__('Change the duration of the initial fade animation when the page loads. Enter 0 to disable fading.', 'LayerSlider'),
-            'attrs' => array(
-                'min' => 0
-            )
-        ),
+            'desc' => ls__('Change the duration of the initial fade animation when the page loads. Enter 0 to disable fading.'),
+            'attrs' => [
+                'min' => 0,
+            ],
+        ],
 
-        'sliderClasses' => array(
+        'sliderClasses' => [
             'value' => '',
-            'name' => ls__('Slider Classes', 'LayerSlider'),
+            'name' => ls__('Slider Classes'),
             'keys' => 'sliderclass',
-            'desc' => ls__('One or more space-separated class names to be added to the slider container element.', 'LayerSlider'),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'desc' => ls__('One or more space-separated class names to be added to the slider container element.'),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
         // Some CSS values you can append on each slide individually
         // to make some adjustments if needed.
-        'sliderStyle' => array(
+        'sliderStyle' => [
             'value' => 'margin-bottom: 0px;',
-            'name' => ls__('Slider CSS', 'LayerSlider'),
-            'keys' => array('sliderstyle', 'sliderStyle'),
-            'desc' => ls__('You can enter custom CSS to change some style properties on the slider wrapper element. More complex CSS should be applied with the Custom Styles Editor.', 'LayerSlider'),
-            'props' => array(
-                'meta' => true
-            )
-        ),
-
+            'name' => ls__('Slider CSS'),
+            'keys' => ['sliderstyle', 'sliderStyle'],
+            'desc' => ls__('You can enter custom CSS to change some style properties on the slider wrapper element. More complex CSS should be applied with the Custom Styles Editor.'),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
         // Global background color on all slides.
-        'globalBGColor' => array(
+        'globalBGColor' => [
             'value' => '',
-            'name' => ls__('Background color', 'LayerSlider'),
-            'keys' => array('backgroundcolor', 'globalBGColor'),
-            'desc' => ls__('Global background color of the slider. Slides with non-transparent background will cover this one. You can use all CSS methods such as HEX or RGB(A) values.', 'LayerSlider')
-        ),
+            'name' => ls__('Background color'),
+            'keys' => ['backgroundcolor', 'globalBGColor'],
+            'desc' => ls__('Global background color of the slider. Slides with non-transparent background will cover this one. You can use all CSS methods such as HEX or RGB(A) values.'),
+        ],
 
         // Global background image on all slides.
-        'globalBGImage' => array(
+        'globalBGImage' => [
             'value' => '',
-            'name' => ls__('Background image', 'LayerSlider'),
-            'keys' => array('backgroundimage', 'globalBGImage'),
-            'desc' => ls__('Global background image of the slider. Slides with non-transparent backgrounds will cover it. This image will not scale in responsive mode.', 'LayerSlider')
-        ),
+            'name' => ls__('Background image'),
+            'keys' => ['backgroundimage', 'globalBGImage'],
+            'desc' => ls__('Global background image of the slider. Slides with non-transparent backgrounds will cover it. This image will not scale in responsive mode.'),
+        ],
 
-        'globalBGImageId' => array(
+        'globalBGImageId' => [
             'value' => '',
-            'keys' => array('backgroundimageId', 'globalBGImageId'),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'keys' => ['backgroundimageId', 'globalBGImageId'],
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
         // Global background image repeat
-        'globalBGRepeat' => array(
+        'globalBGRepeat' => [
             'value' => 'no-repeat',
-            'name' => ls__('Background repeat', 'LayerSlider'),
+            'name' => ls__('Background repeat'),
             'keys' => 'globalBGRepeat',
-            'desc' => ls__('Global background image repeat.', 'LayerSlider'),
-            'options' => array(
-                'no-repeat' => ls__('No-repeat', 'LayerSlider'),
-                'repeat' => ls__('Repeat', 'LayerSlider'),
-                'repeat-x' => ls__('Repeat-x', 'LayerSlider'),
-                'repeat-y' => ls__('Repeat-y', 'LayerSlider')
-            )
-        ),
+            'desc' => ls__('Global background image repeat.'),
+            'options' => [
+                'no-repeat' => ls__('No-repeat'),
+                'repeat' => ls__('Repeat'),
+                'repeat-x' => ls__('Repeat-x'),
+                'repeat-y' => ls__('Repeat-y'),
+            ],
+        ],
 
         // Global background image behavior
-        'globalBGAttachment' => array(
+        'globalBGAttachment' => [
             'value' => 'scroll',
-            'name' => ls__('Background behavior', 'LayerSlider'),
+            'name' => ls__('Background behavior'),
             'keys' => 'globalBGAttachment',
-            'desc' => ls__('Choose between a scrollable or fixed global background image.', 'LayerSlider'),
-            'options' => array(
-                'scroll' => ls__('Scroll', 'LayerSlider'),
-                'fixed' => ls__('Fixed', 'LayerSlider')
-            )
-        ),
+            'desc' => ls__('Choose between a scrollable or fixed global background image.'),
+            'options' => [
+                'scroll' => ls__('Scroll'),
+                'fixed' => ls__('Fixed'),
+            ],
+        ],
 
         // Global background image position
-        'globalBGPosition' => array(
+        'globalBGPosition' => [
             'value' => '50% 50%',
-            'name' => ls__('Background position', 'LayerSlider'),
+            'name' => ls__('Background position'),
             'keys' => 'globalBGPosition',
-            'desc' => ls__('Global background image position of the slider. The first value is the horizontal position and the second value is the vertical.', 'LayerSlider')
-        ),
+            'desc' => ls__('Global background image position of the slider. The first value is the horizontal position and the second value is the vertical.'),
+        ],
 
         // Global background image size
-        'globalBGSize' => array(
+        'globalBGSize' => [
             'value' => 'auto',
-            'name' => ls__('Background size', 'LayerSlider'),
+            'name' => ls__('Background size'),
             'keys' => 'globalBGSize',
-            'desc' => ls__('Global background size of the slider. You can set the size in pixels, percentages, or constants: auto | cover | contain ', 'LayerSlider'),
-            'attrs' => array('data-options' => '[{
+            'desc' => ls__('Global background size of the slider. You can set the size in pixels, percentages, or constants: auto | cover | contain '),
+            'attrs' => ['data-options' => '[{
                 "name": "auto",
                 "value": "auto"
             }, {
@@ -699,80 +681,78 @@ $lsDefaults = array(
             }, {
                 "name": "stretch",
                 "value": "100% 100%"
-            }]')
-        ),
-
-
+            }]'],
+        ],
 
         // ================= //
         // |   Navigation  | //
         // ================= //
 
         // Show the next and previous buttons.
-        'navPrevNextButtons' => array(
+        'navPrevNextButtons' => [
             'value' => true,
-            'name' => ls__('Show Prev & Next buttons', 'LayerSlider'),
-            'keys' => array('navprevnext', 'navPrevNext'),
-            'desc' => ls__('Disabling this option will hide the Prev and Next buttons.', 'LayerSlider')
-        ),
+            'name' => ls__('Show Prev & Next buttons'),
+            'keys' => ['navprevnext', 'navPrevNext'],
+            'desc' => ls__('Disabling this option will hide the Prev and Next buttons.'),
+        ],
 
         // Show the next and previous buttons
         // only when hovering over the slider.
-        'hoverPrevNextButtons' => array(
+        'hoverPrevNextButtons' => [
             'value' => true,
-            'name' => ls__('Show Prev & Next buttons on hover', 'LayerSlider'),
-            'keys' => array('hoverprevnext', 'hoverPrevNext'),
-            'desc' => ls__('Show the buttons only when someone moves the mouse cursor over the slider. This option depends on the previous setting.', 'LayerSlider')
-        ),
+            'name' => ls__('Show Prev & Next buttons on hover'),
+            'keys' => ['hoverprevnext', 'hoverPrevNext'],
+            'desc' => ls__('Show the buttons only when someone moves the mouse cursor over the slider. This option depends on the previous setting.'),
+        ],
 
         // Show the start and stop buttons
-        'navStartStopButtons' => array(
+        'navStartStopButtons' => [
             'value' => true,
-            'name' => ls__('Show Start & Stop buttons', 'LayerSlider'),
-            'keys' => array('navstartstop', 'navStartStop'),
-            'desc' => ls__('Disabling this option will hide the Start & Stop buttons.', 'LayerSlider')
-        ),
+            'name' => ls__('Show Start & Stop buttons'),
+            'keys' => ['navstartstop', 'navStartStop'],
+            'desc' => ls__('Disabling this option will hide the Start & Stop buttons.'),
+        ],
 
         // Show the slide buttons or thumbnails.
-        'navSlideButtons' => array(
+        'navSlideButtons' => [
             'value' => true,
-            'name' => ls__('Show slide navigation buttons', 'LayerSlider'),
-            'keys' => array('navbuttons', 'navButtons'),
-            'desc' => ls__('Disabling this option will hide slide navigation buttons or thumbnails.', 'LayerSlider')
-        ),
+            'name' => ls__('Show slide navigation buttons'),
+            'keys' => ['navbuttons', 'navButtons'],
+            'desc' => ls__('Disabling this option will hide slide navigation buttons or thumbnails.'),
+        ],
 
         // Show the slider buttons or thumbnails
         // ony when hovering over the slider.
-        'hoverSlideButtons' => array(
+        'hoverSlideButtons' => [
             'value' => false,
-            'name' => ls__('Slide navigation on hover', 'LayerSlider'),
-            'keys' => array('hoverbottomnav', 'hoverBottomNav'),
-            'desc' => ls__('Slide navigation buttons (including thumbnails) will be shown on mouse hover only.', 'LayerSlider')
-        ),
+            'name' => ls__('Slide navigation on hover'),
+            'keys' => ['hoverbottomnav', 'hoverBottomNav'],
+            'desc' => ls__('Slide navigation buttons (including thumbnails) will be shown on mouse hover only.'),
+        ],
 
         // Show bar timer
-        'barTimer' => array(
+        'barTimer' => [
             'value' => false,
-            'name' => ls__('Show bar timer', 'LayerSlider'),
-            'keys' => array('bartimer', 'showBarTimer'),
-            'desc' => ls__('Show the bar timer to indicate slideshow progression.', 'LayerSlider')
-        ),
+            'name' => ls__('Show bar timer'),
+            'keys' => ['bartimer', 'showBarTimer'],
+            'desc' => ls__('Show the bar timer to indicate slideshow progression.'),
+        ],
 
         // Show circle timer. Requires CSS3 capable browser.
         // This setting will overrule the 'barTimer' option.
-        'circleTimer' => array(
+        'circleTimer' => [
             'value' => true,
-            'name' => ls__('Show circle timer', 'LayerSlider'),
-            'keys' => array('circletimer', 'showCircleTimer'),
-            'desc' => ls__('Use circle timer to indicate slideshow progression.', 'LayerSlider')
-        ),
+            'name' => ls__('Show circle timer'),
+            'keys' => ['circletimer', 'showCircleTimer'],
+            'desc' => ls__('Use circle timer to indicate slideshow progression.'),
+        ],
 
-        'slideBarTimer' => array(
+        'slideBarTimer' => [
             'value' => false,
-            'name' => ls__('Show slidebar timer', 'LayerSlider'),
-            'keys' => array('slidebartimer', 'showSlideBarTimer'),
-            'desc' => ls__('You can grab the slidebar timer playhead and seek the whole slide real-time like a movie.', 'LayerSlider')
-        ),
+            'name' => ls__('Show slidebar timer'),
+            'keys' => ['slidebartimer', 'showSlideBarTimer'],
+            'desc' => ls__('You can grab the slidebar timer playhead and seek the whole slide real-time like a movie.'),
+        ],
 
         // ========================== //
         // |  Thumbnail navigation  | //
@@ -781,491 +761,494 @@ $lsDefaults = array(
         // Use thumbnails for slide buttons
         // Depends on: navSlideButtons.
         // Possible values: 'disabled', 'hover', 'always'
-        'thumbnailNavigation' => array(
+        'thumbnailNavigation' => [
             'value' => 'hover',
-            'name' => ls__('Thumbnail navigation', 'LayerSlider'),
-            'keys' => array('thumb_nav', 'thumbnailNavigation'),
-            'desc' => ls__('Use thumbnail navigation instead of slide bullet buttons.', 'LayerSlider'),
-            'options' => array(
-                'disabled' => ls__('Disabled', 'LayerSlider'),
-                'hover' => ls__('Hover', 'LayerSlider'),
-                'always' => ls__('Always', 'LayerSlider')
-            )
-        ),
+            'name' => ls__('Thumbnail navigation'),
+            'keys' => ['thumb_nav', 'thumbnailNavigation'],
+            'desc' => ls__('Use thumbnail navigation instead of slide bullet buttons.'),
+            'options' => [
+                'disabled' => ls__('Disabled'),
+                'hover' => ls__('Hover'),
+                'always' => ls__('Always'),
+            ],
+        ],
 
         // The width of the thumbnail area in percents.
-        'thumbnailAreaWidth' => array(
+        'thumbnailAreaWidth' => [
             'value' => '60%',
-            'name' => ls__('Thumbnail container width', 'LayerSlider'),
-            'keys' => array('thumb_container_width', 'tnContainerWidth'),
-            'desc' => ls__('The width of the thumbnail area relative to the slider size.', 'LayerSlider')
-        ),
+            'name' => ls__('Thumbnail container width'),
+            'keys' => ['thumb_container_width', 'tnContainerWidth'],
+            'desc' => ls__('The width of the thumbnail area relative to the slider size.'),
+        ],
 
         // Thumbnails' width in pixels.
-        'thumbnailWidth' => array(
+        'thumbnailWidth' => [
             'value' => 100,
-            'name' => ls__('Thumbnail width', 'LayerSlider'),
-            'keys' => array('thumb_width', 'tnWidth'),
-            'desc' => ls__('The width of thumbnails in the navigation area.', 'LayerSlider'),
-            'attrs' => array(
-                'min' => 0
-            )
-        ),
+            'name' => ls__('Thumbnail width'),
+            'keys' => ['thumb_width', 'tnWidth'],
+            'desc' => ls__('The width of thumbnails in the navigation area.'),
+            'attrs' => [
+                'min' => 0,
+            ],
+        ],
 
         // Thumbnails' height in pixels.
-        'thumbnailHeight' => array(
+        'thumbnailHeight' => [
             'value' => 60,
-            'name' => ls__('Thumbnail height', 'LayerSlider'),
-            'keys' => array('thumb_height', 'tnHeight'),
-            'desc' => ls__('The height of thumbnails in the navigation area.', 'LayerSlider'),
-            'attrs' => array(
-                'min' => 0
-            )
-        ),
-
+            'name' => ls__('Thumbnail height'),
+            'keys' => ['thumb_height', 'tnHeight'],
+            'desc' => ls__('The height of thumbnails in the navigation area.'),
+            'attrs' => [
+                'min' => 0,
+            ],
+        ],
 
         // The opacity of the active thumbnail in percents.
-        'thumbnailActiveOpacity' => array(
+        'thumbnailActiveOpacity' => [
             'value' => 35,
-            'name' => ls__('Active thumbnail opacity', 'LayerSlider'),
-            'keys' => array('thumb_active_opacity', 'tnActiveOpacity'),
-            'desc' => ls__("Opacity in percentage of the active slide's thumbnail.", "LayerSlider"),
-            'attrs' => array(
+            'name' => ls__('Active thumbnail opacity'),
+            'keys' => ['thumb_active_opacity', 'tnActiveOpacity'],
+            'desc' => ls__("Opacity in percentage of the active slide's thumbnail."),
+            'attrs' => [
                 'min' => 0,
-                'max' => 100
-            )
-        ),
+                'max' => 100,
+            ],
+        ],
 
         // The opacity of inactive thumbnails in percents.
-        'thumbnailInactiveOpacity' => array(
+        'thumbnailInactiveOpacity' => [
             'value' => 100,
-            'name' => ls__('Inactive thumbnail opacity', 'LayerSlider'),
-            'keys' => array('thumb_inactive_opacity', 'tnInactiveOpacity'),
-            'desc' => ls__('Opacity in percentage of inactive slide thumbnails.', 'LayerSlider'),
-            'attrs' => array(
+            'name' => ls__('Inactive thumbnail opacity'),
+            'keys' => ['thumb_inactive_opacity', 'tnInactiveOpacity'],
+            'desc' => ls__('Opacity in percentage of inactive slide thumbnails.'),
+            'attrs' => [
                 'min' => 0,
-                'max' => 100
-            )
-        ),
+                'max' => 100,
+            ],
+        ],
 
         // ============ //
         // |  Videos  | //
         // ============ //
 
         // Automatically starts vidoes on the given slide.
-        'autoPlayVideos' => array(
+        'autoPlayVideos' => [
             'value' => true,
-            'name' => ls__('Automatically play videos', 'LayerSlider'),
-            'keys' => array('autoplayvideos', 'autoPlayVideos'),
-            'desc' => ls__('Videos will be automatically started on the active slide.', 'LayerSlider')
-        ),
+            'name' => ls__('Automatically play videos'),
+            'keys' => ['autoplayvideos', 'autoPlayVideos'],
+            'desc' => ls__('Videos will be automatically started on the active slide.'),
+        ],
 
         // Automatically pauses the slideshow when a video is playing.
         // Auto means it only pauses the slideshow while the video is playing.
         // Possible values: 'auto', 'enabled', 'disabled'
-        'autoPauseSlideshow' => array(
+        'autoPauseSlideshow' => [
             'value' => 'auto',
-            'name' => ls__('Pause slideshow', 'LayerSlider'),
-            'keys' => array('autopauseslideshow', 'autoPauseSlideshow'),
-            'desc' => ls__('The slideshow can temporally be paused while videos are playing. You can choose to permanently stop the pause until manual restarting.', 'LayerSlider'),
-            'options' => array(
-                'auto' => ls__('While playing', 'LayerSlider'),
-                'enabled' => ls__('Permanently', 'LayerSlider'),
-                'disabled' => ls__('No action', 'LayerSlider')
-            )
-        ),
+            'name' => ls__('Pause slideshow'),
+            'keys' => ['autopauseslideshow', 'autoPauseSlideshow'],
+            'desc' => ls__('The slideshow can temporally be paused while videos are playing. You can choose to permanently stop the pause until manual restarting.'),
+            'options' => [
+                'auto' => ls__('While playing'),
+                'enabled' => ls__('Permanently'),
+                'disabled' => ls__('No action'),
+            ],
+        ],
 
         // The preview image quality of a YouTube video.
         // Some videos doesn't have HD preview images and
         // you may have to lower the quality settings.
         // Possible values:
-            // 'maxresdefault.jpg',
-            // 'hqdefault.jpg',
-            // 'mqdefault.jpg',
-            // 'default.jpg'
-        'youtubePreviewQuality' => array(
+        // 'maxresdefault.jpg', 'hqdefault.jpg', 'mqdefault.jpg', 'default.jpg'
+        'youtubePreviewQuality' => [
             'value' => 'maxresdefault.jpg',
-            'name' => ls__('Youtube preview', 'LayerSlider'),
-            'keys' => array('youtubepreview', 'youtubePreview'),
-            'desc' => ls__('The automatically fetched preview image quaility for YouTube videos when you do not set your own. Please note, some videos do not have HD previews, and you may need to choose a lower quaility.', 'LayerSlider'),
-            'options' => array(
-                'maxresdefault.jpg' => ls__('Maximum quality', 'LayerSlider'),
-                'hqdefault.jpg' => ls__('High quality', 'LayerSlider'),
-                'mqdefault.jpg' => ls__('Medium quality', 'LayerSlider'),
-                'default.jpg' => ls__('Default quality', 'LayerSlider')
-            )
-        ),
+            'name' => ls__('Youtube preview'),
+            'keys' => ['youtubepreview', 'youtubePreview'],
+            'desc' => ls__('The automatically fetched preview image quaility for YouTube videos when you do not set your own. Please note, some videos do not have HD previews, and you may need to choose a lower quaility.'),
+            'options' => [
+                'maxresdefault.jpg' => ls__('Maximum quality'),
+                'hqdefault.jpg' => ls__('High quality'),
+                'mqdefault.jpg' => ls__('Medium quality'),
+                'default.jpg' => ls__('Default quality'),
+            ],
+        ],
 
         // ========== //
         // |  Misc  | //
         // ========== //
 
-
         // Ignores the host/domain names in URLS by converting the to
         // relative format. Useful when you move your site.
         // Prevents linking content from 3rd party servers.
-        'relativeURLs' => array(
+        'relativeURLs' => [
             'value' => false,
-            'name' => ls__('Use relative URLs', 'LayerSlider'),
+            'name' => ls__('Use relative URLs'),
             'keys' => 'relativeurls',
-            'desc' => ls__('Use relative URLs for local images. This setting could be important when moving your PS installation.', 'LayerSlider'),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'desc' => ls__('Use relative URLs for local images. This setting could be important when moving your PS installation.'),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'allowRestartOnResize' => array(
+        'allowRestartOnResize' => [
             'value' => false,
-            'name' => ls__('Allow restarting slides on resize', 'LayerSlider'),
+            'name' => ls__('Allow restarting slides on resize'),
             'keys' => 'allowRestartOnResize',
-            'desc' => ls__('Certain transformation and transition options cannot be updated on the fly when the browser size or device orientation changes. By enabling this option, the slider will automatically detect such situations and will restart the itself to preserve its appearance.', 'LayerSlider'),
-            'advanced' => true
-        ),
+            'desc' => ls__('Certain transformation and transition options cannot be updated on the fly when the browser size or device orientation changes. By enabling this option, the slider will automatically detect such situations and will restart the itself to preserve its appearance.'),
+            'advanced' => true,
+        ],
 
-        'useSrcset' => array(
+        'useSrcset' => [
             'value' => true,
-            'name' => ls__('Use srcset attribute', 'LayerSlider'),
+            'name' => ls__('Use srcset attribute'),
             'keys' => 'useSrcset',
-            'desc' => ls__('The srcset attribute allows loading dynamically scaled images based on screen resolution. It can save bandwidth and allow using retina-ready images on high resolution devices. In some rare edge cases, this option might cause blurry images.', 'LayerSlider')
-        ),
+            'desc' => ls__('The srcset attribute allows loading dynamically scaled images based on screen resolution. It can save bandwidth and allow using retina-ready images on high resolution devices. In some rare edge cases, this option might cause blurry images.'),
+        ],
 
-        'preferBlendMode' => array(
+        'enhancedLazyLoad' => [
+            'value' => false,
+            'name' => ls__('Enhanced lazy load'),
+            'keys' => 'enhancedLazyLoad',
+            'desc' => ls__('The default lazy loading behavior makes a compromise to ensure maximum compatibility while offering a solution that works ideally in almost all cases. However, by leaving the image ’src’ attribute untouched, there is a slight chance that the browser might start downloading some assets for a split second before Creative Slider cancels them. Enabling this option will eliminate any chance of generating even a minuscule amount of unwanted traffic, but it can also cause issues for search engine indexing and other themes/modules.'),
+            'advanced' => true,
+            'props' => [
+                'meta' => true,
+            ],
+        ],
+
+        'preferBlendMode' => [
             'value' => 'disabled',
-            'name' => ls__('Prefer Blend Mode', 'LayerSlider'),
+            'name' => ls__('Prefer Blend Mode'),
             'keys' => 'preferBlendMode',
-            'desc' => ls__('Enable this option to avoid blend mode issues with slide transitions. Due to technical limitations, this will also clip your slide transitions regardless of your settings.', 'LayerSlider'),
-            'options' => array(
-                'enabled' => ls__('Enabled', 'LayerSlider'),
-                'disabled' => ls__('Disabled', 'LayerSlider')
-            ),
-            'advanced' => true
-        ),
-
+            'desc' => ls__('Enable this option to avoid blend mode issues with slide transitions. Due to technical limitations, this will also clip your slide transitions regardless of your settings.'),
+            'options' => [
+                'enabled' => ls__('Enabled'),
+                'disabled' => ls__('Disabled'),
+            ],
+            'advanced' => true,
+        ],
 
         // ============== //
         // |  YourLogo  | //
         // ============== //
 
         // Places a fixed image on the top of the slider.
-        'yourLogoImage' => array(
+        'yourLogoImage' => [
             'value' => '',
-            'name' => ls__('YourLogo', 'LayerSlider'),
-            'keys' => array('yourlogo', 'yourLogo'),
-            'desc' => ls__('A fixed image layer can be shown above the slider that remains still throughout the whole slider. Can be used to display logos or watermarks.', 'LayerSlider')
-        ),
+            'name' => ls__('YourLogo'),
+            'keys' => ['yourlogo', 'yourLogo'],
+            'desc' => ls__('A fixed image layer can be shown above the slider that remains still throughout the whole slider. Can be used to display logos or watermarks.'),
+        ],
 
         // Custom CSS style settings for the YourLogo image.
         // Depends on: yourLogoImage
-        'yourLogoStyle' => array(
+        'yourLogoStyle' => [
             'value' => 'left: -10px; top: -10px;',
-            'name' => ls__('YourLogo style', 'LayerSlider'),
-            'keys' => array('yourlogostyle', 'yourLogoStyle'),
-            'desc' => ls__('CSS properties to control the image placement and appearance.', 'LayerSlider')
-        ),
+            'name' => ls__('YourLogo style'),
+            'keys' => ['yourlogostyle', 'yourLogoStyle'],
+            'desc' => ls__('CSS properties to control the image placement and appearance.'),
+        ],
 
         // Linking the YourLogo image to a given URL.
         // Depends on: yourLogoImage
-        'yourLogoLink' => array(
+        'yourLogoLink' => [
             'value' => '',
-            'name' => ls__('YourLogo link', 'LayerSlider'),
-            'keys' => array('yourlogolink', 'yourLogoLink'),
-            'desc' => ls__('Enter a URL to link the YourLogo image.', 'LayerSlider')
-        ),
+            'name' => ls__('YourLogo link'),
+            'keys' => ['yourlogolink', 'yourLogoLink'],
+            'desc' => ls__('Enter a URL to link the YourLogo image.'),
+        ],
 
         // Link target for yourLogoLink.
         // Depends on: yourLogoLink
-        'yourLogoTarget' => array(
+        'yourLogoTarget' => [
             'value' => '_self',
-            'name' => ls__('Link target', 'LayerSlider'),
-            'keys' => array('yourlogotarget', 'yourLogoTarget'),
+            'name' => ls__('Link target'),
+            'keys' => ['yourlogotarget', 'yourLogoTarget'],
             'desc' => '',
-            'options' => array(
-                '_self' => ls__('Open on the same page', 'LayerSlider'),
-                '_blank' => ls__('Open on new page', 'LayerSlider'),
-                '_parent' => ls__('Open in parent frame', 'LayerSlider'),
-                '_top' => ls__('Open in main frame', 'LayerSlider')
-            ),
-        ),
+            'options' => [
+                '_self' => ls__('Open on the same page'),
+                '_blank' => ls__('Open on new page'),
+                '_parent' => ls__('Open in parent frame'),
+                '_top' => ls__('Open in main frame'),
+            ],
+        ],
 
         // Post options
-        'postType' => array(
+        'postType' => [
             'value' => '',
             'keys' => 'post_type',
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'postOrderBy' => array(
+        'postOrderBy' => [
             'value' => 'date',
             'keys' => 'post_orderby',
-            'options' => array(
-                'date' => ls__('Date Created', 'LayerSlider'),
-                'modified' => ls__('Last Modified', 'LayerSlider'),
-                'ID' => ls__('Post ID', 'LayerSlider'),
-                'title' => ls__('Post Title', 'LayerSlider'),
-                'comment_count' => ls__('Number of Comments', 'LayerSlider'),
-                'rand' => ls__('Random', 'LayerSlider')
-            ),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'options' => [
+                'date' => ls__('Date Created'),
+                'modified' => ls__('Last Modified'),
+                'ID' => ls__('Post ID'),
+                'title' => ls__('Post Title'),
+                'comment_count' => ls__('Number of Comments'),
+                'rand' => ls__('Random'),
+            ],
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'postOrder' => array(
+        'postOrder' => [
             'value' => 'DESC',
             'keys' => 'post_order',
-            'options' => array(
-                'ASC' => ls__('Ascending', 'LayerSlider'),
-                'DESC' => ls__('Descending', 'LayerSlider')
-            ),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'options' => [
+                'ASC' => ls__('Ascending'),
+                'DESC' => ls__('Descending'),
+            ],
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'postCategories' => array(
+        'postCategories' => [
             'value' => '',
             'keys' => 'post_categories',
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'postTags' => array(
+        'postTags' => [
             'value' => '',
             'keys' => 'post_tags',
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'postTaxonomy' => array(
+        'postTaxonomy' => [
             'value' => '',
             'keys' => 'post_taxonomy',
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'postTaxTerms' => array(
+        'postTaxTerms' => [
             'value' => '',
             'keys' => 'post_tax_terms',
             'options' => PSOpts::getProductImgTypes(),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
         // Old and obsolete API
-        'cbInit' => array(
+        'cbInit' => [
             'value' => "function(element) {\r\n\r\n}",
-            'keys' => array('cbinit','cbInit'),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'keys' => ['cbinit', 'cbInit'],
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'cbStart' => array(
+        'cbStart' => [
             'value' => "function(data) {\r\n\r\n}",
-            'keys' => array('cbstart','cbStart'),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'keys' => ['cbstart', 'cbStart'],
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'cbStop' => array(
+        'cbStop' => [
             'value' => "function(data) {\r\n\r\n}",
-            'keys' => array('cbstop','cbStop'),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'keys' => ['cbstop', 'cbStop'],
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'cbPause' => array(
+        'cbPause' => [
             'value' => "function(data) {\r\n\r\n}",
-            'keys' => array('cbpause','cbPause'),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'keys' => ['cbpause', 'cbPause'],
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'cbAnimStart' => array(
+        'cbAnimStart' => [
             'value' => "function(data) {\r\n\r\n}",
-            'keys' => array('cbanimstart','cbAnimStart'),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'keys' => ['cbanimstart', 'cbAnimStart'],
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'cbAnimStop' => array(
+        'cbAnimStop' => [
             'value' => "function(data) {\r\n\r\n}",
-            'keys' => array('cbanimstop','cbAnimStop'),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'keys' => ['cbanimstop', 'cbAnimStop'],
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'cbPrev' => array(
+        'cbPrev' => [
             'value' => "function(data) {\r\n\r\n}",
-            'keys' => array('cbprev','cbPrev'),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'keys' => ['cbprev', 'cbPrev'],
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'cbNext' => array(
+        'cbNext' => [
             'value' => "function(data) {\r\n\r\n}",
-            'keys' => array('cbnext','cbNext'),
-            'props' => array(
-                'meta' => true
-            )
-        ),
-    ),
+            'keys' => ['cbnext', 'cbNext'],
+            'props' => [
+                'meta' => true,
+            ],
+        ],
+    ],
 
-    'slides' => array(
-
+    'slides' => [
         // The background image of slides
         // Defaults to: void
-        'image' => array (
+        'image' => [
             'value' => '',
-            'name' => ls__('Set a slide image', 'LayerSlider'),
+            'name' => ls__('Set a slide image'),
             'keys' => 'background',
-            'tooltip' => ls__('The slide image/background. Click on the image to open the Image Manager to choose or upload an image.', 'LayerSlider'),
-            'props' => array('meta' => true)
-        ),
+            'tooltip' => ls__('The slide image/background. Click on the image to open the Image Manager to choose or upload an image.'),
+            'props' => ['meta' => true],
+        ],
 
-        'imageId' => array (
+        'imageId' => [
             'value' => '',
             'keys' => 'backgroundId',
-            'props' => array('meta' => true)
-        ),
+            'props' => ['meta' => true],
+        ],
 
-        'imageSize' => array(
+        'imageSize' => [
             'value' => 'inherit',
-            'name' => ls__('Size', 'LayerSlider'),
+            'name' => ls__('Size'),
             'keys' => 'bgsize',
-            'tooltip' => ls__('The size of the slide background image. Leave this option on inherit if you want to set it globally from Slider Settings.', 'LayerSlider'),
-            'options' => array(
-                'inherit' => ls__('Inherit', 'LayerSlider'),
-                'auto' => ls__('Auto', 'LayerSlider'),
-                'cover' => ls__('Cover', 'LayerSlider'),
-                'contain' => ls__('Contain', 'LayerSlider'),
-                '100% 100%' => ls__('Stretch', 'LayerSlider')
-            )
-        ),
+            'tooltip' => ls__('The size of the slide background image. Leave this option on inherit if you want to set it globally from Slider Settings.'),
+            'options' => [
+                'inherit' => ls__('Inherit'),
+                'auto' => ls__('Auto'),
+                'cover' => ls__('Cover'),
+                'contain' => ls__('Contain'),
+                '100% 100%' => ls__('Stretch'),
+            ],
+        ],
 
-        'imagePosition' => array(
+        'imagePosition' => [
             'value' => 'inherit',
-            'name' => ls__('Position', 'LayerSlider'),
+            'name' => ls__('Position'),
             'keys' => 'bgposition',
-            'tooltip' => ls__('The position of the slide background image. Leave this option on inherit if you want to set it globally from Slider Settings.', 'LayerSlider'),
-            'options' => array(
-                'inherit' => ls__('Inherit', 'LayerSlider'),
-                '0% 0%' => ls__('left top', 'LayerSlider'),
-                '0% 50%' => ls__('left center', 'LayerSlider'),
-                '0% 100%' => ls__('left bottom', 'LayerSlider'),
-                '50% 0%' => ls__('center top', 'LayerSlider'),
-                '50% 50%' => ls__('center center', 'LayerSlider'),
-                '50% 100%' => ls__('center bottom', 'LayerSlider'),
-                '100% 0%' => ls__('right top', 'LayerSlider'),
-                '100% 50%' => ls__('right center', 'LayerSlider'),
-                '100% 100%' => ls__('right bottom', 'LayerSlider')
-            )
-        ),
+            'tooltip' => ls__('The position of the slide background image. Leave this option on inherit if you want to set it globally from Slider Settings.'),
+            'options' => [
+                'inherit' => ls__('Inherit'),
+                '0% 0%' => ls__('left top'),
+                '0% 50%' => ls__('left center'),
+                '0% 100%' => ls__('left bottom'),
+                '50% 0%' => ls__('center top'),
+                '50% 50%' => ls__('center center'),
+                '50% 100%' => ls__('center bottom'),
+                '100% 0%' => ls__('right top'),
+                '100% 50%' => ls__('right center'),
+                '100% 100%' => ls__('right bottom'),
+            ],
+        ],
 
-        'imageColor' => array(
+        'imageColor' => [
             'value' => '',
-            'name' => ls__('Color', 'LayerSlider'),
+            'name' => ls__('Color'),
             'keys' => 'bgcolor',
-            'tooltip' => ls__('The slide background color. You can use color names, hexadecimal, RGB or RGBA values.', 'LayerSlider')
-        ),
+            'tooltip' => ls__('The slide background color. You can use color names, hexadecimal, RGB or RGBA values.'),
+        ],
 
-        'thumbnail' => array (
+        'thumbnail' => [
             'value' => '',
-            'name' => ls__('Set a slide thumbnail', 'LayerSlider'),
+            'name' => ls__('Set a slide thumbnail'),
             'keys' => 'thumbnail',
-            'tooltip' => ls__('The thumbnail image of this slide. Click on the image to open the Image Manager to choose or upload an image. If you leave this field empty, the slide image will be used.', 'LayerSlider'),
-            'props' => array('meta' => true)
-        ),
+            'tooltip' => ls__('The thumbnail image of this slide. Click on the image to open the Image Manager to choose or upload an image. If you leave this field empty, the slide image will be used.'),
+            'props' => ['meta' => true],
+        ],
 
-        'thumbnailId' => array (
+        'thumbnailId' => [
             'value' => '',
             'keys' => 'thumbnailId',
-            'props' => array('meta' => true)
-        ),
+            'props' => ['meta' => true],
+        ],
 
         // Default slide delay in millisecs.
         // Defaults to: 4000 (ms) => 4secs
-        'delay' => array(
+        'delay' => [
             'value' => '',
-            'name' => ls__('Duration', 'LayerSlider'),
-            'keys' => array('slidedelay', 'duration'),
-            'tooltip' => ls__("Here you can set the time interval between slide changes, this slide will stay visible for the time specified here. This value is in millisecs, so the value 1000 means 1 second. Please don't use 0 or very low values.", "LayerSlider"),
-            'attrs' => array(
+            'name' => ls__('Duration'),
+            'keys' => ['slidedelay', 'duration'],
+            'tooltip' => ls__("Here you can set the time interval between slide changes, this slide will stay visible for the time specified here. This value is in millisecs, so the value 1000 means 1 second. Please don't use 0 or very low values."),
+            'attrs' => [
                 'type' => 'number',
                 'min' => 0,
                 'step' => 500,
-                'placeholder' => 'auto'
-            )
-        ),
+                'placeholder' => 'auto',
+            ],
+        ],
 
-        '2dTransitions' => array(
+        '2dTransitions' => [
             'value' => '',
-            'keys' => array('2d_transitions', 'transition2d')
-        ),
+            'keys' => ['2d_transitions', 'transition2d'],
+        ],
 
-        '3dTransitions' => array(
+        '3dTransitions' => [
             'value' => '',
-            'keys' => array('3d_transitions', 'transition3d')
-        ),
+            'keys' => ['3d_transitions', 'transition3d'],
+        ],
 
-        'custom2dTransitions' => array(
+        'custom2dTransitions' => [
             'value' => '',
-            'keys' => array('custom_2d_transitions', 'customtransition2d')
-        ),
+            'keys' => ['custom_2d_transitions', 'customtransition2d'],
+        ],
 
-        'custom3dTransitions' => array(
+        'custom3dTransitions' => [
             'value' => '',
-            'keys' => array('custom_3d_transitions', 'customtransition3d')
-        ),
+            'keys' => ['custom_3d_transitions', 'customtransition3d'],
+        ],
 
-        'transitionOrigami' => array(
+        'transitionOrigami' => [
             'value' => false,
             'keys' => 'transitionorigami',
-            'premium' => true
-        ),
+            'premium' => true,
+        ],
 
-        'transitionDuration' => array(
+        'transitionDuration' => [
             'value' => '',
-            'name' => ls__('Duration', 'LayerSlider'),
+            'name' => ls__('Duration'),
             'keys' => 'transitionduration',
-            'tooltip' => ls__("We've made our pre-defined slide transitions with special care to fit in most use cases. However, if you would like to increase or decrease the speed of these transitions, you can override their timing here by providing your own transition length in milliseconds. (1 second = 1000 milliseconds)", "LayerSlider"),
-            'attrs' => array(
+            'tooltip' => ls__("We've made our pre-defined slide transitions with special care to fit in most use cases. However, if you would like to increase or decrease the speed of these transitions, you can override their timing here by providing your own transition length in milliseconds. (1 second = 1000 milliseconds)"),
+            'attrs' => [
                 'type' => 'number',
                 'min' => 0,
                 'step' => 500,
-                'placeholder' => ls__('custom duration', 'LayerSlider')
-            )
+                'placeholder' => ls__('custom duration'),
+            ],
+        ],
 
-        ),
-
-        'timeshift' => array(
+        'timeshift' => [
             'value' => 0,
-            'name' => ls__('Time Shift', 'LayerSlider'),
+            'name' => ls__('Time Shift'),
             'keys' => 'timeshift',
-            'tooltip' => ls__("You can shift the starting point of the slide animation timeline, so layers can animate in an earlier time after a slide change. This value is in milliseconds. A second is 1000 milliseconds. You can only use a negative value.", 'LayerSlider'),
-            'attrs' => array(
-                'step' => 50
-            )
-        ),
+            'tooltip' => ls__('You can shift the starting point of the slide animation timeline, so layers can animate in an earlier time after a slide change. This value is in milliseconds. A second is 1000 milliseconds. You can only use a negative value.'),
+            'attrs' => [
+                'step' => 50,
+            ],
+        ],
 
-        'linkUrl' => array(
+        'linkUrl' => [
             'value' => '',
-            'name' => ls__('Enter URL', 'LayerSlider'),
-            'keys' => array('layer_link', 'linkUrl'),
-            'tooltip' => ls__('If you want to link the whole slide, type the URL here. You can choose one of the pre-defined options from the dropdown list when you click into this field. You can also type a hash mark followed by a number to link this layer to another slide. Example: #3 - this will switch to the third slide.', 'LayerSlider'),
-            'attrs' => array(
+            'name' => ls__('Enter URL'),
+            'keys' => ['layer_link', 'linkUrl'],
+            'tooltip' => ls__('If you want to link the whole slide, type the URL here. You can choose one of the pre-defined options from the dropdown list when you click into this field. You can also type a hash mark followed by a number to link this layer to another slide. Example: #3 - this will switch to the third slide.'),
+            'attrs' => [
                 'data-options' => '[{
                     "name": "Switch to the next slide",
                     "value": "#next"
@@ -1287,293 +1270,285 @@ $lsDefaults = array(
                 }, {
                     "name": "Reverse the slide, then replay it",
                     "value": "#reverse-replay"
-                }]'
-            ),
-            'props' => array(
-                'meta' => true
-            )
+                }]',
+            ],
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        ),
-
-        'linkId' => array(
+        'linkId' => [
             'value' => '',
             'keys' => 'linkId',
-            'props' => array( 'meta' => true )
-        ),
+            'props' => ['meta' => true],
+        ],
 
-        'linkTarget' => array(
+        'linkTarget' => [
             'value' => '_self',
-            'name' => ls__('Link Target', 'LayerSlider'),
-            'keys' => array('layer_link_target', 'linkTarget'),
-            'options' => array(
-                '_self' => ls__('Open on the same page', 'LayerSlider'),
-                '_blank' => ls__('Open on new page', 'LayerSlider'),
-                '_parent' => ls__('Open in parent frame', 'LayerSlider'),
-                '_top' => ls__('Open in main frame', 'LayerSlider'),
-                'ls-scroll' => ls__('Scroll to element (Enter selector)', 'LayerSlider')
-            ),
-            'props' => array(
-                'meta' => true
-            )
+            'name' => ls__('Link Target'),
+            'keys' => ['layer_link_target', 'linkTarget'],
+            'options' => [
+                '_self' => ls__('Open on the same page'),
+                '_blank' => ls__('Open on new page'),
+                '_parent' => ls__('Open in parent frame'),
+                '_top' => ls__('Open in main frame'),
+                'ls-scroll' => ls__('Scroll to element (Enter selector)'),
+            ],
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        ),
-
-        'linkType' => array(
+        'linkType' => [
             'value' => 'over',
-            'keys' => array('layer_link_type', 'linkType'),
-            'tooltip' => ls__('Choose whether the slide link should be on top or underneath your layers. The later option makes the link clickable only at empty spaces where the slide background is visible, and enables you to link both slides and layers independently from each other.', 'LayerSlider'),
-            'options' => array(
-                'over' => ls__('On top of layers', 'LayerSlider'),
-                'under' => ls__('Underneath layers', 'LayerSlider'),
-            ),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'keys' => ['layer_link_type', 'linkType'],
+            'tooltip' => ls__('Choose whether the slide link should be on top or underneath your layers. The later option makes the link clickable only at empty spaces where the slide background is visible, and enables you to link both slides and layers independently from each other.'),
+            'options' => [
+                'over' => ls__('On top of layers'),
+                'under' => ls__('Underneath layers'),
+            ],
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'ID' => array(
+        'ID' => [
             'value' => '',
-            'name' => ls__('#ID', 'LayerSlider'),
+            'name' => ls__('#ID'),
             'keys' => 'id',
-            'tooltip' => ls__('You can apply an ID attribute on the HTML element of this slide to work with it in your custom CSS or Javascript code.', 'LayerSlider'),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'tooltip' => ls__('You can apply an ID attribute on the HTML element of this slide to work with it in your custom CSS or Javascript code.'),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'deeplink' => array(
+        'deeplink' => [
             'value' => '',
-            'name' => ls__('Deeplink', 'LayerSlider'),
+            'name' => ls__('Deeplink'),
             'keys' => 'deeplink',
-            'tooltip' => ls__('You can specify a slide alias name which you can use in your URLs with a hash mark, so LayerSlider will start with the correspondig slide.', 'LayerSlider')
-        ),
+            'tooltip' => ls__('You can specify a slide alias name which you can use in your URLs with a hash mark, so Creative Slider will start with the correspondig slide.'),
+        ],
 
-        'globalHover' => array(
+        'globalHover' => [
             'value' => false,
-            'name' => ls__('Global Hover', 'LayerSlider'),
+            'name' => ls__('Global Hover'),
             'keys' => 'globalhover',
-            'tooltip' => ls__('By turning this option on, all layers will trigger their Hover Transitions at the same time when you hover over the slider with your mouse cursor. It’s useful to create spectacular effects that involve multiple layer transitions and activate on hovering over the slider instead of individual layers.', 'LayerSlider'),
-            'premium' => true
-        ),
+            'tooltip' => ls__('By turning this option on, all layers will trigger their Hover Transitions at the same time when you hover over the slider with your mouse cursor. It’s useful to create spectacular effects that involve multiple layer transitions and activate on hovering over the slider instead of individual layers.'),
+            'premium' => true,
+        ],
 
-        'postContent' => array(
+        'postContent' => [
             'value' => null,
             'keys' => 'post_content',
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-
-        'postOffset' => array(
+        'postOffset' => [
             'value' => '',
             'keys' => 'post_offset',
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'skipSlide' => array(
+        'skipSlide' => [
             'value' => false,
-            'name' => ls__('Hidden', 'LayerSlider'),
+            'name' => ls__('Hidden'),
             'keys' => 'skip',
-            'tooltip' => ls__("If you don't want to use this slide in your front-page, but you want to keep it, you can hide it with this switch.", 'LayerSlider'),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'tooltip' => ls__("If you don't want to use this slide in your front-page, but you want to keep it, you can hide it with this switch."),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-
-        'overflow' => array(
+        'overflow' => [
             'value' => false,
-            'name' => ls__('Overflow layers', 'LayerSlider'),
+            'name' => ls__('Overflow layers'),
             'keys' => 'overflow',
-            'tooltip' => ls__('By default the slider clips the layers outside of its bounds. Enable this option to allow overflowing content.', 'LayerSlider')
-        ),
+            'tooltip' => ls__('By default the slider clips the layers outside of its bounds. Enable this option to allow overflowing content.'),
+        ],
 
-        'scheduleStart' => array(
+        'scheduleStart' => [
             'value' => '',
             'name' => ls__('Start on'),
             'keys' => 'schedule_start',
             'desc' => ls__("Scheduled slide will only be visible to your visitors between the time period you set here.<br>We're using international date and time format to avoid ambiguity."),
-            'attrs' => array(
-                'placeholder' => ls__('No schedule')
-            ),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'attrs' => [
+                'placeholder' => ls__('No schedule'),
+            ],
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'scheduleEnd' => array(
+        'scheduleEnd' => [
             'value' => '',
             'name' => ls__('Stop on'),
             'keys' => 'schedule_end',
             'desc' => 'Clear the text field above and left it empty if you want to cancel the schedule.',
-            'attrs' => array(
-                'placeholder' => ls__('No schedule')
-            ),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'attrs' => [
+                'placeholder' => ls__('No schedule'),
+            ],
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'title' => array(
+        'title' => [
             'value' => '',
-            'name' => ls__('Title', 'LayerSlider'),
+            'name' => ls__('Title'),
             'keys' => 'title',
-            'props' => array('meta' => true),
-        ),
+            'props' => ['meta' => true],
+        ],
 
-        'alt' => array(
+        'alt' => [
             'value' => '',
-            'name' => ls__('Alt', 'LayerSlider'),
+            'name' => ls__('Alt'),
             'keys' => 'alt',
-            'tooltip' => ls__('Name or describe your slide image, so search engines and VoiceOver softwares can properly identify it.', 'LayerSlider'),
-            'props' => array('meta' => true),
-        ),
+            'tooltip' => ls__('Name or describe your slide image, so search engines and VoiceOver softwares can properly identify it.'),
+            'props' => ['meta' => true],
+        ],
 
         // Ken Burns effect
-        'kenBurnsZoom' => array(
+        'kenBurnsZoom' => [
             'value' => 'disabled',
-            'name' => ls__('Zoom', 'LayerSlider'),
+            'name' => ls__('Zoom'),
             'keys' => 'kenburnszoom',
-            'options' => array(
-                'disabled' => ls__('Disabled', 'LayerSlider'),
-                'in' => ls__('Zoom In', 'LayerSlider'),
-                'out' => ls__('Zoom Out', 'LayerSlider'),
-            )
-        ),
+            'options' => [
+                'disabled' => ls__('Disabled'),
+                'in' => ls__('Zoom In'),
+                'out' => ls__('Zoom Out'),
+            ],
+        ],
 
-        'kenBurnsRotate' => array(
+        'kenBurnsRotate' => [
             'value' => '',
-            'name' => ls__('Rotate', 'LayerSlider'),
+            'name' => ls__('Rotate'),
             'keys' => 'kenburnsrotate',
-            'tooltip' => ls__('The amount of rotation (if any) in degrees used in the Ken Burns effect. Negative values are allowed for counterclockwise rotation.', 'LayerSlider'),
+            'tooltip' => ls__('The amount of rotation (if any) in degrees used in the Ken Burns effect. Negative values are allowed for counterclockwise rotation.'),
+        ],
 
-        ),
-
-        'kenBurnsScale' => array(
+        'kenBurnsScale' => [
             'value' => 1.2,
-            'name' => ls__('Scale', 'LayerSlider'),
+            'name' => ls__('Scale'),
             'keys' => 'kenburnsscale',
-            'tooltip' => ls__('Increase or decrease the size of the slide background image in the Ken Burns effect. The default value is 1, the value 2 will double the image, while 0.5 results half the size. Negative values will flip the image.', 'LayerSlider'),
-            'attrs' => array(
+            'tooltip' => ls__('Increase or decrease the size of the slide background image in the Ken Burns effect. The default value is 1, the value 2 will double the image, while 0.5 results half the size. Negative values will flip the image.'),
+            'attrs' => [
                 'type' => 'number',
-                'step' => 0.1
-            ),
-            'props' => array(
-                'output' => true
-            )
-        ),
-
+                'step' => 0.1,
+            ],
+            'props' => [
+                'output' => true,
+            ],
+        ],
 
         // Parallax
-        'parallaxType' => array(
+        'parallaxType' => [
             'value' => '2d',
-            'name' => ls__('Type', 'LayerSlider'),
+            'name' => ls__('Type'),
             'keys' => 'parallaxtype',
-            'tooltip' => ls__('The default value for parallax layers on this slide, which they will inherit, unless you set it otherwise on the affected layers.', 'LayerSlider'),
-            'options' => array(
-                '2d' => ls__('2D', 'LayerSlider'),
-                '3d' => ls__('3D', 'LayerSlider')
-             )
-        ),
+            'tooltip' => ls__('The default value for parallax layers on this slide, which they will inherit, unless you set it otherwise on the affected layers.'),
+            'options' => [
+                '2d' => ls__('2D'),
+                '3d' => ls__('3D'),
+            ],
+        ],
 
-        'parallaxEvent' => array(
+        'parallaxEvent' => [
             'value' => 'cursor',
-            'name' => ls__('Event', 'LayerSlider'),
+            'name' => ls__('Event'),
             'keys' => 'parallaxevent',
-            'tooltip' => ls__('You can trigger the parallax effect by either scrolling the page, or by moving your mouse cursor / tilting your mobile device. This is the default value on this slide, which parallax layers will inherit, unless you set it otherwise directly on them.', 'LayerSlider'),
-            'options' => array(
-                'cursor' => ls__('Cursor or Tilt', 'LayerSlider'),
-                'scroll' => ls__('Scroll', 'LayerSlider')
-             )
-        ),
+            'tooltip' => ls__('You can trigger the parallax effect by either scrolling the page, or by moving your mouse cursor / tilting your mobile device. This is the default value on this slide, which parallax layers will inherit, unless you set it otherwise directly on them.'),
+            'options' => [
+                'cursor' => ls__('Cursor or Tilt'),
+                'scroll' => ls__('Scroll'),
+            ],
+        ],
 
-        'parallaxAxis' => array(
+        'parallaxAxis' => [
             'value' => 'both',
-            'name' => ls__('Axes', 'LayerSlider'),
+            'name' => ls__('Axes'),
             'keys' => 'parallaxaxis',
-            'tooltip' => ls__('Choose on which axes parallax layers should move. This is the default value on this slide, which parallax layers will inherit, unless you set it otherwise directly on them.', 'LayerSlider'),
-            'options' => array(
-                'none' => ls__('None', 'LayerSlider'),
-                'both' => ls__('Both axes', 'LayerSlider'),
-                'x' => ls__('Horizontal only', 'LayerSlider'),
-                'y' => ls__('Vertical only', 'LayerSlider')
-            )
-        ),
+            'tooltip' => ls__('Choose on which axes parallax layers should move. This is the default value on this slide, which parallax layers will inherit, unless you set it otherwise directly on them.'),
+            'options' => [
+                'none' => ls__('None'),
+                'both' => ls__('Both axes'),
+                'x' => ls__('Horizontal only'),
+                'y' => ls__('Vertical only'),
+            ],
+        ],
 
-
-        'parallaxTransformOrigin' => array(
+        'parallaxTransformOrigin' => [
             'value' => '50% 50% 0',
-            'name' => ls__('Transform Origin', 'LayerSlider'),
+            'name' => ls__('Transform Origin'),
             'keys' => 'parallaxtransformorigin',
-            'tooltip' => ls__('Sets a point on canvas from which transformations are calculated. For example, a layer may rotate around its center axis or a completely custom point, such as one of its corners. The three values represent the X, Y and Z axes in 3D space. Apart from the pixel and percentage values, you can also use the following constants: top, right, bottom, left, center.', 'LayerSlider')
-        ),
+            'tooltip' => ls__('Sets a point on canvas from which transformations are calculated. For example, a layer may rotate around its center axis or a completely custom point, such as one of its corners. The three values represent the X, Y and Z axes in 3D space. Apart from the pixel and percentage values, you can also use the following constants: top, right, bottom, left, center.'),
+        ],
 
-        'parallaxDurationMove' => array(
+        'parallaxDurationMove' => [
             'value' => 1500,
-            'name' => ls__('Move duration', 'LayerSlider'),
+            'name' => ls__('Move duration'),
             'keys' => 'parallaxdurationmove',
-            'tooltip' => ls__('Controls the speed of animating layers when you move your mouse cursor or tilt your mobile device. This is the default value on this slide, which parallax layers will inherit, unless you set it otherwise directly on them.', 'LayerSlider'),
-            'attrs' => array(
+            'tooltip' => ls__('Controls the speed of animating layers when you move your mouse cursor or tilt your mobile device. This is the default value on this slide, which parallax layers will inherit, unless you set it otherwise directly on them.'),
+            'attrs' => [
                 'type' => 'number',
                 'step' => 100,
-                'min' => 0
-            )
-        ),
+                'min' => 0,
+            ],
+        ],
 
-        'parallaxDurationLeave' => array(
+        'parallaxDurationLeave' => [
             'value' => 1200,
-            'name' => ls__('Leave duration', 'LayerSlider'),
+            'name' => ls__('Leave duration'),
             'keys' => 'parallaxdurationleave',
-            'tooltip' => ls__('Controls how quickly your layers revert to their original position when you move your mouse cursor outside of a parallax slider. This value is in milliseconds. 1 second = 1000 milliseconds. This is the default value on this slide, which parallax layers will inherit, unless you set it otherwise directly on them.', 'LayerSlider'),
-            'attrs' => array(
+            'tooltip' => ls__('Controls how quickly your layers revert to their original position when you move your mouse cursor outside of a parallax slider. This value is in milliseconds. 1 second = 1000 milliseconds. This is the default value on this slide, which parallax layers will inherit, unless you set it otherwise directly on them.'),
+            'attrs' => [
                 'type' => 'number',
                 'step' => 100,
-                'min' => 0
-            )
-        ),
+                'min' => 0,
+            ],
+        ],
 
-        'parallaxDistance' => array(
+        'parallaxDistance' => [
             'value' => 10,
-            'name' => ls__('Distance', 'LayerSlider'),
+            'name' => ls__('Distance'),
             'keys' => 'parallaxdistance',
-            'tooltip' => ls__('Increase or decrease the amount of layer movement when moving your mouse cursor or tilting on a mobile device. This is the default value on this slide, which parallax layers will inherit, unless you set it otherwise directly on them.', 'LayerSlider'),
-            'attrs' => array(
+            'tooltip' => ls__('Increase or decrease the amount of layer movement when moving your mouse cursor or tilting on a mobile device. This is the default value on this slide, which parallax layers will inherit, unless you set it otherwise directly on them.'),
+            'attrs' => [
                 'type' => 'number',
-                'step' => 1
-            )
+                'step' => 1,
+            ],
+        ],
 
-        ),
-
-        'parallaxRotate' => array(
+        'parallaxRotate' => [
             'value' => 10,
-            'name' => ls__('Rotation', 'LayerSlider'),
+            'name' => ls__('Rotation'),
             'keys' => 'parallaxrotate',
-            'tooltip' => ls__('Increase or decrease the amount of layer rotation in the 3D space when moving your mouse cursor or tilting on a mobile device. This is the default value on this slide, which parallax layers will inherit, unless you set it otherwise directly on them.', 'LayerSlider'),
-            'attrs' => array(
+            'tooltip' => ls__('Increase or decrease the amount of layer rotation in the 3D space when moving your mouse cursor or tilting on a mobile device. This is the default value on this slide, which parallax layers will inherit, unless you set it otherwise directly on them.'),
+            'attrs' => [
                 'type' => 'number',
-                'step' => 1
-            )
-        ),
+                'step' => 1,
+            ],
+        ],
 
-        'parallaxPerspective' => array(
+        'parallaxPerspective' => [
             'value' => 500,
-            'name' => ls__('Perspective', 'LayerSlider'),
+            'name' => ls__('Perspective'),
             'keys' => 'parallaxtransformperspective',
-            'tooltip' => ls__('Changes the perspective of layers in the 3D space. This is the default value on this slide, which parallax layers will inherit, unless you set it otherwise directly on them.', 'LayerSlider'),
-            'attrs' => array(
+            'tooltip' => ls__('Changes the perspective of layers in the 3D space. This is the default value on this slide, which parallax layers will inherit, unless you set it otherwise directly on them.'),
+            'attrs' => [
                 'type' => 'number',
-                'step' => 100
-            )
-        ),
+                'step' => 100,
+            ],
+        ],
 
         // 'filterFrom' => array(
         //     'value' => '',
-        //     'name' => ls__('Filter From', 'LayerSlider'),
+        //     'name' => ls__('Filter From'),
         //     'keys' => 'filterfrom',
-        //     'tooltip' => ls__('Filters provide effects like blurring or color shifting your layers. Click into the text field to see a selection of filters you can use. Although clicking on the pre-defined options will reset the text field, you can apply multiple filters simply by providing a space separated list of all the filters you would like to use.', 'LayerSlider'),
+        //     'tooltip' => ls__('Filters provide effects like blurring or color shifting your layers. Click into the text field to see a selection of filters you can use. Although clicking on the pre-defined options will reset the text field, you can apply multiple filters simply by providing a space separated list of all the filters you would like to use.'),
         //     'advanced' => true,
         //     'attrs' => array(
         //         'data-options' => '[{
@@ -1607,9 +1582,9 @@ $lsDefaults = array(
 
         // 'filterTo' => array(
         //     'value' => '',
-        //     'name' => ls__('Filter To', 'LayerSlider'),
+        //     'name' => ls__('Filter To'),
         //     'keys' => 'filterto',
-        //     'tooltip' => ls__('Filters provide effects like blurring or color shifting your layers. Click into the text field to see a selection of filters you can use. Although clicking on the pre-defined options will reset the text field, you can apply multiple filters simply by providing a space separated list of all the filters you would like to use.', 'LayerSlider'),
+        //     'tooltip' => ls__('Filters provide effects like blurring or color shifting your layers. Click into the text field to see a selection of filters you can use. Although clicking on the pre-defined options will reset the text field, you can apply multiple filters simply by providing a space separated list of all the filters you would like to use.'),
         //     'advanced' => true,
         //     'attrs' => array(
         //         'data-options' => '[{
@@ -1640,187 +1615,181 @@ $lsDefaults = array(
         //         }]'
         //     )
         // )
-    ),
+    ],
 
-    'layers' => array(
-
+    'layers' => [
         // ======================= //
         // |  Content  | //
         // ======================= //
 
-        'uuid' => array(
+        'uuid' => [
             'value' => '',
             'keys' => 'uuid',
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'type' => array(
+        'type' => [
             'value' => '',
             'keys' => 'type',
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'hide_on_desktop' => array(
+        'hide_on_desktop' => [
             'value' => false,
             'keys' => 'hide_on_desktop',
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'hide_on_tablet' => array(
+        'hide_on_tablet' => [
             'value' => false,
             'keys' => 'hide_on_tablet',
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'hide_on_phone' => array(
+        'hide_on_phone' => [
             'value' => false,
             'keys' => 'hide_on_phone',
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'media' => array(
+        'media' => [
             'value' => '',
             'keys' => 'media',
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'image' => array(
+        'image' => [
             'value' => '',
             'keys' => 'image',
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'imageId' => array(
+        'imageId' => [
             'value' => '',
             'keys' => 'imageId',
-            'props' => array('meta' => true)
-        ),
+            'props' => ['meta' => true],
+        ],
 
-        'html' => array(
+        'html' => [
             'value' => '',
             'keys' => 'html',
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'mediaAutoPlay' => array(
+        'mediaAutoPlay' => [
             'value' => 'inherit',
-            'name' => ls__('Autoplay', 'LayerSlider'),
+            'name' => ls__('Autoplay'),
             'keys' => 'autoplay',
-            'options' => array(
-                'inherit' => ls__('Inherit', 'LayerSlider'),
-                'enabled' => ls__('Enabled', 'LayerSlider'),
-                'disabled' => ls__('Disabled', 'LayerSlider')
-            )
-        ),
+            'options' => [
+                'inherit' => ls__('Inherit'),
+                'enabled' => ls__('Enabled'),
+                'disabled' => ls__('Disabled'),
+            ],
+        ],
 
-        'mediaInfo' => array(
+        'mediaInfo' => [
             'value' => true,
-            'name' => ls__('Show Info', 'LayerSlider'),
+            'name' => ls__('Show Info'),
             'keys' => 'showinfo',
-            'options' => array(
-                'auto' => ls__('Auto', 'LayerSlider'),
-                'enabled' => ls__('Enabled', 'LayerSlider'),
-                'disabled' => ls__('Disabled', 'LayerSlider')
-            )
-        ),
+            'options' => [
+                'auto' => ls__('Auto'),
+                'enabled' => ls__('Enabled'),
+                'disabled' => ls__('Disabled'),
+            ],
+        ],
 
-        'mediaControls' => array(
+        'mediaControls' => [
             'value' => true,
-            'name' => ls__('Controls', 'LayerSlider'),
+            'name' => ls__('Controls'),
             'keys' => 'controls',
-            'options' => array(
-                'auto' => ls__('Auto', 'LayerSlider'),
-                'enabled' => ls__('Enabled', 'LayerSlider'),
-                'disabled' => ls__('Disabled', 'LayerSlider')
-            )
-        ),
+            'options' => [
+                'auto' => ls__('Auto'),
+                'enabled' => ls__('Enabled'),
+                'disabled' => ls__('Disabled'),
+            ],
+        ],
 
-
-        'mediaPoster' => array(
+        'mediaPoster' => [
             'value' => '',
             'keys' => 'poster',
-        ),
+        ],
 
-
-        'mediaFillMode' => array(
+        'mediaFillMode' => [
             'value' => 'cover',
-            'name' => ls__('Fill mode', 'LayerSlider'),
+            'name' => ls__('Fill mode'),
             'keys' => 'fillmode',
-            'options' => array(
-                'contain'  => ls__('Contain', 'LayerSlider'),
-                'cover'  => ls__('Cover', 'LayerSlider')
-            )
-        ),
+            'options' => [
+                'contain' => ls__('Contain'),
+                'cover' => ls__('Cover'),
+            ],
+        ],
 
-
-        'mediaVolume' => array(
+        'mediaVolume' => [
             'value' => '',
-            'name' => ls__('Volume', 'LayerSlider'),
+            'name' => ls__('Volume'),
             'keys' => 'volume',
-            'attrs' => array(
+            'attrs' => [
                 'type' => 'number',
                 'min' => 0,
                 'max' => 100,
-                'placeholder' => 'auto'
-            )
-        ),
+                'placeholder' => 'auto',
+            ],
+        ],
 
-        'mediaBackgroundVideo' => array(
+        'mediaBackgroundVideo' => [
             'value' => false,
-            'name' => ls__('Use this video as slide background', 'LayerSlider'),
+            'name' => ls__('Use this video as slide background'),
             'keys' => 'backgroundvideo',
-            'tooltip' => ls__('Forces this layer to act like the slide background by covering the whole slider and ignoring some transitions. Please make sure to provide your own poster image with the option above, so the slider can display it immediately on page load.', 'LayerSlider')
-        ),
+            'tooltip' => ls__('Forces this layer to act like the slide background by covering the whole slider and ignoring some transitions. Please make sure to provide your own poster image with the option above, so the slider can display it immediately on page load.'),
+        ],
 
-        'mediaOverlay' => array(
+        'mediaOverlay' => [
             'value' => 'disabled',
-            'name' => ls__('Choose an overlay image:', 'LayerSlider'),
+            'name' => ls__('Choose an overlay image:'),
             'keys' => 'overlay',
-            'tooltip' => ls__('Cover your videos with an overlay image to have dotted or striped effects on them.', 'LayerSlider')
-        ),
+            'tooltip' => ls__('Cover your videos with an overlay image to have dotted or striped effects on them.'),
+        ],
 
-
-        'postTextLength' => array(
+        'postTextLength' => [
             'value' => '',
             'keys' => 'post_text_length',
-            'props' => array(
-                'meta' => true
-            )
-        ),
-
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
         // ======================= //
         // |  Animation options  | //
         // ======================= //
-        'transition' => array('value' => '', 'keys' => 'transition', 'props' => array('meta' => true)),
+        'transition' => ['value' => '', 'keys' => 'transition', 'props' => ['meta' => true]],
 
-        'transitionIn' => array(
+        'transitionIn' => [
             'value' => true,
-            'keys' => 'transitionin'
-        ),
+            'keys' => 'transitionin',
+        ],
 
-        'transitionInOffsetX' => array(
+        'transitionInOffsetX' => [
             'value' => '0',
-            'name' => ls__('OffsetX', 'LayerSlider'),
+            'name' => ls__('OffsetX'),
             'keys' => 'offsetxin',
-            'tooltip' => ls__("Shifts the layer starting position from its original on the horizontal axis with the given number of pixels. Use negative values for the opposite direction. Percentage values are relative to the width of this layer. The values 'left' or 'right' position the layer out the staging area, so it enters the scene from either side when animating to its destination location.", "LayerSlider"),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'tooltip' => ls__("Shifts the layer starting position from its original on the horizontal axis with the given number of pixels. Use negative values for the opposite direction. Percentage values are relative to the width of this layer. The values 'left' or 'right' position the layer out the staging area, so it enters the scene from either side when animating to its destination location."),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Enter the stage from left",
                 "value": "left"
             }, {
@@ -1841,15 +1810,15 @@ $lsDefaults = array(
             }, {
                 "name": "Random",
                 "value": "random(-100,100)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'transitionInOffsetY' => array(
+        'transitionInOffsetY' => [
             'value' => '0',
-            'name' => ls__('OffsetY', 'LayerSlider'),
+            'name' => ls__('OffsetY'),
             'keys' => 'offsetyin',
-            'tooltip' => ls__("Shifts the layer starting position from its original on the vertical axis with the given number of pixels. Use negative values for the opposite direction. Percentage values are relative to the height of this layer. The values 'top' or 'bottom' position the layer out the staging area, so it enters the scene from either vertical side when animating to its destination location.", "LayerSlider"),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'tooltip' => ls__("Shifts the layer starting position from its original on the vertical axis with the given number of pixels. Use negative values for the opposite direction. Percentage values are relative to the height of this layer. The values 'top' or 'bottom' position the layer out the staging area, so it enters the scene from either vertical side when animating to its destination location."),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Enter the stage from top",
                 "value": "top"
             }, {
@@ -1870,141 +1839,141 @@ $lsDefaults = array(
             }, {
                 "name": "Random",
                 "value": "random(-100,100)"
-            }]')
-        ),
+            }]'],
+        ],
 
         // Duration of the transition in millisecs when a layer animates in.
         // Original: durationin
         // Defaults to: 1000 (ms) => 1sec
-        'transitionInDuration' => array(
+        'transitionInDuration' => [
             'value' => 1000,
-            'name' => ls__('Duration', 'LayerSlider'),
+            'name' => ls__('Duration'),
             'keys' => 'durationin',
-            'tooltip' => ls__('The length of the transition in milliseconds when the layer enters the scene. A second equals to 1000 milliseconds.', 'LayerSlider'),
-            'attrs' => array('min' => 0, 'step' => 50)
-        ),
+            'tooltip' => ls__('The length of the transition in milliseconds when the layer enters the scene. A second equals to 1000 milliseconds.'),
+            'attrs' => ['min' => 0, 'step' => 50],
+        ],
 
         // Delay before the transition in millisecs when a layer animates in.
         // Original: delayin
         // Defaults to: 0 (ms)
-        'transitionInDelay' => array(
+        'transitionInDelay' => [
             'value' => 0,
-            'name' => ls__('Start at', 'LayerSlider'),
+            'name' => ls__('Start at'),
             'keys' => 'delayin',
-            'tooltip' => ls__('Delays the transition with the given amount of milliseconds before the layer enters the scene. A second equals to 1000 milliseconds.', 'LayerSlider'),
-            'attrs' => array('min' => 0, 'step' => 50)
-        ),
+            'tooltip' => ls__('Delays the transition with the given amount of milliseconds before the layer enters the scene. A second equals to 1000 milliseconds.'),
+            'attrs' => ['min' => 0, 'step' => 50],
+        ],
 
         // Easing of the transition when a layer animates in.
         // Original: easingin
         // Defaults to: 'easeInOutQuint'
-        'transitionInEasing' => array(
+        'transitionInEasing' => [
             'value' => 'easeInOutQuint',
-            'name' => ls__('Easing', 'LayerSlider'),
+            'name' => ls__('Easing'),
             'keys' => 'easingin',
-            'tooltip' => ls__("The timing function of the animation. With this function you can manipulate the movement of the animated object. Please click on the link next to this select field to open easings.net for more information and real-time examples.", "LayerSlider")
-        ),
+            'tooltip' => ls__('The timing function of the animation. With this function you can manipulate the movement of the animated object. Please click on the link next to this select field to open easings.net for more information and real-time examples.'),
+        ],
 
-        'transitionInFade' => array(
+        'transitionInFade' => [
             'value' => true,
-            'name' => ls__('Fade', 'LayerSlider'),
+            'name' => ls__('Fade'),
             'keys' => 'fadein',
-            'tooltip' => ls__('Fade the layer during the transition.', 'LayerSlider'),
-        ),
+            'tooltip' => ls__('Fade the layer during the transition.'),
+        ],
 
         // Initial rotation degrees when a layer animates in.
         // Original: rotatein
         // Defaults to: 0 (deg)
-        'transitionInRotate' => array(
+        'transitionInRotate' => [
             'value' => 0,
-            'name' => ls__('Rotate', 'LayerSlider'),
+            'name' => ls__('Rotate'),
             'keys' => 'rotatein',
-            'tooltip' => ls__('Rotates the layer by the given number of degrees. Negative values are allowed for counterclockwise rotation.', 'LayerSlider'),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'tooltip' => ls__('Rotates the layer by the given number of degrees. Negative values are allowed for counterclockwise rotation.'),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Random",
                 "value": "random(-45,45)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'transitionInRotateX' => array(
+        'transitionInRotateX' => [
             'value' => 0,
-            'name' => ls__('RotateX', 'LayerSlider'),
+            'name' => ls__('RotateX'),
             'keys' => 'rotatexin',
-            'tooltip' => ls__('Rotates the layer along the X (horizontal) axis by the given number of degrees. Negative values are allowed for reverse direction.', 'LayerSlider'),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'tooltip' => ls__('Rotates the layer along the X (horizontal) axis by the given number of degrees. Negative values are allowed for reverse direction.'),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Random",
                 "value": "random(-45,45)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'transitionInRotateY' => array(
+        'transitionInRotateY' => [
             'value' => 0,
-            'name' => ls__('RotateY', 'LayerSlider'),
+            'name' => ls__('RotateY'),
             'keys' => 'rotateyin',
-            'tooltip' => ls__('Rotates the layer along the Y (vertical) axis by the given number of degrees. Negative values are allowed for reverse direction.', 'LayerSlider'),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'tooltip' => ls__('Rotates the layer along the Y (vertical) axis by the given number of degrees. Negative values are allowed for reverse direction.'),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Random",
                 "value": "random(-45,45)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'transitionInSkewX' => array(
+        'transitionInSkewX' => [
             'value' => 0,
-            'name' => ls__('SkewX', 'LayerSlider'),
+            'name' => ls__('SkewX'),
             'keys' => 'skewxin',
-            'tooltip' => ls__('Skews the layer along the X (horizontal) by the given number of degrees. Negative values are allowed for reverse direction.', 'LayerSlider'),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'tooltip' => ls__('Skews the layer along the X (horizontal) by the given number of degrees. Negative values are allowed for reverse direction.'),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Random",
                 "value": "random(-45,45)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'transitionInSkewY' => array(
+        'transitionInSkewY' => [
             'value' => 0,
-            'name' => ls__('SkewY', 'LayerSlider'),
+            'name' => ls__('SkewY'),
             'keys' => 'skewyin',
-            'tooltip' => ls__('Skews the layer along the Y (vertical) by the given number of degrees. Negative values are allowed for reverse direction.', 'LayerSlider'),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'tooltip' => ls__('Skews the layer along the Y (vertical) by the given number of degrees. Negative values are allowed for reverse direction.'),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Random",
                 "value": "random(-45,45)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'transitionInScaleX' => array(
+        'transitionInScaleX' => [
             'value' => 1,
-            'name' => ls__('ScaleX', 'LayerSlider'),
+            'name' => ls__('ScaleX'),
             'keys' => 'scalexin',
-            'tooltip' => ls__("Scales the layer along the X (horizontal) axis by the specified vector. Use the value 1 for the original size. The value 2 will double, while 0.5 shrinks the layer compared to its original size.", "LayerSlider"),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'tooltip' => ls__('Scales the layer along the X (horizontal) axis by the specified vector. Use the value 1 for the original size. The value 2 will double, while 0.5 shrinks the layer compared to its original size.'),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Random",
                 "value": "random(2,4)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'transitionInScaleY' => array(
+        'transitionInScaleY' => [
             'value' => 1,
-            'name' => ls__('ScaleY', 'LayerSlider'),
+            'name' => ls__('ScaleY'),
             'keys' => 'scaleyin',
-            'tooltip' => ls__("Scales the layer along the Y (vertical) axis by the specified vector. Use the value 1 for the original size. The value 2 will double, while 0.5 shrinks the layer compared to its original size.", "LayerSlider"),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'tooltip' => ls__('Scales the layer along the Y (vertical) axis by the specified vector. Use the value 1 for the original size. The value 2 will double, while 0.5 shrinks the layer compared to its original size.'),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Random",
                 "value": "random(2,4)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'transitionInTransformOrigin' => array(
+        'transitionInTransformOrigin' => [
             'value' => '50% 50% 0',
-            'name' => ls__('Transform Origin', 'LayerSlider'),
+            'name' => ls__('Transform Origin'),
             'keys' => 'transformoriginin',
-            'tooltip' => ls__('Sets a point on canvas from which transformations are calculated. For example, a layer may rotate around its center axis or a completely custom point, such as one of its corners. The three values represent the X, Y and Z axes in 3D space. Apart from the pixel and percentage values, you can also use the following constants: top, right, bottom, left, center, slidercenter, slidermiddle, slidertop, sliderright, sliderbottom, sliderleft.', 'LayerSlider'),
-        ),
+            'tooltip' => ls__('Sets a point on canvas from which transformations are calculated. For example, a layer may rotate around its center axis or a completely custom point, such as one of its corners. The three values represent the X, Y and Z axes in 3D space. Apart from the pixel and percentage values, you can also use the following constants: top, right, bottom, left, center, slidercenter, slidermiddle, slidertop, sliderright, sliderbottom, sliderleft.'),
+        ],
 
-        'transitionInClip' => array(
+        'transitionInClip' => [
             'value' => '',
-            'name' => ls__('Mask', 'LayerSlider'),
+            'name' => ls__('Mask'),
             'keys' => 'clipin',
-            'tooltip' => ls__("Clips (cuts off) the sides of the layer by the given amount specified in pixels or percentages. The 4 value in order: top, right, bottom and the left side of the layer.", "LayerSlider"),
-            'attrs' => array('data-options' => '[{
+            'tooltip' => ls__('Clips (cuts off) the sides of the layer by the given amount specified in pixels or percentages. The 4 value in order: top, right, bottom and the left side of the layer.'),
+            'attrs' => ['data-options' => '[{
                 "name": "From top",
                 "value": "0 0 100% 0"
             }, {
@@ -2016,51 +1985,51 @@ $lsDefaults = array(
             }, {
                 "name": "From left",
                 "value": "0 100% 0 0"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'transitionInBGColor' => array(
+        'transitionInBGColor' => [
             'value' => '',
-            'name' => ls__('Background', 'LayerSlider'),
+            'name' => ls__('Background'),
             'keys' => 'bgcolorin',
-            'tooltip' => ls__("The background color of your layer. You can use color names, hexadecimal, RGB or RGBA values as well as the 'transparent' keyword. Example: #FFF", 'LayerSlider'),
-        ),
+            'tooltip' => ls__("The background color of your layer. You can use color names, hexadecimal, RGB or RGBA values as well as the 'transparent' keyword. Example: #FFF"),
+        ],
 
-        'transitionInColor' => array(
+        'transitionInColor' => [
             'value' => '',
-            'name' => ls__('Color', 'LayerSlider'),
+            'name' => ls__('Color'),
             'keys' => 'colorin',
-            'tooltip' => ls__("The color of your text. You can use color names, hexadecimal, RGB or RGBA values. Example: #333", 'LayerSlider'),
-        ),
+            'tooltip' => ls__('The color of your text. You can use color names, hexadecimal, RGB or RGBA values. Example: #333'),
+        ],
 
-        'transitionInRadius' => array(
+        'transitionInRadius' => [
             'value' => '',
-            'name' => ls__('Rounded Corners', 'LayerSlider'),
+            'name' => ls__('Rounded Corners'),
             'keys' => 'radiusin',
-            'tooltip' => ls__('If you want rounded corners, you can set its radius here in pixels. Example: 5px', 'LayerSlider'),
-        ),
+            'tooltip' => ls__('If you want rounded corners, you can set its radius here in pixels. Example: 5px'),
+        ],
 
-        'transitionInWidth' => array(
+        'transitionInWidth' => [
             'value' => '',
-            'name' => ls__('Width', 'LayerSlider'),
+            'name' => ls__('Width'),
             'keys' => 'widthin',
-            'tooltip' => ls__('The initial width of this layer from which it will be animated to its proper size during the transition.', 'LayerSlider'),
-        ),
+            'tooltip' => ls__('The initial width of this layer from which it will be animated to its proper size during the transition.'),
+        ],
 
-        'transitionInHeight' => array(
+        'transitionInHeight' => [
             'value' => '',
-            'name' => ls__('Height', 'LayerSlider'),
+            'name' => ls__('Height'),
             'keys' => 'heightin',
-            'tooltip' => ls__('The initial height of this layer from which it will be animated to its proper size during the transition.', 'LayerSlider'),
-        ),
+            'tooltip' => ls__('The initial height of this layer from which it will be animated to its proper size during the transition.'),
+        ],
 
-        'transitionInFilter' => array(
+        'transitionInFilter' => [
             'value' => '',
-            'name' => ls__('Filter', 'LayerSlider'),
+            'name' => ls__('Filter'),
             'keys' => 'filterin',
-            'tooltip' => ls__('Filters provide effects like blurring or color shifting your layers. Click into the text field to see a selection of filters you can use. Although clicking on the pre-defined options will reset the text field, you can apply multiple filters simply by providing a space separated list of all the filters you would like to use. Click on the "Filter" link for more information.', 'LayerSlider'),
+            'tooltip' => ls__('Filters provide effects like blurring or color shifting your layers. Click into the text field to see a selection of filters you can use. Although clicking on the pre-defined options will reset the text field, you can apply multiple filters simply by providing a space separated list of all the filters you would like to use. Click on the "Filter" link for more information.'),
             'premium' => true,
-            'attrs' => array(
+            'attrs' => [
                 'data-options' => '[{
                     "name": "Blur",
                     "value": "blur(5px)"
@@ -2085,30 +2054,30 @@ $lsDefaults = array(
                 }, {
                     "name": "Sepia",
                     "value": "sepia(60%)"
-                }]'
-            )
-        ),
+                }]',
+            ],
+        ],
 
-        'transitionInPerspective' => array(
+        'transitionInPerspective' => [
             'value' => '500',
-            'name' => ls__('Perspective', 'LayerSlider'),
+            'name' => ls__('Perspective'),
             'keys' => 'transformperspectivein',
-            'tooltip' => ls__('Changes the perspective of this layer in the 3D space.', 'LayerSlider')
-        ),
+            'tooltip' => ls__('Changes the perspective of this layer in the 3D space.'),
+        ],
 
         // ======
 
-        'transitionOut' => array(
+        'transitionOut' => [
             'value' => true,
-            'keys' => 'transitionout'
-        ),
+            'keys' => 'transitionout',
+        ],
 
-        'transitionOutOffsetX' => array(
+        'transitionOutOffsetX' => [
             'value' => 0,
-            'name' => ls__('OffsetX', 'LayerSlider'),
+            'name' => ls__('OffsetX'),
             'keys' => 'offsetxout',
-            'tooltip' => ls__("Shifts the layer from its original position on the horizontal axis with the given number of pixels. Use negative values for the opposite direction. Percentage values are relative to the width of this layer. The values 'left' or 'right' animate the layer out the staging area, so it can leave the scene on either side.", "LayerSlider"),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'tooltip' => ls__("Shifts the layer from its original position on the horizontal axis with the given number of pixels. Use negative values for the opposite direction. Percentage values are relative to the width of this layer. The values 'left' or 'right' animate the layer out the staging area, so it can leave the scene on either side."),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Leave the stage on left",
                 "value": "left"
             }, {
@@ -2129,15 +2098,15 @@ $lsDefaults = array(
             }, {
                 "name": "Random",
                 "value": "random(-100,100)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'transitionOutOffsetY' => array(
+        'transitionOutOffsetY' => [
             'value' => 0,
-            'name' => ls__('OffsetY', 'LayerSlider'),
+            'name' => ls__('OffsetY'),
             'keys' => 'offsetyout',
-            'tooltip' => ls__("Shifts the layer from its original position on the vertical axis with the given number of pixels. Use negative values for the opposite direction. Percentage values are relative to the height of this layer. The values 'top' or 'bottom' animate the layer out the staging area, so it can leave the scene on either vertical side.", "LayerSlider"),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'tooltip' => ls__("Shifts the layer from its original position on the vertical axis with the given number of pixels. Use negative values for the opposite direction. Percentage values are relative to the height of this layer. The values 'top' or 'bottom' animate the layer out the staging area, so it can leave the scene on either vertical side."),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Leave the stage on top",
                 "value": "top"
             }, {
@@ -2158,179 +2127,177 @@ $lsDefaults = array(
             }, {
                 "name": "Random",
                 "value": "random(-100,100)"
-            }]')
-        ),
+            }]'],
+        ],
 
         // Duration of the transition in millisecs when a layer animates out.
         // Original: durationout
         // Defaults to: 1000 (ms) => 1sec
-        'transitionOutDuration' => array(
+        'transitionOutDuration' => [
             'value' => 1000,
-            'name' => ls__('Duration', 'LayerSlider'),
+            'name' => ls__('Duration'),
             'keys' => 'durationout',
-            'tooltip' => ls__('The length of the transition in milliseconds when the layer leaves the slide. A second equals to 1000 milliseconds.', 'LayerSlider'),
-            'attrs' => array('min' => 0, 'step' => 50)
-        ),
+            'tooltip' => ls__('The length of the transition in milliseconds when the layer leaves the slide. A second equals to 1000 milliseconds.'),
+            'attrs' => ['min' => 0, 'step' => 50],
+        ],
 
-        'showUntil' => array(
+        'showUntil' => [
             'value' => '0',
-            'keys' => 'showuntil'
-        ),
+            'keys' => 'showuntil',
+        ],
 
-        'transitionOutStartAt' => array(
+        'transitionOutStartAt' => [
             'value' => 'slidechangeonly',
-            'name' => ls__('Start at', 'LayerSlider'),
+            'name' => ls__('Start at'),
             'keys' => 'startatout',
-            'tooltip' => ls__('You can set the starting time of this transition. Use one of the pre-defined options to use relative timing, which can be shifted with custom operations.', 'LayerSlider'),
-            'attrs' => array('type' => 'hidden')
-        ),
+            'tooltip' => ls__('You can set the starting time of this transition. Use one of the pre-defined options to use relative timing, which can be shifted with custom operations.'),
+            'attrs' => ['type' => 'hidden'],
+        ],
 
-
-        'transitionOutStartAtTiming' => array(
+        'transitionOutStartAtTiming' => [
             'value' => 'slidechangeonly',
             'keys' => 'startatouttiming',
-            'props' => array('meta' => true),
-            'options' => array(
-                'slidechangeonly' => ls__('Slide change starts (ignoring modifier)', 'LayerSlider'),
-                'transitioninend' => ls__('Opening Transition completes', 'LayerSlider'),
-                'textinstart' => ls__('Opening Text Transition starts', 'LayerSlider'),
-                'textinend' => ls__('Opening Text Transition completes', 'LayerSlider'),
-                'allinend' => ls__('Opening and Opening Text Transition complete', 'LayerSlider'),
-                'loopstart' => ls__('Loop starts', 'LayerSlider'),
-                'loopend' => ls__('Loop completes', 'LayerSlider'),
-                'transitioninandloopend' => ls__('Opening and Loop Transitions complete', 'LayerSlider'),
-                'textinandloopend' => ls__('Opening Text and Loop Transitions complete', 'LayerSlider'),
-                'allinandloopend' => ls__('Opening, Opening Text and Loop Transitions complete', 'LayerSlider'),
-                'textoutstart' => ls__('Ending Text Transition starts', 'LayerSlider'),
-                'textoutend' => ls__('Ending Text Transition completes', 'LayerSlider'),
-                'textoutandloopend' => ls__('Ending Text and Loop Transitions complete', 'LayerSlider')
-            )
-        ),
+            'props' => ['meta' => true],
+            'options' => [
+                'slidechangeonly' => ls__('Slide change starts (ignoring modifier)'),
+                'transitioninend' => ls__('Opening Transition completes'),
+                'textinstart' => ls__('Opening Text Transition starts'),
+                'textinend' => ls__('Opening Text Transition completes'),
+                'allinend' => ls__('Opening and Opening Text Transition complete'),
+                'loopstart' => ls__('Loop starts'),
+                'loopend' => ls__('Loop completes'),
+                'transitioninandloopend' => ls__('Opening and Loop Transitions complete'),
+                'textinandloopend' => ls__('Opening Text and Loop Transitions complete'),
+                'allinandloopend' => ls__('Opening, Opening Text and Loop Transitions complete'),
+                'textoutstart' => ls__('Ending Text Transition starts'),
+                'textoutend' => ls__('Ending Text Transition completes'),
+                'textoutandloopend' => ls__('Ending Text and Loop Transitions complete'),
+            ],
+        ],
 
-        'transitionOutStartAtOperator' => array(
+        'transitionOutStartAtOperator' => [
             'value' => '+',
             'keys' => 'startatoutoperator',
-            'props' => array('meta' => true),
-            'options' => array('+', '-', '/', '*')
-        ),
+            'props' => ['meta' => true],
+            'options' => ['+', '-', '/', '*'],
+        ],
 
-        'transitionOutStartAtValue' => array(
+        'transitionOutStartAtValue' => [
             'value' => 0,
             'keys' => 'startatoutvalue',
-            'props' => array('meta' => true)
-        ),
+            'props' => ['meta' => true],
+        ],
 
         // Easing of the transition when a layer animates out.
         // Original: easingout
         // Defaults to: 'easeInOutQuint'
-        'transitionOutEasing' => array(
+        'transitionOutEasing' => [
             'value' => 'easeInOutQuint',
-            'name' => ls__('Easing', 'LayerSlider'),
+            'name' => ls__('Easing'),
             'keys' => 'easingout',
-            'tooltip' => ls__("The timing function of the animation. With this function you can manipulate the movement of the animated object. Please click on the link next to this select field to open easings.net for more information and real-time examples.", "LayerSlider")
-        ),
+            'tooltip' => ls__('The timing function of the animation. With this function you can manipulate the movement of the animated object. Please click on the link next to this select field to open easings.net for more information and real-time examples.'),
+        ],
 
-        'transitionOutFade' => array(
+        'transitionOutFade' => [
             'value' => true,
-            'name' => ls__('Fade', 'LayerSlider'),
+            'name' => ls__('Fade'),
             'keys' => 'fadeout',
-            'tooltip' => ls__('Fade the layer during the transition.', 'LayerSlider'),
-        ),
-
+            'tooltip' => ls__('Fade the layer during the transition.'),
+        ],
 
         // Initial rotation degrees when a layer animates out.
         // Original: rotateout
         // Defaults to: 0 (deg)
-        'transitionOutRotate' => array(
+        'transitionOutRotate' => [
             'value' => 0,
-            'name' => ls__('Rotate', 'LayerSlider'),
+            'name' => ls__('Rotate'),
             'keys' => 'rotateout',
-            'tooltip' => ls__('Rotates the layer by the given number of degrees. Negative values are allowed for counterclockwise rotation.', 'LayerSlider'),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'tooltip' => ls__('Rotates the layer by the given number of degrees. Negative values are allowed for counterclockwise rotation.'),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Random",
                 "value": "random(-45,45)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'transitionOutRotateX' => array(
+        'transitionOutRotateX' => [
             'value' => 0,
-            'name' => ls__('RotateX', 'LayerSlider'),
+            'name' => ls__('RotateX'),
             'keys' => 'rotatexout',
-            'tooltip' => ls__('Rotates the layer along the X (horizontal) axis by the given number of degrees. Negative values are allowed for reverse direction.', 'LayerSlider'),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'tooltip' => ls__('Rotates the layer along the X (horizontal) axis by the given number of degrees. Negative values are allowed for reverse direction.'),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Random",
                 "value": "random(-45,45)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'transitionOutRotateY' => array(
+        'transitionOutRotateY' => [
             'value' => 0,
-            'name' => ls__('RotateY', 'LayerSlider'),
+            'name' => ls__('RotateY'),
             'keys' => 'rotateyout',
-            'tooltip' => ls__('Rotates the layer along the Y (vertical) axis by the given number of degrees. Negative values are allowed for reverse direction.', 'LayerSlider'),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'tooltip' => ls__('Rotates the layer along the Y (vertical) axis by the given number of degrees. Negative values are allowed for reverse direction.'),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Random",
                 "value": "random(-45,45)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'transitionOutSkewX' => array(
+        'transitionOutSkewX' => [
             'value' => 0,
-            'name' => ls__('SkewX', 'LayerSlider'),
+            'name' => ls__('SkewX'),
             'keys' => 'skewxout',
-            'tooltip' => ls__('Skews the layer along the X (horizontal) axis by the given number of degrees. Negative values are allowed for reverse direction.', 'LayerSlider'),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'tooltip' => ls__('Skews the layer along the X (horizontal) axis by the given number of degrees. Negative values are allowed for reverse direction.'),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Random",
                 "value": "random(-45,45)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'transitionOutSkewY' => array(
+        'transitionOutSkewY' => [
             'value' => 0,
-            'name' => ls__('SkewY', 'LayerSlider'),
+            'name' => ls__('SkewY'),
             'keys' => 'skewyout',
-            'tooltip' => ls__('Skews the layer along the Y (vertical) axis by the given number of degrees. Negative values are allowed for reverse direction.', 'LayerSlider'),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'tooltip' => ls__('Skews the layer along the Y (vertical) axis by the given number of degrees. Negative values are allowed for reverse direction.'),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Random",
                 "value": "random(-45,45)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'transitionOutScaleX' => array(
+        'transitionOutScaleX' => [
             'value' => 1,
-            'name' => ls__('ScaleX', 'LayerSlider'),
+            'name' => ls__('ScaleX'),
             'keys' => 'scalexout',
-            'tooltip' => ls__("Scales the layer along the X (horizontal) axis by the specified vector. Use the value 1 for the original size. The value 2 will double, while 0.5 shrinks the layer compared to its original size.", "LayerSlider"),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'tooltip' => ls__('Scales the layer along the X (horizontal) axis by the specified vector. Use the value 1 for the original size. The value 2 will double, while 0.5 shrinks the layer compared to its original size.'),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Random",
                 "value": "random(2,4)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'transitionOutScaleY' => array(
+        'transitionOutScaleY' => [
             'value' => 1,
-            'name' => ls__('ScaleY', 'LayerSlider'),
+            'name' => ls__('ScaleY'),
             'keys' => 'scaleyout',
-            'tooltip' => ls__("Scales the layer along the Y (vertical) axis by the specified vector. Use the value 1 for the original size. The value 2 will double, while 0.5 shrinks the layer compared to its original size.", "LayerSlider"),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'tooltip' => ls__('Scales the layer along the Y (vertical) axis by the specified vector. Use the value 1 for the original size. The value 2 will double, while 0.5 shrinks the layer compared to its original size.'),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Random",
                 "value": "random(2,4)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'transitionOutTransformOrigin' => array(
+        'transitionOutTransformOrigin' => [
             'value' => '50% 50% 0',
-            'name' => ls__('Transform Origin', 'LayerSlider'),
+            'name' => ls__('Transform Origin'),
             'keys' => 'transformoriginout',
-            'tooltip' => ls__('Sets a point on canvas from which transformations are calculated. For example, a layer may rotate around its center axis or a completely custom point, such as one of its corners. The three values represent the X, Y and Z axes in 3D space. Apart from the pixel and percentage values, you can also use the following constants: top, right, bottom, left, center, slidercenter, slidermiddle, slidertop, sliderright, sliderbottom, sliderleft.', 'LayerSlider'),
-        ),
+            'tooltip' => ls__('Sets a point on canvas from which transformations are calculated. For example, a layer may rotate around its center axis or a completely custom point, such as one of its corners. The three values represent the X, Y and Z axes in 3D space. Apart from the pixel and percentage values, you can also use the following constants: top, right, bottom, left, center, slidercenter, slidermiddle, slidertop, sliderright, sliderbottom, sliderleft.'),
+        ],
 
-        'transitionOutClip' => array(
+        'transitionOutClip' => [
             'value' => '',
-            'name' => ls__('Mask', 'LayerSlider'),
+            'name' => ls__('Mask'),
             'keys' => 'clipout',
-            'tooltip' => ls__("Clips (cuts off) the sides of the layer by the given amount specified in pixels or percentages. The 4 value in order: top, right, bottom and the left side of the layer.", "LayerSlider"),
-            'attrs' => array('data-options' => '[{
+            'tooltip' => ls__('Clips (cuts off) the sides of the layer by the given amount specified in pixels or percentages. The 4 value in order: top, right, bottom and the left side of the layer.'),
+            'attrs' => ['data-options' => '[{
                 "name": "From top",
                 "value": "0 0 100% 0"
             }, {
@@ -2342,16 +2309,16 @@ $lsDefaults = array(
             }, {
                 "name": "From left",
                 "value": "0 100% 0 0"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'transitionOutFilter' => array(
+        'transitionOutFilter' => [
             'value' => '',
-            'name' => ls__('Filter', 'LayerSlider'),
+            'name' => ls__('Filter'),
             'keys' => 'filterout',
-            'tooltip' => ls__('Filters provide effects like blurring or color shifting your layers. Click into the text field to see a selection of filters you can use. Although clicking on the pre-defined options will reset the text field, you can apply multiple filters simply by providing a space separated list of all the filters you would like to use. Click on the "Filter" link for more information.', 'LayerSlider'),
+            'tooltip' => ls__('Filters provide effects like blurring or color shifting your layers. Click into the text field to see a selection of filters you can use. Although clicking on the pre-defined options will reset the text field, you can apply multiple filters simply by providing a space separated list of all the filters you would like to use. Click on the "Filter" link for more information.'),
             'premium' => true,
-            'attrs' => array(
+            'attrs' => [
                 'data-options' => '[{
                     "name": "Blur",
                     "value": "blur(5px)"
@@ -2376,141 +2343,138 @@ $lsDefaults = array(
                 }, {
                     "name": "Sepia",
                     "value": "sepia(60%)"
-                }]'
-            )
-        ),
+                }]',
+            ],
+        ],
 
-        'transitionOutPerspective' => array(
+        'transitionOutPerspective' => [
             'value' => '500',
-            'name' => ls__('Perspective', 'LayerSlider'),
+            'name' => ls__('Perspective'),
             'keys' => 'transformperspectiveout',
-            'tooltip' => ls__('Changes the perspective of this layer in the 3D space.', 'LayerSlider')
-        ),
+            'tooltip' => ls__('Changes the perspective of this layer in the 3D space.'),
+        ],
 
         // -----
 
-        'skipLayer' => array(
+        'skipLayer' => [
             'value' => false,
-            'name' => ls__('Hidden', 'LayerSlider'),
+            'name' => ls__('Hidden'),
             'keys' => 'skip',
-            'tooltip' => ls__("If you don't want to use this layer, but you want to keep it, you can hide it with this switch.", "LayerSlider"),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'tooltip' => ls__("If you don't want to use this layer, but you want to keep it, you can hide it with this switch."),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'transitionOutBGColor' => array(
+        'transitionOutBGColor' => [
             'value' => '',
-            'name' => ls__('Background', 'LayerSlider'),
+            'name' => ls__('Background'),
             'keys' => 'bgcolorout',
-            'tooltip' => ls__('Animates the background toward the color you specify here when the layer leaves the slider canvas.', 'LayerSlider'),
-        ),
+            'tooltip' => ls__('Animates the background toward the color you specify here when the layer leaves the slider canvas.'),
+        ],
 
-        'transitionOutColor' => array(
+        'transitionOutColor' => [
             'value' => '',
-            'name' => ls__('Color', 'LayerSlider'),
+            'name' => ls__('Color'),
             'keys' => 'colorout',
-            'tooltip' => ls__('Animates the text color toward the color you specify here when the layer leaves the slider canvas.', 'LayerSlider'),
-        ),
+            'tooltip' => ls__('Animates the text color toward the color you specify here when the layer leaves the slider canvas.'),
+        ],
 
-        'transitionOutRadius' => array(
+        'transitionOutRadius' => [
             'value' => '',
-            'name' => ls__('Rounded Corners', 'LayerSlider'),
+            'name' => ls__('Rounded Corners'),
             'keys' => 'radiusout',
-            'tooltip' => ls__('Animates rounded corners toward the value you specify here when the layer leaves the slider canvas.', 'LayerSlider'),
-        ),
+            'tooltip' => ls__('Animates rounded corners toward the value you specify here when the layer leaves the slider canvas.'),
+        ],
 
-        'transitionOutWidth' => array(
+        'transitionOutWidth' => [
             'value' => '',
-            'name' => ls__('Width', 'LayerSlider'),
+            'name' => ls__('Width'),
             'keys' => 'widthout',
-            'tooltip' => ls__('Animates the layer width toward the value you specify here when the layer leaves the slider canvas.', 'LayerSlider'),
-        ),
+            'tooltip' => ls__('Animates the layer width toward the value you specify here when the layer leaves the slider canvas.'),
+        ],
 
-        'transitionOutHeight' => array(
+        'transitionOutHeight' => [
             'value' => '',
-            'name' => ls__('Height', 'LayerSlider'),
+            'name' => ls__('Height'),
             'keys' => 'heightout',
-            'tooltip' => ls__('Animates the layer height toward the value you specify here when the layer leaves the slider canvas.', 'LayerSlider'),
-        ),
-
+            'tooltip' => ls__('Animates the layer height toward the value you specify here when the layer leaves the slider canvas.'),
+        ],
 
         // == Compatibility ==
-        'transitionInType' => array(
+        'transitionInType' => [
             'value' => 'auto',
-            'keys' => 'slidedirection'
-        ),
-        'transitionOutType' => array(
+            'keys' => 'slidedirection',
+        ],
+        'transitionOutType' => [
             'value' => 'auto',
-            'keys' => 'slideoutdirection'
-        ),
+            'keys' => 'slideoutdirection',
+        ],
 
-        'transitionOutDelay' => array(
+        'transitionOutDelay' => [
             'value' => 0,
-            'keys' => 'delayout'
-        ),
+            'keys' => 'delayout',
+        ],
 
-        'transitionInScale' => array(
+        'transitionInScale' => [
             'value' => '1.0',
-            'keys' => 'scalein'
-        ),
+            'keys' => 'scalein',
+        ],
 
-        'transitionOutScale' => array(
+        'transitionOutScale' => [
             'value' => '1.0',
-            'keys' => 'scaleout'
-        ),
-
-
+            'keys' => 'scaleout',
+        ],
 
         // Text Animation IN
         // -----------------
 
-        'textTransitionIn' => array(
+        'textTransitionIn' => [
             'value' => false,
-            'keys' => 'texttransitionin'
-        ),
+            'keys' => 'texttransitionin',
+        ],
 
-        'textTypeIn' => array(
+        'textTypeIn' => [
             'value' => 'chars_asc',
-            'name' => ls__('Text Animation', 'LayerSlider'),
+            'name' => ls__('Text Animation'),
             'keys' => 'texttypein',
-            'tooltip' => ls__('Select how your text should be split and animated.', 'LayerSlider'),
-            'options' => array(
-                'chars_asc'  => ls__('by chars ascending', 'LayerSlider'),
-                'chars_desc' => ls__('by chars descending', 'LayerSlider'),
-                'chars_rand' => ls__('by chars random', 'LayerSlider'),
-                'chars_center' => ls__('by chars center to edge', 'LayerSlider'),
-                'chars_edge' => ls__('by chars edge to center', 'LayerSlider'),
-                'words_asc'  => ls__('by words ascending', 'LayerSlider'),
-                'words_desc' => ls__('by words descending', 'LayerSlider'),
-                'words_rand' => ls__('by words random', 'LayerSlider'),
-                'words_center' => ls__('by words center to edge', 'LayerSlider'),
-                'words_edge' => ls__('by words edge to center', 'LayerSlider'),
-                'lines_asc'  => ls__('by lines ascending', 'LayerSlider'),
-                'lines_desc' => ls__('by lines descending', 'LayerSlider'),
-                'lines_rand' => ls__('by lines random', 'LayerSlider'),
-                'lines_center' => ls__('by lines center to edge', 'LayerSlider'),
-                'lines_edge' => ls__('by lines edge to center', 'LayerSlider'),
-            ),
-            'props' => array(
-                'output' => true
-            )
-        ),
+            'tooltip' => ls__('Select how your text should be split and animated.'),
+            'options' => [
+                'chars_asc' => ls__('by chars ascending'),
+                'chars_desc' => ls__('by chars descending'),
+                'chars_rand' => ls__('by chars random'),
+                'chars_center' => ls__('by chars center to edge'),
+                'chars_edge' => ls__('by chars edge to center'),
+                'words_asc' => ls__('by words ascending'),
+                'words_desc' => ls__('by words descending'),
+                'words_rand' => ls__('by words random'),
+                'words_center' => ls__('by words center to edge'),
+                'words_edge' => ls__('by words edge to center'),
+                'lines_asc' => ls__('by lines ascending'),
+                'lines_desc' => ls__('by lines descending'),
+                'lines_rand' => ls__('by lines random'),
+                'lines_center' => ls__('by lines center to edge'),
+                'lines_edge' => ls__('by lines edge to center'),
+            ],
+            'props' => [
+                'output' => true,
+            ],
+        ],
 
-        'textShiftIn' => array(
+        'textShiftIn' => [
             'value' => 50,
-            'name' => ls__('Shift In', 'LayerSlider'),
-            'tooltip' => ls__('Delays the transition of each text nodes relative to each other. A second equals to 1000 milliseconds.', 'LayerSlider'),
-            'keys'  => 'textshiftin',
-            'attrs' => array('type' => 'number')
-        ),
+            'name' => ls__('Shift In'),
+            'tooltip' => ls__('Delays the transition of each text nodes relative to each other. A second equals to 1000 milliseconds.'),
+            'keys' => 'textshiftin',
+            'attrs' => ['type' => 'number'],
+        ],
 
-        'textOffsetXIn' => array(
+        'textOffsetXIn' => [
             'value' => 0,
-            'name' => ls__('OffsetX', 'LayerSlider'),
-            'tooltip' => ls__("Shifts the starting position of text nodes from their original on the horizontal axis with the given number of pixels. Use negative values for the opposite direction. Percentage values are relative to the width of this layer. The values 'left' or 'right' position text nodes out the staging area, so they enter the scene from either side when animating to their destination location. By listing multiple values separated with a | character, the slider will use different transition variations on each text node by cycling between the provided values.", "LayerSlider"),
-            'keys'  => 'textoffsetxin',
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'name' => ls__('OffsetX'),
+            'tooltip' => ls__("Shifts the starting position of text nodes from their original on the horizontal axis with the given number of pixels. Use negative values for the opposite direction. Percentage values are relative to the width of this layer. The values 'left' or 'right' position text nodes out the staging area, so they enter the scene from either side when animating to their destination location. By listing multiple values separated with a | character, the slider will use different transition variations on each text node by cycling between the provided values."),
+            'keys' => 'textoffsetxin',
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Enter the stage from left",
                 "value": "left"
             }, {
@@ -2534,15 +2498,15 @@ $lsDefaults = array(
             }, {
                 "name": "Random",
                 "value": "random(-100,100)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'textOffsetYIn' => array(
+        'textOffsetYIn' => [
             'value' => 0,
-            'name' => ls__('OffsetY', 'LayerSlider'),
-            'tooltip' => ls__("Shifts the starting position of text nodes from their original on the vertical axis with the given number of pixels. Use negative values for the opposite direction. Percentage values are relative to the width of this layer. The values 'top' or 'bottom' position text nodes out the staging area, so they enter the scene from either vertical side when animating to their destination location. By listing multiple values separated with a | character, the slider will use different transition variations on each text node by cycling between the provided values.", "LayerSlider"),
-            'keys'  => 'textoffsetyin',
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'name' => ls__('OffsetY'),
+            'tooltip' => ls__("Shifts the starting position of text nodes from their original on the vertical axis with the given number of pixels. Use negative values for the opposite direction. Percentage values are relative to the width of this layer. The values 'top' or 'bottom' position text nodes out the staging area, so they enter the scene from either vertical side when animating to their destination location. By listing multiple values separated with a | character, the slider will use different transition variations on each text node by cycling between the provided values."),
+            'keys' => 'textoffsetyin',
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Enter the stage from top",
                 "value": "top"
             }, {
@@ -2566,237 +2530,230 @@ $lsDefaults = array(
             }, {
                 "name": "Random",
                 "value": "random(-100,100)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'textDurationIn' => array(
+        'textDurationIn' => [
             'value' => 1000,
-            'name' => ls__('Duration', 'LayerSlider'),
-            'tooltip' => ls__('The transition length in milliseconds of the individual text fragments. A second equals to 1000 milliseconds.', 'LayerSlider'),
-            'keys'  => 'textdurationin',
-            'attrs' => array('min' => 0, 'step' => 50)
-        ),
+            'name' => ls__('Duration'),
+            'tooltip' => ls__('The transition length in milliseconds of the individual text fragments. A second equals to 1000 milliseconds.'),
+            'keys' => 'textdurationin',
+            'attrs' => ['min' => 0, 'step' => 50],
+        ],
 
-        'textEasingIn' => array(
+        'textEasingIn' => [
             'value' => 'easeInOutQuint',
-            'name' => ls__('Easing', 'LayerSlider'),
-            'tooltip' => ls__("The timing function of the animation. With this function you can manipulate the movement of animated text fragments. Please click on the link next to this select field to open easings.net for more information and real-time examples.", "LayerSlider"),
-            'keys'  => 'texteasingin',
-        ),
+            'name' => ls__('Easing'),
+            'tooltip' => ls__('The timing function of the animation. With this function you can manipulate the movement of animated text fragments. Please click on the link next to this select field to open easings.net for more information and real-time examples.'),
+            'keys' => 'texteasingin',
+        ],
 
-        'textFadeIn' => array(
+        'textFadeIn' => [
             'value' => true,
-            'name' => ls__('Fade', 'LayerSlider'),
-            'tooltip' => ls__('Fade the text fragments during their transition.', 'LayerSlider'),
-            'keys'  => 'textfadein'
-        ),
+            'name' => ls__('Fade'),
+            'tooltip' => ls__('Fade the text fragments during their transition.'),
+            'keys' => 'textfadein',
+        ],
 
-        'textStartAtIn' => array(
+        'textStartAtIn' => [
             'value' => 'transitioninend',
-            'name' => ls__('StartAt', 'LayerSlider'),
-            'tooltip' => ls__('You can set the starting time of this transition. Use one of the pre-defined options to use relative timing, which can be shifted with custom operations.', 'LayerSlider'),
-            'keys'  => 'textstartatin',
-            'attrs' => array('type' => 'hidden')
-        ),
+            'name' => ls__('StartAt'),
+            'tooltip' => ls__('You can set the starting time of this transition. Use one of the pre-defined options to use relative timing, which can be shifted with custom operations.'),
+            'keys' => 'textstartatin',
+            'attrs' => ['type' => 'hidden'],
+        ],
 
-        'textStartAtInTiming' => array(
+        'textStartAtInTiming' => [
             'value' => 'transitioninend',
-            'keys'  => 'textstartatintiming',
-            'props' => array('meta' => true),
-            'options' => array(
-                'transitioninstart' => ls__('Opening Transition starts', 'LayerSlider'),
-                'transitioninend' => ls__('Opening Transition completes', 'LayerSlider'),
-                'loopstart' => ls__('Loop starts', 'LayerSlider'),
-                'loopend' => ls__('Loop completes', 'LayerSlider'),
-                'transitioninandloopend' => ls__('Opening and Loop Transitions complete', 'LayerSlider')
-            )
-        ),
+            'keys' => 'textstartatintiming',
+            'props' => ['meta' => true],
+            'options' => [
+                'transitioninstart' => ls__('Opening Transition starts'),
+                'transitioninend' => ls__('Opening Transition completes'),
+                'loopstart' => ls__('Loop starts'),
+                'loopend' => ls__('Loop completes'),
+                'transitioninandloopend' => ls__('Opening and Loop Transitions complete'),
+            ],
+        ],
 
-        'textStartAtInOperator' => array(
+        'textStartAtInOperator' => [
             'value' => '+',
-            'keys'  => 'textstartatinoperator',
-            'props' => array('meta' => true),
-            'options' => array('+', '-', '/', '*')
-        ),
+            'keys' => 'textstartatinoperator',
+            'props' => ['meta' => true],
+            'options' => ['+', '-', '/', '*'],
+        ],
 
-        'textStartAtInValue' => array(
+        'textStartAtInValue' => [
             'value' => 0,
-            'keys'  => 'textstartatinvalue',
-            'props' => array('meta' => true)
-        ),
+            'keys' => 'textstartatinvalue',
+            'props' => ['meta' => true],
+        ],
 
-
-
-        'textRotateIn' => array(
+        'textRotateIn' => [
             'value' => 0,
-            'name' => ls__('Rotate', 'LayerSlider'),
-            'tooltip' => ls__('Rotates text fragments clockwise by the given number of degrees. Negative values are allowed for counterclockwise rotation. By listing multiple values separated with a | character, the slider will use different transition variations on each text node by cycling between the provided values.', 'LayerSlider'),
-            'keys'  => 'textrotatein',
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'name' => ls__('Rotate'),
+            'tooltip' => ls__('Rotates text fragments clockwise by the given number of degrees. Negative values are allowed for counterclockwise rotation. By listing multiple values separated with a | character, the slider will use different transition variations on each text node by cycling between the provided values.'),
+            'keys' => 'textrotatein',
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Cycle between values",
                 "value": "30|-30"
             }, {
                 "name": "Random",
                 "value": "random(-45,45)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'textRotateXIn' => array(
+        'textRotateXIn' => [
             'value' => 0,
-            'name' => ls__('RotateX', 'LayerSlider'),
-            'tooltip' => ls__('Rotates text fragments along the X (horizontal) axis by the given number of degrees. Negative values are allowed for reverse direction. By listing multiple values separated with a | character, the slider will use different transition variations on each text node by cycling between the provided values.', 'LayerSlider'),
-            'keys'  => 'textrotatexin',
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'name' => ls__('RotateX'),
+            'tooltip' => ls__('Rotates text fragments along the X (horizontal) axis by the given number of degrees. Negative values are allowed for reverse direction. By listing multiple values separated with a | character, the slider will use different transition variations on each text node by cycling between the provided values.'),
+            'keys' => 'textrotatexin',
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Cycle between values",
                 "value": "30|-30"
             }, {
                 "name": "Random",
                 "value": "random(-45,45)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'textRotateYIn' => array(
+        'textRotateYIn' => [
             'value' => 0,
-            'name' => ls__('RotateY', 'LayerSlider'),
-            'tooltip' => ls__('Rotates text fragments along the Y (vertical) axis by the given number of degrees. Negative values are allowed for reverse direction. By listing multiple values separated with a | character, the slider will use different transition variations on each text node by cycling between the provided values.', 'LayerSlider'),
-            'keys'  => 'textrotateyin',
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'name' => ls__('RotateY'),
+            'tooltip' => ls__('Rotates text fragments along the Y (vertical) axis by the given number of degrees. Negative values are allowed for reverse direction. By listing multiple values separated with a | character, the slider will use different transition variations on each text node by cycling between the provided values.'),
+            'keys' => 'textrotateyin',
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Cycle between values",
                 "value": "30|-30"
             }, {
                 "name": "Random",
                 "value": "random(-45,45)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'textScaleXIn' => array(
+        'textScaleXIn' => [
             'value' => 1,
-            'name' => ls__('ScaleX', 'LayerSlider'),
-            'keys'  => 'textscalexin',
-            'tooltip' => ls__("Scales text fragments along the X (horizontal) axis by the specified vector. Use the value 1 for the original size. The value 2 will double, while 0.5 shrinks text fragments compared to their original size. By listing multiple values separated with a | character, the slider will use different transition variations on each text node by cycling between the provided values.", "LayerSlider"),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'name' => ls__('ScaleX'),
+            'keys' => 'textscalexin',
+            'tooltip' => ls__('Scales text fragments along the X (horizontal) axis by the specified vector. Use the value 1 for the original size. The value 2 will double, while 0.5 shrinks text fragments compared to their original size. By listing multiple values separated with a | character, the slider will use different transition variations on each text node by cycling between the provided values.'),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Cycle between values",
                 "value": "30|-30"
             }, {
                 "name": "Random",
                 "value": "random(2,4)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'textScaleYIn' => array(
+        'textScaleYIn' => [
             'value' => 1,
-            'name' => ls__('ScaleY', 'LayerSlider'),
-            'keys'  => 'textscaleyin',
-            'tooltip' => ls__("Scales text fragments along the Y (vertical) axis by the specified vector. Use the value 1 for the original size. The value 2 will double, while 0.5 shrinks text fragments compared to their original size. By listing multiple values separated with a | character, the slider will use different transition variations on each text node by cycling between the provided values.", "LayerSlider"),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'name' => ls__('ScaleY'),
+            'keys' => 'textscaleyin',
+            'tooltip' => ls__('Scales text fragments along the Y (vertical) axis by the specified vector. Use the value 1 for the original size. The value 2 will double, while 0.5 shrinks text fragments compared to their original size. By listing multiple values separated with a | character, the slider will use different transition variations on each text node by cycling between the provided values.'),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Cycle between values",
                 "value": "30|-30"
             }, {
                 "name": "Random",
                 "value": "random(2,4)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'textSkewXIn' => array(
+        'textSkewXIn' => [
             'value' => 0,
-            'name' => ls__('SkewX', 'LayerSlider'),
-            'tooltip' => ls__('Skews text fragments along the X (horizontal) axis by the given number of degrees. Negative values are allowed for reverse direction. By listing multiple values separated with a | character, the slider will use different transition variations on each text node by cycling between the provided values.', 'LayerSlider'),
-            'keys'  => 'textskewxin',
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'name' => ls__('SkewX'),
+            'tooltip' => ls__('Skews text fragments along the X (horizontal) axis by the given number of degrees. Negative values are allowed for reverse direction. By listing multiple values separated with a | character, the slider will use different transition variations on each text node by cycling between the provided values.'),
+            'keys' => 'textskewxin',
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Cycle between values",
                 "value": "30|-30"
             }, {
                 "name": "Random",
                 "value": "random(-45,45)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'textSkewYIn' => array(
+        'textSkewYIn' => [
             'value' => 0,
-            'name' => ls__('SkewY', 'LayerSlider'),
-            'tooltip' => ls__('Skews text fragments along the Y (vertical) axis by the given number of degrees. Negative values are allowed for reverse direction. By listing multiple values separated with a | character, the slider will use different transition variations on each text node by cycling between the provided values.', 'LayerSlider'),
-            'keys'  => 'textskewyin',
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'name' => ls__('SkewY'),
+            'tooltip' => ls__('Skews text fragments along the Y (vertical) axis by the given number of degrees. Negative values are allowed for reverse direction. By listing multiple values separated with a | character, the slider will use different transition variations on each text node by cycling between the provided values.'),
+            'keys' => 'textskewyin',
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Cycle between values",
                 "value": "30|-30"
             }, {
                 "name": "Random",
                 "value": "random(-45,45)"
-            }]')
-        ),
+            }]'],
+        ],
 
-
-
-        'textTransformOriginIn' => array(
+        'textTransformOriginIn' => [
             'value' => '50% 50% 0',
-            'name' => ls__('Transform Origin', 'LayerSlider'),
-            'tooltip' => ls__('Sets a point on canvas from which transformations are calculated. For example, a layer may rotate around its center axis or a completely custom point, such as one of its corners. The three values represent the X, Y and Z axes in 3D space. Apart from the pixel and percentage values, you can also use the following constants: top, right, bottom, left, center, slidercenter, slidermiddle, slidertop, sliderright, sliderbottom, sliderleft.', 'LayerSlider'),
-            'keys'  => 'texttransformoriginin',
-            'attrs' => array('data-options' => '[{
+            'name' => ls__('Transform Origin'),
+            'tooltip' => ls__('Sets a point on canvas from which transformations are calculated. For example, a layer may rotate around its center axis or a completely custom point, such as one of its corners. The three values represent the X, Y and Z axes in 3D space. Apart from the pixel and percentage values, you can also use the following constants: top, right, bottom, left, center, slidercenter, slidermiddle, slidertop, sliderright, sliderbottom, sliderleft.'),
+            'keys' => 'texttransformoriginin',
+            'attrs' => ['data-options' => '[{
                 "name": "Cycle between values",
                 "value": "50% 50% 0|100% 100% 0"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'textPerspectiveIn' => array(
+        'textPerspectiveIn' => [
             'value' => '500',
-            'name' => ls__('Perspective', 'LayerSlider'),
+            'name' => ls__('Perspective'),
             'keys' => 'texttransformperspectivein',
-            'tooltip' => ls__('Changes the perspective of this layer in the 3D space.', 'LayerSlider')
-        ),
-
-
-
+            'tooltip' => ls__('Changes the perspective of this layer in the 3D space.'),
+        ],
 
         // Text Animation OUT
         // -----------------
 
-        'textTransitionOut' => array(
+        'textTransitionOut' => [
             'value' => false,
-            'keys' => 'texttransitionout'
-        ),
+            'keys' => 'texttransitionout',
+        ],
 
-        'textTypeOut' => array(
+        'textTypeOut' => [
             'value' => 'chars_desc',
-            'name' => ls__('Text Animation', 'LayerSlider'),
+            'name' => ls__('Text Animation'),
             'keys' => 'texttypeout',
-            'tooltip' => ls__('Select how your text should be split and animated.', 'LayerSlider'),
-            'options' => array(
-                'chars_asc'  => ls__('by chars ascending', 'LayerSlider'),
-                'chars_desc' => ls__('by chars descending', 'LayerSlider'),
-                'chars_rand' => ls__('by chars random', 'LayerSlider'),
-                'chars_center' => ls__('by chars center to edge', 'LayerSlider'),
-                'chars_edge' => ls__('by chars edge to center', 'LayerSlider'),
-                'words_asc'  => ls__('by words ascending', 'LayerSlider'),
-                'words_desc' => ls__('by words descending', 'LayerSlider'),
-                'words_rand' => ls__('by words random', 'LayerSlider'),
-                'words_center' => ls__('by words center to edge', 'LayerSlider'),
-                'words_edge' => ls__('by words edge to center', 'LayerSlider'),
-                'lines_asc'  => ls__('by lines ascending', 'LayerSlider'),
-                'lines_desc' => ls__('by lines descending', 'LayerSlider'),
-                'lines_rand' => ls__('by lines random', 'LayerSlider'),
-                'lines_center' => ls__('by lines center to edge', 'LayerSlider'),
-                'lines_edge' => ls__('by lines edge to center', 'LayerSlider'),
-            ),
-            'props' => array(
-                'output' => true
-            )
-        ),
+            'tooltip' => ls__('Select how your text should be split and animated.'),
+            'options' => [
+                'chars_asc' => ls__('by chars ascending'),
+                'chars_desc' => ls__('by chars descending'),
+                'chars_rand' => ls__('by chars random'),
+                'chars_center' => ls__('by chars center to edge'),
+                'chars_edge' => ls__('by chars edge to center'),
+                'words_asc' => ls__('by words ascending'),
+                'words_desc' => ls__('by words descending'),
+                'words_rand' => ls__('by words random'),
+                'words_center' => ls__('by words center to edge'),
+                'words_edge' => ls__('by words edge to center'),
+                'lines_asc' => ls__('by lines ascending'),
+                'lines_desc' => ls__('by lines descending'),
+                'lines_rand' => ls__('by lines random'),
+                'lines_center' => ls__('by lines center to edge'),
+                'lines_edge' => ls__('by lines edge to center'),
+            ],
+            'props' => [
+                'output' => true,
+            ],
+        ],
 
-        'textShiftOut' => array(
+        'textShiftOut' => [
             'value' => '',
-            'name' => ls__('Shift Out', 'LayerSlider'),
-            'tooltip' => ls__('Delays the transition of each text nodes relative to each other. A second equals to 1000 milliseconds.', 'LayerSlider'),
-            'keys'  => 'textshiftout',
-            'attrs' => array('type' => 'number')
-        ),
+            'name' => ls__('Shift Out'),
+            'tooltip' => ls__('Delays the transition of each text nodes relative to each other. A second equals to 1000 milliseconds.'),
+            'keys' => 'textshiftout',
+            'attrs' => ['type' => 'number'],
+        ],
 
-        'textOffsetXOut' => array(
+        'textOffsetXOut' => [
             'value' => 0,
-            'name' => ls__('OffsetX', 'LayerSlider'),
-            'tooltip' => ls__("Shifts the ending position of text nodes from their original on the horizontal axis with the given number of pixels. Use negative values for the opposite direction. Percentage values are relative to the width of this layer. The values 'left' or 'right' position text nodes out the staging area, so they leave the scene from either side when animating to their destination location. By listing multiple values separated with a | character, the slider will use different transition variations on each text node by cycling between the provided values.", "LayerSlider"),
-            'keys'  => 'textoffsetxout',
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'name' => ls__('OffsetX'),
+            'tooltip' => ls__("Shifts the ending position of text nodes from their original on the horizontal axis with the given number of pixels. Use negative values for the opposite direction. Percentage values are relative to the width of this layer. The values 'left' or 'right' position text nodes out the staging area, so they leave the scene from either side when animating to their destination location. By listing multiple values separated with a | character, the slider will use different transition variations on each text node by cycling between the provided values."),
+            'keys' => 'textoffsetxout',
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Leave the stage on left",
                 "value": "left"
             }, {
@@ -2820,15 +2777,15 @@ $lsDefaults = array(
             }, {
                 "name": "Random",
                 "value": "random(-100,100)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'textOffsetYOut' => array(
+        'textOffsetYOut' => [
             'value' => 0,
-            'name' => ls__('OffsetY', 'LayerSlider'),
-            'tooltip' => ls__("Shifts the ending position of text nodes from their original on the vertical axis with the given number of pixels. Use negative values for the opposite direction. Percentage values are relative to the width of this layer. The values 'top' or 'bottom' position text nodes out the staging area, so they leave the scene from either vertical side when animating to their destination location. By listing multiple values separated with a | character, the slider will use different transition variations on each text node by cycling between the provided values.", "LayerSlider"),
-            'keys'  => 'textoffsetyout',
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'name' => ls__('OffsetY'),
+            'tooltip' => ls__("Shifts the ending position of text nodes from their original on the vertical axis with the given number of pixels. Use negative values for the opposite direction. Percentage values are relative to the width of this layer. The values 'top' or 'bottom' position text nodes out the staging area, so they leave the scene from either vertical side when animating to their destination location. By listing multiple values separated with a | character, the slider will use different transition variations on each text node by cycling between the provided values."),
+            'keys' => 'textoffsetyout',
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Leave the stage on top",
                 "value": "top"
             }, {
@@ -2852,211 +2809,201 @@ $lsDefaults = array(
             }, {
                 "name": "Random",
                 "value": "random(-100,100)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'textDurationOut' => array(
+        'textDurationOut' => [
             'value' => 1000,
-            'name' => ls__('Duration', 'LayerSlider'),
-            'tooltip' => ls__('The transition length in milliseconds of the individual text fragments. A second equals to 1000 milliseconds.', 'LayerSlider'),
-            'keys'  => 'textdurationout',
-            'attrs' => array('min' => 0, 'step' => 50)
-        ),
+            'name' => ls__('Duration'),
+            'tooltip' => ls__('The transition length in milliseconds of the individual text fragments. A second equals to 1000 milliseconds.'),
+            'keys' => 'textdurationout',
+            'attrs' => ['min' => 0, 'step' => 50],
+        ],
 
-        'textEasingOut' => array(
+        'textEasingOut' => [
             'value' => 'easeInOutQuint',
-            'name' => ls__('Easing', 'LayerSlider'),
-            'tooltip' => ls__("The timing function of the animation. With this function you can manipulate the movement of animated text fragments. Please click on the link next to this select field to open easings.net for more information and real-time examples.", "LayerSlider"),
-            'keys'  => 'texteasingout',
-            'attrs' => array('type' => 'hidden')
-        ),
+            'name' => ls__('Easing'),
+            'tooltip' => ls__('The timing function of the animation. With this function you can manipulate the movement of animated text fragments. Please click on the link next to this select field to open easings.net for more information and real-time examples.'),
+            'keys' => 'texteasingout',
+            'attrs' => ['type' => 'hidden'],
+        ],
 
-        'textFadeOut' => array(
+        'textFadeOut' => [
             'value' => true,
-            'name' => ls__('Fade', 'LayerSlider'),
-            'tooltip' => ls__('Fade the text fragments during their transition.', 'LayerSlider'),
-            'keys'  => 'textfadeout'
-        ),
+            'name' => ls__('Fade'),
+            'tooltip' => ls__('Fade the text fragments during their transition.'),
+            'keys' => 'textfadeout',
+        ],
 
-        'textStartAtOut' => array(
+        'textStartAtOut' => [
             'value' => 'allinandloopend',
-            'name' => ls__('StartAt', 'LayerSlider'),
-            'tooltip' => ls__('You can set the starting time of this transition. Use one of the pre-defined options to use relative timing, which can be shifted with custom operations.', 'LayerSlider'),
-            'keys'  => 'textstartatout',
-            'attrs' => array('type' => 'hidden')
-        ),
+            'name' => ls__('StartAt'),
+            'tooltip' => ls__('You can set the starting time of this transition. Use one of the pre-defined options to use relative timing, which can be shifted with custom operations.'),
+            'keys' => 'textstartatout',
+            'attrs' => ['type' => 'hidden'],
+        ],
 
-        'textStartAtOutTiming' => array(
+        'textStartAtOutTiming' => [
             'value' => 'allinandloopend',
-            'keys'  => 'textstartatouttiming',
-            'props' => array('meta' => true),
-            'options' => array(
-                'transitioninend' => ls__('Opening Transition completes', 'LayerSlider'),
-                'textinstart' => ls__('Opening Text Transition starts', 'LayerSlider'),
-                'textinend' => ls__('Opening Text Transition completes', 'LayerSlider'),
-                'allinend' => ls__('Opening and Opening Text Transition complete', 'LayerSlider'),
-                'loopstart' => ls__('Loop starts', 'LayerSlider'),
-                'loopend' => ls__('Loop completes', 'LayerSlider'),
-                'transitioninandloopend' => ls__('Opening and Loop Transitions complete', 'LayerSlider'),
-                'textinandloopend' => ls__('Opening Text and Loop Transitions complete', 'LayerSlider'),
-                'allinandloopend' => ls__('Opening, Opening Text and Loop Transitions complete', 'LayerSlider')
-            )
-        ),
+            'keys' => 'textstartatouttiming',
+            'props' => ['meta' => true],
+            'options' => [
+                'transitioninend' => ls__('Opening Transition completes'),
+                'textinstart' => ls__('Opening Text Transition starts'),
+                'textinend' => ls__('Opening Text Transition completes'),
+                'allinend' => ls__('Opening and Opening Text Transition complete'),
+                'loopstart' => ls__('Loop starts'),
+                'loopend' => ls__('Loop completes'),
+                'transitioninandloopend' => ls__('Opening and Loop Transitions complete'),
+                'textinandloopend' => ls__('Opening Text and Loop Transitions complete'),
+                'allinandloopend' => ls__('Opening, Opening Text and Loop Transitions complete'),
+            ],
+        ],
 
-        'textStartAtOutOperator' => array(
+        'textStartAtOutOperator' => [
             'value' => '+',
-            'keys'  => 'textstartatoutoperator',
-            'props' => array('meta' => true),
-            'options' => array('+', '-', '/', '*')
-        ),
+            'keys' => 'textstartatoutoperator',
+            'props' => ['meta' => true],
+            'options' => ['+', '-', '/', '*'],
+        ],
 
-        'textStartAtOutValue' => array(
+        'textStartAtOutValue' => [
             'value' => 0,
-            'keys'  => 'textstartatoutvalue',
-            'props' => array('meta' => true)
-        ),
+            'keys' => 'textstartatoutvalue',
+            'props' => ['meta' => true],
+        ],
 
-        'textRotateOut' => array(
+        'textRotateOut' => [
             'value' => 0,
-            'name' => ls__('Rotate', 'LayerSlider'),
-            'tooltip' => ls__('Rotates text fragments clockwise by the given number of degrees. Negative values are allowed for counterclockwise rotation. By listing multiple values separated with a | character, the slider will use different transition variations on each text node by cycling between the provided values.', 'LayerSlider'),
-            'keys'  => 'textrotateout',
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'name' => ls__('Rotate'),
+            'tooltip' => ls__('Rotates text fragments clockwise by the given number of degrees. Negative values are allowed for counterclockwise rotation. By listing multiple values separated with a | character, the slider will use different transition variations on each text node by cycling between the provided values.'),
+            'keys' => 'textrotateout',
+            'attrs' => ['type' => 'text', 'data-options' => '[{
             "name": "Cycle between values",
                 "value": "30|-30"
             }, {
                 "name": "Random",
                 "value": "random(-45,45)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'textRotateXOut' => array(
+        'textRotateXOut' => [
             'value' => 0,
-            'name' => ls__('RotateX', 'LayerSlider'),
-            'tooltip' => ls__('Rotates text fragments along the X (horizontal) axis by the given number of degrees. Negative values are allowed for reverse direction. By listing multiple values separated with a | character, the slider will use different transition variations on each text node by cycling between the provided values.', 'LayerSlider'),
-            'keys'  => 'textrotatexout',
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'name' => ls__('RotateX'),
+            'tooltip' => ls__('Rotates text fragments along the X (horizontal) axis by the given number of degrees. Negative values are allowed for reverse direction. By listing multiple values separated with a | character, the slider will use different transition variations on each text node by cycling between the provided values.'),
+            'keys' => 'textrotatexout',
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Cycle between values",
                 "value": "30|-30"
             }, {
                 "name": "Random",
                 "value": "random(-45,45)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'textRotateYOut' => array(
+        'textRotateYOut' => [
             'value' => 0,
-            'name' => ls__('RotateY', 'LayerSlider'),
-            'tooltip' => ls__('Rotates text fragments along the Y (vertical) axis by the given number of degrees. Negative values are allowed for reverse direction. By listing multiple values separated with a | character, the slider will use different transition variations on each text node by cycling between the provided values.', 'LayerSlider'),
-            'keys'  => 'textrotateyout',
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'name' => ls__('RotateY'),
+            'tooltip' => ls__('Rotates text fragments along the Y (vertical) axis by the given number of degrees. Negative values are allowed for reverse direction. By listing multiple values separated with a | character, the slider will use different transition variations on each text node by cycling between the provided values.'),
+            'keys' => 'textrotateyout',
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Cycle between values",
                 "value": "30|-30"
             }, {
                 "name": "Random",
                 "value": "random(-45,45)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'textScaleXOut' => array(
+        'textScaleXOut' => [
             'value' => 1,
-            'name' => ls__('ScaleX', 'LayerSlider'),
-            'keys'  => 'textscalexout',
-            'tooltip' => ls__("Scales text fragments along the X (horizontal) axis by the specified vector. Use the value 1 for the original size. The value 2 will double, while 0.5 shrinks text fragments compared to their original size. By listing multiple values separated with a | character, the slider will use different transition variations on each text node by cycling between the provided values.", "LayerSlider"),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'name' => ls__('ScaleX'),
+            'keys' => 'textscalexout',
+            'tooltip' => ls__('Scales text fragments along the X (horizontal) axis by the specified vector. Use the value 1 for the original size. The value 2 will double, while 0.5 shrinks text fragments compared to their original size. By listing multiple values separated with a | character, the slider will use different transition variations on each text node by cycling between the provided values.'),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Cycle between values",
                 "value": "30|-30"
             }, {
                 "name": "Random",
                 "value": "random(2,4)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'textScaleYOut' => array(
+        'textScaleYOut' => [
             'value' => 1,
-            'name' => ls__('ScaleY', 'LayerSlider'),
-            'keys'  => 'textscaleyout',
-            'tooltip' => ls__("Scales text fragments along the Y (vertical) axis by the specified vector. Use the value 1 for the original size. The value 2 will double, while 0.5 shrinks text fragments compared to their original size. By listing multiple values separated with a | character, the slider will use different transition variations on each text node by cycling between the provided values.", "LayerSlider"),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'name' => ls__('ScaleY'),
+            'keys' => 'textscaleyout',
+            'tooltip' => ls__('Scales text fragments along the Y (vertical) axis by the specified vector. Use the value 1 for the original size. The value 2 will double, while 0.5 shrinks text fragments compared to their original size. By listing multiple values separated with a | character, the slider will use different transition variations on each text node by cycling between the provided values.'),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Cycle between values",
                 "value": "30|-30"
             }, {
                 "name": "Random",
                 "value": "random(2,4)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'textSkewXOut' => array(
+        'textSkewXOut' => [
             'value' => 0,
-            'name' => ls__('SkewX', 'LayerSlider'),
-            'tooltip' => ls__('Skews text fragments along the X (horizontal) axis by the given number of degrees. Negative values are allowed for reverse direction. By listing multiple values separated with a | character, the slider will use different transition variations on each text node by cycling between the provided values.', 'LayerSlider'),
-            'keys'  => 'textskewxout',
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'name' => ls__('SkewX'),
+            'tooltip' => ls__('Skews text fragments along the X (horizontal) axis by the given number of degrees. Negative values are allowed for reverse direction. By listing multiple values separated with a | character, the slider will use different transition variations on each text node by cycling between the provided values.'),
+            'keys' => 'textskewxout',
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Cycle between values",
                 "value": "30|-30"
             }, {
                 "name": "Random",
                 "value": "random(-45,45)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'textSkewYOut' => array(
+        'textSkewYOut' => [
             'value' => 0,
-            'name' => ls__('SkewY', 'LayerSlider'),
-            'tooltip' => ls__('Skews text fragments along the Y (vertical) axis by the given number of degrees. Negative values are allowed for reverse direction. By listing multiple values separated with a | character, the slider will use different transition variations on each text node by cycling between the provided values.', 'LayerSlider'),
-            'keys'  => 'textskewyout',
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'name' => ls__('SkewY'),
+            'tooltip' => ls__('Skews text fragments along the Y (vertical) axis by the given number of degrees. Negative values are allowed for reverse direction. By listing multiple values separated with a | character, the slider will use different transition variations on each text node by cycling between the provided values.'),
+            'keys' => 'textskewyout',
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Cycle between values",
                 "value": "30|-30"
             }, {
                 "name": "Random",
                 "value": "random(-45,45)"
-            }]')
-        ),
+            }]'],
+        ],
 
-
-
-        'textTransformOriginOut' => array(
+        'textTransformOriginOut' => [
             'value' => '50% 50% 0',
-            'name' => ls__('Transform Origin', 'LayerSlider'),
-            'tooltip' => ls__('Sets a point on canvas from which transformations are calculated. For example, a layer may rotate around its center axis or a completely custom point, such as one of its corners. The three values represent the X, Y and Z axes in 3D space. Apart from the pixel and percentage values, you can also use the following constants: top, right, bottom, left, center, slidercenter, slidermiddle, slidertop, sliderright, sliderbottom, sliderleft.', 'LayerSlider'),
-            'keys'  => 'texttransformoriginout',
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'name' => ls__('Transform Origin'),
+            'tooltip' => ls__('Sets a point on canvas from which transformations are calculated. For example, a layer may rotate around its center axis or a completely custom point, such as one of its corners. The three values represent the X, Y and Z axes in 3D space. Apart from the pixel and percentage values, you can also use the following constants: top, right, bottom, left, center, slidercenter, slidermiddle, slidertop, sliderright, sliderbottom, sliderleft.'),
+            'keys' => 'texttransformoriginout',
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Cycle between values",
                 "value": "50% 50% 0|100% 100% 0"
-            }]')
-        ),
+            }]'],
+        ],
 
-
-        'textPerspectiveOut' => array(
+        'textPerspectiveOut' => [
             'value' => '500',
-            'name' => ls__('Perspective', 'LayerSlider'),
+            'name' => ls__('Perspective'),
             'keys' => 'texttransformperspectiveout',
-            'tooltip' => ls__('Changes the perspective of this layer in the 3D space.', 'LayerSlider')
-        ),
-
-
-
-
-
-
+            'tooltip' => ls__('Changes the perspective of this layer in the 3D space.'),
+        ],
 
         // ======
 
-
         // LOOP
 
-        'loop' => array(
+        'loop' => [
             'value' => false,
-            'keys' => 'loop'
-        ),
+            'keys' => 'loop',
+        ],
 
-        'loopOffsetX' => array(
+        'loopOffsetX' => [
             'value' => 0,
-            'name' => ls__('OffsetX', 'LayerSlider'),
+            'name' => ls__('OffsetX'),
             'keys' => 'loopoffsetx',
-            'tooltip' => ls__("Shifts the layer starting position from its original on the horizontal axis with the given number of pixels. Use negative values for the opposite direction. Percentage values are relative to the width of this layer. The values 'left' or 'right' position the layer out the staging area, so it can leave and re-enter the scene from either side during the transition.", "LayerSlider"),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'tooltip' => ls__("Shifts the layer starting position from its original on the horizontal axis with the given number of pixels. Use negative values for the opposite direction. Percentage values are relative to the width of this layer. The values 'left' or 'right' position the layer out the staging area, so it can leave and re-enter the scene from either side during the transition."),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Move out of stage on left",
                 "value": "left"
             }, {
@@ -3077,15 +3024,15 @@ $lsDefaults = array(
             }, {
                 "name": "Random",
                 "value": "random(-100,100)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'loopOffsetY' => array(
+        'loopOffsetY' => [
             'value' => 0,
-            'name' => ls__('OffsetY', 'LayerSlider'),
+            'name' => ls__('OffsetY'),
             'keys' => 'loopoffsety',
-            'tooltip' => ls__("Shifts the layer starting position from its original on the vertical axis with the given number of pixels. Use negative values for the opposite direction. Percentage values are relative to the height of this layer. The values 'top' or 'bottom' position the layer out the staging area, so it can leave and re-enter the scene from either vertical side during the transition.", "LayerSlider"),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'tooltip' => ls__("Shifts the layer starting position from its original on the vertical axis with the given number of pixels. Use negative values for the opposite direction. Percentage values are relative to the height of this layer. The values 'top' or 'bottom' position the layer out the staging area, so it can leave and re-enter the scene from either vertical side during the transition."),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Move out of stage on top",
                 "value": "top"
             }, {
@@ -3106,156 +3053,156 @@ $lsDefaults = array(
             }, {
                 "name": "Random",
                 "value": "random(-100,100)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'loopDuration' => array(
+        'loopDuration' => [
             'value' => 1000,
-            'name' => ls__('Duration', 'LayerSlider'),
+            'name' => ls__('Duration'),
             'keys' => 'loopduration',
-            'tooltip' => ls__('The length of the transition in milliseconds. A second is equal to 1000 milliseconds.', 'LayerSlider'),
-            'attrs' => array('min' => 0, 'step' => 100)
-        ),
+            'tooltip' => ls__('The length of the transition in milliseconds. A second is equal to 1000 milliseconds.'),
+            'attrs' => ['min' => 0, 'step' => 100],
+        ],
 
-        'loopStartAt' => array(
+        'loopStartAt' => [
             'value' => 'allinend',
-            'name' => ls__('Start at', 'LayerSlider'),
+            'name' => ls__('Start at'),
             'keys' => 'loopstartat',
-            'tooltip' => ls__('You can set the starting time of this transition. Use one of the pre-defined options to use relative timing, which can be shifted with custom operations.', 'LayerSlider'),
-            'attrs' => array('type' => 'hidden', 'step' => 100),
-        ),
+            'tooltip' => ls__('You can set the starting time of this transition. Use one of the pre-defined options to use relative timing, which can be shifted with custom operations.'),
+            'attrs' => ['type' => 'hidden', 'step' => 100],
+        ],
 
-        'loopStartAtTiming' => array(
+        'loopStartAtTiming' => [
             'value' => 'allinend',
-            'keys'  => 'loopstartattiming',
-            'props' => array('meta' => true),
-            'options' => array(
-                'transitioninstart' => ls__('Opening Transition starts', 'LayerSlider'),
-                'transitioninend' => ls__('Opening Transition completes', 'LayerSlider'),
-                'textinstart' => ls__('Opening Text Transition starts', 'LayerSlider'),
-                'textinend' => ls__('Opening Text Transition completes', 'LayerSlider'),
-                'allinend' => ls__('Opening and Opening Text Transition complete', 'LayerSlider')
-            )
-        ),
+            'keys' => 'loopstartattiming',
+            'props' => ['meta' => true],
+            'options' => [
+                'transitioninstart' => ls__('Opening Transition starts'),
+                'transitioninend' => ls__('Opening Transition completes'),
+                'textinstart' => ls__('Opening Text Transition starts'),
+                'textinend' => ls__('Opening Text Transition completes'),
+                'allinend' => ls__('Opening and Opening Text Transition complete'),
+            ],
+        ],
 
-        'loopStartAtOperator' => array(
+        'loopStartAtOperator' => [
             'value' => '+',
-            'keys'  => 'loopstartatoperator',
-            'props' => array('meta' => true),
-            'options' => array('+', '-', '/', '*')
-        ),
+            'keys' => 'loopstartatoperator',
+            'props' => ['meta' => true],
+            'options' => ['+', '-', '/', '*'],
+        ],
 
-        'loopStartAtValue' => array(
+        'loopStartAtValue' => [
             'value' => 0,
-            'keys'  => 'loopstartatvalue',
-            'props' => array('meta' => true)
-        ),
+            'keys' => 'loopstartatvalue',
+            'props' => ['meta' => true],
+        ],
 
-        'loopEasing' => array(
+        'loopEasing' => [
             'value' => 'linear',
-            'name' => ls__('Easing', 'LayerSlider'),
+            'name' => ls__('Easing'),
             'keys' => 'loopeasing',
-            'tooltip' => ls__("The timing function of the animation to manipualte the layer's movement. Click on the link next to this field to open easings.net for examples and more information", "LayerSlider")
-        ),
+            'tooltip' => ls__("The timing function of the animation to manipualte the layer's movement. Click on the link next to this field to open easings.net for examples and more information"),
+        ],
 
-        'loopOpacity' => array(
+        'loopOpacity' => [
             'value' => 1,
-            'name' => ls__('Opacity', 'LayerSlider'),
+            'name' => ls__('Opacity'),
             'keys' => 'loopopacity',
-            'tooltip' => ls__('Fades the layer. You can use values between 1 and 0 to set the layer fully opaque or transparent respectively. For example, the value 0.5 will make the layer semi-transparent.', 'LayerSlider'),
-            'attrs' => array('min' => 0, 'max' => 1, 'step' => 0.01)
-        ),
+            'tooltip' => ls__('Fades the layer. You can use values between 1 and 0 to set the layer fully opaque or transparent respectively. For example, the value 0.5 will make the layer semi-transparent.'),
+            'attrs' => ['min' => 0, 'max' => 1, 'step' => 0.01],
+        ],
 
-        'loopRotate' => array(
+        'loopRotate' => [
             'value' => 0,
-            'name' => ls__('Rotate', 'LayerSlider'),
+            'name' => ls__('Rotate'),
             'keys' => 'looprotate',
-            'tooltip' => ls__('Rotates the layer by the given number of degrees. Negative values are allowed for counterclockwise rotation.', 'LayerSlider'),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'tooltip' => ls__('Rotates the layer by the given number of degrees. Negative values are allowed for counterclockwise rotation.'),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Random",
                 "value": "random(-45,45)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'loopRotateX' => array(
+        'loopRotateX' => [
             'value' => 0,
-            'name' => ls__('RotateX', 'LayerSlider'),
+            'name' => ls__('RotateX'),
             'keys' => 'looprotatex',
-            'tooltip' => ls__('Rotates the layer along the X (horizontal) axis by the given number of degrees. Negative values are allowed for reverse direction.', 'LayerSlider'),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'tooltip' => ls__('Rotates the layer along the X (horizontal) axis by the given number of degrees. Negative values are allowed for reverse direction.'),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Random",
                 "value": "random(-45,45)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'loopRotateY' => array(
+        'loopRotateY' => [
             'value' => 0,
-            'name' => ls__('RotateY', 'LayerSlider'),
+            'name' => ls__('RotateY'),
             'keys' => 'looprotatey',
-            'tooltip' => ls__('Rotates the layer along the Y (vertical) axis by the given number of degrees. Negative values are allowed for reverse direction.', 'LayerSlider'),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'tooltip' => ls__('Rotates the layer along the Y (vertical) axis by the given number of degrees. Negative values are allowed for reverse direction.'),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Random",
                 "value": "random(-45,45)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'loopSkewX' => array(
+        'loopSkewX' => [
             'value' => 0,
-            'name' => ls__('SkewX', 'LayerSlider'),
+            'name' => ls__('SkewX'),
             'keys' => 'loopskewx',
-            'tooltip' => ls__('Skews the layer along the X (horizontal) axis by the given number of degrees. Negative values are allowed for reverse direction.', 'LayerSlider'),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'tooltip' => ls__('Skews the layer along the X (horizontal) axis by the given number of degrees. Negative values are allowed for reverse direction.'),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Random",
                 "value": "random(-45,45)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'loopSkewY' => array(
+        'loopSkewY' => [
             'value' => 0,
-            'name' => ls__('SkewY', 'LayerSlider'),
+            'name' => ls__('SkewY'),
             'keys' => 'loopskewy',
-            'tooltip' => ls__('Skews the layer along the Y (vertical) axis by the given number of degrees. Negative values are allowed for reverse direction.', 'LayerSlider'),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'tooltip' => ls__('Skews the layer along the Y (vertical) axis by the given number of degrees. Negative values are allowed for reverse direction.'),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Random",
                 "value": "random(-45,45)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'loopScaleX' => array(
+        'loopScaleX' => [
             'value' => 1,
-            'name' => ls__('ScaleX', 'LayerSlider'),
+            'name' => ls__('ScaleX'),
             'keys' => 'loopscalex',
-            'tooltip' => ls__("Scales the layer along the X (horizontal) axis by the specified vector. Use the value 1 for the original size. The value 2 will double, while 0.5 shrinks the layer compared to its original size.", "LayerSlider"),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'tooltip' => ls__('Scales the layer along the X (horizontal) axis by the specified vector. Use the value 1 for the original size. The value 2 will double, while 0.5 shrinks the layer compared to its original size.'),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Random",
                 "value": "random(2,4)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'loopScaleY' => array(
+        'loopScaleY' => [
             'value' => 1,
-            'name' => ls__('ScaleY', 'LayerSlider'),
+            'name' => ls__('ScaleY'),
             'keys' => 'loopscaley',
-            'tooltip' => ls__("Scales the layer along the X (horizontal) axis by the specified vector. Use the value 1 for the original size. The value 2 will double, while 0.5 shrinks the layer compared to its original size.", "LayerSlider"),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'tooltip' => ls__('Scales the layer along the X (horizontal) axis by the specified vector. Use the value 1 for the original size. The value 2 will double, while 0.5 shrinks the layer compared to its original size.'),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Random",
                 "value": "random(2,4)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'loopTransformOrigin' => array(
+        'loopTransformOrigin' => [
             'value' => '50% 50% 0',
-            'name' => ls__('Transform Origin', 'LayerSlider'),
+            'name' => ls__('Transform Origin'),
             'keys' => 'looptransformorigin',
-            'tooltip' => ls__('Sets a point on canvas from which transformations are calculated. For example, a layer may rotate around its center axis or a completely custom point, such as one of its corners. The three values represent the X, Y and Z axes in 3D space. Apart from the pixel and percentage values, you can also use the following constants: top, right, bottom, left, center, slidercenter, slidermiddle, slidertop, sliderright, sliderbottom, sliderleft.', 'LayerSlider')
-        ),
+            'tooltip' => ls__('Sets a point on canvas from which transformations are calculated. For example, a layer may rotate around its center axis or a completely custom point, such as one of its corners. The three values represent the X, Y and Z axes in 3D space. Apart from the pixel and percentage values, you can also use the following constants: top, right, bottom, left, center, slidercenter, slidermiddle, slidertop, sliderright, sliderbottom, sliderleft.'),
+        ],
 
-        'loopClip' => array(
+        'loopClip' => [
             'value' => '',
-            'name' => ls__('Mask', 'LayerSlider'),
+            'name' => ls__('Mask'),
             'keys' => 'loopclip',
-            'tooltip' => ls__('Clips (cuts off) the sides of the layer by the given amount specified in pixels or percentages. The 4 value in order: top, right, bottom and the left side of the layer.', 'LayerSlider'),
-            'attrs' => array('data-options' => '[{
+            'tooltip' => ls__('Clips (cuts off) the sides of the layer by the given amount specified in pixels or percentages. The 4 value in order: top, right, bottom and the left side of the layer.'),
+            'attrs' => ['data-options' => '[{
                 "name": "From top",
                 "value": "0 0 100% 0"
             }, {
@@ -3267,55 +3214,55 @@ $lsDefaults = array(
             }, {
                 "name": "From left",
                 "value": "0 100% 0 0"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'loopCount' => array(
+        'loopCount' => [
             'value' => 1,
-            'name' => ls__('Count', 'LayerSlider'),
+            'name' => ls__('Count'),
             'keys' => 'loopcount',
-            'tooltip' => ls__('The number of times repeating the Loop transition. The count includes the reverse part of the transitions when you use the Yoyo feature. Use the value -1 to repeat infinitely or zero to disable looping.', 'LayerSlider'),
-            'attrs' => array(
+            'tooltip' => ls__('The number of times repeating the Loop transition. The count includes the reverse part of the transitions when you use the Yoyo feature. Use the value -1 to repeat infinitely or zero to disable looping.'),
+            'attrs' => [
                 'step' => 1,
                 'data-options' => '[{
                     "name": "Infinite",
                     "value": -1
-                }]'
-            ),
-            'props' => array(
-                'output' => true
-            )
-        ),
+                }]',
+            ],
+            'props' => [
+                'output' => true,
+            ],
+        ],
 
-        'loopWait' => array(
+        'loopWait' => [
             'value' => 0,
-            'name' => ls__('Wait', 'LayerSlider'),
+            'name' => ls__('Wait'),
             'keys' => 'looprepeatdelay',
-            'tooltip' => ls__('Waiting time between repeats in milliseconds. A second is 1000 milliseconds.', 'LayerSlider'),
-            'attrs' => array('min' => 0, 'step' => 100)
-        ),
+            'tooltip' => ls__('Waiting time between repeats in milliseconds. A second is 1000 milliseconds.'),
+            'attrs' => ['min' => 0, 'step' => 100],
+        ],
 
-        'loopYoyo' => array(
+        'loopYoyo' => [
             'value' => false,
-            'name' => ls__('Yoyo', 'LayerSlider'),
+            'name' => ls__('Yoyo'),
             'keys' => 'loopyoyo',
-            'tooltip' => ls__('Enable this option to allow reverse transition, so you can loop back and forth seamlessly.', 'LayerSlider')
-        ),
+            'tooltip' => ls__('Enable this option to allow reverse transition, so you can loop back and forth seamlessly.'),
+        ],
 
-        'loopPerspective' => array(
+        'loopPerspective' => [
             'value' => '500',
-            'name' => ls__('Perspective', 'LayerSlider'),
+            'name' => ls__('Perspective'),
             'keys' => 'looptransformperspective',
-            'tooltip' => ls__('Changes the perspective of this layer in the 3D space.', 'LayerSlider')
-        ),
+            'tooltip' => ls__('Changes the perspective of this layer in the 3D space.'),
+        ],
 
-        'loopFilter' => array(
+        'loopFilter' => [
             'value' => '',
-            'name' => ls__('Filter', 'LayerSlider'),
+            'name' => ls__('Filter'),
             'keys' => 'loopfilter',
-            'tooltip' => ls__('Filters provide effects like blurring or color shifting your layers. Click into the text field to see a selection of filters you can use. Although clicking on the pre-defined options will reset the text field, you can apply multiple filters simply by providing a space separated list of all the filters you would like to use. Click on the "Filter" link for more information.', 'LayerSlider'),
+            'tooltip' => ls__('Filters provide effects like blurring or color shifting your layers. Click into the text field to see a selection of filters you can use. Although clicking on the pre-defined options will reset the text field, you can apply multiple filters simply by providing a space separated list of all the filters you would like to use. Click on the "Filter" link for more information.'),
             'premium' => true,
-            'attrs' => array(
+            'attrs' => [
                 'data-options' => '[{
                     "name": "Blur",
                     "value": "blur(5px)"
@@ -3340,28 +3287,23 @@ $lsDefaults = array(
                 }, {
                     "name": "Sepia",
                     "value": "sepia(60%)"
-                }]'
-            )
-        ),
-
-
-
-
+                }]',
+            ],
+        ],
 
         // HOVER
 
-        'hover' => array(
+        'hover' => [
             'value' => false,
-            'keys' => 'hover'
-        ),
+            'keys' => 'hover',
+        ],
 
-
-        'hoverOffsetX' => array(
+        'hoverOffsetX' => [
             'value' => 0,
-            'name' => ls__('OffsetX', 'LayerSlider'),
+            'name' => ls__('OffsetX'),
             'keys' => 'hoveroffsetx',
-            'tooltip' => ls__("Moves the layer horizontally by the given number of pixels. Use negative values for the opposite direction. Percentage values are relative to the width of this layer. ", "LayerSlider"),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'tooltip' => ls__('Moves the layer horizontally by the given number of pixels. Use negative values for the opposite direction. Percentage values are relative to the width of this layer. '),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "20% layer width",
                 "value": "20lw"
             }, {
@@ -3370,15 +3312,15 @@ $lsDefaults = array(
             }, {
                 "name": "Random",
                 "value": "random(-100,100)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'hoverOffsetY' => array(
+        'hoverOffsetY' => [
             'value' => 0,
-            'name' => ls__('OffsetY', 'LayerSlider'),
+            'name' => ls__('OffsetY'),
             'keys' => 'hoveroffsety',
-            'tooltip' => ls__("Moves the layer vertically by the given number of pixels. Use negative values for the opposite direction. Percentage values are relative to the width of this layer. ", "LayerSlider"),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'tooltip' => ls__('Moves the layer vertically by the given number of pixels. Use negative values for the opposite direction. Percentage values are relative to the width of this layer. '),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "20% layer height",
                 "value": "20lh"
             }, {
@@ -3387,333 +3329,325 @@ $lsDefaults = array(
             }, {
                 "name": "Random",
                 "value": "random(-100,100)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'hoverInDuration' => array(
+        'hoverInDuration' => [
             'value' => 500,
-            'name' => ls__('Duration', 'LayerSlider'),
+            'name' => ls__('Duration'),
             'keys' => 'hoverdurationin',
-            'tooltip' => ls__('The length of the transition in milliseconds. A second is equal to 1000 milliseconds.', 'LayerSlider'),
-            'attrs' => array('min' => 0, 'step' => 100)
-        ),
+            'tooltip' => ls__('The length of the transition in milliseconds. A second is equal to 1000 milliseconds.'),
+            'attrs' => ['min' => 0, 'step' => 100],
+        ],
 
-        'hoverOutDuration' => array(
+        'hoverOutDuration' => [
             'value' => '',
-            'name' => ls__('Reverse<br>duration', 'LayerSlider'),
+            'name' => ls__('Reverse<br>duration'),
             'keys' => 'hoverdurationout',
-            'tooltip' => ls__('The duration of the reverse transition in milliseconds. A second is equal to 1000 milliseconds.', 'LayerSlider'),
-            'attrs' => array('min' => 0, 'step' => 100, 'placeholder' => 'same')
-        ),
+            'tooltip' => ls__('The duration of the reverse transition in milliseconds. A second is equal to 1000 milliseconds.'),
+            'attrs' => ['min' => 0, 'step' => 100, 'placeholder' => 'same'],
+        ],
 
-        'hoverInEasing' => array(
+        'hoverInEasing' => [
             'value' => 'easeInOutQuint',
-            'name' => ls__('Easing', 'LayerSlider'),
+            'name' => ls__('Easing'),
             'keys' => 'hovereasingin',
-            'tooltip' => ls__("The timing function of the animation to manipualte the layer's movement. Click on the link next to this field to open easings.net for examples and more information", "LayerSlider")
-        ),
+            'tooltip' => ls__("The timing function of the animation to manipualte the layer's movement. Click on the link next to this field to open easings.net for examples and more information"),
+        ],
 
-        'hoverOutEasing' => array(
+        'hoverOutEasing' => [
             'value' => '',
-            'name' => ls__('Reverse<br>easing', 'LayerSlider'),
+            'name' => ls__('Reverse<br>easing'),
             'keys' => 'hovereasingout',
-            'tooltip' => ls__("The timing function of the reverse animation to manipualte the layer's movement. Click on the link next to this field to open easings.net for examples and more information", "LayerSlider"),
-            'attrs' => array('placeholder' => 'same')
-        ),
+            'tooltip' => ls__("The timing function of the reverse animation to manipualte the layer's movement. Click on the link next to this field to open easings.net for examples and more information"),
+            'attrs' => ['placeholder' => 'same'],
+        ],
 
-        'hoverOpacity' => array(
+        'hoverOpacity' => [
             'value' => '',
-            'name' => ls__('Opacity', 'LayerSlider'),
+            'name' => ls__('Opacity'),
             'keys' => 'hoveropacity',
-            'tooltip' => ls__('Fades the layer. You can use values between 1 and 0 to set the layer fully opaque or transparent respectively. For example, the value 0.5 will make the layer semi-transparent.', 'LayerSlider'),
-            'attrs' => array(
+            'tooltip' => ls__('Fades the layer. You can use values between 1 and 0 to set the layer fully opaque or transparent respectively. For example, the value 0.5 will make the layer semi-transparent.'),
+            'attrs' => [
                 'min' => 0,
                 'max' => 1,
-                'step' => 0.1
-            )
-        ),
+                'step' => 0.1,
+            ],
+        ],
 
-        'hoverRotate' => array(
+        'hoverRotate' => [
             'value' => 0,
-            'name' => ls__('Rotate', 'LayerSlider'),
+            'name' => ls__('Rotate'),
             'keys' => 'hoverrotate',
-            'tooltip' => ls__('Rotates the layer clockwise by the given number of degrees. Negative values are allowed for counterclockwise rotation.', 'LayerSlider'),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'tooltip' => ls__('Rotates the layer clockwise by the given number of degrees. Negative values are allowed for counterclockwise rotation.'),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Random",
                 "value": "random(-45,45)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'hoverRotateX' => array(
+        'hoverRotateX' => [
             'value' => 0,
-            'name' => ls__('RotateX', 'LayerSlider'),
+            'name' => ls__('RotateX'),
             'keys' => 'hoverrotatex',
-            'tooltip' => ls__('Rotates the layer along the X (horizontal) axis by the given number of degrees. Negative values are allowed for reverse direction.', 'LayerSlider'),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'tooltip' => ls__('Rotates the layer along the X (horizontal) axis by the given number of degrees. Negative values are allowed for reverse direction.'),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Random",
                 "value": "random(-45,45)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'hoverRotateY' => array(
+        'hoverRotateY' => [
             'value' => 0,
-            'name' => ls__('RotateY', 'LayerSlider'),
+            'name' => ls__('RotateY'),
             'keys' => 'hoverrotatey',
-            'tooltip' => ls__('Rotates the layer along the Y (vertical) axis by the given number of degrees. Negative values are allowed for reverse direction.', 'LayerSlider'),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'tooltip' => ls__('Rotates the layer along the Y (vertical) axis by the given number of degrees. Negative values are allowed for reverse direction.'),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Random",
                 "value": "random(-45,45)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'hoverSkewX' => array(
+        'hoverSkewX' => [
             'value' => 0,
-            'name' => ls__('SkewX', 'LayerSlider'),
+            'name' => ls__('SkewX'),
             'keys' => 'hoverskewx',
-            'tooltip' => ls__('Skews the layer along the X (horizontal) axis by the given number of degrees. Negative values are allowed for reverse direction.', 'LayerSlider'),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'tooltip' => ls__('Skews the layer along the X (horizontal) axis by the given number of degrees. Negative values are allowed for reverse direction.'),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Random",
                 "value": "random(-45,45)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'hoverSkewY' => array(
+        'hoverSkewY' => [
             'value' => 0,
-            'name' => ls__('SkewY', 'LayerSlider'),
+            'name' => ls__('SkewY'),
             'keys' => 'hoverskewy',
-            'tooltip' => ls__('Skews the layer along the Y (vertical) axis by the given number of degrees. Negative values are allowed for reverse direction.', 'LayerSlider'),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'tooltip' => ls__('Skews the layer along the Y (vertical) axis by the given number of degrees. Negative values are allowed for reverse direction.'),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Random",
                 "value": "random(-45,45)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'hoverScaleX' => array(
+        'hoverScaleX' => [
             'value' => 1,
-            'name' => ls__('ScaleX', 'LayerSlider'),
+            'name' => ls__('ScaleX'),
             'keys' => 'hoverscalex',
-            'tooltip' => ls__("Scales the layer along the X (horizontal) axis by the specified vector. Use the value 1 for the original size. The value 2 will double, while 0.5 shrinks the layer compared to its original size.", "LayerSlider"),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'tooltip' => ls__('Scales the layer along the X (horizontal) axis by the specified vector. Use the value 1 for the original size. The value 2 will double, while 0.5 shrinks the layer compared to its original size.'),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Random",
                 "value": "random(2,4)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'hoverScaleY' => array(
+        'hoverScaleY' => [
             'value' => 1,
-            'name' => ls__('ScaleY', 'LayerSlider'),
+            'name' => ls__('ScaleY'),
             'keys' => 'hoverscaley',
-            'tooltip' => ls__("Scales the layer along the Y (vertical) axis by the specified vector. Use the value 1 for the original size. The value 2 will double, while 0.5 shrinks the layer compared to its original size.", "LayerSlider"),
-            'attrs' => array('type' => 'text', 'data-options' => '[{
+            'tooltip' => ls__('Scales the layer along the Y (vertical) axis by the specified vector. Use the value 1 for the original size. The value 2 will double, while 0.5 shrinks the layer compared to its original size.'),
+            'attrs' => ['type' => 'text', 'data-options' => '[{
                 "name": "Random",
                 "value": "random(2,4)"
-            }]')
-        ),
+            }]'],
+        ],
 
-        'hoverTransformOrigin' => array(
+        'hoverTransformOrigin' => [
             'value' => '50% 50% 0',
-              'attrs' => array('placeholder' => 'inherit'),
-            'name' => ls__('Transform Origin', 'LayerSlider'),
+            'attrs' => ['placeholder' => 'inherit'],
+            'name' => ls__('Transform Origin'),
             'keys' => 'hovertransformorigin',
-            'tooltip' => ls__('Sets a point on canvas from which transformations are calculated. For example, a layer may rotate around its center axis or a completely custom point, such as one of its corners. The three values represent the X, Y and Z axes in 3D space. Apart from the pixel and percentage values, you can also use the following constants: top, right, bottom, left, center.', 'LayerSlider'),
-        ),
+            'tooltip' => ls__('Sets a point on canvas from which transformations are calculated. For example, a layer may rotate around its center axis or a completely custom point, such as one of its corners. The three values represent the X, Y and Z axes in 3D space. Apart from the pixel and percentage values, you can also use the following constants: top, right, bottom, left, center.'),
+        ],
 
-        'hoverBGColor' => array(
+        'hoverBGColor' => [
             'value' => '',
-            'name' => ls__('Background', 'LayerSlider'),
+            'name' => ls__('Background'),
             'keys' => 'hoverbgcolor',
-            'tooltip' => ls__("The background color of this layer. You can use color names, hexadecimal, RGB or RGBA values as well as the 'transparent' keyword. Example: #FFF", "LayerSlider")
-        ),
+            'tooltip' => ls__("The background color of this layer. You can use color names, hexadecimal, RGB or RGBA values as well as the 'transparent' keyword. Example: #FFF"),
+        ],
 
-        'hoverColor' => array(
+        'hoverColor' => [
             'value' => '',
-            'name' => ls__('Color', 'LayerSlider'),
+            'name' => ls__('Color'),
             'keys' => 'hovercolor',
-            'tooltip' => ls__('The text color of this text. You can use color names, hexadecimal, RGB or RGBA values. Example: #333', 'LayerSlider')
-        ),
+            'tooltip' => ls__('The text color of this text. You can use color names, hexadecimal, RGB or RGBA values. Example: #333'),
+        ],
 
-        'hoverBorderRadius' => array(
+        'hoverBorderRadius' => [
             'value' => '',
-            'name' => ls__('Rounded corners', 'LayerSlider'),
+            'name' => ls__('Rounded corners'),
             'keys' => 'hoverborderradius',
-            'tooltip' => ls__('If you want rounded corners, you can set here its radius in pixels. Example: 5px', 'LayerSlider')
-        ),
+            'tooltip' => ls__('If you want rounded corners, you can set here its radius in pixels. Example: 5px'),
+        ],
 
-        'hoverTransformPerspective' => array(
+        'hoverTransformPerspective' => [
             'value' => 500,
-            'name' => ls__('Perspective', 'LayerSlider'),
+            'name' => ls__('Perspective'),
             'keys' => 'hovertransformperspective',
-            'tooltip' => ls__('Changes the perspective of layers in the 3D space.', 'LayerSlider')
-        ),
+            'tooltip' => ls__('Changes the perspective of layers in the 3D space.'),
+        ],
 
-        'hoverTopOn' => array(
+        'hoverTopOn' => [
             'value' => true,
-            'name' => ls__('Always on top', 'LayerSlider'),
+            'name' => ls__('Always on top'),
             'keys' => 'hoveralwaysontop',
-            'tooltip' => ls__('Show this layer above every other layer while hovering.', 'LayerSlider')
-        ),
-
-
-
-
+            'tooltip' => ls__('Show this layer above every other layer while hovering.'),
+        ],
 
         // Parallax
-        'parallax' => array(
+        'parallax' => [
             'value' => false,
-            'keys' => 'parallax'
-        ),
+            'keys' => 'parallax',
+        ],
 
-        'parallaxLevel' => array(
+        'parallaxLevel' => [
             'value' => 10,
-            'name' => ls__('Parallax Level', 'LayerSlider'),
-            'tooltip' => ls__('Set the intensity of the parallax effect. Use negative values to shift layers in the opposite direction.', 'LayerSlider'),
+            'name' => ls__('Parallax Level'),
+            'tooltip' => ls__('Set the intensity of the parallax effect. Use negative values to shift layers in the opposite direction.'),
             'keys' => 'parallaxlevel',
-            'props' => array(
-                'output' => true
-            )
-        ),
+            'props' => [
+                'output' => true,
+            ],
+        ],
 
-        'parallaxType' => array(
+        'parallaxType' => [
             'value' => 'inherit',
-            'name' => ls__('Type', 'LayerSlider'),
-            'tooltip' => ls__('Choose if you want 2D or 3D parallax layers.', 'LayerSlider'),
+            'name' => ls__('Type'),
+            'tooltip' => ls__('Choose if you want 2D or 3D parallax layers.'),
             'keys' => 'parallaxtype',
-            'options' => array(
-                'inherit' => ls__('Inherit from Slide Options', 'LayerSlider'),
-                '2d' => ls__('2D', 'LayerSlider'),
-                '3d' => ls__('3D', 'LayerSlider')
-             )
-        ),
+            'options' => [
+                'inherit' => ls__('Inherit from Slide Options'),
+                '2d' => ls__('2D'),
+                '3d' => ls__('3D'),
+            ],
+        ],
 
-        'parallaxEvent' => array(
+        'parallaxEvent' => [
             'value' => 'inherit',
-            'name' => ls__('Event', 'LayerSlider'),
-            'tooltip' => ls__('You can trigger the parallax effect by either scrolling the page, or by moving your mouse cursor / tilting your mobile device.', 'LayerSlider'),
+            'name' => ls__('Event'),
+            'tooltip' => ls__('You can trigger the parallax effect by either scrolling the page, or by moving your mouse cursor / tilting your mobile device.'),
             'keys' => 'parallaxevent',
-            'options' => array(
-                'inherit' => ls__('Inherit from Slide Options', 'LayerSlider'),
-                'cursor' => ls__('Cursor or Tilt', 'LayerSlider'),
-                'scroll' => ls__('Scroll', 'LayerSlider')
-             )
-        ),
+            'options' => [
+                'inherit' => ls__('Inherit from Slide Options'),
+                'cursor' => ls__('Cursor or Tilt'),
+                'scroll' => ls__('Scroll'),
+            ],
+        ],
 
-        'parallaxAxis' => array(
+        'parallaxAxis' => [
             'value' => 'inherit',
-            'name' => ls__('Axes', 'LayerSlider'),
-            'tooltip' => ls__('Choose on which axes parallax layers should move.', 'LayerSlider'),
+            'name' => ls__('Axes'),
+            'tooltip' => ls__('Choose on which axes parallax layers should move.'),
             'keys' => 'parallaxaxis',
-            'options' => array(
-                'inherit' => ls__('Inherit from Slide Options', 'LayerSlider'),
-                'none' => ls__('None', 'LayerSlider'),
-                'both' => ls__('Both', 'LayerSlider'),
-                'x' => ls__('Horizontal only', 'LayerSlider'),
-                'y' => ls__('Vertical only', 'LayerSlider')
-            )
-        ),
+            'options' => [
+                'inherit' => ls__('Inherit from Slide Options'),
+                'none' => ls__('None'),
+                'both' => ls__('Both'),
+                'x' => ls__('Horizontal only'),
+                'y' => ls__('Vertical only'),
+            ],
+        ],
 
-
-        'parallaxTransformOrigin' => array(
+        'parallaxTransformOrigin' => [
             'value' => '',
-            'name' => ls__('Transform Origin', 'LayerSlider'),
-            'tooltip' => ls__('Sets a point on canvas from which transformations are calculated. For example, a layer may rotate around its center axis or a completely custom point, such as one of its corners. The three values represent the X, Y and Z axes in 3D space. Apart from the pixel and percentage values, you can also use the following constants: top, right, bottom, left, center.', 'LayerSlider'),
+            'name' => ls__('Transform Origin'),
+            'tooltip' => ls__('Sets a point on canvas from which transformations are calculated. For example, a layer may rotate around its center axis or a completely custom point, such as one of its corners. The three values represent the X, Y and Z axes in 3D space. Apart from the pixel and percentage values, you can also use the following constants: top, right, bottom, left, center.'),
             'keys' => 'parallaxtransformorigin',
-            'attrs' => array(
-                'placeholder' => 'Inherit from Slide Options'
-            )
-        ),
+            'attrs' => [
+                'placeholder' => 'Inherit from Slide Options',
+            ],
+        ],
 
-        'parallaxDurationMove' => array(
+        'parallaxDurationMove' => [
             'value' => '',
-            'name' => ls__('Move Duration', 'LayerSlider'),
-            'tooltip' => ls__('Controls the speed of animating layers when you move your mouse cursor or tilt your mobile device.', 'LayerSlider'),
+            'name' => ls__('Move Duration'),
+            'tooltip' => ls__('Controls the speed of animating layers when you move your mouse cursor or tilt your mobile device.'),
             'keys' => 'parallaxdurationmove',
-            'attrs' => array(
+            'attrs' => [
                 'type' => 'number',
                 'step' => 100,
                 'min' => 0,
-                'placeholder' => 'Inherit from Slide Options'
-            )
-        ),
+                'placeholder' => 'Inherit from Slide Options',
+            ],
+        ],
 
-        'parallaxDurationLeave' => array(
+        'parallaxDurationLeave' => [
             'value' => '',
-            'name' => ls__('Leave Duration', 'LayerSlider'),
-            'tooltip' => ls__('Controls how quickly parallax layers revert to their original position when you move your mouse cursor outside of the slider. This value is in milliseconds. A second equals to 1000 milliseconds.', 'LayerSlider'),
+            'name' => ls__('Leave Duration'),
+            'tooltip' => ls__('Controls how quickly parallax layers revert to their original position when you move your mouse cursor outside of the slider. This value is in milliseconds. A second equals to 1000 milliseconds.'),
             'keys' => 'parallaxdurationleave',
-            'attrs' => array(
+            'attrs' => [
                 'type' => 'number',
                 'step' => 100,
                 'min' => 0,
-                'placeholder' => 'Inherit from Slide Options'
-            )
-        ),
+                'placeholder' => 'Inherit from Slide Options',
+            ],
+        ],
 
-        'parallaxRotate' => array(
+        'parallaxRotate' => [
             'value' => '',
-            'name' => ls__('Rotation', 'LayerSlider'),
-            'tooltip' => ls__('Increase or decrease the amount of layer rotation in the 3D space when moving your mouse cursor or tilting on a mobile device.', 'LayerSlider'),
+            'name' => ls__('Rotation'),
+            'tooltip' => ls__('Increase or decrease the amount of layer rotation in the 3D space when moving your mouse cursor or tilting on a mobile device.'),
             'keys' => 'parallaxrotate',
-            'attrs' => array(
+            'attrs' => [
                 'type' => 'number',
                 'step' => 1,
-                'placeholder' => 'Inherit from Slide Options'
-            )
-        ),
+                'placeholder' => 'Inherit from Slide Options',
+            ],
+        ],
 
-        'parallaxDistance' => array(
+        'parallaxDistance' => [
             'value' => '',
-            'name' => ls__('Distance', 'LayerSlider'),
-            'tooltip' => ls__('Increase or decrease the amount of layer movement when moving your mouse cursor or tilting on a mobile device.', 'LayerSlider'),
+            'name' => ls__('Distance'),
+            'tooltip' => ls__('Increase or decrease the amount of layer movement when moving your mouse cursor or tilting on a mobile device.'),
             'keys' => 'parallaxdistance',
-            'attrs' => array(
+            'attrs' => [
                 'type' => 'number',
                 'step' => 1,
-                'placeholder' => 'Inherit from Slide Options'
-            )
-        ),
+                'placeholder' => 'Inherit from Slide Options',
+            ],
+        ],
 
-        'parallaxPerspective' => array(
+        'parallaxPerspective' => [
             'value' => '',
-            'name' => ls__('Perspective', 'LayerSlider'),
-            'tooltip' => ls__('Changes the perspective of layers in the 3D space.', 'LayerSlider'),
+            'name' => ls__('Perspective'),
+            'tooltip' => ls__('Changes the perspective of layers in the 3D space.'),
             'keys' => 'parallaxtransformperspective',
-            'attrs' => array(
+            'attrs' => [
                 'type' => 'number',
                 'step' => 100,
-                'placeholder' => 'Inherit from Slide Options'
-            )
-        ),
-
+                'placeholder' => 'Inherit from Slide Options',
+            ],
+        ],
 
         // TRANSITON MISC
-        'transitionStatic' => array(
+        'transitionStatic' => [
             'value' => 'none',
-            'name' => ls__('Static layer', 'LayerSlider'),
+            'name' => ls__('Static layer'),
             'keys' => 'static',
-            'tooltip' => ls__("You can keep this layer on top of the slider across multiple slides. Just select the slide on which this layer should animate out. Alternatively, you can make this layer global on all slides after it transitioned in.", "LayerSlider"),
-            'options' => array(
-                'none' => ls__('Disabled (default)', 'LayerSlider'),
-                'forever' => ls__('Enabled (never animate out)', 'LayerSlider')
-            )
-        ),
+            'tooltip' => ls__('You can keep this layer on top of the slider across multiple slides. Just select the slide on which this layer should animate out. Alternatively, you can make this layer global on all slides after it transitioned in.'),
+            'options' => [
+                'none' => ls__('Disabled (default)'),
+                'forever' => ls__('Enabled (never animate out)'),
+            ],
+        ],
 
-        'transitionKeyframe' => array(
+        'transitionKeyframe' => [
             'value' => false,
-            'name' => ls__('Play By Scroll Keyframe', 'LayerSlider'),
+            'name' => ls__('Play By Scroll Keyframe'),
             'keys' => 'keyframe',
-            'tooltip' => ls__('A Play by Scroll slider will pause when this layer finished its opening transition.', 'LayerSlider')
-        ),
+            'tooltip' => ls__('A Play by Scroll slider will pause when this layer finished its opening transition.'),
+        ],
 
+        // Attributes
 
-// Attributes
-
-
-        'linkURL' => array(
+        'linkURL' => [
             'value' => '',
-            'name' => ls__('Enter URL', 'LayerSlider'),
+            'name' => ls__('Enter URL'),
             'keys' => 'url',
-            'tooltip' => ls__('If you want to link your layer, type here the URL. You can use a hash mark followed by a number to link this layer to another slide. Example: #3 - this will switch to the third slide.', 'LayerSlider'),
-            'attrs' => array(
+            'tooltip' => ls__('If you want to link your layer, type here the URL. You can use a hash mark followed by a number to link this layer to another slide. Example: #3 - this will switch to the third slide.'),
+            'attrs' => [
                 'data-options' => '[{
                     "name": "Switch to the next slide",
                     "value": "#next"
@@ -3735,452 +3669,453 @@ $lsDefaults = array(
                 }, {
                     "name": "Reverse the slide, then replay it",
                     "value": "#reverse-replay"
-                }]'
-            ),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+                }]',
+            ],
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-
-        'linkTarget' => array(
+        'linkTarget' => [
             'value' => '_self',
-            'name' => ls__('URL target', 'LayerSlider'),
+            'name' => ls__('URL target'),
             'keys' => 'target',
-            'options' => array(
-                '_self' => ls__('Open on the same page', 'LayerSlider'),
-                '_blank' => ls__('Open on new page', 'LayerSlider'),
-                '_parent' => ls__('Open in parent frame', 'LayerSlider'),
-                '_top' => ls__('Open in main frame', 'LayerSlider'),
-                'ls-scroll' => ls__('Scroll to element (Enter selector)', 'LayerSlider')
-            ),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'options' => [
+                '_self' => ls__('Open on the same page'),
+                '_blank' => ls__('Open on new page'),
+                '_parent' => ls__('Open in parent frame'),
+                '_top' => ls__('Open in main frame'),
+                'ls-scroll' => ls__('Scroll to element (Enter selector)'),
+            ],
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'innerAttributes' => array(
+        'innerAttributes' => [
             'value' => '',
-            'name' => ls__('Custom Attributes', 'LayerSlider'),
+            'name' => ls__('Custom Attributes'),
             'keys' => 'innerAttributes',
-            'desc' => ls__('Your list of custom attributes. Use this feature if your needs are not covered by the common attributes above or you want to override them. You can use data-* as well as regular attribute names. Empty attributes (without value) are also allowed. For example, to make a FancyBox gallery, you may enter "data-fancybox-group" and "gallery1" for the attribute name and value, respectively.', 'LayerSlider'),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'desc' => ls__('Your list of custom attributes. Use this feature if your needs are not covered by the common attributes above or you want to override them. You can use data-* as well as regular attribute names. Empty attributes (without value) are also allowed. For example, to make a FancyBox gallery, you may enter "data-fancybox-group" and "gallery1" for the attribute name and value, respectively.'),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'outerAttributes' => array(
+        'outerAttributes' => [
             'value' => '',
-            'name' => ls__('Custom Attributes', 'LayerSlider'),
+            'name' => ls__('Custom Attributes'),
             'keys' => 'outerAttributes',
-            'desc' => ls__('Your list of custom attributes. Use this feature if your needs are not covered by the common attributes above or you want to override them. You can use data-* as well as regular attribute names. Empty attributes (without value) are also allowed. For example, to make a FancyBox gallery, you may enter "data-fancybox-group" and "gallery1" for the attribute name and value, respectively.', 'LayerSlider'),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'desc' => ls__('Your list of custom attributes. Use this feature if your needs are not covered by the common attributes above or you want to override them. You can use data-* as well as regular attribute names. Empty attributes (without value) are also allowed. For example, to make a FancyBox gallery, you may enter "data-fancybox-group" and "gallery1" for the attribute name and value, respectively.'),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
         // Styles
 
-        'width' => array(
+        'width' => [
             'value' => '',
-            'name' => ls__('Width', 'LayerSlider'),
+            'name' => ls__('Width'),
             'keys' => 'width',
-            'tooltip' => ls__("You can set the width of your layer. You can use pixels, percentage, or the default value 'auto'. Examples: 100px, 50% or auto.", "LayerSlider"),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'tooltip' => ls__("You can set the width of your layer. You can use pixels, percentage, or the default value 'auto'. Examples: 100px, 50% or auto."),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'height' => array(
+        'height' => [
             'value' => '',
-            'name' => ls__('Height', 'LayerSlider'),
+            'name' => ls__('Height'),
             'keys' => 'height',
-            'tooltip' => ls__("You can set the height of your layer. You can use pixels, percentage, or the default value 'auto'. Examples: 100px, 50% or auto", "LayerSlider"),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'tooltip' => ls__("You can set the height of your layer. You can use pixels, percentage, or the default value 'auto'. Examples: 100px, 50% or auto"),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'top' => array(
+        'top' => [
             'value' => '10px',
-            'name' => ls__('Top', 'LayerSlider'),
+            'name' => ls__('Top'),
             'keys' => 'top',
-            'tooltip' => ls__("The layer position from the top of the slide. You can use pixels and percentage. Examples: 100px or 50%. You can move your layers in the preview above with a drag n' drop, or set the exact values here.", "LayerSlider"),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'tooltip' => ls__("The layer position from the top of the slide. You can use pixels and percentage. Examples: 100px or 50%. You can move your layers in the preview above with a drag n' drop, or set the exact values here."),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'left' => array(
+        'left' => [
             'value' => '10px',
-            'name' => ls__('Left', 'LayerSlider'),
+            'name' => ls__('Left'),
             'keys' => 'left',
-            'tooltip' => ls__("The layer position from the left side of the slide. You can use pixels and percentage. Examples: 100px or 50%. You can move your layers in the preview above with a drag n' drop, or set the exact values here.", "LayerSlider"),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'tooltip' => ls__("The layer position from the left side of the slide. You can use pixels and percentage. Examples: 100px or 50%. You can move your layers in the preview above with a drag n' drop, or set the exact values here."),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'paddingTop' => array(
+        'paddingTop' => [
             'value' => '',
-            'name' => ls__('Top', 'LayerSlider'),
+            'name' => ls__('Top'),
             'keys' => 'padding-top',
-            'tooltip' => ls__('Padding on the top of the layer. Example: 10px', 'LayerSlider'),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'tooltip' => ls__('Padding on the top of the layer. Example: 10px'),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'paddingRight' => array(
+        'paddingRight' => [
             'value' => '',
-            'name' => ls__('Right', 'LayerSlider'),
+            'name' => ls__('Right'),
             'keys' => 'padding-right',
-            'tooltip' => ls__('Padding on the right side of the layer. Example: 10px', 'LayerSlider'),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'tooltip' => ls__('Padding on the right side of the layer. Example: 10px'),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'paddingBottom' => array(
+        'paddingBottom' => [
             'value' => '',
-            'name' => ls__('Bottom', 'LayerSlider'),
+            'name' => ls__('Bottom'),
             'keys' => 'padding-bottom',
-            'tooltip' => ls__('Padding on the bottom of the layer. Example: 10px', 'LayerSlider'),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'tooltip' => ls__('Padding on the bottom of the layer. Example: 10px'),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'paddingLeft' => array(
+        'paddingLeft' => [
             'value' => '',
-            'name' => ls__('Left', 'LayerSlider'),
+            'name' => ls__('Left'),
             'keys' => 'padding-left',
-            'tooltip' => ls__('Padding on the left side of the layer. Example: 10px', 'LayerSlider'),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'tooltip' => ls__('Padding on the left side of the layer. Example: 10px'),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'borderTop' => array(
+        'borderTop' => [
             'value' => '',
-            'name' => ls__('Top', 'LayerSlider'),
+            'name' => ls__('Top'),
             'keys' => 'border-top',
-            'tooltip' => ls__('Border on the top of the layer. Example: 5px solid #000', 'LayerSlider'),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'tooltip' => ls__('Border on the top of the layer. Example: 5px solid #000'),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'borderRight' => array(
+        'borderRight' => [
             'value' => '',
-            'name' => ls__('Right', 'LayerSlider'),
+            'name' => ls__('Right'),
             'keys' => 'border-right',
-            'tooltip' => ls__('Border on the right side of the layer. Example: 5px solid #000', 'LayerSlider'),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'tooltip' => ls__('Border on the right side of the layer. Example: 5px solid #000'),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'borderBottom' => array(
+        'borderBottom' => [
             'value' => '',
-            'name' => ls__('Bottom', 'LayerSlider'),
+            'name' => ls__('Bottom'),
             'keys' => 'border-bottom',
-            'tooltip' => ls__('Border on the bottom of the layer. Example: 5px solid #000', 'LayerSlider'),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'tooltip' => ls__('Border on the bottom of the layer. Example: 5px solid #000'),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'borderLeft' => array(
+        'borderLeft' => [
             'value' => '',
-            'name' => ls__('Left', 'LayerSlider'),
+            'name' => ls__('Left'),
             'keys' => 'border-left',
-            'tooltip' => ls__('Border on the left side of the layer. Example: 5px solid #000', 'LayerSlider'),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'tooltip' => ls__('Border on the left side of the layer. Example: 5px solid #000'),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'fontFamily' => array(
+        'fontFamily' => [
             'value' => '',
-            'name' => ls__('Family', 'LayerSlider'),
+            'name' => ls__('Family'),
             'keys' => 'font-family',
-            'tooltip' => ls__('List of your chosen fonts separated with a comma. Please use apostrophes if your font names contains white spaces. Example: Helvetica, Arial, sans-serif', 'LayerSlider')
-        ),
+            'tooltip' => ls__('List of your chosen fonts separated with a comma. Please use apostrophes if your font names contains white spaces. Example: Helvetica, Arial, sans-serif'),
+        ],
 
-        'fontSize' => array(
+        'fontSize' => [
             'value' => '',
-            'name' => ls__('Font size', 'LayerSlider'),
+            'name' => ls__('Font size'),
             'keys' => 'font-size',
-            'tooltip' => ls__('The font size in pixels. Example: 16px.', 'LayerSlider'),
-            'attrs' => array('data-options' => '["9", "10", "11", "12", "13", "14", "18", "24", "36", "48", "64", "96"]'),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'tooltip' => ls__('The font size in pixels. Example: 16px.'),
+            'attrs' => ['data-options' => '["9", "10", "11", "12", "13", "14", "18", "24", "36", "48", "64", "96"]'],
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'lineHeight' => array(
+        'lineHeight' => [
             'value' => '',
-            'name' => ls__('Line height', 'LayerSlider'),
+            'name' => ls__('Line height'),
             'keys' => 'line-height',
-            'tooltip' => ls__("The line height of your text. The default setting is 'normal'. Example: 22px", "LayerSlider"),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'tooltip' => ls__("The line height of your text. The default setting is 'normal'. Example: 22px"),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'fontWeight' => array(
+        'fontWeight' => [
             'value' => 400,
-            'name' => ls__('Font weight', 'LayerSlider'),
+            'name' => ls__('Font weight'),
             'keys' => 'font-weight',
-            'tooltip' => ls__('Sets the font boldness. Please note, not every font supports all the listed variants, thus some settings may have the same result.', ''),
-            'options' => array(
-                '100' => ls__('100 (UltraLight)', 'LayerSlider'),
-                '200' => ls__('200 (Thin)', 'LayerSlider'),
-                '300' => ls__('300 (Light)', 'LayerSlider'),
-                '400' => ls__('400 (Regular)', 'LayerSlider'),
-                '500' => ls__('500 (Medium)', 'LayerSlider'),
-                '600' => ls__('600 (Semibold)', 'LayerSlider'),
-                '700' => ls__('700 (Bold)', 'LayerSlider'),
-                '800' => ls__('800 (Heavy)', 'LayerSlider'),
-                '900' => ls__('900 (Black)', 'LayerSlider')
-            ),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'tooltip' => ls__('Sets the font boldness. Please note, not every font supports all the listed variants, thus some settings may have the same result.'),
+            'options' => [
+                '100' => ls__('100 (UltraLight)'),
+                '200' => ls__('200 (Thin)'),
+                '300' => ls__('300 (Light)'),
+                '400' => ls__('400 (Regular)'),
+                '500' => ls__('500 (Medium)'),
+                '600' => ls__('600 (Semibold)'),
+                '700' => ls__('700 (Bold)'),
+                '800' => ls__('800 (Heavy)'),
+                '900' => ls__('900 (Black)'),
+            ],
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'fontStyle' => array(
+        'fontStyle' => [
             'value' => 'normal',
-            'name' => ls__('Font style', 'LayerSlider'),
+            'name' => ls__('Font style'),
             'keys' => 'font-style',
-            'tooltip' => ls__('Oblique is an auto-generated italic version of your chosen font and can force slating even if there is no italic font variant available. However, you should use the regular italic option whenever is possible. Please double check to load italic font variants when using Google Fonts.', ''),
-            'options' => array(
-                'normal' => ls__('Normal', 'LayerSlider'),
-                'italic' => ls__('Italic', 'LayerSlider'),
-                'oblique' => ls__('Oblique (Forced slant)', 'LayerSlider')
-            ),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'tooltip' => ls__('Oblique is an auto-generated italic version of your chosen font and can force slating even if there is no italic font variant available. However, you should use the regular italic option whenever is possible. Please double check to load italic font variants when using Google Fonts.'),
+            'options' => [
+                'normal' => ls__('Normal'),
+                'italic' => ls__('Italic'),
+                'oblique' => ls__('Oblique (Forced slant)'),
+            ],
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'textDecoration' => array(
+        'textDecoration' => [
             'value' => 'none',
-            'name' => ls__('Text decoration', 'LayerSlider'),
+            'name' => ls__('Text decoration'),
             'keys' => 'text-decoration',
-            'options' => array(
+            'options' => [
                 'none' => 'None',
-                'underline' => ls__('Underline', 'LayerSlider'),
-                'overline' => ls__('Overline', 'LayerSlider'),
-                'line-through' => ls__('Line through', 'LayerSlider')
+                'underline' => ls__('Underline'),
+                'overline' => ls__('Overline'),
+                'line-through' => ls__('Line through'),
+            ],
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-            ),
-            'props' => array(
-                'meta' => true
-            )
-        ),
-
-        'letterSpacing' => array(
+        'letterSpacing' => [
             'value' => '',
-            'name' => ls__('Letter spacing', 'LayerSlider'),
+            'name' => ls__('Letter spacing'),
             'keys' => 'letter-spacing',
-            'tooltip' => ls__('Controls the amount of space between each character. Useful the change letter density in a line or block of text. Negative values and decimals can be used.', 'LayerSlider'),
-            'attrs' => array(
+            'tooltip' => ls__('Controls the amount of space between each character. Useful the change letter density in a line or block of text. Negative values and decimals can be used.'),
+            'attrs' => [
                 'type' => 'number',
-                'step' => 0.5
-            ),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+                'step' => 0.5,
+            ],
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'textAlign' => array(
+        'textAlign' => [
             'value' => 'none',
-            'name' => ls__('Text align', 'LayerSlider'),
+            'name' => ls__('Text align'),
             'keys' => 'text-align',
-            'options' => array(
-                'initial' => ls__('Initial (Language default)', 'LayerSlider'),
-                'left' => ls__('Left', 'LayerSlider'),
-                'right' => ls__('Right', 'LayerSlider'),
-                'center' => ls__('Center', 'LayerSlider'),
-                'justify' => ls__('Justify', 'LayerSlider')
+            'options' => [
+                'initial' => ls__('Initial (Language default)'),
+                'left' => ls__('Left'),
+                'right' => ls__('Right'),
+                'center' => ls__('Center'),
+                'justify' => ls__('Justify'),
+            ],
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-            ),
-            'props' => array(
-                'meta' => true
-            )
-        ),
-
-        'opacity' => array(
+        'opacity' => [
             'value' => 1,
-            'name' => ls__('Opacity', 'LayerSlider'),
+            'name' => ls__('Opacity'),
             'keys' => 'opacity',
-            'tooltip' => ls__('Fades the layer. You can use values between 1 and 0 to set the layer fully opaque or transparent respectively. For example, the value 0.5 will make the layer semi-transparent.', 'LayerSlider'),
-            'attrs' => array(
+            'tooltip' => ls__('Fades the layer. You can use values between 1 and 0 to set the layer fully opaque or transparent respectively. For example, the value 0.5 will make the layer semi-transparent.'),
+            'attrs' => [
                 'min' => 0,
                 'max' => 1,
-                'step' => 0.1
-            ),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+                'step' => 0.1,
+            ],
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'minFontSize' => array(
+        'minFontSize' => [
             'value' => '',
-            'name' => ls__('Min. font size', 'LayerSlider'),
+            'name' => ls__('Min. font size'),
             'keys' => 'minfontsize',
-            'tooltip' => ls__('The minimum font size in a responsive slider. This option allows you to prevent your texts layers becoming too small on smaller screens.', 'LayerSlider')
-        ),
+            'tooltip' => ls__('The minimum font size in a responsive slider. This option allows you to prevent your texts layers becoming too small on smaller screens.'),
+        ],
 
-        'minMobileFontSize' => array(
+        'minMobileFontSize' => [
             'value' => '',
-            'name' => ls__('Min. mobile font size', 'LayerSlider'),
+            'name' => ls__('Min. mobile font size'),
             'keys' => 'minmobilefontsize',
-            'tooltip' => ls__('The minimum font size in a responsive slider on mobile devices. This option allows you to prevent your texts layers becoming too small on smaller screens.', 'LayerSlider')
-        ),
+            'tooltip' => ls__('The minimum font size in a responsive slider on mobile devices. This option allows you to prevent your texts layers becoming too small on smaller screens.'),
+        ],
 
-
-
-        'color' => array(
+        'color' => [
             'value' => '',
-            'name' => ls__('Color', 'LayerSlider'),
+            'name' => ls__('Color'),
             'keys' => 'color',
-            'tooltip' => ls__('The color of your text. You can use color names, hexadecimal, RGB or RGBA values. Example: #333', 'LayerSlider'),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'tooltip' => ls__('The color of your text. You can use color names, hexadecimal, RGB or RGBA values. Example: #333'),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'background' => array(
+        'background' => [
             'value' => '',
-            'name' => ls__('Background', 'LayerSlider'),
+            'name' => ls__('Background'),
             'keys' => 'background',
-            'tooltip' => ls__("The background color of your layer. You can use color names, hexadecimal, RGB or RGBA values as well as the 'transparent' keyword. Example: #FFF", "LayerSlider"),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'tooltip' => ls__("The background color of your layer. You can use color names, hexadecimal, RGB or RGBA values as well as the 'transparent' keyword. Example: #FFF"),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'borderRadius' => array(
+        'borderRadius' => [
             'value' => '',
-            'name' => ls__('Rounded corners', 'LayerSlider'),
+            'name' => ls__('Rounded corners'),
             'keys' => 'border-radius',
-            'tooltip' => ls__('If you want rounded corners, you can set its radius here. Example: 5px', 'LayerSlider'),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'tooltip' => ls__('If you want rounded corners, you can set its radius here. Example: 5px'),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'wordWrap' => array(
+        'wordWrap' => [
             'value' => false,
             'name' => 'Word-wrap',
             'keys' => 'wordwrap',
             'tooltip' => 'Enable this option to allow line breaking if your text content does not fit into one line. By default, layers have auto sizes based on the text length. If you set custom sizes, it\'s recommended to enable this option in most cases.',
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'style' => array(
+        'style' => [
             'value' => '',
-            'name' => ls__('Custom styles', 'LayerSlider'),
+            'name' => ls__('Custom styles'),
             'keys' => 'style',
-            'tooltip' => ls__('If you want to set style settings other than above, you can use here any CSS codes. Please make sure to write valid markup.', 'LayerSlider'),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'tooltip' => ls__('If you want to set style settings other than above, you can use here any CSS codes. Please make sure to write valid markup.'),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'styles' => array(
+        'styles' => [
             'value' => '',
             'keys' => 'styles',
-            'props' => array(
+            'props' => [
                 'meta' => true,
-                'raw' => true
-            )
-        ),
+                'raw' => true,
+            ],
+        ],
 
-        'rotate' => array(
+        'rotate' => [
             'value' => 0,
-            'name' => ls__('Rotate', 'LayerSlider'),
+            'name' => ls__('Rotate'),
             'keys' => 'rotation',
-            'tooltip' => ls__('The rotation angle where this layer animates toward when entering into the slider canvas. Negative values are allowed for counterclockwise rotation.', 'LayerSlider')
-        ),
+            'tooltip' => ls__('The rotation angle where this layer animates toward when entering into the slider canvas. Negative values are allowed for counterclockwise rotation.'),
+        ],
 
-        'rotateX' => array(
+        'rotateX' => [
             'value' => 0,
-            'name' => ls__('RotateX', 'LayerSlider'),
+            'name' => ls__('RotateX'),
             'keys' => 'rotationX',
-            'tooltip' => ls__('The rotation angle on the horizontal axis where this animates toward when entering into the slider canvas. Negative values are allowed for reversed direction.', 'LayerSlider')
-        ),
+            'tooltip' => ls__('The rotation angle on the horizontal axis where this animates toward when entering into the slider canvas. Negative values are allowed for reversed direction.'),
+        ],
 
-        'rotateY' => array(
+        'rotateY' => [
             'value' => 0,
-            'name' => ls__('RotateY', 'LayerSlider'),
+            'name' => ls__('RotateY'),
             'keys' => 'rotationY',
-            'tooltip' => ls__('The rotation angle on the vertical axis where this layer animates toward when entering into the slider canvas. Negative values are allowed for reversed direction.', 'LayerSlider')
-        ),
+            'tooltip' => ls__('The rotation angle on the vertical axis where this layer animates toward when entering into the slider canvas. Negative values are allowed for reversed direction.'),
+        ],
 
-        'scaleX' => array(
+        'scaleX' => [
             'value' => 1,
-            'name' => ls__('ScaleX', 'LayerSlider'),
+            'name' => ls__('ScaleX'),
             'keys' => 'scaleX',
-            'tooltip' => ls__('The layer horizontal scale where this layer animates toward when entering into the slider canvas.', 'LayerSlider')
-        ),
+            'tooltip' => ls__('The layer horizontal scale where this layer animates toward when entering into the slider canvas.'),
+            'attrs' => [
+                'step' => 0.1,
+            ],
+        ],
 
-        'scaleY' => array(
+        'scaleY' => [
             'value' => 1,
-            'name' => ls__('ScaleY', 'LayerSlider'),
+            'name' => ls__('ScaleY'),
             'keys' => 'scaleY',
-            'tooltip' => ls__('The layer vertical scale where this layer animates toward when entering into the slider canvas.', 'LayerSlider')
-        ),
+            'tooltip' => ls__('The layer vertical scale where this layer animates toward when entering into the slider canvas.'),
+            'attrs' => [
+                'step' => 0.1,
+            ],
+        ],
 
-        'skewX' => array(
+        'skewX' => [
             'value' => 0,
-            'name' => ls__('SkewX', 'LayerSlider'),
+            'name' => ls__('SkewX'),
             'keys' => 'skewX',
-            'tooltip' => ls__('The layer horizontal skewing angle where this layer animates toward when entering into the slider canvas.', 'LayerSlider')
-        ),
+            'tooltip' => ls__('The layer horizontal skewing angle where this layer animates toward when entering into the slider canvas.'),
+        ],
 
-        'skewY' => array(
+        'skewY' => [
             'value' => 0,
-            'name' => ls__('SkewY', 'LayerSlider'),
+            'name' => ls__('SkewY'),
             'keys' => 'skewY',
-            'tooltip' => ls__('The layer vertical skewing angle where this layer animates toward when entering into the slider canvas.', 'LayerSlider')
-        ),
+            'tooltip' => ls__('The layer vertical skewing angle where this layer animates toward when entering into the slider canvas.'),
+        ],
 
-        'position' => array(
+        'position' => [
             'value' => 'relative',
-            'name' => ls__('Calculate positions from', 'LayerSlider'),
+            'name' => ls__('Calculate positions from'),
             'keys' => 'position',
-            'tooltip' => ls__('Sets the layer position origin from which top and left values are calculated. The default is the upper left corner of the slider canvas. In a full width and full size slider, your content is centered based on the screen size to achieve the best possible fit. By selecting the "sides of the screen" option in those scenarios, you can allow layers to escape the centered inner area and stick to the sides of the screen.', 'LayerSlider'),
-            'options' => array(
-                'relative' => ls__('sides of the slider', 'LayerSlider'),
-                'fixed' => ls__('sides of the screen', 'LayerSlider'),
-            )
-        ),
+            'tooltip' => ls__('Sets the layer position origin from which top and left values are calculated. The default is the upper left corner of the slider canvas. In a full width and full size slider, your content is centered based on the screen size to achieve the best possible fit. By selecting the "sides of the screen" option in those scenarios, you can allow layers to escape the centered inner area and stick to the sides of the screen.'),
+            'options' => [
+                'relative' => ls__('sides of the slider'),
+                'fixed' => ls__('sides of the screen'),
+            ],
+        ],
 
-        'zIndex' => array(
+        'zIndex' => [
             'value' => '',
-            'name' => ls__('Stacking order', 'LayerSlider'),
+            'name' => ls__('Stacking order'),
             'keys' => 'z-index',
-            'tooltip' => ls__("This option controls the vertical stacking order of layers that overlap. In CSS, it's commonly called as z-index. Elements with a higher value are stacked in front of elements with a lower one, effectively covering them. By default, this value is calculated automatically based on the order of your layers, thus simply re-ordering them can fix overlap issues. Use this option only if you want to set your own value manually in special cases like using static layers.<br><br>On each slide, the stacking order starts counting from 100. Providing a number less than 100 will put the layer behind every other layer on all slides. Specifying a much greater number, for example 500, will make the layer to be on top of everything else.", 'LayerSlider'),
-            'attrs' => array(
+            'tooltip' => ls__("This option controls the vertical stacking order of layers that overlap. In CSS, it's commonly called as z-index. Elements with a higher value are stacked in front of elements with a lower one, effectively covering them. By default, this value is calculated automatically based on the order of your layers, thus simply re-ordering them can fix overlap issues. Use this option only if you want to set your own value manually in special cases like using static layers.<br><br>On each slide, the stacking order starts counting from 100. Providing a number less than 100 will put the layer behind every other layer on all slides. Specifying a much greater number, for example 500, will make the layer to be on top of everything else."),
+            'attrs' => [
                 'type' => 'number',
                 'min' => 1,
-                'placeholder' => 'auto'
-            )
-        ),
+                'placeholder' => 'auto',
+            ],
+        ],
 
-        'blendMode' => array(
+        'blendMode' => [
             'value' => 'normal',
-            'name' => ls__('Blend mode', 'LayerSlider'),
+            'name' => ls__('Blend mode'),
             'keys' => 'mix-blend-mode',
-            'tooltip' => ls__('Choose how layers and the slide background should blend into each other. Blend modes are an easy way to add eye-catching effects and is one of the most frequently used features in graphic and print design.', 'LayerSlider'),
+            'tooltip' => ls__('Choose how layers and the slide background should blend into each other. Blend modes are an easy way to add eye-catching effects and is one of the most frequently used features in graphic and print design.'),
             'premium' => true,
-            'options' => array(
+            'options' => [
                 'normal' => 'Normal',
                 'multiply' => 'Multiply',
                 'screen' => 'Screen',
@@ -4196,17 +4131,17 @@ $lsDefaults = array(
                 'hue' => 'Hue',
                 'saturation' => 'Saturation',
                 'color' => 'Color',
-                'luminosity' => 'Luminosity'
-            )
-        ),
+                'luminosity' => 'Luminosity',
+            ],
+        ],
 
-        'filter' => array(
+        'filter' => [
             'value' => '',
-            'name' => ls__('Filter', 'LayerSlider'),
+            'name' => ls__('Filter'),
             'keys' => 'filter',
-            'tooltip' => ls__('Filters provide effects like blurring or color shifting your layers. Click into the text field to see a selection of filters you can use. Although clicking on the pre-defined options will reset the text field, you can apply multiple filters simply by providing a space separated list of all the filters you would like to use. Click on the "Filter" link for more information.', 'LayerSlider'),
+            'tooltip' => ls__('Filters provide effects like blurring or color shifting your layers. Click into the text field to see a selection of filters you can use. Although clicking on the pre-defined options will reset the text field, you can apply multiple filters simply by providing a space separated list of all the filters you would like to use. Click on the "Filter" link for more information.'),
             'premium' => true,
-            'attrs' => array(
+            'attrs' => [
                 'data-options' => '[{
                     "name": "Blur",
                     "value": "blur(5px)"
@@ -4231,67 +4166,64 @@ $lsDefaults = array(
                 }, {
                     "name": "Sepia",
                     "value": "sepia(60%)"
-                }]'
-            )
-        ),
-
-
+                }]',
+            ],
+        ],
 
         // Attributes
 
-        'ID' => array(
+        'ID' => [
             'value' => '',
-            'name' => ls__('ID', 'LayerSlider'),
+            'name' => ls__('ID'),
             'keys' => 'id',
-            'tooltip' => ls__("You can apply an ID attribute on the HTML element of this layer to work with it in your custom CSS or Javascript code.", 'LayerSlider'),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'tooltip' => ls__('You can apply an ID attribute on the HTML element of this layer to work with it in your custom CSS or Javascript code.'),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'class' => array(
+        'class' => [
             'value' => '',
-            'name' => ls__('Classes', 'LayerSlider'),
+            'name' => ls__('Classes'),
             'keys' => 'class',
-            'tooltip' => ls__('You can apply classes on the HTML element of this layer to work with it in your custom CSS or Javascript code.', 'LayerSlider'),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'tooltip' => ls__('You can apply classes on the HTML element of this layer to work with it in your custom CSS or Javascript code.'),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'title' => array(
+        'title' => [
             'value' => '',
-            'name' => ls__('Title', 'LayerSlider'),
+            'name' => ls__('Title'),
             'keys' => 'title',
-            'tooltip' => ls__('You can add a title to this layer which will display as a tooltip if someone holds his mouse cursor over the layer.', 'LayerSlider'),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'tooltip' => ls__('You can add a title to this layer which will display as a tooltip if someone holds his mouse cursor over the layer.'),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'alt' => array(
+        'alt' => [
             'value' => '',
-            'name' => ls__('Alt', 'LayerSlider'),
+            'name' => ls__('Alt'),
             'keys' => 'alt',
-            'tooltip' => ls__('Name or describe your image layer, so search engines and VoiceOver softwares can properly identify it.', 'LayerSlider'),
-            'props' => array(
-                'meta' => true
-            )
-        ),
+            'tooltip' => ls__('Name or describe your image layer, so search engines and VoiceOver softwares can properly identify it.'),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
 
-        'rel' => array(
+        'rel' => [
             'value' => '',
-            'name' => ls__('Rel', 'LayerSlider'),
+            'name' => ls__('Rel'),
             'keys' => 'rel',
-            'tooltip' => ls__('Plugins and search engines may use this attribute to get more information about the role and behavior of a link.', 'LayerSlider'),
-            'props' => array(
-                'meta' => true
-            )
-        )
+            'tooltip' => ls__('Plugins and search engines may use this attribute to get more information about the role and behavior of a link.'),
+            'props' => [
+                'meta' => true,
+            ],
+        ],
+    ],
 
-    ),
-
-    'easings' => array(
+    'easings' => [
         'linear',
         'swing',
         'easeInQuad',
@@ -4323,6 +4255,6 @@ $lsDefaults = array(
         'easeInOutBack',
         'easeInBounce',
         'easeOutBounce',
-        'easeInOutBounce'
-    )
-);
+        'easeInOutBounce',
+    ],
+];

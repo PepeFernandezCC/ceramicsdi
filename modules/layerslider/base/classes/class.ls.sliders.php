@@ -4,51 +4,43 @@
  * https://creativeslider.webshopworks.com
  *
  * @author    WebshopWorks <info@webshopworks.com>
- * @copyright 2015-2020 WebshopWorks
+ * @copyright 2015-2025 WebshopWorks
  * @license   One Domain Licence
  *
  * Not allowed to resell or redistribute this software
  */
-
-defined('_PS_VERSION_') or exit;
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 class LsSliders
 {
-
     /**
-     * @var array $results Array containing the result of the last DB query
-     * @access public
+     * @var array Array containing the result of the last DB query
      */
-    public static $results = array();
-
-
+    public static $results = [];
 
     /**
-     * @var int $count Count of found sliders in the last DB query
-     * @access public
+     * @var int Count of found sliders in the last DB query
      */
-    public static $count = null;
-
-
+    public static $count;
 
     /**
-     * Private constructor to prevent instantiate static class
+     * Private constructor to prevent instantiate static class.
      *
      * @since 5.0.0
-     * @access private
+     *
      * @return void
      */
     private function __construct()
     {
     }
 
-
-
     /**
-     * Returns the count of found sliders in the last DB query
+     * Returns the count of found sliders in the last DB query.
      *
      * @since 5.0.0
-     * @access public
+     *
      * @return int Count of found sliders in the last DB query
      */
     public static function count()
@@ -56,116 +48,78 @@ class LsSliders
         return self::$count;
     }
 
-
-
     /**
-     * Find sliders with the provided filters
+     * Find sliders with the provided filters.
      *
      * @since 5.0.0
-     * @access public
+     *
      * @param mixed $args Find any slider with the provided filters
+     *
      * @return mixed Array on success, false otherwise
      */
-    public static function find($args = array())
+    public static function find($args = [])
     {
-
-        // Find by slider ID
-        if (is_numeric($args) && (int)$args == $args) {
+        if (is_numeric($args) && (int) $args == $args) {
+            // Find by slider ID
             return self::_getById((int) $args);
-
-        // Random slider
-        } elseif ($args === 'random') {
+        } elseif ('random' === $args) {
+            // Random slider
             return self::_getRandom();
-
-        // Find by slider slug
         } elseif (is_string($args)) {
+            // Find by slider slug
             return self::_getBySlug($args);
-
-        // Find by list of slider IDs
         } elseif (is_array($args) && isset($args[0]) && is_numeric($args[0])) {
+            // Find by list of slider IDs
             return self::_getByIds($args);
-
-        // Find by query
         } else {
-            // Defaults
-            $defaults = array(
-                'columns' => '*',
-                'where' => '',
-                'exclude' => array('removed'),
+            // Find by query
+            $defaults = [
+                'term' => '',
+                'exclude' => ['removed'],
                 'orderby' => 'date_c',
                 'order' => 'DESC',
                 'limit' => 10,
                 'page' => 1,
-                'data' => true
-            );
+                'data' => true,
+            ];
+            $args = array_merge($defaults, $args);
 
-            // Merge user data with defaults
-            foreach ($defaults as $key => $val) {
-                if (!isset($args[$key])) {
-                    $args[$key] = $val;
-                }
-            }
-
-            // Escape user data
-            foreach ($args as $key => $val) {
-                if ($key !== 'where') {
-                    $args[$key] = ls_esc_sql($val);
-                }
-            }
-
-            $columns = array('id', 'author', 'name', 'slug', 'data', 'date_c', 'date_m', 'flag_hidden', 'flag_deleted', 'schedule_start', 'schedule_end');
-
-            $args['orderby'] = in_array($args['orderby'], $columns) ? $args['orderby'] : 'date_c';
-            $args['order'] = ($args['order'] === 'DESC') ? 'DESC' : 'ASC';
-            $args['limit'] = (int) $args['limit'];
-            $args['page'] = (int) $args['page'];
-            $args['data'] = (bool) $args['data'];
-
-            // Exclude
-            if (!empty($args['exclude'])) {
-                $exclude = array();
-                if (in_array('hidden', $args['exclude'])) {
-                    $exclude[] = "flag_hidden = '0'";
-                }
-
-                if (in_array('removed', $args['exclude'])) {
-                    $exclude[] = "flag_deleted = '0'";
-                }
-
-                $args['exclude'] = implode(' AND ', $exclude);
-            }
-
-            // Where
-            $where = '';
-            if (!empty($args['where']) && !empty($args['exclude'])) {
-                $where = "WHERE ({$args['exclude']}) AND ({$args['where']}) ";
-            } elseif (!empty($args['where'])) {
-                $where = "WHERE {$args['where']} ";
-            } elseif (!empty($args['exclude'])) {
-                $where = "WHERE {$args['exclude']} ";
-            }
-
-            // Some adjustments
-            $args['limit'] = ($args['limit'] * $args['page'] - $args['limit']).', '.$args['limit'];
+            in_array($args['orderby'], [
+                'id',
+                'author',
+                'name',
+                'slug',
+                'data',
+                'date_c',
+                'date_m',
+                'flag_hidden',
+                'flag_deleted',
+                'schedule_start',
+                'schedule_end',
+            ]) || $args['orderby'] = 'date_c';
 
             // Build the query
-            $wpdb = $GLOBALS['ls_db'];
-            $table = $wpdb->prefix.LS_DB_TABLE;
-            $sliders = $wpdb->getResults("SELECT SQL_CALC_FOUND_ROWS {$args['columns']} FROM $table $where ORDER BY {$args['orderby']} {$args['order']} LIMIT {$args['limit']}", ARRAY_A);
+            $db = Db::getInstance();
+            $query = (new DbQuery())->select('SQL_CALC_FOUND_ROWS *')->from('layerslider');
+
+            if ($args['exclude']) {
+                in_array('hidden', $args['exclude']) && $query->where('`flag_hidden` = 0');
+                in_array('removed', $args['exclude']) && $query->where('`flag_deleted` = 0');
+            }
+            if ($args['term']) {
+                $query->where('`name` LIKE "%' . pSQL($args['term']) . '%" OR `slug` LIKE "%' . pSQL($args['term']) . '%"');
+            }
+            $query->orderBy(bqSQL($args['orderby']) . ('DESC' === $args['order'] ? ' DESC' : ''));
+            $query->limit($args['limit'], $args['limit'] * $args['page'] - $args['limit']);
+            $sliders = $db->executeS($query);
 
             // Set counter
-            $found = $wpdb->getCol("SELECT FOUND_ROWS()");
-            self::$count = (int) $found[0];
-
-            // Return original value on error
-            if (!is_array($sliders)) {
-                return $sliders;
-            }
+            self::$count = (int) $db->getValue('SELECT FOUND_ROWS()');
 
             // Parse slider data
-            if ($args['data']) {
-                foreach ($sliders as $key => $val) {
-                    $sliders[$key]['data'] = Tools::jsonDecode($val['data'], true);
+            if ($args['data'] && $sliders) {
+                foreach ($sliders as &$slider) {
+                    $slider['data'] = json_decode($slider['data'], true);
                 }
             }
 
@@ -174,352 +128,292 @@ class LsSliders
         }
     }
 
-
-
     /**
-     * Add slider with the provided name and optional slider data
+     * Add slider with the provided name and optional slider data.
      *
      * @since 5.0.0
-     * @access public
+     *
      * @param string $title The title of the slider to create
      * @param array $data The settings of the slider to create
+     *
      * @return int The slider database ID inserted
      */
-    public static function add($title = 'Unnamed', $data = array(), $slug = '')
+    public static function add($title = 'Unnamed', $data = [], $slug = '')
     {
-
-        $wpdb = $GLOBALS['ls_db'];
-
         // Slider data
-        $data = !empty($data) ? $data : array(
-            'properties' => array(
+        $data = $data ?: [
+            'properties' => [
                 'createdWith' => LS_PLUGIN_VERSION,
                 'sliderVersion' => LS_PLUGIN_VERSION,
                 'title' => $title,
                 'new' => true,
-            ),
-            'layers' => array(array()),
-        );
+            ],
+            'layers' => [[]],
+        ];
 
-        // Fix WP 4.2 issue with longer varchars
-        // than the column length
+        // Fix issue with longer varchars than the column length
         if (Tools::strlen($title) > 99) {
-            $title = Tools::substr($title, 0, (99-Tools::strlen($title)));
+            $title = Tools::substr($title, 0, 99 - Tools::strlen($title));
         }
 
-        // Insert slider, WPDB will escape data automatically
-        $wpdb->insert($wpdb->prefix.LS_DB_TABLE, array(
-            'author' => ls_get_current_user_id(),
-            'name' => $title,
-            'slug' => $slug,
-            'data' => Tools::jsonEncode($data),
-            'date_c' => time(),
-            'date_m' => time()
-        ), array(
-            '%d', '%s', '%s', '%s', '%d', '%d'
-        ));
-        Db::getInstance()->insert('layerslider_module', array('id_slider' => (int)$wpdb->insert_id));
+        // Insert slider
+        $time = time();
+        $db = Db::getInstance();
+        $db->insert('layerslider', [
+            'author' => (int) ls_get_current_user_id(),
+            'name' => pSQL($title),
+            'slug' => pSQL($slug),
+            'data' => pSQL(json_encode($data), true),
+            'date_c' => (int) $time,
+            'date_m' => (int) $time,
+        ]);
+        $id_slider = $db->insert_id();
+        $db->insert('layerslider_module', ['id_slider' => (int) $id_slider]);
 
-        // Return insert database ID
-        return $wpdb->insert_id;
+        // Return inserted slider ID
+        return $id_slider;
     }
 
-
-
     /**
-     * Updates sliders
+     * Updates sliders.
      *
      * @since 5.2.0
-     * @access public
+     *
      * @param int $id The database ID of the slider to be updated
      * @param string $title The new title of the slider
      * @param array $data The new settings of the slider
+     *
      * @return bool Returns true on success, false otherwise
      */
-    public static function update($id = 0, $title = 'Unnamed', $data = array(), $slug = '')
+    public static function update($id = 0, $title = 'Unnamed', $data = [], $slug = '')
     {
-
-        $wpdb = $GLOBALS['ls_db'];
+        // Check ID
+        if (!is_int($id)) {
+            return false;
+        }
 
         // Slider data
-        $data = !empty($data) ? $data : array(
-            'properties' => array('title' => $title),
-            'layers' => array(array()),
-        );
+        $data = $data ?: [
+            'properties' => ['title' => $title],
+            'layers' => [[]],
+        ];
 
-        // Fix WP 4.2 issue with longer varchars
-        // than the column length
+        // Fix issue with longer varchars than the column length
         if (Tools::strlen($title) > 99) {
-            $title = Tools::substr($title, 0, (99-Tools::strlen($title)));
+            $title = Tools::substr($title, 0, 99 - Tools::strlen($title));
         }
 
         // Status
         $status = 0;
-        if (empty($data['properties']['status']) || $data['properties']['status'] === 'false') {
+        if (empty($data['properties']['status']) || 'false' === $data['properties']['status']) {
             $status = 1;
         }
 
         // Schedule
-        $schedule = array('schedule_start' => 0, 'schedule_end' => 0);
+        $schedule = ['schedule_start' => 0, 'schedule_end' => 0];
         foreach ($schedule as $key => $val) {
-            if (! empty($data['properties'][$key])) {
+            if (!empty($data['properties'][$key])) {
                 if (is_numeric($data['properties'][$key])) {
                     $schedule[$key] = (int) $data['properties'][$key];
                 } else {
                     $tz = date_default_timezone_get();
                     date_default_timezone_set(ls_get_option('timezone_string'));
-                    $schedule[$key] = (int) strtotime($data['properties'][$key]);
+                    $schedule[$key] = strtotime($data['properties'][$key]);
                     date_default_timezone_set($tz);
                 }
             }
         }
 
-        // Insert slider, WPDB will escape data automatically
-        $wpdb->update(
-            $wpdb->prefix.LS_DB_TABLE,
-            array(
-                'name' => $title,
-                'slug' => $slug,
-                'data' => Tools::jsonEncode($data),
-                'schedule_start' => $schedule['schedule_start'],
-                'schedule_end' => $schedule['schedule_end'],
-                'date_m' => time(),
-                'flag_hidden' => $status
-            ),
-            array('id' => $id),
-            array('%s', '%s', '%s', '%d', '%d', '%d', '%d')
-        );
-
-        // Return insert database ID
-        return true;
+        // Insert slider
+        return Db::getInstance()->update('layerslider', [
+            'name' => pSQL($title),
+            'slug' => pSQL($slug),
+            'data' => pSQL(json_encode($data), true),
+            'schedule_start' => (int) $schedule['schedule_start'],
+            'schedule_end' => (int) $schedule['schedule_end'],
+            'date_m' => (int) time(),
+            'flag_hidden' => (int) $status,
+        ], '`id` = ' . (int) $id, 1);
     }
-
 
     /**
      * Marking a slider as removed without deleting it
      * with its database ID.
      *
      * @since 5.0.0
-     * @access public
+     *
      * @param int $id The database ID if the slider to remove
+     *
      * @return bool Returns true on success, false otherwise
      */
     public static function remove($id = null)
     {
-
         // Check ID
         if (!is_int($id)) {
             return false;
         }
 
         // Remove
-        $wpdb = $GLOBALS['ls_db'];
-        $wpdb->update(
-            $wpdb->prefix.LS_DB_TABLE,
-            array('flag_deleted' => 1),
-            array('id' => $id),
-            '%d',
-            '%d'
-        );
         $db = Db::getInstance();
-        $table = $wpdb->prefix.'layerslider_module';
-        $row = $db->getRow("SELECT COUNT(m.hook) AS count, s.hook FROM $table m, (SELECT hook FROM $table WHERE id_slider = $id) s WHERE m.id_shop > -1 AND s.hook = m.hook");
-        if ($row && $row['hook'] && $row['count'] == 1) {
-            LayerSlider::$instance->unregisterHook($row['hook']);
-        }
-        $db->update('layerslider_module', array('id_shop' => -1), 'id_slider = '.$id);
+        $result = $db->update('layerslider', ['flag_deleted' => 1], '`id` = ' . (int) $id, 1);
 
-        return true;
+        // Unregister hook if needed
+        $hook = self::_getHookCount($id);
+        if ($hook && $hook['name'] && 1 == $hook['count']) {
+            LayerSlider::$instance->unregisterHook($hook['name']);
+        }
+        $db->update('layerslider_module', ['id_shop' => -1], '`id_slider` = ' . (int) $id, 1);
+
+        return $result;
     }
 
-
     /**
-     * Delete a slider by its database ID
+     * Delete a slider by its database ID.
      *
      * @since 5.0.0
-     * @access public
+     *
      * @param int $id The database ID if the slider to delete
+     *
      * @return bool Returns true on success, false otherwise
      */
     public static function delete($id = null)
     {
-
         // Check ID
         if (!is_int($id)) {
             return false;
         }
 
         // Delete
-        $wpdb = $GLOBALS['ls_db'];
-        $wpdb->delete($wpdb->prefix.LS_DB_TABLE, array('id' => $id), '%d');
-
         $db = Db::getInstance();
-        $table = $wpdb->prefix.'layerslider_module';
-        $row = $db->getRow("SELECT COUNT(m.hook) AS count, s.hook FROM $table m, (SELECT hook FROM $table WHERE id_slider = $id) s WHERE m.id_shop > -1 AND s.hook = m.hook");
-        if ($row && $row['hook'] && $row['count'] == 1) {
-            LayerSlider::$instance->unregisterHook($row['hook']);
+        $result = $db->delete('layerslider', '`id` = ' . (int) $id, 1);
+
+        // Unregister hook if needed
+        $hook = self::_getHookCount($id);
+        if ($hook && $hook['name'] && 1 == $hook['count']) {
+            LayerSlider::$instance->unregisterHook($hook['name']);
         }
-        Db::getInstance()->delete('layerslider_module', 'id_slider = '.(int)$id);
+        $db->delete('layerslider_module', '`id_slider` = ' . (int) $id, 1);
 
-        return true;
+        return $result;
     }
-
-
 
     /**
      * Restore a slider marked as removed previously by its database ID.
      *
      * @since 5.0.0
-     * @access public
+     *
      * @param int $id The database ID if the slider to restore
+     *
      * @return bool Returns true on success, false otherwise
      */
     public static function restore($id = null)
     {
-
         // Check ID
         if (!is_int($id)) {
             return false;
         }
 
-        // Remove
-        $wpdb = $GLOBALS['ls_db'];
-        $wpdb->update(
-            $wpdb->prefix.LS_DB_TABLE,
-            array('flag_deleted' => 0),
-            array('id' => $id),
-            '%d',
-            '%d'
-        );
+        // Restore
         $db = Db::getInstance();
-        $table = $wpdb->prefix.'layerslider_module';
-        $row = $db->getRow("SELECT COUNT(m.hook) AS count, s.hook FROM $table m, (SELECT hook FROM $table WHERE id_slider = $id) s WHERE m.id_shop > -1 AND s.hook = m.hook");
-        if ($row && $row['hook'] && $row['count'] == 0) {
-            LayerSlider::$instance->registerHook($row['hook']);
-        }
-        $db->update('layerslider_module', array('id_shop' => 0), 'id_slider = '.$id);
+        $result = $db->update('layerslider', ['flag_deleted' => 0], '`id` = ' . (int) $id, 1);
 
-        return true;
+        // Register hook if needed
+        $hook = self::_getHookCount($id);
+        if ($hook && $hook['name'] && 0 == $hook['count']) {
+            LayerSlider::$instance->registerHook($hook['name']);
+        }
+        $db->update('layerslider_module', ['id_shop' => 0], '`id_slider` = ' . (int) $id, 1);
+
+        return $result;
     }
 
-
-
+    private static function _getHookCount($id)
+    {
+        return Db::getInstance()->getRow('
+            SELECT COUNT(m.`hook`) AS count, s.`hook` AS name
+            FROM ' . _DB_PREFIX_ . 'layerslider_module m,
+                (SELECT `hook` FROM ' . _DB_PREFIX_ . 'layerslider_module WHERE `id_slider` = ' . (int) $id . ') s
+            WHERE m.`id_shop` > -1 AND s.`hook` = m.`hook`
+        ');
+    }
 
     private static function _getById($id = null)
     {
-
         // Check ID
         if (!is_int($id)) {
+            return false;
+        }
+
+        // Get Slider
+        $result = Db::getInstance()->getRow(
+            'SELECT * FROM ' . _DB_PREFIX_ . 'layerslider WHERE `id` = ' . (int) $id
+        );
+
+        // Decode slider data
+        if ($result) {
+            $result['data'] = json_decode($result['data'], true);
+        }
+
+        return $result;
+    }
+
+    private static function _getByIds(array $ids = [])
+    {
+        // Check IDs
+        if (!$ids) {
             return false;
         }
 
         // Get Sliders
-        $wpdb = $GLOBALS['ls_db'];
-        $table = $wpdb->prefix.LS_DB_TABLE;
-        $result = $wpdb->getRow("SELECT * FROM $table WHERE id = '$id' ORDER BY id DESC LIMIT 1", ARRAY_A);
-
-        // Check return value
-        if (!is_array($result)) {
-            return false;
-        }
-
-        // Return result
-        $result['data'] = Tools::jsonDecode($result['data'], true);
-        return $result;
-    }
-
-
-
-    private static function _getByIds($ids = null)
-    {
-
-        // Check ID
-        if (!is_array($ids)) {
-            return false;
-        }
-
-        // DB stuff
-        $wpdb = $GLOBALS['ls_db'];
-        $table = $wpdb->prefix.LS_DB_TABLE;
         $limit = count($ids);
-
-        // Collect IDs
-        if (is_array($ids) && !empty($ids)) {
-            $tmp = array();
-            foreach ($ids as $id) {
-                $tmp[] = 'id = \''.(int)$id.'\'';
-            }
-            $ids = implode(' OR ', $tmp);
-            unset($tmp);
-        }
-
-        // Make the call
-        $result = $wpdb->getResults("SELECT * FROM $table WHERE $ids ORDER BY id DESC LIMIT $limit", ARRAY_A);
+        $result = Db::getInstance()->executeS('
+            SELECT * FROM ' . _DB_PREFIX_ . 'layerslider
+            WHERE `id` IN (' . implode(',', array_map('intval', $ids)) . ')
+            ORDER BY `id` DESC LIMIT ' . (int) $limit
+        );
 
         // Decode slider data
-        if (is_array($result) && !empty($result)) {
-            foreach ($result as $key => $slider) {
-                $result[$key]['data'] = Tools::jsonDecode($slider['data'], true);
+        if ($result) {
+            foreach ($result as &$slider) {
+                $slider['data'] = json_decode($slider['data'], true);
             }
-
-            return $result;
-
-        // Failed query
-        } else {
-            return false;
         }
+
+        return $result;
     }
-
-
-
-
 
     private static function _getBySlug($slug)
     {
-
         // Check slug
-        if (empty($slug)) {
-            return false;
-        } else {
-            $slug = ls_esc_sql($slug);
-        }
-
-        // Get DB stuff
-        $wpdb = $GLOBALS['ls_db'];
-        $table = $wpdb->prefix.LS_DB_TABLE;
-
-        // Make the call
-        $result = $wpdb->getRow("SELECT * FROM $table WHERE slug = '$slug' ORDER BY id DESC LIMIT 1", ARRAY_A);
-
-        // Check return value
-        if (!is_array($result)) {
+        if (!$slug) {
             return false;
         }
 
-        // Return result
-        $result['data'] = Tools::jsonDecode($result['data'], true);
+        // Get Slider
+        $result = Db::getInstance()->getRow(
+            'SELECT * FROM ' . _DB_PREFIX_ . 'layerslider WHERE `slug` = "' . pSQL($slug) . '"'
+        );
+
+        // Decode slider data
+        if ($result) {
+            $result['data'] = json_decode($result['data'], true);
+        }
+
         return $result;
     }
 
-
-
     private static function _getRandom()
     {
+        // Get Slider
+        $result = Db::getInstance()->getRow(
+            'SELECT * FROM ' . _DB_PREFIX_ . 'layerslider WHERE `flag_hidden` = 0 AND `flag_deleted` = 0 ORDER BY RAND()'
+        );
 
-        // Get DB stuff
-        $wpdb = $GLOBALS['ls_db'];
-        $table = $wpdb->prefix.LS_DB_TABLE;
-
-        // Make the call
-        $result = $wpdb->getRow("SELECT * FROM $table WHERE flag_hidden = '0' AND flag_deleted = '0' ORDER BY RAND() LIMIT 1", ARRAY_A);
-
-        // Check return value
-        if (!is_array($result)) {
-            return false;
+        // Decode slider data
+        if ($result) {
+            $result['data'] = json_decode($result['data'], true);
         }
 
-        // Return result
-        $result['data'] = Tools::jsonDecode($result['data'], true);
         return $result;
     }
 }

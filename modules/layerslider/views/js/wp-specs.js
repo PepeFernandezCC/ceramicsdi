@@ -1,6 +1,6 @@
 /*! Creative Slider - Responsive Slideshow
  * https://creativeslider.webshopworks.com
- * Copyright 2015-2020 WebshopWorks
+ * Copyright 2015-2025 WebshopWorks
  * Not allowed to resell or redistribute this software */
 
 jQuery(document.documentElement).addClass('creativeslider');
@@ -119,7 +119,7 @@ window.lsDefaultTr = [{
 }];
 
 // LISTING PAGE - SUGGESTED MODULES
-if (location.search.match(/\bcontroller=AdminLayerslider\b(?!.*\baction=edit\b)/i)) {
+if (location.search.match(/\bcontroller=AdminLayerSlider\b(?!.*\baction=edit\b)/i)) {
 	window.onLoadSuggestedModules = function(data) {
 		if (window.localStorage) {
 			localStorage.lsSuggestedModules = data;
@@ -173,16 +173,16 @@ if (location.search.match(/\bcontroller=AdminLayerslider\b(?!.*\baction=edit\b)/
 
 ['html', 'text'].forEach(function(plg) {
 	// unwrap CDATA in case of <script type="text/html">
-  jQuery.fn[plg] = (function(parent) {
-  	return function() {
-  		var res = parent.apply(this, arguments);
-  		if (!arguments.length && this.is('script[type="text/html"]')) {
-  			res = res.replace(/^\/\*<!\[CDATA\[\*\//i, '', res);
-  			res = res.replace(/\/\*\]\]>\*\/$/, '', res);
-  		}
-  		return res;
-  	};
-  })(jQuery.fn[plg]);
+	jQuery.fn[plg] = (function(parent) {
+		return function() {
+			var res = parent.apply(this, arguments);
+			if (!arguments.length && this.is('script[type="text/html"]')) {
+				res = res.replace(/^\/\*<!\[CDATA\[\*\//i, '', res);
+				res = res.replace(/\/\*\]\]>\*\/$/, '', res);
+			}
+			return res;
+		};
+	})(jQuery.fn[plg]);
 });
 
 jQuery(function($) {
@@ -196,9 +196,7 @@ jQuery(function($) {
 	root = root.join('/');
 	var token = (location.search.match(/[?&]token=([^&]+)/) || [,''])[1];
 
-	// put admin inside a div#wpwrap
-	var $wpwrap = $('<div id="wpwrap">').appendTo($body);
-	$wpwrap.siblings().appendTo($wpwrap);
+	$(document.body).addClass('no-smb-reskin');
 
 	// remove message param from URL
 	var message = location.href.match(/&message=[^&]*/);
@@ -229,15 +227,7 @@ jQuery(function($) {
 	$('<input>', {name: 'token', value: token, type: 'hidden'}).prependTo('#ls-slider-filters');
 	$('<input>', {name: 'controller', value: 'AdminLayerSlider', type: 'hidden'}).prependTo('#ls-slider-filters');
 	// auto submit on change select
-  $('#ls-slider-filters').on('change', 'select', function() { this.form.submit() });
-
-	$('body').on('click', '#btn-connect-ps', function() {
-		kmUI.modal.close();
-		kmUI.overlay.close();
-		setTimeout(function() {
-			$('#modal_addons_connect').modal('show');
-		}, 500);
-	});
+	$('#ls-slider-filters').on('change', 'select', function() { this.form.submit() });
 
 	// post settings
 	var $basic = $('.ls-post-basic').change(function(e) {
@@ -268,10 +258,6 @@ jQuery(function($) {
 	var $ts = $('#ls-import-samples-button').click(function(e) {
 		e.stopImmediatePropagation();
 		e.preventDefault();
-
-		if ($('#password_addons').length) {
-			return kmUI.modal.open('#tmpl-template-store', { width: 500, height: 250 });
-		}
 
 		var popup = $('#ls-import-sliders-template');
 		if (!popup.length) popup = $('<div id="ls-import-sliders-template">').appendTo($body);
@@ -323,8 +309,8 @@ jQuery(function($) {
 						cache: true,
 						complete: function() {
 							popup.find('.filter-options').css('visibility', ''); // reveal tags
-							// $.getScript(location.protocol+'//offlajn.com/index2.php?option=com_ls_import&task=request&slider=test'); // check domain
-							$.post(ajaxurl, {action: 'ls_test_template_store'}, function(data) {
+							// check domain
+							$.post(ajaxurl, {action: 'ls_template_store'}, function(data) {
 								data = JSON.parse(data);
 								data.success ? key = data.key : lsImportError(errorMsg = data.msg);
 							});
@@ -345,7 +331,7 @@ jQuery(function($) {
 					display: 'block',
 					opacity: 1
 				}).appendTo($figure);
-				$.getScript(location.protocol+'//offlajn.com/index2.php?option=com_ls_import&task=psrequest&ver='+lsVersion+'&slider='+$(this).data('import')+'&key='+key);
+				$.getScript(location.protocol+'//offlajn.com/index2.php?option=com_ls_import&task=psGet&ver='+lsVersion+'&slider='+$(this).data('import')+'&key='+key);
 			});
 			var slideDur = 400;
 			popup.on('click', '.ls-warning-close', function closeWarning() {
@@ -402,15 +388,11 @@ jQuery(function($) {
 	}
 
 	if (location.search.match(/\bcontroller=AdminLayerSlider\b/i)) {
-    // replace shortcode
-    $('.ls-save-shortcode span:last-child').each(function() {
-      this.innerHTML = '[creative'+ this.innerHTML.slice(6);
-      return false;
-    });
-    $('.ls-shortcode').each(function() {
-      this.value = '[creative'+ this.value.slice(6);
-    });
-
+		// Copy shortcode
+		$('.ls-save-shortcode p:not(.revisions):first span:last').on('click', function onClickShortcode() {
+			navigator.clipboard.writeText(this.textContent);
+			showSuccessMessage('<i class="icon-paste"></i> ' + LS_l10n.copied);
+		});
 	}
 
 	$(document.body).on('input', '.km-combo-input[data-hook]', function onChangeHook() {
@@ -448,9 +430,9 @@ jQuery(function($) {
 			$('.ls-modpos').attr('data-id', id).data('id', id)
 				.find('.km-combo-input').val(hook).data({value: hook, hook: hook});
 			// update shortcode
-      $('.shortcode').each(function() {
-        this.value = '[creative'+ this.value.slice(6);
-      });
+			$('.shortcode').each(function() {
+				this.value = '[creative'+ this.value.slice(6);
+			});
 		}, 1);
 	});
 
@@ -885,7 +867,7 @@ jQuery(function($) {
 		}
 		for (var i = 0; i < lsSliderData.layers.length; i++) {
 			var slide = lsSliderData.layers[i];
-			if (!slide.properties && !lsSliderData.layers[i]) {
+			if (!slide || !slide.properties) {
 				// last slide data is null in db
 				lsSliderData.layers.pop();
 				break;

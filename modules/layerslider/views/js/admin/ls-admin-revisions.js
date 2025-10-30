@@ -1,6 +1,6 @@
 /*! Creative Slider - Responsive Slideshow
  * https://creativeslider.webshopworks.com
- * Copyright 2015-2020 WebshopWorks
+ * Copyright 2015-2025 WebshopWorks
  * Not allowed to resell or redistribute this software */
 
 jQuery(function($) {

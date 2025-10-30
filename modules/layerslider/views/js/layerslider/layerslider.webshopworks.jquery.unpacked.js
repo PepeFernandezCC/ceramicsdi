@@ -1,6 +1,6 @@
 /*! Creative Slider - Responsive Slideshow
  * https://creativeslider.webshopworks.com
- * Copyright 2015-2020 WebshopWorks
+ * Copyright 2015-2025 WebshopWorks
  * Not allowed to resell or redistribute this software */
 
 window._layerSlider = {
@@ -800,23 +800,23 @@ Number.prototype.indexOf = function( string ){
 								enabled: true,
 
 								layerFrom: {
-								 	autoCSS: false,
+									autoCSS: false,
 									immediateRender: false,
-								 	css: {
+									css: {
 										opacity: 0
 									}
 								},
 
 								layerTo: {
-								 	autoCSS: false,
+									autoCSS: false,
 									onStart: function(){
-								 		ls.transitions.layers.in.onStart( $layer );
+										ls.transitions.layers.in.onStart( $layer );
 									},
-								 	onComplete: function(){
-								 		ls.transitions.layers.in.onComplete( $layer );
-								 	},
-								 	css: {
-								 		display: 'block',
+									onComplete: function(){
+										ls.transitions.layers.in.onComplete( $layer );
+									},
+									css: {
+										display: 'block',
 										opacity: 1,
 										rotation: 0,
 										rotationX: 0,
@@ -831,29 +831,29 @@ Number.prototype.indexOf = function( string ){
 								},
 
 								layerStyleFrom: {
-								 	autoCSS: false,
+									autoCSS: false,
 									immediateRender: false,
-								 	css: {
-								 	}
+									css: {
+									}
 								},
 
 								layerStyleTo: {
-								 	autoCSS: false,
-								 	css: {
-								 	}
+									autoCSS: false,
+									css: {
+									}
 								},
 
 								clipFrom: {
-								 	autoCSS: false,
+									autoCSS: false,
 									immediateRender: false,
-								 	css: {
-								 	}
+									css: {
+									}
 								},
 
 								clipTo: {
-								 	autoCSS: false,
-								 	css: {
-								 	}
+									autoCSS: false,
+									css: {
+									}
 								},
 
 								layerShouldBeConverted: {
@@ -918,20 +918,20 @@ Number.prototype.indexOf = function( string ){
 								enabled: true,
 
 								layerFrom: {
-								 	autoCSS: false,
+									autoCSS: false,
 									immediateRender: false,
-								 	css: {
+									css: {
 									}
 								},
 
 								layerTo: {
-								 	autoCSS: false,
+									autoCSS: false,
 									onStart: function(){
-								 		ls.transitions.layers.out.onStart( $layer );
+										ls.transitions.layers.out.onStart( $layer );
 									},
-								 	onComplete: function(){
-								 		ls.transitions.layers.out.onComplete( $layer );
-								 	},
+									onComplete: function(){
+										ls.transitions.layers.out.onComplete( $layer );
+									},
 									css: {
 										opacity: 0,
 										rotation: 0,
@@ -945,29 +945,29 @@ Number.prototype.indexOf = function( string ){
 								},
 
 								layerStyleFrom: {
-								 	autoCSS: false,
+									autoCSS: false,
 									immediateRender: false,
-								 	css: {
-								 	}
+									css: {
+									}
 								},
 
 								layerStyleTo: {
-								 	autoCSS: false,
-								 	css: {
-								 	}
+									autoCSS: false,
+									css: {
+									}
 								},
 
 								clipFrom: {
-								 	autoCSS: false,
+									autoCSS: false,
 									immediateRender: false,
-								 	css: {
-								 	}
+									css: {
+									}
 								},
 
 								clipTo: {
-								 	autoCSS: false,
-								 	css: {
-								 	}
+									autoCSS: false,
+									css: {
+									}
 								},
 
 								layerShouldBeConverted: {
@@ -1041,7 +1041,7 @@ Number.prototype.indexOf = function( string ){
 								},
 
 								layerShouldBeConverted: {
-							 		transformOrigin: '50% 50% 0',
+									transformOrigin: '50% 50% 0',
 									x: 0,
 									y: 0
 								},
@@ -2379,7 +2379,6 @@ Number.prototype.indexOf = function( string ){
 							delete layerData.textIn.ns;
 							delete layerData.textOut.ns;
 						}
-
 					}
 
 					// SET: clip
@@ -3221,6 +3220,528 @@ Number.prototype.indexOf = function( string ){
 				ls.media.html5.init();
 			},
 
+			set: {
+
+				backgroundVideo: function( $layer, layerData ){
+
+					if( $layer.children( '.ls-vpcontainer' ).length === 0 ){
+
+						var    vpContainer = $( '<div>' ).addClass( 'ls-vpcontainer' ).appendTo( $layer );
+
+						if( layerData.mediaSettings.poster ){
+							$( '<div>' ).appendTo( vpContainer ).addClass( 'ls-videopreview' ).attr({
+								style: 'background-image: url(' + layerData.mediaSettings.poster + ')'
+							});
+						}
+					}
+				},
+
+				customPoster: function( $layer, layerData ){
+
+					var customPoster;
+					if( layerData.mediaSettings.poster ){
+						customPoster = layerData.mediaSettings.poster;
+					}else if( $layer.data( 'ls' ) && $layer.data( 'ls' ).indexOf( 'poster:' ) !== -1 ){
+						customPoster = $layer.data( 'ls' ).split( 'poster:' )[1].split( ';')[0].trim();
+						layerData.mediaSettings.poster = customPoster;
+					}
+					return customPoster;
+				},
+
+				dataAttribute: function( $media, attr ){
+
+					$media.removeAttr( 'data-ls-playing data-ls-not-playing' );
+					$media.attr( 'data-ls-' + attr, '' );
+
+					ls.media.functions.checkSlideshowWaiting();
+				},
+
+				mediaElements: function( $layer, $media, layerData ){
+
+					var    vpContainer = $( '<div>' ).addClass( 'ls-vpcontainer' ).appendTo( $layer );
+
+					if( ( ! ( 'autoplay' in layerData.mediaSettings ) && ls.o.autoPlayVideos ) || layerData.mediaSettings.autoplay ){
+						$layer.addClass( 'ls-autoplay' );
+					}else{
+						// APPEND: play button
+						$( '<div>' ).appendTo( vpContainer ).addClass( 'ls-playvideo' );
+					}
+
+					// IF: element is YouTube or Vimeo video
+					if( $media.is( 'iframe' ) && layerData.mediaProperties.poster ){
+
+						// APPEND: video thumbnail
+						$( '<div>' ).appendTo( vpContainer ).addClass( 'ls-videopreview' ).attr({
+							style: 'background-image: url(' + layerData.mediaProperties.poster + ')'
+						});
+					}
+
+					// IF: element is HTML5 video or audio
+					if( $media.is( 'video, audio' ) ){
+
+						if( layerData.mediaProperties.poster ){
+							// APPEND: video thumbnail image
+							$( '<div>' ).appendTo( vpContainer ).addClass( 'ls-videopreview' ).attr({
+								style: 'background-image: url(' + layerData.mediaProperties.poster + ')'
+							});
+						}
+					}
+				},
+
+				properties: function( $layer, $media, layerData ){
+
+					layerData.is.mediaLayer = true;
+
+					switch( layerData.mediaProperties.type ){
+
+						case 'youtube':
+
+							if( layerData.is.backgroundVideo ){
+
+								layerData.mediaProperties.options = $.extend(
+									true,
+									{
+										loop: 1,
+										playlist: layerData.mediaProperties.embedID,
+										controls: 0,
+										autoplay: 0,
+										showinfo: false,
+										modestbranding: 1,
+										thumbnail: false
+									},
+									ls.media[layerData.mediaProperties.type].defaults,
+									layerData.mediaProperties.embedOptions
+								);
+
+								// SET: background video properties
+								ls.media.set.backgroundVideo( $layer, layerData );
+							}else{
+
+								layerData.mediaProperties.options = $.extend(
+									true,
+									{},
+									ls.media[layerData.mediaProperties.type].defaults,
+									layerData.mediaProperties.embedOptions,
+									{
+										autoplay: 0
+									}
+								);
+
+								// SET: normal media properties
+								ls.media.set.mediaElements( $layer, $media, layerData );
+							}
+
+						break;
+
+						case 'vimeo':
+
+							if( layerData.is.backgroundVideo ){
+
+								layerData.mediaProperties.options = $.extend(
+									true,
+									{
+										loop: 1,
+										byline: 0,
+										portrait: 0,
+										title: 0,
+										fun: 0
+									},
+									ls.media[layerData.mediaProperties.type].defaults,
+									layerData.mediaProperties.embedOptions
+								);
+
+								// SET: background video properties
+								ls.media.set.backgroundVideo( $layer, layerData );
+							}else{
+
+								layerData.mediaProperties.options = $.extend(
+									true,
+									{},
+									ls.media[layerData.mediaProperties.type].defaults,
+									layerData.mediaProperties.embedOptions,
+									{
+										autoplay: 0
+									}
+								);
+
+								// SET: normal media properties
+								ls.media.set.mediaElements( $layer, $media, layerData );
+							}
+						break;
+
+						case 'html5':
+
+							// SET: autoplay
+							if( $media.attr( 'autoplay' ) ){
+								$media.removeAttr( 'autoplay' );
+								$layer.attr( 'data-ls', $layer.attr( 'data-ls' ) + ' autoplay: true;' );
+							}
+
+							// SET: backgroundVideo
+							if( layerData.is.backgroundVideo ){
+								$media.removeAttr( 'controls' );
+								$media[0].muted = true;
+								$media.attr( 'loop', '' );
+							}
+
+							// SET: controls
+							if( 'controls' in layerData.mediaSettings ){
+								if( layerData.mediaSettings.controls ){
+									$media.attr( 'controls', '' );
+									$media.removeAttr( 'nocontrols' );
+								}else{
+									$media.removeAttr( 'controls' );
+								}
+							}
+
+							// SET: volume
+							if( 'volume' in layerData.mediaSettings ){
+								if( layerData.mediaSettings.volume < 0 ){
+									layerData.mediaSettings.volume = 0;
+								}else if( layerData.mediaSettings.volume > 100 ){
+									layerData.mediaSettings.volume = 100;
+								}
+								$media[0].volume = layerData.mediaSettings.volume / 100;
+							}
+
+							// SET: mute
+							if( 'muted' in layerData.mediaSettings ){
+								if( layerData.mediaSettings.muted ){
+									$media[0].muted = true;
+								}else{
+									$media[0].muted = false;
+								}
+							}
+
+							// SET: loop
+							if( 'loop' in layerData.mediaSettings ){
+								if( layerData.mediaSettings.loop ){
+									$media.attr( 'loop', '' );
+								}else{
+									$media.removeAttr( 'loop' );
+								}
+							}
+
+							if( layerData.is.backgroundVideo ){
+								// SET: background video properties
+								ls.media.set.backgroundVideo( $layer, layerData );
+							}else{
+								ls.media.set.mediaElements( $layer, $media, layerData );
+							}
+
+							// REAPPEND: media element into the slider with updated attributes
+							// var $newMedia = $media.clone( true, true );
+							// $media.remove();
+							// $media = $newMedia.appendTo( $layer );
+
+						break;
+					}
+				},
+
+				thumbnail: function( $thumbnail, event ){
+
+					switch( event ){
+
+						case 'show':
+							// FADE IN: video thumbnail
+							$thumbnail.fadeIn( ls.transitions.media.defaults.fadeIn );
+						break;
+
+						case 'hide':
+							// FADE OUT: video thumbnail
+							$thumbnail.delay( ls.transitions.media.defaults.delay ).fadeOut( ls.transitions.media.defaults.fadeOut );
+						break;
+					}
+				}
+
+			},
+
+			unmute: {
+
+				set: function( $media, type, mutedByBrowser ){
+
+					if( ( type !== 'youtube' && type !== 'vimeo' ) || ls.media.allowToUnmute ){
+						ls.gui.media.showUnmute();
+					}
+
+					$media.attr( 'data-ls-allow-to-unmute', '' );
+
+					if( mutedByBrowser ){
+						$media.attr( 'data-ls-muted-by-browser', '' );
+					}
+				},
+
+				singleMediaElement: function( $media ){
+
+					var	$layer = $media.closest( '.ls-layer' ),
+						layerData = $layer.data( ls.defaults.init.dataKey ),
+						allowToRemoveAttribute = false,
+						volume;
+
+					switch( layerData.mediaProperties.type ){
+
+						case 'youtube':
+							if( ls.media.allowToUnmute ){
+								allowToRemoveAttribute = true;
+								layerData.mediaProperties.player.unMute();
+							}
+						break;
+
+						case 'vimeo':
+							if( ls.media.allowToUnmute ){
+								allowToRemoveAttribute = true;
+								volume = layerData.mediaSettings.volume ? layerData.mediaSettings.volume / 100 : 1;
+								layerData.mediaProperties.player.setVolume( volume );
+							}
+						break;
+
+						case 'html5':
+							allowToRemoveAttribute = true;
+							$media[0].muted = false;
+						break;
+					}
+
+					if( allowToRemoveAttribute ){
+						$media.removeAttr( 'data-ls-muted-by-browser data-ls-allow-to-unmute' );
+					}
+				}
+			},
+
+			functions: {
+
+				allowedToPlay: function( $media, layerData ){
+
+					var $layer = $media.closest( '.ls-layer' );
+
+					if(
+						(
+							ls.slides.current.index === parseInt( $layer.attr( 'data-ls-slidein' ) ) ||
+							( layerData.is.backgroundVideo && ls.slides.next.index === parseInt( $layer.attr( 'data-ls-slidein' ) ) )
+						) || (
+							$layer.attr( 'data-ls-static' ) &&
+							typeof $layer.attr( 'data-ls-active' ) !== 'undefined'
+						)
+					){
+						return true;
+					}else{
+						return false;
+					}
+				},
+
+				playActiveMedia: function(){
+
+					var layerData;
+
+					ls.media.get( 'notbg,active' ).each( function(){
+
+						layerData = $(this).closest( '.ls-layer' ).data( ls.defaults.init.dataKey );
+
+						if( layerData.mediaProperties.alreadyStarted ){
+							switch( layerData.mediaProperties.type ){
+
+								case 'youtube':
+									layerData.mediaProperties.player.playVideo();
+								break;
+
+								case 'vimeo':
+									layerData.mediaProperties.player.play();
+								break;
+
+								case 'html5':
+									(layerData.mediaProperties.$media)[0].play();
+								break;
+							}
+						}else{
+
+							$(this).parent().find( '.ls-vpcontainer' ).trigger( 'playMedia' );
+						}
+					});
+				},
+
+				pauseActiveMedia: function(){
+
+					var layerData;
+
+					ls.media.get( 'notbg,active,playing' ).each( function(){
+
+						layerData = $(this).closest( '.ls-layer' ).data( ls.defaults.init.dataKey );
+
+						switch( layerData.mediaProperties.type ){
+
+							case 'youtube':
+								layerData.mediaProperties.player.pauseVideo();
+							break;
+
+							case 'vimeo':
+								layerData.mediaProperties.player.pause();
+							break;
+
+							case 'html5':
+								this.pause();
+							break;
+						}
+					});
+				},
+
+				urlToObject: function( url ){
+
+					var obj = {},
+						qs = url.split( '?' )[1];
+
+					if( qs ){
+
+						qs.split( '#' )[0].replace(/([^=&]+)=([^&]*)/g, function(m, key, value) {
+							obj[decodeURIComponent(key)] = $.isNumeric( decodeURIComponent(value) ) ? parseInt( decodeURIComponent(value) ) : decodeURIComponent(value);
+						});
+					}
+
+					return obj;
+				},
+
+				checkSlideshowState: function( $layer, layerData ){
+
+					// SET: slideshow state and stop slideshow if needed
+					// Static media layer cannot pause slideshow
+					if( !layerData.is.static && ls.o.autoPauseSlideshow ){
+
+						// SET: slideshow state
+						ls.functions.setStates( ls.slideshow, {
+							pausedByVideo: true
+						});
+
+						if( ls.o.autoPauseSlideshow == 'auto' ){
+							ls.media.playingInCurSlide++;
+						}
+					}
+				},
+
+				checkSlideshowWaiting: function(){
+
+					var playingMediaCount = ls.media.playingInCurSlide,
+						$pausedMedias = ls.media.get( 'notbg,active,notstatic,notplaying'),
+						pausedMediaCount = ls.media.get( 'notbg,active,notstatic,notplaying').length;
+
+					if(
+						pausedMediaCount === playingMediaCount &&
+						pausedMediaCount > 0 &&
+						ls.slideshow.state.pausedByVideo &&
+						ls.o.autoPauseSlideshow &&
+						!ls.timeouts.pausedVideos &&
+						ls.slideshow.state.running
+					){
+
+						ls.timeouts.pausedVideos = setTimeout( function(){
+							// slide change
+							if( ls.slideshow.state.running ){
+								$pausedMedias.each(function(){
+									ls.media.functions.mediaEnded( $(this), $(this).closest( '.ls-layer' ), $(this).closest( '.ls-layer' ).data( ls.defaults.init.dataKey ) );
+								});
+							}else{
+								ls.slideshow.state.pausedByVideo = false;
+							}
+						}, 5000 );
+					}else{
+						if( ls.timeouts.pausedVideos ){
+							clearTimeout( ls.timeouts.pausedVideos );
+							delete ls.timeouts.pausedVideos;
+						}
+					}
+				},
+
+				playIfAllowed: function( $layer ){
+
+					var layerData = $layer.data( ls.defaults.init.dataKey );
+
+					if( layerData.is.mediaLayer  ){
+
+						// IF: media element is hidden on a mobile phone or tablet
+						if(
+							ls.device.isMobile &&
+							(
+								( $slider.hasClass( 'ls-device-is-phone' ) && layerData.elements.$outerWrapper.hasClass( 'ls-hide-on-phone' ) ) ||
+								( $slider.hasClass( 'ls-device-is-tablet' ) && layerData.elements.$outerWrapper.hasClass( 'ls-hide-on-tablet' ) )
+							)
+						){
+							// do NOT play background video
+						}else if(
+							// IF: local autoplay is true or local autoplay is not defined but global autoplay is true...
+							( ! ( 'autoplay' in layerData.mediaSettings ) && ls.o.autoPlayVideos ) ||
+							layerData.mediaSettings.autoplay
+						){
+							$layer.find( '.ls-vpcontainer' ).trigger( 'playMedia' );
+						}
+					}
+				},
+
+				stop: function( resetMedia ){
+
+					var resetMedia = typeof resetMedia !== 'undefined' ? resetMedia : true;
+
+					ls.layers.get('current,out,youtube').each(function(){
+						var    $media = $(this),
+							$layer = $media.closest( '.ls-layer' ),
+							layerData = $layer.data( ls.defaults.init.dataKey );
+
+						ls.media.youtube.stop( $layer, $media, layerData, resetMedia );
+					});
+
+					ls.layers.get('current,out,vimeo').each(function(){
+						var    $media = $(this),
+							$layer = $media.closest( '.ls-layer' ),
+							layerData = $layer.data( ls.defaults.init.dataKey );
+
+						ls.media.vimeo.stop( $layer, $media, layerData, resetMedia );
+					});
+
+					ls.layers.get('current,out,html5').each(function(){
+						var    $media = $(this),
+							$layer = $media.closest( '.ls-layer' ),
+							layerData = $layer.data( ls.defaults.init.dataKey );
+
+						ls.media.html5.stop( $layer, $media, layerData, resetMedia );
+					});
+
+					// RESET: counters on slide change
+					ls.media.playingInCurSlide = 0;
+					ls.media.endedInCurSlide = 0;
+				},
+
+				mediaEnded: function( $media, $layer, layerData ){
+
+					// If the slideshow should start after video ends...
+					if( ls.o.autoPauseSlideshow == 'auto' && !layerData.is.backgroundVideo ){
+
+						// If the currently ended video is not in a static layer
+						if( !layerData.is.static ){
+							ls.media.endedInCurSlide ++;
+						}
+
+						// If the number of ended videos equals the number of played videos in the current slide
+						if( ls.media.endedInCurSlide == ls.media.playingInCurSlide && ls.media.playingInCurSlide !== 0 ){
+
+							// SET: slideshow state
+							ls.functions.setStates( ls.slideshow, {
+								pausedByVideo: false
+							});
+
+							// SET: slideshow remaining slide duration to 1
+							ls.slideshow.remainingSlideDuration = 1;
+
+							// START: slideshow
+							ls.slideshow.start();
+						}
+					}
+
+					ls.media.set.dataAttribute( $media, 'not-playing' );
+					// ls.media.events.stop( $media, $layer, layerData );
+				},
+
+				removeFromTimeline: function( $layer ){
+
+					ls.transitions._slideTimeline.kill( null, $layer.closest( '.ls-in-out' )[0] );
+				}
+			},
+
 			youtube: {
 
 				// INIT: embedded videos
@@ -3470,11 +3991,19 @@ Number.prototype.indexOf = function( string ){
 
 			vimeo: {
 
+				defaults: {
+					autoplay: 0,
+					autopause: 0,
+					wmode: 'opaque',
+					playsinline: 1
+				},
+
 				// INIT: embedded videos
 				init: function(){
 
 					// GET: all Vimeo videos in the slider
-					var $vimeoVideos = this.$videos = ls.slider.$hiddenWrapper.find( 'iframe[src*="player.vimeo"], iframe[data-src*="player.vimeo"]' );
+					var $vimeoVideos = this.$medias = ls.slider.$hiddenWrapper.find( 'iframe[src*="player.vimeo"], iframe[data-src*="player.vimeo"]' ),
+						tnRequiredCount = ls.slider.$hiddenWrapper.find( '.ls-slide:eq(0) iframe[src*="player.vimeo"], .ls-slide:eq(0) iframe[data-src*="player.vimeo"]' ).length;
 
 					// IF: there are any Vimeo videos in the slider...
 					if( $vimeoVideos.length ){
@@ -3482,13 +4011,13 @@ Number.prototype.indexOf = function( string ){
 						ls.timeouts.loadVimeo = Math.floor( Date.now() / 1000 );
 
 						// ADD: Vimeo video parent layers
-						ls.media.$allMediaLayers = ls.media.$allMediaLayers.add( $vimeoVideos.parent() );
+						ls.media.$allMediaLayers = ls.media.$allMediaLayers.add( $vimeoVideos.closest( '.ls-layer' ) );
 
 						var count = 0;
 
 						// LOAD: Vimeo player API
 						$( '<script>' ).attr({
-							'src' : ls.media.protocol + '//f.vimeocdn.com/js/froogaloop2.min.js',
+							'src' : 'https://player.vimeo.com/api/player.js',
 							'type' : 'text/javascript'
 						}).appendTo( 'head' );
 
@@ -3500,13 +4029,12 @@ Number.prototype.indexOf = function( string ){
 								waitingForVimeo: true
 							});
 
-							if( window.Froogaloop || Math.floor( Date.now() / 1000 ) - ls.timeouts.loadVimeo > 3 ){
+							if( window.Vimeo || Math.floor( Date.now() / 1000 ) - ls.timeouts.loadVimeo > 3 ){
 								// CLEAR & REMOVE: interval from ls.intervals object
 								clearInterval( ls.intervals.isVimeoReady );
 								delete ls.intervals.isVimeoReady;
 								delete ls.timeouts.loadVimeo;
 
-								window._layerSlider.globals.vimeoIsReady = true;
 								onVimeoPlayerAPIReady();
 							}
 						}, 25 );
@@ -3514,68 +4042,96 @@ Number.prototype.indexOf = function( string ){
 						// WHEN: Vimeo player API is ready...
 						var onVimeoPlayerAPIReady = function(){
 
+							var tnLoadedCount = 0;
+
 							// ON EACH: videos
-							ls.media.vimeo.$videos.each(function(){
+							ls.media.vimeo.$medias.each(function(){
 
 								// SET: variables
-								var	$video = $(this).attr( 'id', 'ls-vimeo-' + ( ++count ) ),
-									$layer = $video.parent(),
+								var	$media = $(this).attr({
+										id: 'ls-vimeo-' + ( ++count ),
+										allow: 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen',
+										allowfullscreen: ''
+									}),
+									$layer = $media.closest( '.ls-layer' ),
 									layerData = $layer.data( ls.defaults.init.dataKey ),
-									src = ( $video.attr( 'src' ) || $video.attr( 'data-src' ) ).replace( /&amp;/g, '&' ).replace( 'autoplay=1','autoplay=0' ).replace( '?','?smart=true&' ),
-									sep = src.indexOf( '?' ) === -1 ? '?' : '&',
-									protocol = src.indexOf( 'http' ) === -1 ? ls.media.protocol : '',
-									options = 'wmode=opaque&api=1&player_id=ls-vimeo-' + count,
-									jsonURL = ls.media.protocol + '//vimeo.com/api/v2/video/'+ ( src.split('video/')[1].split('?')[0] ) +'.json?callback=?',
-									videoURL = protocol + src + sep + options;
+									embedURL = $media.attr( 'src' ) || $media.attr( 'data-src' ),
+									embedOptions = ls.media.functions.urlToObject( embedURL ),
+									embedID = embedURL.split('video/')[1].split('?')[0],
+									jsonURL = 'https://vimeo.com/api/oembed.json?url=http://vimeo.com/'+ embedID;
+
+								embedURL = embedURL.split( '?' )[0].split( '//' )[1];
+								ls.media.vimeo.defaults.player_id = 'ls-vimeo-' + count;
+
+								// SET: poster image (must do this here, because ls.media.init is calling BEFORE media layers on the first slide are wrapped!)
+								var customPoster = ls.media.set.customPoster( $layer, layerData );
 
 								// SAVE: media properties into layer data
 								layerData.mediaProperties = {
-									type: 'vimeo',
-									saved: {}
+										type: 'vimeo',
+										$media: $media,
+										embedURL: embedURL,
+										embedOptions: embedOptions
+									};
+
+								var setPoster = function( poster ){
+
+									// SAVE: thumbnail URL
+									layerData.mediaProperties.poster = poster;
+
+									if( tnRequiredCount === 0 || ( tnRequiredCount > 0 && ++tnLoadedCount == tnRequiredCount ) ){
+										window._layerSlider.globals.vimeoIsReady = true;
+									}
+
+									// SET: properties
+									ls.media.set.properties( $layer, $media, layerData );
 								};
 
-								// SET: properties
-								ls.media.setProperties( layerData );
 
-								if( layerData.is.backgroundVideo ){
-									// SET: background video properties
-									ls.media.setBackgroundVideo( layerData, $layer );
+								if( customPoster ){
+
+									setPoster( customPoster );
+
+								}else{
+
+									// SET: video elements
+									$.getJSON( jsonURL, function( data ){
+
+										setPoster( data.thumbnail_url );
+									});
 								}
-
-								// SET: video elements
-								$.getJSON( jsonURL, function( data ){
-
-									if( !layerData.is.backgroundVideo ){
-										ls.media.setMediaElements( $layer, $video, videoURL, data[0].thumbnail_large, layerData );
-									}
-								});
 
 								// SET: video events
 								$layer.on( 'playMedia.' + sliderUID + ' click.' + sliderUID, '.ls-vpcontainer', function(){
 
 									// FADE OUT: video thumbnail
-									ls.media.hideThumbnail( $(this) );
+									ls.media.set.thumbnail( $(this), 'hide' );
 
 									// CHECK: slideshow state
-									ls.media.checkSlideshowState( $layer, layerData );
+									ls.media.functions.checkSlideshowState( $layer, layerData );
 
 									// REMOVE: media layer from timeline (if it has showUntil property for example) if the media is starting to play
-									ls.media.removeFromTimeline( $layer );
+									ls.media.functions.removeFromTimeline( $layer );
 
 									// START: playing video
-									ls.media.vimeo.play( $layer, $video, videoURL, layerData );
+									ls.media.vimeo.play( $layer, $media, layerData, embedURL );
+
 								}).on( 'playBackgroundVideo.' + sliderUID, function(){
 
 									// START: playing video
-									ls.media.vimeo.play( $layer, $video, videoURL, layerData );
+									ls.media.vimeo.play( $layer, $media, layerData, embedURL );
+									// ls.layers.set.dataAttribute( $layer, 'active' );
+
 								}).on( 'stopBackgroundVideo.' + sliderUID, function(){
 
 									// STOP: playing video
-									ls.media.vimeo.stop( $layer, $video, layerData, true );
+									ls.media.vimeo.stop( $layer, $media, layerData, true );
+									// ls.layers.set.dataAttribute( $layer, 'hidden' );
+
 								}).on( 'preloadBackgroundVideo.' + sliderUID, function(){
 
 									// PRELOAD: video for smooth transitions
-									ls.media.vimeo.createPlayer( $layer, $video, videoURL, layerData, true );
+									ls.media.vimeo.createPlayer( $layer, $media, layerData, embedURL, true );
 								});
 							});
 
@@ -3588,83 +4144,187 @@ Number.prototype.indexOf = function( string ){
 				},
 
 				// CREATE: player
-				createPlayer: function( $layer, $video, videoURL, layerData, preloadOnly ){
+				createPlayer: function( $layer, $media, layerData, embedURL, preloadOnly ){
 
-					// SET: showinfo
-					if( layerData.mediaSettings.showinfo !== null ){
+					layerData.mediaProperties.playerState = 'initializing';
 
-						videoURL = videoURL.replace('&title=0','').replace('&title=1','').replace('&byline=0','').replace('&byline=1','').replace('&portrait=0','').replace('&portrait=1','');
-
-						switch( layerData.mediaSettings.showinfo ){
-							case true:
-								videoURL = videoURL.replace('title=0','title=1','').replace('byline=0','byline=1','').replace('portrait=0','portrait=1','');
-							break;
-							case false:
-								videoURL = videoURL.replace('title=1','title=0','').replace('byline=1','byline=0','').replace('portrait=1','portrait=0','');
-							break;
-						}
-					}
-
-					// SET: video url for the first time
-					$video.attr( 'src', videoURL );
-
-					// SET: video ended function
-					var videoEnded = function(){
-						if( layerData.is.backgroundVideo ){
-							layerData.mediaProperties.player.api( 'seekTo', 0 ).api( 'play' );
-						}else{
-							ls.media.videoEnded( $layer, layerData );
-						}
+					// SET: events
+					var mediaPlaying = function(){
+						ls.media.set.dataAttribute( $media, 'playing' );
+						// ls.media.events.start( $media, $layer, layerData );
 					};
 
+					var mediaPaused = function(){
+						ls.media.set.dataAttribute( $media, 'not-playing' );
+					};
+
+					var mediaEnded = function(){
+						ls.media.functions.mediaEnded( $media, $layer, layerData );
+					};
+
+					// SET: properties #2
+					if( 'controls' in layerData.mediaSettings ){
+						//layerData.mediaProperties.options.controls = layerData.mediaSettings.controls ? 1 : 0;
+						delete layerData.mediaSettings.controls;
+					}
+					if( 'loop' in layerData.mediaSettings ){
+						layerData.mediaProperties.options.loop = layerData.mediaSettings.loop ? 1 : 0;
+					}
+					if( 'showinfo' in layerData.mediaSettings ){
+						if( layerData.mediaSettings.showinfo ){
+							layerData.mediaProperties.options.byline = 1;
+							layerData.mediaProperties.options.portrait = 1;
+							layerData.mediaProperties.options.title = 1;
+							//layerData.mediaProperties.options.sidedock = 1;
+						}else{
+							layerData.mediaProperties.options.byline = 0;
+							layerData.mediaProperties.options.portrait = 0;
+							layerData.mediaProperties.options.title = 0;
+							//layerData.mediaProperties.options.sidedock = 0;
+						}
+						delete layerData.mediaProperties.options.showinfo;
+					}
+
+					if( 'volume' in layerData.mediaSettings ){
+						if( layerData.mediaSettings.volume === 0 ){
+							layerData.mediaSettings.volume = 100;
+							layerData.mediaSettings.muted = true;
+						}else if( layerData.mediaSettings.volume < 0 || layerData.mediaSettings.volume > 100 ){
+							layerData.mediaSettings.volume = 100;
+						}
+					}
+                    if( layerData.mediaSettings.muted ){
+                        layerData.mediaProperties.options.muted = 1;
+                    }
+					// SET: video url
+					$media.attr( 'src', 'https://' + embedURL + '?' + jQuery.param( layerData.mediaProperties.options ) );
+
 					// CREATE: vimeo player
-					layerData.mediaProperties.player = $f( $video[0] );
+					layerData.mediaProperties.player = new Vimeo.Player( $media[0] );
 
 					// SET: player events
-					layerData.mediaProperties.player.addEvent('ready', function(){
+					layerData.mediaProperties.player.on( 'play', mediaPlaying );
+					layerData.mediaProperties.player.on( 'pause', mediaPaused );
+					layerData.mediaProperties.player.on( 'ended', mediaEnded );
 
-						layerData.mediaProperties.player.addEvent('finish', videoEnded );
+					layerData.mediaProperties.player.ready().then(function() {
+
+						layerData.mediaProperties.playerState = 'ready';
+
 						// SET: volume
-						if( layerData.mediaSettings.volume !== null ){
-							layerData.mediaProperties.player.api( 'setVolume', layerData.mediaSettings.volume / 100 );
+						if( layerData.mediaSettings.volume &&
+							!layerData.mediaSettings.muted &&
+							$.isNumeric( layerData.mediaSettings.volume ) &&
+							layerData.mediaSettings.volume >= 0 &&
+							layerData.mediaSettings.volume <= 100 ){
+								layerData.mediaProperties.player.setVolume( layerData.mediaSettings.volume / 100 );
 						}
 
 						if( !preloadOnly ){
-							// START: playing video for the first time
-							layerData.mediaProperties.player.api( 'play' );
+
+							// START: playing for the first time
+							ls.media.vimeo.play( $layer, $media, layerData, embedURL );
 						}
 					});
 				},
 
 				// PLAY | RESUME: video
-				play: function( $layer, $video, videoURL, layerData ){
+				play: function( $layer, $media, layerData, embedURL, mutedByBrowser ){
+
+					// IF: video was previously muted by browser
+					if( typeof $media.attr( 'data-ls-muted-by-browser') !== 'undefined' ){
+						ls.media.unmute.singleMediaElement( $media );
+					}
 
 					// IF: player is not exist...
 					if( !layerData.mediaProperties.player ){
 						// CREATE: player
-						this.createPlayer( $layer, $video, videoURL, layerData );
+						this.createPlayer( $layer, $media, layerData, embedURL );
+
 					}else{
-						// START: playing video
-						layerData.mediaProperties.player.api( 'play' );
+
+						// SET: muted state | background videos
+						if( layerData.is.backgroundVideo && !( 'muted' in layerData.mediaSettings ) ){
+							layerData.mediaProperties.player.setVolume(0);
+						}
+
+						// SET: muted state
+						if( layerData.mediaSettings.muted ){
+
+							if( !( ls.o.rememberUnmuteState && ls.media.userDidUnmute ) ){
+
+								layerData.mediaProperties.player.setVolume(0);
+
+								if( layerData.mediaSettings.muted == 'offertounmute' ){
+									ls.media.unmute.set( $media, layerData.mediaProperties.type);
+								}
+							}else if( ls.o.rememberUnmuteState && ls.media.userDidUnmute ){
+
+								layerData.mediaProperties.player.setVolume( layerData.mediaSettings.volume / 100 || 1 );
+								delete layerData.mediaSettings.muted;
+							}
+						}
+
+						if( mutedByBrowser ){
+
+							layerData.mediaProperties.player.setVolume(0);
+							ls.media.unmute.set( $media, layerData.mediaProperties.type, true );
+						}else{
+							layerData.mediaProperties.player.getVolume().then(function(volume){
+								if( volume == 0 && layerData.mediaSettings.muted == 'offertounmute' ){
+									ls.media.unmute.set( $media, layerData.mediaProperties.type );
+								}
+							});
+						}
+
+						if( ls.media.functions.allowedToPlay( $media, layerData ) ){
+								// START: playing video
+								layerData.mediaProperties.player.play().then(function(){
+							}).catch(function(error){
+								switch (error.name) {
+									// The video is password-protected
+									case 'PasswordError':
+										if( window.console ){
+											console.error( ls.defaults.slider.errorText );
+											console.error( 'Vimeo video is password protected and may cause playback issues.' );
+										}
+									break;
+									// The video is private
+									case 'PrivacyError':
+										if( window.console ){
+											console.error( ls.defaults.slider.errorText );
+											console.error( "Vimeo video is private and may cause playback issues." );
+										}
+									break;
+								    default:
+										ls.media.vimeo.play( $layer, $media, layerData, embedURL, true );
+									break;
+								  }
+							});
+						}else{
+							ls.media.vimeo.stop( $layer, $media, layerData, true );
+						}
 					}
 				},
 
 				// STOP: video | seek to 0
 				// @ slide change
-				stop: function( $layer, $video, layerData, resetMedia ){
+				stop: function( $layer, $media, layerData, resetMedia ){
 
 					// IF: player is exist...
 					if( layerData.mediaProperties.player ){
 						// STOP: video
-						layerData.mediaProperties.player.api( 'pause' );
+						layerData.mediaProperties.player.pause();
 						if( resetMedia ){
-							layerData.mediaProperties.player.api( 'seekTo', 0 );
+							layerData.mediaProperties.player.setCurrentTime( 0 );
 						}
 						// IF: not a background video
 						if( !layerData.is.backgroundVideo ){
 							// SHOW: video thumbnail
-							ls.media.showThumbnail( $layer.find( '.ls-vpcontainer' ) );
+							ls.media.set.thumbnail( $layer.find( '.ls-vpcontainer' ), 'show' );
 						}
+
+						// ls.media.events.stop( $media, $layer, layerData );
 					}
 				}
 			},
@@ -4765,7 +5425,7 @@ Number.prototype.indexOf = function( string ){
 
 							self.$containerElement[index].on( 'mousedown.' + sliderUID + ' touchstart.' + sliderUID, function( e ){
 								ls.transitions.layers.timeline.pause( 0 );
-						    	$( 'body' ).prop( 'unselectable', true ).addClass( 'ls-unselectable' );
+								$( 'body' ).prop( 'unselectable', true ).addClass( 'ls-unselectable' );
 								$( document ).on( 'mousemove.' + sliderUID, function( e ){
 									drag( e, index );
 								});
@@ -5115,7 +5775,7 @@ Number.prototype.indexOf = function( string ){
 			thumbnails: function(){
 
 				var thumbnails = ls.slider.thumbnails.filter(function(item, pos, self) {
-				    	return self.indexOf(item) == pos;
+						return self.indexOf(item) == pos;
 					}),
 					length = thumbnails.length;
 
@@ -7982,7 +8642,7 @@ Number.prototype.indexOf = function( string ){
 													( layerData.loopToCSS.x && layerData.loopToCSS.x !== 0 ) ||
 													( layerData.loopToCSS.y && layerData.loopToCSS.y !== 0 )
 												 ){
-												 	// SET: retart slide timeline when resizing
+													// SET: retart slide timeline when resizing
 													ls.transitions.layers.timeline.shouldRestart = true;
 												}
 
@@ -8500,7 +9160,7 @@ Number.prototype.indexOf = function( string ){
 
 						// UPDATE: easing to reversed hover easing
 						layerData.hover._tween.updateTo({
-						 	ease: layerData.hover.easeOut
+							ease: layerData.hover.easeOut
 						});
 
 						if( layerData.hover._linkTween ){
@@ -8826,7 +9486,7 @@ Number.prototype.indexOf = function( string ){
 								gsap.TweenMax.to( $wrapper[0], parallaxData.durationMove, {
 									x: _x,
 									y: _y
-			 					});
+								});
 							}
 						});
 					},
@@ -9011,7 +9671,7 @@ Number.prototype.indexOf = function( string ){
 												filterValue = filters[propertyName][0] - Math.abs( filters[propertyName][0] - filters[propertyName][1] ) / 100 * progress;
 											}
 											calculatedFilters += ' blur( ' + filterValue + 'px' + ' )';
-								        break;
+										break;
 
 										case 'hue-rotate':
 											if ( filters[propertyName][0] < filters[propertyName][1] ){
@@ -10517,14 +11177,14 @@ Number.prototype.indexOf = function( string ){
 
 			// FUNCTION: counts properties in an object
 			countProp: function( obj ) {
-			    var count = 0;
+				var count = 0;
 
-			    for( var prop in obj ) {
-			        if( obj.hasOwnProperty( prop ) ){
-			            ++count;
+				for( var prop in obj ) {
+					if( obj.hasOwnProperty( prop ) ){
+						++count;
 					}
-			    }
-			    return count;
+				}
+				return count;
 			},
 
 			// FUNCTION: returns URL of an image | automatically working with src, currentSrc and .data( 'src' )
@@ -10684,7 +11344,7 @@ Number.prototype.indexOf = function( string ){
 				preventDefaultForScrollKeys: function( e ){
 					if( ls.device.scroll.keys.indexOf(e.keyCode) !== -1 ){
 						ls.device.scroll.preventDefault( e );
-	        			return false;
+						return false;
 					}
 				}
 			},
@@ -10695,7 +11355,7 @@ Number.prototype.indexOf = function( string ){
 					if( window.getSelection().empty ){
 						window.getSelection().empty();
 					}else if( window.getSelection().removeAllRanges ){
-				    	window.getSelection().removeAllRanges();
+						window.getSelection().removeAllRanges();
 					}
 				}else if( document.selection ){  // IE?
 					document.selection.empty();
@@ -11106,7 +11766,7 @@ Number.prototype.indexOf = function( string ){
 					testEl.remove();
 				}
 
-		        return (s3d1 && s3d2);
+				return (s3d1 && s3d2);
 			},
 
 			isOld: navigator.userAgent.indexOf( 'rident/5' ) === -1 ? false : true
@@ -11119,7 +11779,7 @@ Number.prototype.indexOf = function( string ){
 		ls.intervals = {};
 
 		ls.plugin = {
-			version: '6.6.9'
+			version: '6.6.12'
 		};
 
 		// LOAD: LayerSlider

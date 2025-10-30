@@ -424,7 +424,7 @@ div.ls-plugin-settings {
 .slide-transition .ls-hide-slide {
 	position: absolute;
 	top: 13px;
-	right: 160px;
+	right: 195px;
 }
 .slide-transition .ls-hide-slide .ls-checkbox {
 	vertical-align: middle;
@@ -433,7 +433,7 @@ div.ls-plugin-settings {
 }
 
 .ls-slide-options .ls-configure-posts {
-	width: 182px !important;
+	width: 205px !important;
 }
 
 .ls-box .button,
@@ -1069,11 +1069,6 @@ div.ls-image.hover a:before {
 	border-radius: 50%;
 	width: 20px;
 }
-div.ls-image.hover a.aviary:before {
-	line-height: 20px;
-	height: 20px;
-	display: block;
-}
 
 #ls-tr-builder-form .header.medium p{
 	margin-top:-1px;
@@ -1171,11 +1166,11 @@ div.ls-post-filters select:not([multiple]) {
 	height: auto !important;
 }
 
-#wpwrap .ls-save-shortcode p {
+#main .ls-save-shortcode p {
 	margin: 0 15px 0 0;
 }
 
-#wpwrap .ls-save-shortcode p:last-child {
+#main .ls-save-shortcode p:last-child {
 	display: none;
 }
 
@@ -1336,6 +1331,7 @@ html.creativeslider .ls-layer-options-thead h4 button{
 	background: linear-gradient(to bottom, #39b54a 0%,#34aa44 100%) !important;
 	border: 1px solid #249533 !important;
 	color: #fff !important;
+	width: 178px !important;
 }
 
 html.creativeslider .ls-layer-options-thead h4 button:hover{
@@ -1856,8 +1852,10 @@ html.creativeslider .ls-sublayer-wrapper h4 a.ls-add-sublayer {
 	height: 28px;
 	line-height: 28px;
 	border-radius: 4px;
-	margin-left: 115px;
+	width: 115px;
+	margin-left: 75px;
 	padding: 0 10px 0 6px;
+	text-align: center;
 }
 
 html.creativeslider .ls-sublayer-wrapper h4 a.ls-add-sublayer span{
@@ -2630,6 +2628,7 @@ html.creativeslider .ls-save-shortcode span:last-child {
 	line-height: 34px;
 	color: #7f8ba0;
 	background: #ffffff;
+	cursor: copy;
 }
 
 /*Screen options*/
@@ -3129,7 +3128,7 @@ html.creativeslider .ls-sliders-list .ls-shortcode {
 	background: #eff3f6;
 	color: #7f8ba0;
 	height: 32px;
-	cursor: text;
+	cursor: copy;
 }
 html.creativeslider .ls-pagination {
 	color: #778194;
@@ -3238,14 +3237,17 @@ html.creativeslider .ls-plugin-settings .ls-font-list li{
 html.creativeslider textarea{
 	box-shadow: none;
 }
+html.creativeslider #ls-slider-form textarea {
+	display: block;
+	margin-bottom: 0;
+}
 
 html.creativeslider .ls-font-search > input{
 	height:32px;
 	margin-left: 8px;
 }
 
-html.creativeslider .ls-google-fonts .footer > button,
-html.creativeslider .ls-global-settings .footer > button,
+html.creativeslider .ls-plugin-settings .footer > button,
 html.creativeslider .ls-font-search > button,
 html.creativeslider .ls-font-search button.add-font{
 	background: linear-gradient(to bottom, #2ca0f7 0%,#1991eb 100%);
@@ -3255,8 +3257,7 @@ html.creativeslider .ls-font-search button.add-font{
 	height: 32px;
 }
 
-html.creativeslider .ls-google-fonts .footer > button:hover,
-html.creativeslider .ls-global-settings .footer > button:hover,
+html.creativeslider .ls-plugin-settings .footer > button:hover,
 html.creativeslider .ls-font-search > button:hover,
 html.creativeslider .ls-font-search button.add-font:hover{
 	background: linear-gradient(to bottom, #2184d0 0%,#1584d7 100%);
@@ -3264,8 +3265,7 @@ html.creativeslider .ls-font-search button.add-font:hover{
 	color: #fff;
 }
 
-html.creativeslider .ls-google-fonts .footer > button:active,
-html.creativeslider .ls-global-settings .footer > button:active,
+html.creativeslider .ls-plugin-settings .footer > button:active,
 html.creativeslider .ls-font-search > button:active,
 html.creativeslider .ls-font-search button.add-font:active{
 	background: linear-gradient(to bottom, #196cab 0%,#0c73c0 100%);
@@ -4055,9 +4055,35 @@ html[lang=fr].creativeslider #ls-main-nav-bar a.callbacks i {
 	line-height: 8px;
 	margin-top: 9px;
 }
+html[lang=fr] .ls-preview-context-menu ul {
+	width: 250px;
+}
 html[lang=fr].creativeslider span.slideproptitle {
 	width: 125px;
 }
-html[lang=fr] .ls-slide-options td.slide-transition .inner .row-helper span {
-	right: -22px;
+/* ES */
+html[lang=es].creativeslider #ls-main-nav-bar a.settings,
+html[lang=es].creativeslider #ls-main-nav-bar a.callbacks {
+	line-height: 13px;
+}
+html[lang=es].creativeslider #ls-main-nav-bar a.settings i,
+html[lang=es].creativeslider #ls-main-nav-bar a.callbacks i {
+	line-height: 8px;
+	margin-top: 9px;
+}
+/* DE */
+html[lang=de].creativeslider #ls-main-nav-bar a.settings {
+	line-height: 13px;
+}
+html[lang=de].creativeslider #ls-main-nav-bar a.settings i {
+	line-height: 8px;
+	margin-top: 9px;
+}
+/* PL */
+html[lang=pl].creativeslider #ls-main-nav-bar a.callbacks {
+	line-height: 13px;
+}
+html[lang=pl].creativeslider #ls-main-nav-bar a.callbacks i {
+	line-height: 8px;
+	margin-top: 9px;
 }

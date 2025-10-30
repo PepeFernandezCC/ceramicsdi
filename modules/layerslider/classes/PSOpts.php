@@ -4,75 +4,67 @@
  * https://creativeslider.webshopworks.com
  *
  * @author    WebshopWorks <info@webshopworks.com>
- * @copyright 2015-2020 WebshopWorks
+ * @copyright 2015-2025 WebshopWorks
  * @license   One Domain Licence
  *
  * Not allowed to resell or redistribute this software
  */
-
-defined('_PS_VERSION_') or exit;
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 class PSOpts
 {
-    private static $tab = '&nbsp;&nbsp;&nbsp;&nbsp;';
-    private static $products = array();
+    const TAB = '&ensp;&ensp;';
 
-    private static function getProducts($lang, $id_category)
+    const PRODUCT_LIMIT = 3000;
+
+    private static $products = [];
+
+    private static function getProducts($id_lang, $id_category)
     {
-        if (empty(self::$products[$lang])) {
-            self::$products[$lang] = array();
-            $products = &self::$products[$lang];
+        if (empty(self::$products[$id_lang])) {
+            self::$products[$id_lang] = [];
+            $products = &self::$products[$id_lang];
+            $id_shop = $GLOBALS['context']->shop->id;
+            $rows = Db::getInstance()->executeS('
+                SELECT p.`id_product`, p.`id_category_default`, pl.`name` FROM ' . _DB_PREFIX_ . 'product p
+                LEFT JOIN ' . _DB_PREFIX_ . 'product_lang pl ON p.`id_product` = pl.`id_product`
+                WHERE pl.`id_lang` = ' . (int) $id_lang . ' AND pl.`id_shop` = ' . (int) $id_shop . '
+                ORDER BY p.`id_category_default`, pl.`name`
+            ') ?: [];
 
-            $lang = (int) $lang;
-            $id_category = (int) $id_category;
+            foreach ($rows as &$row) {
+                $cat = $row['id_category_default'];
 
-            $ps_ = _DB_PREFIX_;
-            $res = Db::getInstance()->executeS("
-                SELECT p.id_product, p.id_category_default, pl.name FROM {$ps_}product AS p
-                LEFT JOIN {$ps_}product_lang AS pl ON p.id_product = pl.id_product
-                WHERE pl.id_lang = $lang
-                ORDER BY p.id_category_default, pl.name
-            ");
-
-            foreach ($res as &$product) {
-                $cat = $product['id_category_default'];
                 if (!isset($products[$cat])) {
-                    $products[$cat] = array();
+                    $products[$cat] = [];
                 }
-                $products[$cat][] = &$product;
+                $products[$cat][] = &$row;
             }
         }
 
-        return isset(self::$products[$lang][$id_category]) ? self::$products[$lang][$id_category] : array();
+        return isset(self::$products[$id_lang][$id_category]) ? self::$products[$id_lang][$id_category] : [];
     }
 
     public static function getNestedCategories($root_category = null, $id_lang = false, $active = true)
     {
-        $id_shop = Context::getContext()->shop->id;
-
-        if (isset($root_category) && !Validate::isInt($root_category)) {
-            die(Tools::displayError());
+        if (isset($root_category) && !Validate::isInt($root_category) || !Validate::isBool($active)) {
+            exit(Tools::displayError());
         }
-
-        if (!Validate::isBool($active)) {
-            die(Tools::displayError());
-        }
-
+        $id_shop = $GLOBALS['context']->shop->id;
         $result = Db::getInstance()->executeS('
-            SELECT c.*, cl.* FROM `'._DB_PREFIX_.'category` c
-            INNER JOIN '._DB_PREFIX_.'category_shop category_shop ON (category_shop.id_category = c.id_category AND category_shop.id_shop = 1)
-            LEFT JOIN `'._DB_PREFIX_.'category_lang` cl ON c.`id_category` = cl.`id_category` AND cl.id_shop = '.(int)$id_shop.'
-            '.(isset($root_category) ? 'RIGHT JOIN `'._DB_PREFIX_.'category` c2 ON c2.`id_category` = '.(int)$root_category.
-            ' AND c.`nleft` >= c2.`nleft` AND c.`nright` <= c2.`nright`' : '').'
-            WHERE 1 '.($id_lang ? 'AND `id_lang` = '.(int)$id_lang : '').'
-            '.($active ? ' AND c.`active` = 1' : '').'
-            '.(!$id_lang ? ' GROUP BY c.`id_category`' : '').'
-            '.' ORDER BY c.`level_depth` ASC, category_shop.`position` ASC');
-
-        $categories = array();
-        $buff = array();
-
-        $root = (array)Category::getRootCategory();
+            SELECT c.*, cl.* FROM ' . _DB_PREFIX_ . 'category c
+            INNER JOIN ' . _DB_PREFIX_ . 'category_shop cs ON cs.`id_category` = c.`id_category` AND cs.`id_shop` = 1
+            LEFT JOIN ' . _DB_PREFIX_ . 'category_lang cl ON cl.`id_category` = c.`id_category` AND cl.`id_shop` = ' . (int) $id_shop . ($root_category ? '
+            RIGHT JOIN ' . _DB_PREFIX_ . 'category c2 ON c2.`id_category` = ' . (int) $root_category . ' AND c.`nleft` >= c2.`nleft` AND c.`nright` <= c2.`nright`' : '') . '
+            WHERE 1' . ($active ? ' AND c.`active` = 1' : '') . ($id_lang ? ' AND `id_lang` = ' . (int) $id_lang : '
+            GROUP BY c.`id_category`') . '
+            ORDER BY c.`level_depth`, cs.`position`
+        ');
+        $categories = [];
+        $buff = [];
+        $root = (array) Category::getRootCategory();
         array_unshift($result, $root);
 
         if (!isset($root_category)) {
@@ -97,21 +89,22 @@ class PSOpts
     {
         foreach ($cats as &$cat) {
             if (empty($a)) {
-                $a[] = array('value' => 'all', 'option' => '- All -');
-                $a[] = array('value' => '', 'option' => '- None -');
-                $a[] = array('value' => 'index', 'option' => $tabs.'▾ '.$cat['name']);
+                $a[] = ['value' => 'all', 'option' => '- All -'];
+                $a[] = ['value' => '', 'option' => '- None -'];
+                $a[] = ['value' => 'index', 'option' => $tabs . '▾ ' . $cat['name']];
             } else {
-                $a[] = array('value' => 'c-'.$cat['id_category'], 'option' => $tabs.'▾ '.$cat['name']);
+                $a[] = ['value' => 'c-' . $cat['id_category'], 'option' => $tabs . '▾ ' . $cat['name']];
             }
 
             if (isset($cat['children'])) {
-                self::generateCategories($cat['children'], $a, $tabs.self::$tab);
+                self::generateCategories($cat['children'], $a, $tabs . self::TAB);
             }
-
-            $lang = (int)Context::getContext()->language->id;
-            $prods = self::getProducts($lang, $cat['id_category']);
-            foreach ($prods as &$prod) {
-                $a[] = array('value' => 'p-'.$prod['id_product'], 'option' => $tabs.self::$tab.'▸ '.$prod['name']);
+            if (null !== self::$products) {
+                $lang = (int) $GLOBALS['language']->id;
+                $prods = self::getProducts($lang, $cat['id_category']);
+                foreach ($prods as &$prod) {
+                    $a[] = ['value' => 'p-' . $prod['id_product'], 'option' => $tabs . self::TAB . '▸ ' . $prod['name']];
+                }
             }
         }
     }
@@ -119,10 +112,10 @@ class PSOpts
     private static function generateCategoryList(&$cats, &$a, $tabs = '')
     {
         foreach ($cats as &$cat) {
-            $a[] = (object) array('term_id' => $cat['id_category'], 'name' => $tabs.$cat['name']);
+            $a[] = (object) ['term_id' => $cat['id_category'], 'name' => $tabs . $cat['name']];
 
             if (isset($cat['children'])) {
-                self::generateCategoryList($cat['children'], $a, $tabs.self::$tab);
+                self::generateCategoryList($cat['children'], $a, $tabs . self::TAB);
             }
         }
     }
@@ -130,56 +123,56 @@ class PSOpts
     private static function generateCMSCategories(&$e, &$a, $tabs = '')
     {
         if (empty($a)) {
-            $a[] = array('value' => 'all', 'option' => '- All -');
-            $a[] = array('value' => '', 'option' => '- None -');
-            if (file_exists(dirname(__FILE__).'/../../psblog')) {
-                $a[] = array('value' => 'psblogpostsmodulefront', 'option' => $tabs.'▸ '.'Blog home');
+            $a[] = ['value' => 'all', 'option' => '- All -'];
+            $a[] = ['value' => '', 'option' => '- None -'];
+            if (file_exists(dirname(__FILE__) . '/../../psblog')) {
+                $a[] = ['value' => 'psblogpostsmodulefront', 'option' => $tabs . '▸ Blog home'];
             }
-            $a[] = array('value' => 'newproducts', 'option' => $tabs.'▸ '.'New products');
-            $a[] = array('value' => 'bestsales', 'option' => $tabs.'▸ '.'Best sellers');
-            $a[] = array('value' => 'pricesdrop', 'option' => $tabs.'▸ '.'Price drop');
-            $a[] = array('value' => 'manufacturer-0', 'option' => $tabs.'▾ '.'Brands');
+            $a[] = ['value' => 'newproducts', 'option' => $tabs . '▸ New products'];
+            $a[] = ['value' => 'bestsales', 'option' => $tabs . '▸ Best sellers'];
+            $a[] = ['value' => 'pricesdrop', 'option' => $tabs . '▸ Price drop'];
+            $a[] = ['value' => 'manufacturer-0', 'option' => $tabs . '▾ Brands'];
             $manufacturers = Manufacturer::getManufacturers();
             foreach ($manufacturers as &$manufacturer) {
-                $a[] = array('value' => 'manufacturer-'.$manufacturer['id_manufacturer'], 'option' => self::$tab.$tabs.'▸ '.$manufacturer['name']);
+                $a[] = ['value' => 'manufacturer-' . $manufacturer['id_manufacturer'], 'option' => self::TAB . $tabs . '▸ ' . $manufacturer['name']];
             }
-            $a[] = array('value' => 'supplier', 'option' => $tabs.'▸ '.'Suppliers');
-            $a[] = array('value' => 'cart', 'option' => $tabs.'▾ '.'Cart');
-            $a[] = array('value' => 'order', 'option' => self::$tab.$tabs.'▸ '.'Order');
-            $a[] = array('value' => 'order-confirmation', 'option' => self::$tab.$tabs.'▸ '.'Order confirmation');
-            $a[] = array('value' => 'contact', 'option' => $tabs.'▸ '.'Contact us');
-            $a[] = array('value' => 'search', 'option' => $tabs.'▸ '.'Search');
-            $a[] = array('value' => 'sitemap', 'option' => $tabs.'▸ '.'Sitemap');
-            $a[] = array('value' => 'stores', 'option' => $tabs.'▸ '.'Stores');
-            $a[] = array('value' => 'c-'.$e['id_cms_category'], 'option' => $tabs.'▾ '.'Pages');
+            $a[] = ['value' => 'supplier', 'option' => $tabs . '▸ Suppliers'];
+            $a[] = ['value' => 'cart', 'option' => $tabs . '▾ Cart'];
+            $a[] = ['value' => 'order', 'option' => self::TAB . $tabs . '▸ Order'];
+            $a[] = ['value' => 'order-confirmation', 'option' => self::TAB . $tabs . '▸ Order confirmation'];
+            $a[] = ['value' => 'contact', 'option' => $tabs . '▸ Contact us'];
+            $a[] = ['value' => 'search', 'option' => $tabs . '▸ Search'];
+            $a[] = ['value' => 'sitemap', 'option' => $tabs . '▸ Sitemap'];
+            $a[] = ['value' => 'stores', 'option' => $tabs . '▸ Stores'];
+            $a[] = ['value' => 'c-' . $e['id_cms_category'], 'option' => $tabs . '▾ Pages'];
         } else {
-            $a[] = array('value' => 'c-'.$e['id_cms_category'], 'option' => $tabs.'▾ '.$e['name']);
+            $a[] = ['value' => 'c-' . $e['id_cms_category'], 'option' => $tabs . '▾ ' . $e['name']];
         }
 
         if (isset($e['children'])) {
             foreach ($e['children'] as &$child) {
-                self::generateCMSCategories($child, $a, $tabs.self::$tab);
+                self::generateCMSCategories($child, $a, $tabs . self::TAB);
             }
         }
 
         foreach ($e['cms'] as &$c) {
-            $a[] = array('value' => 'p-'.$c['id_cms'], 'option' => $tabs.self::$tab.'▸ '.$c['meta_title']);
+            $a[] = ['value' => 'p-' . $c['id_cms'], 'option' => $tabs . self::TAB . '▸ ' . $c['meta_title']];
         }
     }
 
     private static function generatePBCategories(&$cats, &$news, &$a, $tabs = '')
     {
         foreach ($cats as &$e) {
-            $a[] = array('value' => 'bc-'.$e['id'], 'option' => $tabs.'▾ '.$e['title']);
+            $a[] = ['value' => 'bc-' . $e['id'], 'option' => $tabs . '▾ ' . $e['title']];
 
             if (isset($e['children'])) {
-                self::generatePBCategories($e['children'], $news, $a, $tabs.self::$tab);
+                self::generatePBCategories($e['children'], $news, $a, $tabs . self::TAB);
             }
 
             foreach ($news as &$n) {
                 foreach ($n['categories'] as $cid => &$c) {
                     if ($e['id'] == $cid) {
-                        $a[] = array('value' => 'bn-'.$n['id'], 'option' => $tabs.self::$tab.'▸ '.$n['title']);
+                        $a[] = ['value' => 'bn-' . $n['id'], 'option' => $tabs . self::TAB . '▸ ' . $n['title']];
                     }
                 }
             }
@@ -188,37 +181,47 @@ class PSOpts
 
     public static function getCategoryList()
     {
-        $opts = array();
-        $cats = method_exists('Category', 'getNestedCategories') ? Category::getNestedCategories() : self::getNestedCategories();
-        if (empty($cats)) {
-            $cats = self::getNestedCategories();
-        }
+        $opts = [];
+        method_exists('Category', 'getNestedCategories')
+            && ($cats = Category::getNestedCategories())
+            || ($cats = self::getNestedCategories());
+
         self::generateCategoryList($cats, $opts);
+
         return $opts;
     }
 
     public static function getCategories()
     {
-        $opts = array();
-        $cats = method_exists('Category', 'getNestedCategories') ? Category::getNestedCategories() : self::getNestedCategories();
-        if (empty($cats)) {
-            $cats = self::getNestedCategories();
+        $opts = [];
+        method_exists('Category', 'getNestedCategories')
+            && ($cats = Category::getNestedCategories())
+            || ($cats = self::getNestedCategories());
+
+        $id_shop = $GLOBALS['context']->shop->id;
+        $count = (int) Db::getInstance()->getValue(
+            'SELECT COUNT(`id_product`) FROM ' . _DB_PREFIX_ . 'product_shop WHERE `active` = 1 AND `id_shop` = ' . (int) $id_shop
+        );
+        if (!$count || $count > self::PRODUCT_LIMIT) {
+            self::$products = null;
         }
+
         self::generateCategories($cats, $opts);
+
         return $opts;
     }
 
     public static function getCMSCategories()
     {
-        $opts = array();
+        $opts = [];
         $cats = CMSCategory::getRecurseCategory();
         self::generateCMSCategories($cats, $opts);
 
         if (class_exists('CategoriesClass')) {
-            $opts[] = array('value' => 'bc-0', 'option' => '▾ PrestaBlog');
-            $blogcats = call_user_func(array('CategoriesClass', 'getListe'), null, true);
-            $blognews = call_user_func(array('NewsClass', 'getListe'), null, true, 0, 0, null, 'NULL', 'ASC');
-            self::generatePBCategories($blogcats, $blognews, $opts, self::$tab);
+            $opts[] = ['value' => 'bc-0', 'option' => '▾ PrestaBlog'];
+            $blogcats = call_user_func(['CategoriesClass', 'getListe'], null, true);
+            $blognews = call_user_func(['NewsClass', 'getListe'], null, true, 0, 0, null, 'NULL', 'ASC');
+            self::generatePBCategories($blogcats, $blognews, $opts, self::TAB);
         }
 
         return $opts;
@@ -226,36 +229,29 @@ class PSOpts
 
     public static function getTagList()
     {
-        $context = Context::getContext();
-        $id_lang = $context->language->id;
+        $id_lang = $GLOBALS['language']->id;
+        $id_shop = $GLOBALS['context']->shop->id;
         $db = Db::getInstance(_PS_USE_SQL_SLAVE_);
 
         if (version_compare(_PS_VERSION_, '1.6.1', '<')) {
-            return $db->executeS('
-                SELECT t.name, t.id_tag AS term_id FROM `'._DB_PREFIX_.'tag` t
-                WHERE t.`id_lang` = '.(int)$id_lang.' ORDER BY t.name ASC');
+            return $db->executeS(
+                'SELECT `name`, `id_tag` AS term_id FROM ' . _DB_PREFIX_ . 'tag WHERE `id_lang` = ' . (int) $id_lang . ' ORDER BY `name`'
+            );
         }
-        if (Group::isFeatureActive()) {
-            $groups = FrontController::getCurrentCustomerGroups();
-            return $db->executeS('
-                SELECT t.name, t.id_tag AS term_id
-                FROM `'._DB_PREFIX_.'tag_count` pt
-                LEFT JOIN `'._DB_PREFIX_.'tag` t ON (t.id_tag = pt.id_tag)
-                WHERE pt.`id_group` '.(count($groups) ? 'IN ('.implode(',', $groups).')' : '= 1').'
-                AND pt.`id_lang` = '.(int)$id_lang.' AND pt.`id_shop` = '.(int)$context->shop->id.'
-                ORDER BY t.name ASC');
-        }
+        $groups = Group::isFeatureActive() ? FrontController::getCurrentCustomerGroups() : [0];
+
         return $db->executeS('
-            SELECT t.name, t.id_tag AS term_id
-            FROM `'._DB_PREFIX_.'tag_count` pt
-            LEFT JOIN `'._DB_PREFIX_.'tag` t ON (t.id_tag = pt.id_tag)
-            WHERE pt.id_group = 0 AND pt.`id_lang` = '.(int)$id_lang.' AND pt.`id_shop` = '.(int)$context->shop->id.'
-            ORDER BY t.name ASC');
+            SELECT t.`name`, t.`id_tag` AS term_id FROM ' . _DB_PREFIX_ . 'tag_count pt
+            LEFT JOIN ' . _DB_PREFIX_ . 'tag t ON t.`id_tag` = pt.`id_tag`
+            WHERE pt.`id_lang` = ' . (int) $id_lang . ' AND pt.`id_shop` = ' . (int) $id_shop . '
+            AND pt.`id_group` ' . ($groups ? 'IN (' . implode(',', array_map('intval', $groups)) . ')' : '= 1') . '
+            ORDER BY t.`name` ASC
+        ');
     }
 
     public static function getProductImgTypes()
     {
-        $types = array('' => ls__('original size'));
+        $types = ['' => ls__('original size')];
 
         foreach (ImageType::getImagesTypes('products') as $type) {
             $types[$type['name']] = $type['name'] . ' (' . $type['width'] . ' x ' . $type['height'] . ')';

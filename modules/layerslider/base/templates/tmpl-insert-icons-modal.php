@@ -4,29 +4,30 @@
  * https://creativeslider.webshopworks.com
  *
  * @author    WebshopWorks <info@webshopworks.com>
- * @copyright 2015-2020 WebshopWorks
+ * @copyright 2015-2025 WebshopWorks
  * @license   One Domain Licence
  *
  * Not allowed to resell or redistribute this software
  */
-
-defined('_PS_VERSION_') or exit;
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 ?>
 <script type="text/html" id="tmpl-insert-icons-modal">
     <div id="ls-insert-icons-modal-window">
         <header>
-            <h1><?php ls_e('Insert Icon', 'LayerSlider') ?></h1>
+            <h1><?php ls_e('Insert Icon'); ?></h1>
             <b class="dashicons dashicons-no"></b>
         </header>
         <div class="km-ui-modal-scrollable">
             <div class="search-holder">
-                <input type="search" name="s" placeholder="<?php ls_e('Search icons ...', 'LayerSlider') ?>">
+                <input type="search" name="s" placeholder="<?php ls_e('Search icons ...'); ?>">
             </div>
             <div class="results">
 
 
                 <!-- Web Application Icons -->
-                <h2><?php ls_e('Web Application Icons', 'LayerSlider') ?></h2>
+                <h2><?php ls_e('Web Application Icons'); ?></h2>
                 <section class="clearfix">
                     <div data-help="address-book"><i class="fa fa-address-book"></i></div>
                     <div data-help="address-book-o"><i class="fa fa-address-book-o"></i></div>
@@ -483,7 +484,7 @@ defined('_PS_VERSION_') or exit;
 
 
                 <!-- Accessibility Icons -->
-                <h2><?php ls_e('Accessibility Icons', 'LayerSlider') ?></h2>
+                <h2><?php ls_e('Accessibility Icons'); ?></h2>
                 <section class="clearfix">
                     <div data-help="american-sign-language-interpreting"><i class="fa fa-american-sign-language-interpreting"></i></div>
                     <div data-help="american-sign-language-interpreting"><i class="fa fa-american-sign-language-interpreting"></i></div>
@@ -508,7 +509,7 @@ defined('_PS_VERSION_') or exit;
 
 
                 <!-- Hand Icons -->
-                <h2><?php ls_e('Hand Icons', 'LayerSlider') ?></h2>
+                <h2><?php ls_e('Hand Icons'); ?></h2>
                 <section class="clearfix">
                     <div data-help="hand-rock-o"><i class="fa fa-hand-rock-o"></i></div>
                     <div data-help="hand-lizard-o"><i class="fa fa-hand-lizard-o"></i></div>
@@ -531,7 +532,7 @@ defined('_PS_VERSION_') or exit;
 
 
                 <!-- Transportation Icons -->
-                <h2><?php ls_e('Transportation Icons', 'LayerSlider') ?></h2>
+                <h2><?php ls_e('Transportation Icons'); ?></h2>
                 <section class="clearfix">
                     <div data-help="ambulance"><i class="fa fa-ambulance"></i></div>
                     <div data-help="car"><i class="fa fa-car"></i></div>
@@ -555,7 +556,7 @@ defined('_PS_VERSION_') or exit;
 
 
                 <!-- Gender Icons -->
-                <h2><?php ls_e('Gender Icons', 'LayerSlider') ?></h2>
+                <h2><?php ls_e('Gender Icons'); ?></h2>
                 <section class="clearfix">
                     <div data-help="genderless"><i class="fa fa-genderless"></i></div>
                     <div data-help="transgender"><i class="fa fa-transgender"></i></div>
@@ -575,7 +576,7 @@ defined('_PS_VERSION_') or exit;
 
 
                 <!-- File Type Icons -->
-                <h2><?php ls_e('File Type Icons', 'LayerSlider') ?></h2>
+                <h2><?php ls_e('File Type Icons'); ?></h2>
                 <section class="clearfix">
                     <div data-help="file"><i class="fa fa-file"></i></div>
                     <div data-help="file-archive-o"><i class="fa fa-file-archive-o"></i></div>
@@ -599,7 +600,7 @@ defined('_PS_VERSION_') or exit;
 
 
                 <!-- File Type Icons -->
-                <h2><?php ls_e('Spinner Icons', 'LayerSlider') ?></h2>
+                <h2><?php ls_e('Spinner Icons'); ?></h2>
                 <section class="clearfix">
                     <div data-help="circle-o-notch"><i class="fa fa-circle-o-notch"></i></div>
                     <div data-help="cog"><i class="fa fa-cog"></i></div>
@@ -610,7 +611,7 @@ defined('_PS_VERSION_') or exit;
 
 
                 <!-- Form Control Icons -->
-                <h2><?php ls_e('Form Control Icons', 'LayerSlider') ?></h2>
+                <h2><?php ls_e('Form Control Icons'); ?></h2>
                 <section class="clearfix">
                     <div data-help="check-square"><i class="fa fa-check-square"></i></div>
                     <div data-help="check-square-o"><i class="fa fa-check-square-o"></i></div>
@@ -627,7 +628,7 @@ defined('_PS_VERSION_') or exit;
 
 
                 <!-- Payment Icons -->
-                <h2><?php ls_e('Payment Icons', 'LayerSlider') ?></h2>
+                <h2><?php ls_e('Payment Icons'); ?></h2>
                 <section class="clearfix">
                     <div data-help="cc-amex"><i class="fa fa-cc-amex"></i></div>
                     <div data-help="cc-diners-club"><i class="fa fa-cc-diners-club"></i></div>
@@ -645,7 +646,7 @@ defined('_PS_VERSION_') or exit;
 
 
                 <!-- Chart Icons -->
-                <h2><?php ls_e('Chart Icons', 'LayerSlider') ?></h2>
+                <h2><?php ls_e('Chart Icons'); ?></h2>
                 <section class="clearfix">
                     <div data-help="area-chart"><i class="fa fa-area-chart"></i></div>
                     <div data-help="bar-chart"><i class="fa fa-bar-chart"></i></div>
@@ -656,7 +657,7 @@ defined('_PS_VERSION_') or exit;
 
 
                 <!-- Currency Icons -->
-                <h2><?php ls_e('Currency Icons', 'LayerSlider') ?></h2>
+                <h2><?php ls_e('Currency Icons'); ?></h2>
                 <section class="clearfix">
                     <div data-help="btc"><i class="fa fa-btc"></i></div>
                     <div data-help="btc"><i class="fa fa-btc"></i></div>
@@ -688,7 +689,7 @@ defined('_PS_VERSION_') or exit;
 
 
                 <!-- Text Editor Icons -->
-                <h2><?php ls_e('Text Editor Icons', 'LayerSlider') ?></h2>
+                <h2><?php ls_e('Text Editor Icons'); ?></h2>
                 <section class="clearfix">
                     <div data-help="align-center"><i class="fa fa-align-center"></i></div>
                     <div data-help="align-justify"><i class="fa fa-align-justify"></i></div>
@@ -743,7 +744,7 @@ defined('_PS_VERSION_') or exit;
 
 
                 <!-- Directional Icons -->
-                <h2><?php ls_e('Directional Icons', 'LayerSlider') ?></h2>
+                <h2><?php ls_e('Directional Icons'); ?></h2>
                 <section class="clearfix">
                     <div data-help="angle-double-down"><i class="fa fa-angle-double-down"></i></div>
                     <div data-help="angle-double-left"><i class="fa fa-angle-double-left"></i></div>
@@ -802,7 +803,7 @@ defined('_PS_VERSION_') or exit;
 
 
                 <!-- Video Player Icons -->
-                <h2><?php ls_e('Video Player Icons', 'LayerSlider') ?></h2>
+                <h2><?php ls_e('Video Player Icons'); ?></h2>
                 <section class="clearfix">
                     <div data-help="arrows-alt"><i class="fa fa-arrows-alt"></i></div>
                     <div data-help="backward"><i class="fa fa-backward"></i></div>
@@ -829,7 +830,7 @@ defined('_PS_VERSION_') or exit;
 
 
                 <!-- Brand Icons -->
-                <h2><?php ls_e('Brand Icons', 'LayerSlider') ?></h2>
+                <h2><?php ls_e('Brand Icons'); ?></h2>
                 <section class="clearfix">
                     <div data-help="500px"><i class="fa fa-500px"></i></div>
                     <div data-help="adn"><i class="fa fa-adn"></i></div>
@@ -1024,7 +1025,7 @@ defined('_PS_VERSION_') or exit;
 
 
                 <!-- Medical Icons -->
-                <h2><?php ls_e('Medical Icons', 'LayerSlider') ?></h2>
+                <h2><?php ls_e('Medical Icons'); ?></h2>
                 <section class="clearfix">
                     <div data-help="ambulance"><i class="fa fa-ambulance"></i></div>
                     <div data-help="h-square"><i class="fa fa-h-square"></i></div>

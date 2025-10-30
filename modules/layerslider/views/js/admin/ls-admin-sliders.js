@@ -1,6 +1,6 @@
 /*! Creative Slider - Responsive Slideshow
  * https://creativeslider.webshopworks.com
- * Copyright 2015-2020 WebshopWorks
+ * Copyright 2015-2025 WebshopWorks
  * Not allowed to resell or redistribute this software */
 
 jQuery(function($) {
@@ -143,7 +143,7 @@ jQuery(function($) {
 		getFonts : function() {
 
 			if(LS_GoogleFontsAPI.results == 0) {
-				var API_KEY = 'AIzaSyC_iL-1h1jz_StV_vMbVtVfh3h2QjVUZ8c';
+				var API_KEY = 'AIzaSyCwp3cvlHhId4qkV8zyxMi3mr473N33lx8';
 				$.getJSON('https://www.googleapis.com/webfonts/v1/webfonts?key=' + API_KEY, function(data) {
 					LS_GoogleFontsAPI.results = data;
 				});
@@ -280,6 +280,11 @@ jQuery(function($) {
 	// Google Fonts API
 	LS_GoogleFontsAPI.init();
 
+	// License
+	if ('#license' === location.hash) {
+			$('#license').click();
+	}
+
 	$('.ls-sliders-grid').on('click', '.slider-actions', function() {
 
 		var $this 		= $(this),
@@ -406,7 +411,7 @@ jQuery(function($) {
 		$modal.find('input.shortcode').val('[layerslider id="'+slug+'"]');
 	});
 
-	// Pagivation
+	// Pagination
 	$('.pagination-links a.disabled').click(function(e) {
 		e.preventDefault();
 	});
@@ -470,8 +475,8 @@ jQuery(function($) {
 					top: 0,
 					right: 0,
 					bottom: 0
-				}).appendTo( '#wpwrap' );
-				jQuery( '#wpwrap' ).addClass( 'ls-wp-wrap-white' );
+				}).appendTo( '#main' );
+				jQuery( '#main' ).addClass( 'ls-wp-wrap-white' );
 				jQuery(document).on( 'keyup.LS', function( e ) {
 					if( e.keyCode === 27 ){
 						jQuery( '#ls-import-samples-button' ).data( 'lsModalTimeline' ).reverse();
@@ -480,8 +485,8 @@ jQuery(function($) {
 			},
 			onReverseComplete: function(){
 				jQuery( 'html, body' ).removeClass( 'ls-body-black' );
-				jQuery( '#wpwrap' ).removeClass( 'ls-wp-wrap-white' );
-				jQuery( '#wpwrap' ).attr( 'style', '' );
+				jQuery( '#main' ).removeClass( 'ls-wp-wrap-white' );
+				jQuery( '#main' ).attr( 'style', '' );
 				jQuery( '#ls-import-samples-button' ).data( 'lsModalTimeline' ).clear().kill();
 				jQuery( '#ls-import-samples-button' ).removeData( 'lsModalTimeline' );
 				jQuery(document).off( 'keyup.LS' );
@@ -516,7 +521,7 @@ jQuery(function($) {
 			ease: Quint.easeInOut
 		}, 0 );
 
-		tl.fromTo( $( '#wpwrap' )[0], 1, {
+		tl.fromTo( $( '#main' )[0], 1, {
 			autoCSS: false,
 			css: {
 				transformPerspective: width,
@@ -590,122 +595,6 @@ jQuery(function($) {
 		});
 	});
 
-	// Auto-update authorization
-	$('.ls-auto-update form').submit(function(e) {
-
-		// Prevent browser default submission
-		e.preventDefault();
-
-		var $form 	= $(this),
-			$key 	= $form.find('.key input'),
-			$button = $form.find('.button-save:visible');
-
-		if( $key.val().length < 10 ) {
-			alert(LS_l10n.SLEnterCode);
-			return false;
-		}
-
-		// Send request and provide feedback message
-		$button.data('text', $button.text() ).text(LS_l10n.working).addClass('saving');
-
-		// Post it
-		$.post( ajaxurl, $(this).serialize(), function(data) {
-
-			// Parse response and set message
-			data = $.parseJSON(data);
-
-			// Success
-			if(data && ! data.errCode ) {
-
-				// Apply activated state to GUI
-				$form.closest('.ls-box').addClass('active');
-
-				// Display activation message
-				$('p.note', $form).css('color', '#74bf48').text( data.message );
-
-				// Make sure that features requiring activation will
-				// work without refreshing the page.
-				window.lsSiteActivation = true;
-
-			// Alert message (if any)
-			} else if(typeof data.message !== "undefined") {
-				alert(data.message);
-			}
-
-			$button.removeClass('saving').text( $button.data('text') );
-		});
-	});
-
-
-	// Auto-update deauthorization
-	$('.ls-auto-update a.ls-deauthorize').click(function(event) {
-		event.preventDefault();
-
-		if( confirm(LS_l10n.SLDeactivate) ) {
-
-			var $form = $(this).closest('form');
-
-			$.get( ajaxurl, $.param({ action: 'layerslider_deauthorize_site'}), function(data) {
-
-				// Parse response and set message
-				var data = $.parseJSON(data);
-
-				if( data && ! data.errCode ) {
-
-					var $box 	= $form.closest('.ls-box'),
-						$guide 	= $box.find('.guide'),
-						$notice = $form.find('p.note');
-
-					$notice.css('color', '#666').text('');
-
-					$form.find('.key input').val('');
-					$box.removeClass('active');
-
-					$form.hide();
-					$guide.css('transform', 'translateX(0px)').show();
-
-					window.lsSiteActivation = false;
-				}
-
-				// Alert message (if any)
-				if(typeof data.message !== "undefined") {
-					alert(data.message);
-				}
-			});
-		}
-	});
-
-	$('.ls-product-banner .unlock').click(function(e) {
-		e.preventDefault();
-
-		var $box 	= $('.ls-product-banner.ls-auto-update'),
-			$window = $(window),
-			wh 		= $window.height(),
-			bt 		= $box.offset().top,
-			bh 		= $box.height(),
-			top 	= bt + (bh / 2) - (wh / 2);
-
-			$('html,body').animate({ scrollTop: top }, 200, function() {
-				setTimeout(function() {
-
-					TweenMax.to( $box[0], 0.2, {
-						yoyo: true,
-						repeat: 3,
-						ease: Quad.easeInOut,
-						scale: 1.1
-					});
-				}, 100);
-			});
-	});
-
-	// Permission form
-	$('#ls-permission-form').submit(function(e) {
-		e.preventDefault();
-		if(confirm(LS_l10n.SLPermissions)) {
-			this.submit();
-		}
-	});
-
 
 	// Google CDN version warning
 	$('#ls_use_custom_jquery').on('click', '.ls-checkbox', function(e) {
@@ -741,8 +630,9 @@ jQuery(function($) {
 
 	// Shortcode
 	$('input.ls-shortcode').click(function() {
-		this.focus();
 		this.select();
+		document.execCommand('copy');
+		showSuccessMessage('<i class="icon-paste"></i> ' + LS_l10n.copied);
 	});
 
 	// Importing demo sliders
@@ -755,19 +645,7 @@ jQuery(function($) {
 			bundled = !! $figure.data('bundled'),
 			action 	= bundled ? 'ls_import_bundled' : 'ls_import_online';
 
-		// Premium notice
-		if( $figure.data('premium') && ! window.lsSiteActivation ) {
-			kmUI.modal.open( {
-				into: '#ls-import-modal-window',
-				title: LS_l10n.TSImportWarningTitle,
-				content: LS_l10n.TSImportWarningContent,
-				width: 700,
-				height: 200,
-				overlayAnimate: 'fade'
-			});
-			return;
-
-		} else if( $figure.data('version-warning') ) {
+		if( $figure.data('version-warning') ) {
 			kmUI.modal.open( {
 				into: '#ls-import-modal-window',
 				title: LS_l10n.TSVersionWarningTitle,
@@ -792,7 +670,6 @@ jQuery(function($) {
 			data: {
 				action: action,
 				slider: handle,
-				security: window.lsImportNonce
 			},
 			success: function(data, textStatus, jqXHR) {
 				data = JSON.parse( data );

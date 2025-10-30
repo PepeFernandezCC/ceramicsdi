@@ -1,6 +1,6 @@
 /*! Creative Slider - Responsive Slideshow
  * https://creativeslider.webshopworks.com
- * Copyright 2015-2020 WebshopWorks
+ * Copyright 2015-2025 WebshopWorks
  * Not allowed to resell or redistribute this software */
 
 if (!Array.prototype.indexOf) {
@@ -730,7 +730,7 @@ var kmComboBox = {
 		// Populate list
 		jQuery.each(options, function(index, option) {
 			var optionName = jQuery.type(option) == 'string' ? option : option.name || option.value,
-				optionValue = 'value' in option ? option.value : optionName,
+				optionValue = option.value || optionName,
 				listItem = jQuery('<li>').data('value', optionValue);
 				listItem.text(optionName).appendTo($list);
 

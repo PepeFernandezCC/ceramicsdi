@@ -4,17 +4,18 @@
  * https://creativeslider.webshopworks.com
  *
  * @author    WebshopWorks <info@webshopworks.com>
- * @copyright 2015-2020 WebshopWorks
+ * @copyright 2015-2025 WebshopWorks
  * @license   One Domain Licence
  *
  * Not allowed to resell or redistribute this software
  */
-
-defined('_PS_VERSION_') or exit;
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 function display_gallery_page($files_array, $pageno = 1, $path = '', $resultspp = 4096, $display = true)
 {
-    $pagination = array();
+    $pagination = [];
     $pagination['resultspp'] = $resultspp;
     $pagination['startres'] = 1 + (($pageno - 1) * $pagination['resultspp']);
     $pagination['endres'] = $pagination['startres'] + $pagination['resultspp'] - 1;
@@ -27,7 +28,7 @@ function display_gallery_page($files_array, $pageno = 1, $path = '', $resultspp 
     $output = '';
 
     foreach ($files_array as $file_name) {
-        $file_path = $imagepath.$path.$file_name;
+        $file_path = $imagepath . $path . $file_name;
 
         if (($pagination['counter'] >= $pagination['startres']) && ($pagination['counter'] <= $pagination['endres'])) {
             $addcbr = '';
@@ -36,28 +37,28 @@ function display_gallery_page($files_array, $pageno = 1, $path = '', $resultspp 
                 $addcbr = ' br';
             }
 
-            $file = array();    // ???
+            $file = [];    // ???
             $file['name'] = $file_name;
 
-            $files_array[$array_count] = array($file);
-            $array_count++;
+            $files_array[$array_count] = [$file];
+            ++$array_count;
 
-            if (preg_match('/\.(jpg|jpe|jpeg|png|gif|bmp)$/', $file_name)) {
-                $output .= '<a href="'.$file_path.'" title="'.$file_name.'" data-gallery="gallery">';
+            if (preg_match('/\.(jpe?g|png|gif|bmp|webp)$/i', $file_name)) {
+                $output .= '<a href="' . $file_path . '" title="' . $file_name . '" data-gallery="gallery">';
                 $output .= "<div class=\"thumb$addcbr\" style=\"background-image:url('$file_path')\"></div>";
-                $output .= '<label class="file-name">'.$file_name.'</label>';
+                $output .= '<label class="file-name">' . $file_name . '</label>';
                 $output .= '</a>';
             } else {
-                $output .= '<a href="'.$file_path.'" title="'.$file_name.'" data-folder="folder">';
+                $output .= '<a href="' . $file_path . '" title="' . $file_name . '" data-folder="folder">';
                 $output .= "<div class=\"thumb folder$addcbr\"></div>";
-                $output .= '<label class="file-name">'.$file_name.'</label>';
+                $output .= '<label class="file-name">' . $file_name . '</label>';
                 $output .= '</a>';
             }
         }
-        $pagination['counter']++;
+        ++$pagination['counter'];
     }
 
-    if ($display == true) {
+    if (true == $display) {
         echo $output;
     } else {
         return $output;
@@ -66,7 +67,7 @@ function display_gallery_page($files_array, $pageno = 1, $path = '', $resultspp 
 
 function display_gallery_pagination($url = '', $totalresults = 0, $pageno = 1, $resultspp = 4096, $display = true)
 {
-    $configp = array();
+    $configp = [];
     $configp['results_per_page'] = $resultspp;
     $configp['total_no_results'] = $totalresults;
     $configp['page_url'] = $url;
@@ -76,14 +77,14 @@ function display_gallery_pagination($url = '', $totalresults = 0, $pageno = 1, $
 
     $output = get_html($configp);
 
-    if ($display == true) {
+    if (true == $display) {
         echo $output;
     } else {
         return $output;
     }
 }
 
-function get_html($pconfig/*, $ext = ''*/)
+function get_html($pconfig)
 {
     $links_html = '';
 
@@ -133,7 +134,7 @@ function get_html($pconfig/*, $ext = ''*/)
         $start_page = 1;
     }
 
-    for ($i = $start_page; $i <= $end_page; $i++) {
+    for ($i = $start_page; $i <= $end_page; ++$i) {
         if ($i == $current_page) {
             $links_html .= '<li class="disabled" id="gli$i"><a href="#" data-target-page="$i">$i</a></span></li>';
         } else {
@@ -155,7 +156,8 @@ function get_html($pconfig/*, $ext = ''*/)
             $links_html .= '<li id="gliLast" class="disabled"><a href="#" data-target-page="$round_pages">Last &gt;</a><li>';
         }
     }
-    //if ($round_pages > 9) {}
+    // if ($round_pages > 9) {}
     $links_html .= '</ul>';
+
     return $links_html;
 }

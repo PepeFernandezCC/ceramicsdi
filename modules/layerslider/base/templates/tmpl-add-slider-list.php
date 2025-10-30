@@ -4,23 +4,23 @@
  * https://creativeslider.webshopworks.com
  *
  * @author    WebshopWorks <info@webshopworks.com>
- * @copyright 2015-2020 WebshopWorks
+ * @copyright 2015-2025 WebshopWorks
  * @license   One Domain Licence
  *
  * Not allowed to resell or redistribute this software
  */
-
-defined('_PS_VERSION_') or exit;
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 ?>
 <script type="text/html" id="tmpl-ls-add-slider-list">
     <form method="post" id="ls-add-slider-template-list" class="ls-pointer ls-box">
-        <?php ls_nonce_field('add-slider'); ?>
         <input type="hidden" name="ls-add-new-slider" value="1">
         <span class="ls-mce-arrow"></span>
-        <h3 class="header"><?php ls_e('Name your new slider', 'LayerSlider') ?></h3>
+        <h3 class="header"><?php ls_e('Name your new slider'); ?></h3>
         <div class="inner">
-            <input type="text" name="title" placeholder="<?php ls_e('e.g. Homepage slider', 'LayerSlider') ?>">
-            <button class="button"><?php ls_e('Add slider', 'LayerSlider') ?></button>
+            <input type="text" name="title" placeholder="<?php ls_e('e.g. Homepage slider'); ?>">
+            <button class="button"><?php ls_e('Add slider'); ?></button>
         </div>
     </form>
 </script>

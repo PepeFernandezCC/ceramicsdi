@@ -4,24 +4,25 @@
  * https://creativeslider.webshopworks.com
  *
  * @author    WebshopWorks <info@webshopworks.com>
- * @copyright 2015-2020 WebshopWorks
+ * @copyright 2015-2025 WebshopWorks
  * @license   One Domain Licence
  *
  * Not allowed to resell or redistribute this software
  */
-
-defined('_PS_VERSION_') or exit;
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 ?>
 <script type="text/html" id="tmpl-ls-transition-modal">
     <div id="ls-transition-window">
         <header>
-            <h1><?php ls_e('Choose a slide transition to import', 'LayerSlider') ?></h1>
+            <h1><?php ls_e('Choose a slide transition to import'); ?></h1>
             <b class="dashicons dashicons-no"></b>
             <div id="transitionmenu" class="filters buildermenu">
-                <span><?php ls_e('Show Transitions:', 'LayerSlider') ?></span>
+                <span><?php ls_e('Show Transitions:'); ?></span>
                 <ul>
-                    <li class="active"><?php ls_e('2D', 'LayerSlider') ?></li>
-                    <li><?php ls_e('3D', 'LayerSlider') ?></li>
+                    <li class="active"><?php ls_e('2D'); ?></li>
+                    <li><?php ls_e('3D'); ?></li>
                 </ul>
             </div>
         </header>

@@ -1024,6 +1024,7 @@ select:-ms-input-placeholder {
   text-align: center; }
 
 .ls-sliders-list .slider-actions {
+  position: relative;
   width: 30px;
   height: 30px;
   line-height: 30px;
@@ -1475,136 +1476,6 @@ div.ls-bulk-actions {
     width: 100%;
     height: 350px;
     border: 0; }
-
-#ls-permission-form .inner {
-  padding: 20px;
-  text-align: center;
-  font-size: 13px; }
-
-#ls-permission-form i {
-  margin: 0 20px; }
-
-#ls-permission-form td:first-child {
-  width: 130px;
-  text-align: right; }
-
-#ls-permission-form input, #ls-permission-form select {
-  width: 200px;
-  border-radius: 3px; }
-
-#ls-permission-form p {
-  margin-bottom: 0; }
-
-.ls-auto-update {
-  overflow: hidden;
-  z-index: 10;
-  background: white; }
-  .ls-auto-update p {
-    margin-top: 0; }
-  .ls-auto-update figure.status {
-    color: #ff4400;
-    background: none;
-    text-shadow: none; }
-    .ls-auto-update figure.status .dashicons {
-      line-height: 28px;
-      margin: 0; }
-    .ls-auto-update figure.status span:last-child {
-      display: none; }
-  .ls-auto-update .button-activation {
-    position: absolute;
-    bottom: 10px;
-    right: 10px; }
-  .ls-auto-update .guide, .ls-auto-update form {
-    position: absolute;
-    top: 39px;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding-bottom: 0; }
-  .ls-auto-update form {
-    display: none; }
-    .ls-auto-update form .main-controls .enter {
-      display: inline-block;
-      margin-top: 5px; }
-    .ls-auto-update form .main-controls .key {
-      position: absolute;
-      left: 10px;
-      right: 10px;
-      height: 30px;
-      margin-top: 10px; }
-      .ls-auto-update form .main-controls .key input {
-        width: 100%; }
-    .ls-auto-update form .main-controls p {
-      margin-top: 55px;
-      font-style: italic;
-      font-size: 13px;
-      color: #666;
-      text-align: justify; }
-    .ls-auto-update form .main-controls .button-small {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      box-shadow: none; }
-    .ls-auto-update form .main-controls .purchase-button {
-      left: auto !important;
-      right: 10px; }
-    .ls-auto-update form .main-controls .button-hero {
-      position: absolute;
-      bottom: 10px;
-      left: 10px; }
-    .ls-auto-update form .main-controls .button-secondary {
-      position: absolute;
-      bottom: 10px;
-      right: 10px; }
-    .ls-auto-update form .sub-options {
-      display: none; }
-      .ls-auto-update form .sub-options .button-secondary {
-        position: absolute;
-        top: 82px; }
-      .ls-auto-update form .sub-options .channel {
-        position: absolute;
-        top: 85px;
-        right: 12px;
-        text-align: right; }
-        .ls-auto-update form .sub-options .channel input {
-          margin-left: 5px; }
-        .ls-auto-update form .sub-options .channel label {
-          vertical-align: baseline !important; }
-      .ls-auto-update form .sub-options p.note {
-        margin-top: 90px;
-        text-align: justify; }
-      .ls-auto-update form .sub-options .controls {
-        position: absolute;
-        bottom: 10px;
-        left: 10px;
-        right: 10px;
-        height: 16px;
-        text-align: justify; }
-        .ls-auto-update form .sub-options .controls .button-secondary {
-          position: absolute;
-          top: -100px; }
-        .ls-auto-update form .sub-options .controls a {
-          text-align: left;
-          display: inline-block; }
-        .ls-auto-update form .sub-options .controls span {
-          display: inline-block;
-          width: 99%; }
-        .ls-auto-update form .sub-options .controls span {
-          margin: 0 10px; }
-  .ls-auto-update.active .guide {
-    display: none; }
-  .ls-auto-update.active form {
-    display: block; }
-  .ls-auto-update.active .main-controls p, .ls-auto-update.active .main-controls .button-hero, .ls-auto-update.active .main-controls .button-secondary {
-    display: none; }
-  .ls-auto-update.active .sub-options {
-    display: block; }
-  .ls-auto-update.active figure.status {
-    color: #74bf48; }
-    .ls-auto-update.active figure.status span:first-child {
-      display: none; }
-    .ls-auto-update.active figure.status span:last-child {
-      display: block; }
 
 .ls-product-banner {
   height: 193px;
@@ -2369,7 +2240,7 @@ ul.ls-font-list {
       border-color: #ddd !important;
       box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.07) !important; }
   .ls-slider-titlewrap .ls-slider-slug {
-    width: 350px;
+    width: 360px;
     height: 38px;
     position: absolute;
     top: 0px;
@@ -3012,7 +2883,7 @@ ul.ls-font-list {
 .ls-slide-options td.slide-image {
   min-width: 360px; }
   .ls-slide-options td.slide-image .inner {
-    width: 340px; }
+    width: 400px; }
     .ls-slide-options td.slide-image .inner .float {
       width: 50%; }
   .ls-slide-options td.slide-image .inner:last-child {
@@ -3021,7 +2892,9 @@ ul.ls-font-list {
 .ls-slide-options td.slide-thumb {
   min-width: 172px; }
   .ls-slide-options td.slide-thumb .inner {
-    width: 152px; }
+    text-align: center; }
+    .ls-slide-options td.slide-thumb .inner .ls-image {
+      margin: 0 auto 5px; }
 
 .ls-slide-options td.slide-timing {
   min-width: 230px; }
@@ -3046,10 +2919,9 @@ ul.ls-font-list {
         line-height: 34px;
         color: #999;
         position: absolute;
-        right: 24px;
+        right: -18px;
         top: 0px;
-        pointer-events: none;
-        }
+        pointer-events: none; }
 
 .ls-slide-options td.ls-slide-link .inner {
   width: 340px; }
@@ -3215,17 +3087,6 @@ div.ls-image {
     color: red;
     background-color: white;
     border-radius: 50%; }
-  div.ls-image.hover a.aviary {
-    top: -6px;
-    left: -10px;
-    width: 27px;
-    height: 20px;
-    background: transparent;
-    color: #7f8fa4;
-    border-radius: 0;
-    cursor: pointer;
-    font-size: 17px;
-    }
 
 #ls-post-options {
   display: none; }
@@ -4677,11 +4538,12 @@ tr.active .ls-sublayer-controls {
       .ls-html-code .ls-options .slide-image p {
         margin-bottom: 0; }
 
-.ls-insert-media,
 .ls-insert-icon {
   position: absolute;
-  bottom: 4px;
-  left: 0;
+  bottom: 1px;
+  left: 1px;
+  border-bottom: none !important;
+  border-left: none !important;
   padding-left: 8px !important; }
   .ls-insert-media span,
   .ls-insert-icon span {

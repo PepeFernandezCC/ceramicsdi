@@ -4,18 +4,19 @@
  * https://creativeslider.webshopworks.com
  *
  * @author    WebshopWorks <info@webshopworks.com>
- * @copyright 2015-2020 WebshopWorks
+ * @copyright 2015-2025 WebshopWorks
  * @license   One Domain Licence
  *
  * Not allowed to resell or redistribute this software
  */
-
-defined('_PS_VERSION_') or exit;
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 ?>
 <script type="text/html" id="ls-static-layer-item-template">
     <li>
-        <a href="#" class="dashicons dashicons-redo ls-icon-jump" data-help="<?php ls_e('Click this icon to jump to the slide where this layer was added on, so you can quickly edit its settings.', 'LayerSlider') ?>"></a>
+        <a href="#" class="dashicons dashicons-redo ls-icon-jump" data-help="<?php ls_e('Click this icon to jump to the slide where this layer was added on, so you can quickly edit its settings.'); ?>"></a>
         <div class="ls-sublayer-thumb"></div>
-        <span class="ls-sublayer-title"><?php echo sprintf(ls__('Layer #%d', 'LayerSlider'), '1') ?></span>
+        <span class="ls-sublayer-title"><?php printf(ls__('Layer #%d'), '1'); ?></span>
     </li>
 </script>

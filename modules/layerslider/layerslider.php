@@ -4,30 +4,33 @@
  * https://creativeslider.webshopworks.com
  *
  * @author    WebshopWorks <info@webshopworks.com>
- * @copyright 2015-2020 WebshopWorks
+ * @copyright 2015-2025 WebshopWorks
  * @license   One Domain Licence
  *
  * Not allowed to resell or redistribute this software
  */
-
-defined('_PS_VERSION_') or exit;
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 class LayerSlider extends Module
 {
     public static $instance;
 
+    protected $controllerClass;
     protected $init = false;
-    protected $tabs = array(
-        'Creative Slider' => array('class' => 'AdminParentLayerSlider', 'active' => 1, 'icon' => 'collections'),
-        'Sliders' => array('class' => 'AdminLayerSlider', 'active' => 1),
-        'Media Manager' => array('class' => 'AdminLayerSliderMedia', 'active' => 0),
-        'Revisions' => array('class' => 'AdminLayerSliderRevisions', 'active' => 1),
-        'Transition Builder' => array('class' => 'AdminLayerSliderTransition', 'active' => 1),
-        'Skin Editor' => array('class' => 'AdminLayerSliderSkin', 'active' => 1),
-        'CSS Editor' => array('class' => 'AdminLayerSliderStyle', 'active' => 1),
-    );
-    protected $lang = array(
-        'fr' => array(
+    protected $template;
+    protected $tabs = [
+        'Creative Slider' => ['class' => 'AdminParentLayerSlider', 'active' => 1, 'icon' => 'collections'],
+        'Sliders' => ['class' => 'AdminLayerSlider', 'active' => 1],
+        'Media Manager' => ['class' => 'AdminLayerSliderMedia', 'active' => 0],
+        'Revisions' => ['class' => 'AdminLayerSliderRevisions', 'active' => 1],
+        'Transition Builder' => ['class' => 'AdminLayerSliderTransition', 'active' => 1],
+        'Skin Editor' => ['class' => 'AdminLayerSliderSkin', 'active' => 1],
+        'CSS Editor' => ['class' => 'AdminLayerSliderStyle', 'active' => 1],
+    ];
+    protected $lang = [
+        'fr' => [
             'Creative Slider' => 'Creative Slider',
             'Sliders' => 'Diaporamas',
             'Media Manager' => 'Directeur des médias',
@@ -35,18 +38,18 @@ class LayerSlider extends Module
             'Transition Builder' => 'Effets de Transition',
             'Skin Editor' => 'Éditeur de skin',
             'CSS Editor' => 'Éditeur de CSS',
-        )
-    );
+        ],
+    ];
 
     public function __construct()
     {
         $this->name = 'layerslider';
         $this->tab = 'slideshows';
-        $this->version = '6.6.9';
+        $this->version = '6.6.12';
         $this->author = 'WebshopWorks';
         $this->module_key = 'b92dd49b8609431aeb010cb8db905a3f';
         $this->need_instance = 0;
-        $this->ps_versions_compliancy = array('min' => '1.5', 'max' => '1.7');
+        $this->ps_versions_compliancy = ['min' => '1.5', 'max' => _PS_VERSION_];
         $this->bootstrap = false;
         $this->displayName = 'Creative Slider';
         $this->description = 'Responsive Slideshow Module';
@@ -54,42 +57,72 @@ class LayerSlider extends Module
         self::$instance = $this;
         parent::__construct();
 
-        if (!empty($this->context->controller)) {
-            $this->controllerClass = str_replace('controller', '', Tools::strtolower(get_class($this->context->controller)));
+        if ($this->context->controller) {
+            $this->controllerClass = str_replace('controller', '', strtolower(get_class($this->context->controller)));
         }
     }
 
     public function install()
     {
-        if (Shop::isFeatureActive()) {
-            Shop::setContext(Shop::CONTEXT_ALL);
-        }
+        Shop::isFeatureActive() && Shop::setContext(Shop::CONTEXT_ALL);
+
         $db = Db::getInstance();
-        $res = $db->execute('
-            CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'layerslider_module` (
+        $result = $db->execute('
+            CREATE TABLE IF NOT EXISTS ' . _DB_PREFIX_ . 'layerslider (
+                `id` int(11) NOT NULL AUTO_INCREMENT,
+                `author` int(11) NOT NULL DEFAULT 0,
+                `name` varchar(100) DEFAULT "",
+                `slug` varchar(100) DEFAULT "",
+                `data` mediumtext NOT NULL,
+                `date_c` int(11) NOT NULL,
+                `date_m` int(11) NOT NULL,
+                `schedule_start` int(11) NOT NULL DEFAULT 0,
+                `schedule_end` int(11) NOT NULL DEFAULT 0,
+                `flag_hidden` tinyint(1) NOT NULL DEFAULT 0,
+                `flag_deleted` tinyint(1) NOT NULL DEFAULT 0,
+                PRIMARY KEY (`id`)
+            ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8 DEFAULT COLLATE=utf8_general_ci
+        ') && $db->execute('
+            CREATE TABLE IF NOT EXISTS ' . _DB_PREFIX_ . 'layerslider_revisions (
+                `id` int(11) NOT NULL AUTO_INCREMENT,
+                `slider_id` int(11) NOT NULL,
+                `author` int(11) NOT NULL DEFAULT 0,
+                `data` mediumtext NOT NULL,
+                `date_c` int(11) NOT NULL,
+                PRIMARY KEY (`id`)
+            ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8 DEFAULT COLLATE=utf8_general_ci
+        ') && $db->execute('
+            CREATE TABLE IF NOT EXISTS ' . _DB_PREFIX_ . 'layerslider_module (
                 `id_slider` int(11) NOT NULL,
                 `id_shop` int(11) NOT NULL DEFAULT 0,
                 `id_lang` int(11) NOT NULL DEFAULT 0,
-                `hook` varchar(64) NOT NULL DEFAULT \'\',
+                `hook` varchar(64) NOT NULL DEFAULT "",
                 `position` tinyint(2) NOT NULL DEFAULT 0,
-                `pages` text NULL
-            ) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=UTF8;
+                `pages` text NULL,
+                KEY `id_slider` (`id_slider`),
+                KEY `id_shop` (`id_shop`)
+            ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8 DEFAULT COLLATE=utf8_general_ci
         ');
-        if (!$res) {
+
+        if (!$result) {
             $this->_errors[] = $db->getMsgError();
+
             return false;
         }
+
+        Configuration::get('LS_DATE_INSTALLED') || Configuration::updateValue('LS_DATE_INSTALLED', time());
+
         return parent::install();
     }
 
     protected function addTabs()
     {
-        $parent = version_compare(_PS_VERSION_, '1.7.0', '<') ? 0 : (int)Tab::getIdFromClassName('CONFIGURE');
+        $parent = version_compare(_PS_VERSION_, '1.7.0', '<') ? 0 : (int) Tab::getIdFromClassName('CONFIGURE');
         foreach ($this->tabs as $name => $t) {
             $tab = new Tab();
             $tab->active = $t['active'];
             $tab->class_name = $t['class'];
-            $tab->name = array();
+            $tab->name = [];
             foreach (Language::getLanguages(true) as $lang) {
                 $tab->name[$lang['id_lang']] = isset($this->lang[$lang['iso_code']]) ? $this->lang[$lang['iso_code']][$name] : $name;
             }
@@ -100,8 +133,8 @@ class LayerSlider extends Module
             $tab->id_parent = $parent;
             $tab->add();
 
-            if ($t['class'] == 'AdminParentLayerSlider') {
-                $parent = (int)Tab::getIdFromClassName($t['class']);
+            if ('AdminParentLayerSlider' == $t['class']) {
+                $parent = (int) Tab::getIdFromClassName($t['class']);
             }
         }
     }
@@ -109,12 +142,13 @@ class LayerSlider extends Module
     protected function deleteTabs()
     {
         foreach ($this->tabs as $t) {
-            $id_tab = (int)Tab::getIdFromClassName($t['class']);
+            $id_tab = (int) Tab::getIdFromClassName($t['class']);
             if ($id_tab) {
                 $tab = new Tab($id_tab);
                 $tab->delete();
             }
         }
+        Db::getInstance()->delete('tab', '`module` = "layerslider"');
     }
 
     public function enable($force_all = false)
@@ -123,29 +157,33 @@ class LayerSlider extends Module
             $this->addTabs();
             $this->registerHook('actionOutputHTMLBefore');
             $this->registerHook('displayHeader');
-            if (version_compare(_PS_VERSION_, '1.7.1', '<')) {
-                $this->registerHook('displayBackOfficeHeader');
-            }
-            $modules = Db::getInstance()->executeS('SELECT DISTINCT hook FROM '._DB_PREFIX_.'layerslider_module WHERE hook != "" AND id_shop > -1');
+            version_compare(_PS_VERSION_, '1.7.1', '<')
+                && $this->registerHook('displayBackOfficeHeader');
+
+            $modules = Db::getInstance()->executeS(
+                'SELECT DISTINCT `hook` FROM ' . _DB_PREFIX_ . 'layerslider_module WHERE `id_shop` > -1 AND `hook` != ""'
+            ) ?: [];
             foreach ($modules as $mod) {
                 $this->registerHook($mod['hook']);
             }
         }
+
         return $res;
     }
 
     public function disable($force_all = false)
     {
         $this->deleteTabs();
-        $db = Db::getInstance();
-        $db->execute('DELETE FROM '._DB_PREFIX_.'tab WHERE module = "layerslider"');
         $this->unregisterHook('actionOutputHTMLBefore');
         $this->unregisterHook('displayHeader');
         $this->unregisterHook('displayBackOfficeHeader');
-        $modules = $db->executeS('SELECT DISTINCT hook FROM '._DB_PREFIX_.'layerslider_module WHERE hook != "" AND id_shop > -1');
+        $modules = Db::getInstance()->executeS(
+            'SELECT DISTINCT `hook` FROM ' . _DB_PREFIX_ . 'layerslider_module WHERE `id_shop` > -1 AND `hook` != ""'
+        );
         foreach ($modules as $mod) {
             $this->unregisterHook($mod['hook']);
         }
+
         return parent::disable($force_all);
     }
 
@@ -159,46 +197,50 @@ class LayerSlider extends Module
         if (is_array($id)) {
             $id = empty($id[2]) ? $id[1] : $id[2];
         }
-        require_once _PS_MODULE_DIR_.'layerslider/helper.php';
-        require_once _PS_MODULE_DIR_.'layerslider/base/layerslider.php';
-        return LsShortcode::handleShortcode(array('id' => $id, 'filters' => ''));
+        require_once _PS_MODULE_DIR_ . 'layerslider/helper.php';
+        require_once _PS_MODULE_DIR_ . 'layerslider/base/layerslider.php';
+
+        return LsShortcode::handleShortcode(['id' => $id, 'filters' => '']);
     }
 
     protected function isOnPage(&$mod)
     {
-        if (($mod['id_shop'] == 0 || $mod['id_shop'] == $this->context->shop->id) && ($mod['id_lang'] == 0 || $mod['id_lang'] == $this->context->language->id)) {
+        if ((0 == $mod['id_shop'] || $mod['id_shop'] == $this->context->shop->id) && (0 == $mod['id_lang'] || $mod['id_lang'] == $this->context->language->id)) {
             if (!isset($mod['pages']) || !$mod['pages']) {
                 $mod['pages'] = '{"cat":"all","prod":"all","cms":"all","page":"all"}';
             }
-            if ($mod['pages'] == '{"cat":"all","prod":"all","cms":"all","page":"all"}') {
+            if ('{"cat":"all","prod":"all","cms":"all","page":"all"}' == $mod['pages']) {
                 return true;
             }
-            $pages = Tools::jsonDecode($mod['pages'], true);
+            $pages = json_decode($mod['pages'], true);
 
-            if (!empty($pages['groups']) && in_array('0', $pages['groups']) === false && !count(array_intersect($this->context->customer->getGroups(), $pages['groups']))) {
+            if (!empty($pages['groups']) && false === in_array('0', $pages['groups']) && !count(array_intersect($this->context->customer->getGroups(), $pages['groups']))) {
                 return false;
             }
 
             switch ($this->controllerClass) {
                 case 'index':
-                    if ($pages['cat'] === 'all') {
+                    if ('all' === $pages['cat']) {
                         return true;
                     }
+
                     return isset($pages['index']);
                 case 'category':
-                    if ($pages['cat'] === 'all') {
+                    if ('all' === $pages['cat']) {
                         return true;
                     }
                     $id = Tools::getValue('id_category');
+
                     return in_array("$id", $pages['cat']);
                 case 'product':
-                    if ($pages['prod'] === 'all') {
+                    if ('all' === $pages['prod']) {
                         return true;
                     }
                     $id = Tools::getValue('id_product');
+
                     return in_array("$id", $pages['prod']);
                 case 'cms':
-                    if ($pages['cms'] === 'all') {
+                    if ('all' === $pages['cms']) {
                         return true;
                     }
                     if (isset($this->context->controller->cms->id)) {
@@ -207,53 +249,63 @@ class LayerSlider extends Module
                     if (isset($this->context->controller->cms_category->id)) {
                         return in_array("{$this->context->controller->cms_category->id}", $pages['cms']);
                     }
+
                     return false;
                 case 'manufacturer':
-                    if ($pages['cms'] === 'all') {
+                    if ('all' === $pages['cms']) {
                         return true;
                     }
                     if (isset($pages['manufacturer'])) {
                         $id = (int) Tools::getValue('id_manufacturer', 0);
+
                         return in_array($id, $pages['manufacturer']);
                     }
+
                     return false;
                 case 'psblogpostsmodulefront':
-                    return isset($pages[$this->controllerClass]) && !$this->context->controller->id_post;
+                    return isset($pages[$this->controllerClass]) && empty($this->context->controller->id_post);
                 case 'prestablogblogmodulefront':
-                    if ($pages['cms'] === 'all') {
+                    if ('all' === $pages['cms']) {
                         return true;
                     }
                     if ($id = Tools::getValue('id', 0)) {
                         return isset($pages['bn']) && in_array("$id", $pages['bn']);
                     }
                     $c = Tools::getValue('c', 0);
+
                     return isset($pages['bc']) && in_array("$c", $pages['bc']);
                 default:
-                    if ($pages['cms'] === 'all') {
+                    if ('all' === $pages['cms']) {
                         return true;
                     }
+
                     return isset($pages[$this->controllerClass]);
             }
         }
+
         return false;
     }
 
     protected function displaySliders($hook)
     {
         $content = '';
-        $modules = Db::getInstance()->executeS('SELECT * FROM '._DB_PREFIX_.'layerslider_module WHERE hook = "'.pSQL($hook).'" ORDER BY position');
+        $modules = Db::getInstance()->executeS(
+            'SELECT * FROM ' . _DB_PREFIX_ . 'layerslider_module WHERE `hook` LIKE "' . pSQL($hook) . '" ORDER BY `position`'
+        ) ?: [];
         foreach ($modules as &$mod) {
             if ($this->isOnPage($mod)) {
                 $content .= $this->generateSlider($mod['id_slider']);
             }
         }
+
         return $content;
     }
 
     public function __call($method, $args)
     {
-        if (stripos($method, 'hookdisplay') === 0) {
-            $hook = 'display'.Tools::substr($method, 11);
+        if (0 === stripos($method, 'hook') && 0 !== stripos($method, 'hookAction')) {
+            $hook = substr($method, 4);
+
             return $this->displaySliders($hook);
         }
     }
@@ -265,50 +317,53 @@ class LayerSlider extends Module
 
     public function filterShortcode(&$content)
     {
-        if (Tools::strpos($content, '[creativeslider id="') !== false) {
-            require_once _PS_MODULE_DIR_.'layerslider/helper.php';
-            require_once _PS_MODULE_DIR_.'layerslider/base/layerslider.php';
+        if (false !== strpos($content, '[creativeslider id="')) {
+            require_once _PS_MODULE_DIR_ . 'layerslider/helper.php';
+            require_once _PS_MODULE_DIR_ . 'layerslider/base/layerslider.php';
             $content = preg_replace_callback(
-                '~<p>\s*\[creativeslider id="(\w+)"\]\s*</p>|\[creativeslider id="(\w+)"\]~',
-                array($this, 'generateSlider'),
+                '`<[pP]>\s*\[creativeslider id="([\w\-]+)"\]\s*</[pP]>|\[creativeslider id="([\w\-]+)"\]`',
+                [$this, 'generateSlider'],
                 $content
             );
         }
-        if (Tools::strpos($content, '[cs-navigate id="') !== false) {
+        if (false !== strpos($content, '[cs-navigate id="')) {
             $content = preg_replace(
-                '~\[cs-navigate id="(\w+)" action="(\w+)"\](.*?)\[/cs-navigate\]~',
+                '`\[cs-navigate id="([\w\-]+)" action="([\w\-]+)"\](.*?)\[/cs-navigate\]`',
                 '<a class="ls-navigate" href="javascript:;" onclick="$(\'#layerslider_$1\').layerSlider(parseInt(\'$2\') || \'$2\')">$3</a>',
                 $content
             );
         }
-        return $content;
     }
 
     public function hookDisplayHeader()
     {
-        require_once _PS_MODULE_DIR_.'layerslider/helper.php';
-        require_once _PS_MODULE_DIR_.'layerslider/base/layerslider.php';
+        require_once _PS_MODULE_DIR_ . 'layerslider/helper.php';
+        require_once _PS_MODULE_DIR_ . 'layerslider/base/layerslider.php';
         ls_do_action('ls_enqueue_scripts');
 
-        if (empty($this->controllerClass)) {
-            $this->controllerClass = str_replace('controller', '', Tools::strtolower(get_class($this->context->controller)));
+        if (!$this->controllerClass) {
+            $this->controllerClass = str_replace('controller', '', strtolower(get_class($this->context->controller)));
         }
 
         if (version_compare(_PS_VERSION_, '1.7.1', '<')) {
-            // parse shortcodes
-            $ctrl = $this->context->controller;
-            if (in_array($ctrl->php_self, array('category', 'product', 'manufacturer')) && method_exists($ctrl, 'get'.$ctrl->php_self)) {
-                $res = $ctrl->{'get'.$ctrl->php_self}();
-                foreach (array('description', 'short_description', 'description_short') as $desc) {
-                    if (!empty($res->{$desc})) {
-                        $this->filterShortcode($res->{$desc});
-                    }
-                }
-            } elseif ($ctrl->php_self == 'cms' && !empty($ctrl->cms->content)) {
-                $this->filterShortcode($ctrl->cms->content);
-            }
+            // BC Fix for PS < 1.7.1
+            $this->template = &Closure::bind(function &() {
+                return $this->template;
+            }, $this->context->controller, $this->context->controller)->__invoke();
+            // Parse shortcodes
+            $this->context->smarty->registerFilter('output', [$this, 'outputFilter']);
         }
+
         return ls_meta_generator();
+    }
+
+    public function outputFilter($out, $tpl)
+    {
+        if ($this->template === $tpl->template_resource) {
+            $this->filterShortcode($out);
+        }
+
+        return $out;
     }
 
     public function hookDisplayBackOfficeHeader()

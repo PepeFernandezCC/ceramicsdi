@@ -1,6 +1,6 @@
 /*! Creative Slider - Responsive Slideshow
  * https://creativeslider.webshopworks.com
- * Copyright 2015-2020 WebshopWorks
+ * Copyright 2015-2025 WebshopWorks
  * Not allowed to resell or redistribute this software */
 
 (function($){
@@ -52,7 +52,7 @@
 			this.$strechedElement.append( $( '<div data-slidebar-for="' + sliderUID + '"></div>') );
 
 			if( this.settings.showCurrentTime ){
- 				this.$currentTimeElement = $( '<div>' ).addClass( 'ls-current-time' );
+				this.$currentTimeElement = $( '<div>' ).addClass( 'ls-current-time' );
 			}
 
 			this.$legendWrapper = $( '<div class="ls-timeline-legend"><span class="ls-tl-leg">legend</span><span class="ls-tl-leg-delay">delay</span><span class="ls-tl-leg-in">in</span><span class="ls-tl-leg-out">out</span><span class="ls-tl-leg-textin">text in</span><span class="ls-tl-leg-textout">text out</span><span class="ls-tl-leg-loop">loop / middle</span><span class="ls-tl-leg-static">static</span></div>' ).appendTo( this.$timelineElement );
@@ -154,13 +154,13 @@
 							}) );
 						}
 
- 						if( $layer.children().first().length && $layer.children().first().is( 'iframe, video, audio' ) ){
+						if( $layer.children().first().length && $layer.children().first().is( 'iframe, video, audio' ) ){
 							innerText = 'MEDIA LAYER';
- 						}else{
- 							innerText = $layer[0].innerText;
- 						}
+						}else{
+							innerText = $layer[0].innerText;
+						}
 
- 						if( tl.settings.showLayersProperties ){
+						if( tl.settings.showLayersProperties ){
 							hoverElHTML += '<tr><td>Type & Content</td><td>' + $layer[0].tagName + ( innerText ? ' | ' + innerText : '' ) + '</td></tr>';
 							hoverElHTML += '<tr><td>Original styles</td><td>' + layerData.original.styles.replace( /:/g, ': ' ).replace( /;/g, '; ' ) + '</td></tr>';
 							hoverElHTML += '<tr><td>Original data-ls</td><td>' + layerData.original.dataLS.replace( /:/g, ': ' ).replace( /;/g, '; ' ) + '</td></tr>';
@@ -169,7 +169,7 @@
 								hoverElHTML += '<tr><td>Image URL</td><td>' + $layer[0].src + '</td></tr>';
 							}
 							$hoverEl = '<div class="ls-layer-properties"><table><thead><tr><th colspan="2">Layer Properties</th></tr></thead><tbody>' + hoverElHTML + '</tbody></table></div>';
- 						}
+						}
 
 						$layerInfo.append( '<h1>' + ( $hoverEl ? $hoverEl : '' ) + $layer[0].tagName + '<span>' + innerText + '</span></h1> ' );
 					}

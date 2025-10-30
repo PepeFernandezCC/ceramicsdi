@@ -4,17 +4,17 @@
  * https://creativeslider.webshopworks.com
  *
  * @author    WebshopWorks <info@webshopworks.com>
- * @copyright 2015-2020 WebshopWorks
+ * @copyright 2015-2025 WebshopWorks
  * @license   One Domain Licence
  *
  * Not allowed to resell or redistribute this software
  */
-
-defined('_PS_VERSION_') or exit;
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 class LsExportUtil
 {
-
     /**
      * The managed ZipArchieve instance.
      */
@@ -26,24 +26,21 @@ class LsExportUtil
      */
     private $file;
 
-
     /**
-     * Holds used image URLs in slider to be exported
+     * Holds used image URLs in slider to be exported.
      */
     private $imageList;
-
 
     /**
      * Prepares a ZipArchieve instance and the file system
      * to work with the class.
      *
      * @since 5.0.3
-     * @access public
+     *
      * @return void
      */
     public function __construct()
     {
-
         // Check for ZipArchieve
         if (class_exists('ZipArchive')) {
             // Temporary directory for file operations
@@ -51,112 +48,99 @@ class LsExportUtil
             $tmp_dir = $upload_dir['basedir'];
 
             // Prepare ZIP to work with
-            $this->file = tempnam($tmp_dir, "zip");
-            $this->zip = new ZipArchive;
-            $this->zip->open($this->file, ZIPARCHIVE::CREATE | ZIPARCHIVE::OVERWRITE);
+            $this->file = tempnam($tmp_dir, 'zip');
+            $this->zip = new ZipArchive();
+            $this->zip->open($this->file, ZipArchive::CREATE | ZipArchive::OVERWRITE);
         }
     }
 
-
     /**
-     * Adds slider settings .json file to ZIP
+     * Adds slider settings .json file to ZIP.
      *
      * @since 5.0.3
-     * @access public
+     *
      * @param string $data Slider settings JSON
+     * @param string $folder (Optional)
+     *
      * @return void
      */
     public function addSettings($data, $folder = '')
     {
-        $folder = !empty($folder) ? $folder.'/' : '';
-        $this->zip->addFromString($folder.'settings.json', $data);
+        $folder = !empty($folder) ? $folder . '/' : '';
+        $this->zip->addFromString($folder . 'settings.json', $data);
     }
 
-
     /**
-     * Adds slider images to ZIP
+     * Adds slider images to ZIP.
      *
      * @since 5.0.3
-     * @access public
-     * @param string $path Image path to add
+     *
+     * @param array|string $files Image path to add
+     * @param string $folder (Optional)
+     *
      * @return void
      */
     public function addImage($files, $folder = '')
     {
-
         // Check file
-        if (empty($files)) {
-            return false;
+        if (!$files) {
+            return;
         }
 
-        // Check file type
-        if (!is_array($files)) {
-            $files = array($files);
-        }
-
-        // Check folder
-        $folder = is_string($folder) ? $folder.'/uploads/' : 'uploads/';
+        $files = (array) $files;
+        $folder = $folder . '/uploads/';
 
         // Add contents to ZIP
         foreach ($files as $file) {
-            if (!empty($file) && is_string($file)) {
-                $this->zip->addFile(
-                    $file,
-                    $folder.ls_sanitize_file_name(basename($file))
-                );
+            if ($file) {
+                $this->zip->addFile($file, $folder . ls_sanitize_file_name(basename($file)));
             }
         }
     }
-
 
     /**
      * Closes all pending operations and downloads the ZIP file.
      *
      * @since 5.0.3
-     * @access public
+     *
      * @return void
      */
     public function download()
     {
-
         // Close ZIP operations
         $this->zip->close();
 
         // Set headers and to user
         header('Content-Type: application/zip');
-        header('Content-Disposition: attachment; filename="CreativeSlider_Export_'.date('Y-m-d').'_at_'.date('H.i.s').'.zip"');
-        header("Content-length: " . filesize($this->file));
+        header('Content-Disposition: attachment; filename="CreativeSlider_Export_' . date('Y-m-d') . '_at_' . date('H.i.s') . '.zip"');
+        header('Content-length: ' . filesize($this->file));
         header('Pragma: no-cache');
         header('Expires: 0');
         readfile($this->file);
 
         // Remove temporary file
-        unlink($this->file);
-        die();
+        @call_user_func('unlink', $this->file);
+        exit;
     }
-
 
     public function getImagesForSlider($data)
     {
-
         // Array to hold image URLs
-        $this->imageList = array();
+        $this->imageList = [];
 
         // Slider Preview
-        if (! empty($data['meta'])) {
+        if (!empty($data['meta'])) {
             $this->_addImageToList($data['meta'], 'previewId', 'preview');
         }
 
         $this->_addImageToList($data['properties'], 'backgroundimageId', 'backgroundimage');
         $this->_addImageToList($data['properties'], 'yourlogoId', 'yourlogo');
 
-
         // Slides
         if (!empty($data['layers']) && is_array($data['layers'])) {
             foreach ($data['layers'] as $slide) {
                 $this->_addImageToList($slide['properties'], 'backgroundId', 'background');
                 $this->_addImageToList($slide['properties'], 'thumbnailId', 'thumbnail');
-
 
                 // Layers
                 if (!empty($slide['sublayers']) && is_array($slide['sublayers'])) {
@@ -171,23 +155,20 @@ class LsExportUtil
         return $this->imageList;
     }
 
-
-
     public function fontsForSlider($data)
     {
-
-        $ret = array();
-        $usedFonts = array();
-        $googleFonts = ls_get_option('ls-google-fonts', array());
+        $ret = [];
+        $usedFonts = [];
+        $googleFonts = ls_get_option('ls-google-fonts', []);
 
         if (!empty($data['layers']) && is_array($data['layers'])) {
             foreach ($data['layers'] as $slide) {
-                if (!empty($slide['sublayers']) && is_array($data['layers'])) {
+                if (!empty($slide['sublayers']) && is_array($data['sublayers'])) {
                     foreach ($slide['sublayers'] as $layer) {
                         if (!empty($layer['styles'])) {
-                            $layer['styles'] = Tools::stripslashes($layer['styles']);
+                            $layer['styles'] = stripslashes($layer['styles']);
 
-                            $styles = !empty($layer['styles']) ? Tools::jsonDecode(_ss($layer['styles']), true) : new stdClass;
+                            $styles = !empty($layer['styles']) ? json_decode(stripslashes($layer['styles']), true) : new stdClass();
 
                             if (!empty($styles['font-family'])) {
                                 $families = explode(',', $styles['font-family']);
@@ -209,7 +190,7 @@ class LsExportUtil
             list($family, $weights) = explode(':', $font['param']);
             $family = Tools::strtolower(str_replace('+', ' ', $family));
 
-            if (array_search($family, $usedFonts) !== false) {
+            if (false !== array_search($family, $usedFonts)) {
                 $font['admin'] = false;
                 $ret[] = $font;
             }
@@ -218,15 +199,12 @@ class LsExportUtil
         return $ret;
     }
 
-
     public function getFSPaths($urls)
     {
-
         if (!empty($urls) && is_array($urls)) {
-            $paths         = array();
-            $upload     = ls_upload_dir();
-            $uploadDir     = basename($upload['basedir']);
-
+            $paths = [];
+            $upload = ls_upload_dir();
+            $uploadDir = basename($upload['basedir']);
 
             foreach ($urls as $url) {
                 // Get URL relative to the uploads folder
@@ -252,23 +230,16 @@ class LsExportUtil
             return $paths;
         }
 
-        return array();
+        return [];
     }
 
     protected function _addImageToList($data, $idKey = '', $urlKey = '')
     {
-
-        if (! empty($data[ $urlKey ])) {
-            $src = $data[ $urlKey ];
+        if (!empty($data[$urlKey])) {
+            $src = $data[$urlKey];
         }
 
-        if (! empty($data[ $idKey ])) {
-            if ($result = ls_get_attachment_image_url($data[ $idKey ], 'full')) {
-                $src = $result;
-            }
-        }
-
-        if (! empty($src)) {
+        if (!empty($src)) {
             $this->imageList[] = $src;
         }
     }

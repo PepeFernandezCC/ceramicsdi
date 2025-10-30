@@ -1,6 +1,6 @@
 /*! Creative Slider - Responsive Slideshow
  * https://creativeslider.webshopworks.com
- * Copyright 2015-2020 WebshopWorks
+ * Copyright 2015-2025 WebshopWorks
  * Not allowed to resell or redistribute this software */
 
 // Stores the database ID of
@@ -2807,7 +2807,7 @@ var LayerSlider = {
 			for(var key in post) {
 				if(html && html.indexOf('['+key+']') !== -1) {
 					var postVal = post[key];
-					if( (key == 'title' || key == 'content' || key == 'excerpt') && textlength > 0) {
+					if( (key == 'name' || key == 'description' || key == 'description-short' || key == 'category') && textlength > 0) {
 						postVal = LS_Utils.stripTags(postVal).substr(0, textlength);
 						postVal = LS_Utils.nl2br(postVal);
 					}
@@ -4213,7 +4213,7 @@ var LayerSlider = {
 			layersliders.hide();
 
 			// Rewrote the Preview button text
-			var btnText = ~ location.href.indexOf('AdminLayerSliderRevisions') ? LS_l10n.SBPreviewSlide : LS_l10n.slideNoun;
+			var btnText = ~ location.href.indexOf('AdminLayerSliderRevisions') ? LS_l10n.SBPreviewSlide : LS_l10n.slide;
 			jQuery('#ls-layers .ls-preview-button').text( btnText ).removeClass('playing');
 
 			LayerSlider.generatePreview();
@@ -4658,7 +4658,7 @@ var LayerSlider = {
 			var textlength = layerData.post_text_length;
 			for(var key in post) {
 				if(html.indexOf('['+key+']') !== -1) {
-					if( (key == 'title' || key == 'content' || key == 'excerpt') && textlength > 0) {
+					if( (key == 'name' || key == 'description' || key == 'description-short' || key == 'category') && textlength > 0) {
 						post[key] = post[key].substr(0, textlength);
 					}
 					html = html.replace('['+key+']', post[key]);
@@ -4975,7 +4975,7 @@ var LayerSlider = {
 					jQuery('.ls-publish').removeClass('saving').addClass('failed').find('button').text( LS_l10n.error );
 					if (~jqXHR.indexOf('name="submitLogin"')) {
 						alert('Your session has expired, please login to continue!');
-						jQuery('#wpwrap').css({ opacity: 0.3, pointerEvents: 'none' });
+						jQuery('#main').css({ opacity: 0.3, pointerEvents: 'none' });
 						document.cookie = 'ls-login=1';
 						var win = jQuery('<iframe id="ls-login">').css({
 							position: 'fixed',
@@ -5020,104 +5020,6 @@ var LayerSlider = {
 			}
 		});
 	},
-};
-
-
-
-var LS_InsertIcons = {
-
-	timeout: null,
-
-	init: function() {
-		jQuery('#ls-layers').on('click', '.ls-insert-icon', function(e) {
-			e.preventDefault();
-			LS_InsertIcons.showIcons();
-		});
-
-		jQuery('#ls-layers').on('click', '.ls-replace-icon', function(e) {
-			e.preventDefault();
-
-			var $textarea = jQuery('.ls-sublayer-page textarea[name="html"]');
-				$textarea.val('');
-
-			LS_InsertIcons.showIcons();
-		});
-
-		jQuery(document).on('click', '#ls-insert-icons-modal-window section div', function(e) {
-			e.preventDefault();
-			LS_InsertIcons.insert( this );
-		});
-
-		jQuery(document).on('input change', '#ls-insert-icons-modal-window input', function(e) {
-			e.preventDefault();
-			LS_InsertIcons.search( jQuery(this).val() );
-		});
-	},
-
-
-	showIcons: function() {
-		kmUI.modal.open( '#tmpl-insert-icons-modal', { width: 850, height: 900, clip: false } );
-	},
-
-
-	search: function( term ) {
-
-		// No search term.
-		// Make sure to display everything.
-		if( ! term || term.length < 2 ) {
-			jQuery('#ls-insert-icons-modal-window section').show().prev().show();
-			jQuery('#ls-insert-icons-modal-window section div').show();
-
-
-		// Filter
-		} else {
-
-			clearTimeout( LS_InsertIcons.timeout );
-			LS_InsertIcons.timeout = setTimeout(function() {
-				jQuery('#ls-insert-icons-modal-window section').each(function() {
-					var hasMatch = false;
-					jQuery('div', this).each(function() {
-						if( jQuery(this).data('help').indexOf( term ) !== -1 ) {
-							hasMatch = true;
-						} else {
-							jQuery(this).hide();
-						}
-					});
-
-					// Hide the section if there are no matches
-					if( ! hasMatch ) {
-						jQuery(this).hide().prev().hide();
-					}
-				});
-			}, 200);
-		}
-	},
-
-
-	insert: function( icon ) {
-
-		var $icon 		= jQuery( icon ),
-			text 		= '<i class="fa fa-'+$icon.data('help')+'"></i>',
-			element 	= jQuery('.ls-sublayer-page textarea[name="html"]')[0];
-
-
-		element.value += text;
-
-
-		jQuery(element).trigger('input').trigger('change');
-
-		LS_InsertIcons.close();
-	},
-
-
-	close: function() {
-		setTimeout(function() {
-			kmUI.popover.close();
-		}, 500);
-		kmUI.modal.close();
-		kmUI.overlay.close();
-	}
-
 };
 
 
@@ -5193,7 +5095,7 @@ var LS_ImportLayer = {
 						<div class="slider-item-wrapper">\
 							<div class="preview">\
 								<div class="no-preview">\
-									<h5>'+LS_MCE_l10n.MCENoPreview+'</h5>\
+									<h5>'+LS_l10n.noPreview+'</h5>\
 								</div>\
 							</div>\
 							<div class="info">\
@@ -5252,7 +5154,7 @@ var LS_ImportLayer = {
 						<div class="slider-item-wrapper">\
 							<div class="preview">\
 								<div class="no-preview">\
-									<h5>'+LS_MCE_l10n.MCENoPreview+'</h5>\
+									<h5>'+LS_l10n.noPreview+'</h5>\
 								</div>\
 							</div>\
 							<div class="info">\
@@ -5445,6 +5347,7 @@ var LS_InsertIcons = {
 		element.value += text;
 		element.focus();
 
+
 		jQuery(element).trigger('input').trigger('change');
 
 		LS_InsertIcons.close();
@@ -5452,7 +5355,9 @@ var LS_InsertIcons = {
 
 
 	close: function() {
-
+		setTimeout(function() {
+			kmUI.popover.close();
+		}, 500);
 		kmUI.modal.close();
 		kmUI.overlay.close();
 	}
@@ -6443,37 +6348,6 @@ var initSliderBuilder = function() {
 	}, '.ls-image');
 
 
-	jQuery(document).on('click', '.ls-image a.aviary', function(e) {
-
-		e.preventDefault();
-		e.stopPropagation();
-
-		// Set ID on the currently editing image
-		var $parent = jQuery(this).parent(),
-			$image 	= $parent.find('img').attr('id', 'cc-current-image'),
-			imageURL;
-
-		// Prevent popover to become visible after opening the editor
-		jQuery('body').addClass('hidepopover');
-
-		// Find image URL
-		if( $parent.hasClass('ls-slide-image') ) {
-			imageURL = LS_activeSlideData.properties.background;
-		} else if( $parent.hasClass('ls-slide-thumbnail') ) {
-			imageURL = LS_activeSlideData.properties.thumbnail;
-		} else if( $parent.hasClass('ls-layer-image') ) {
-			imageURL = LS_activeLayerDataSet[0].image;
-		} else if( $parent.hasClass('ls-media-image') ) {
-			imageURL = LS_activeLayerDataSet[0].poster;
-		}
-
-		// Load editor
-		featherEditor.launch({
-			image: 'cc-current-image',
-			url: LS_Utils.toAbsoluteURL( imageURL )
-		});
-	});
-
 	// Clear uploads
 	jQuery(document).on('click', '.ls-image .dashicons-dismiss', function(e) {
 		e.preventDefault();
@@ -7112,7 +6986,7 @@ var initSliderBuilder = function() {
 		LayerSlider.changeLayerScreenType( jQuery(this), true );
 
 	// Layer media type
-	}).on('click', '.ls-layer-kind li:not(:first-child)', function(e) {
+	}).on('click', '.ls-layer-kind li', function(e) {
 		e.preventDefault();
 		var $item = jQuery(this);
 
@@ -7389,119 +7263,6 @@ var initSliderBuilder = function() {
 		});
 	});
 
-
-
-	if( typeof Aviary !== 'undefined' ){
-		var featherEditor = new Aviary.Feather({
-			apiKey: '5cf23f4b299d4953bd257b881c8f37d7',
-			maxSize: 3000,
-			tools: ['enhance', 'effects', 'frames', 'overlays', 'orientation', 'crop', 'resize', 'lighting', 'color', 'sharpness', 'focus', 'vignette', 'blemish', 'whiten', 'redeye', 'draw', 'colorsplash', 'text'],
-			fileFormat: 'png',
-
-			onClose: function( isDirty ) {
-				jQuery('#cc-current-image').removeAttr('id');
-			},
-
-			onSaveButtonClicked: function( imageID ) {
-				featherEditor.showWaitIndicator();
-
-				var $image 	= jQuery('#'+imageID).removeAttr('id');
-					$parent = $image.closest('.ls-image'),
-
-					imgName = 'aviary_'+Date.now()+'.png',
-					imgData = jQuery('#avpw_canvas_element')[0].toDataURL(),
-					imgBlob = LS_Utils.dataURItoBlob(imgData);
-					imgBlob.lastModifiedDate = new Date();
-					imgBlob.name = imgName;
-					imgBlob.filename = imgName;
-
-				LayerSlider.uploadImageToMediaLibrary(imgBlob, function(data) {
-					$image.attr('src', data.url);
-
-					if( $parent.hasClass('ls-slide-image') ) {
-
-						// Add action to UndoManager
-						LS_UndoManager.add('slide.general', LS_l10n.SBUndoSlideImage, {
-							itemIndex: LS_activeSlideIndex,
-							undo: {
-								background: LS_activeSlideData.properties.background,
-								backgroundId: LS_activeSlideData.properties.backgroundId,
-								backgroundThumb: LS_activeSlideData.properties.backgroundThumb
-							},
-							redo: {
-								background: data.url,
-								backgroundId: data.id,
-								backgroundThumb: data.url
-							}
-						});
-
-						LS_activeSlideData.properties.background = data.url;
-						LS_activeSlideData.properties.backgroundId = data.id;
-						LS_activeSlideData.properties.backgroundThumb = data.url;
-
-						LayerSlider.generatePreview();
-
-					} else if( $parent.hasClass('ls-slide-thumbnail') ) {
-
-						LS_activeSlideData.properties.thumbnail = data.url;
-						LS_activeSlideData.properties.thumbnailId = data.id;
-						LS_activeSlideData.properties.thumbnailThumb = data.url;
-
-
-					} else if( $parent.hasClass('ls-layer-image') ) {
-
-						// Add action to UndoManager
-						LS_UndoManager.add('layer.general', LS_l10n.SBUndoLayerImage, {
-							itemIndex: LS_activeLayerIndexSet[0],
-							undo: {
-								image: LS_activeLayerDataSet[0].image,
-								imageId: LS_activeLayerDataSet[0].imageId,
-								imageThumb: LS_activeLayerDataSet[0].imageThumb
-							},
-							redo: {
-								image: data.url,
-								imageId: data.id,
-								imageThumb: data.url
-							}
-						});
-
-						LS_activeLayerDataSet[0].image = data.url;
-						LS_activeLayerDataSet[0].imageId = data.id;
-						LS_activeLayerDataSet[0].imageThumb = data.url;
-
-						LayerSlider.generatePreviewItem( LS_activeLayerIndexSet[0] );
-
-
-					} else if( $parent.hasClass('ls-media-image') ) {
-
-						// Add action to UndoManager
-						LS_UndoManager.add('layer.general', LS_l10n.SBUndoVideoPoster, {
-							itemIndex: LS_activeLayerIndexSet[0],
-							undo: {
-								poster: LS_activeLayerDataSet[0].poster,
-								posterId: LS_activeLayerDataSet[0].posterId,
-								posterThumb: LS_activeLayerDataSet[0].posterThumb
-							},
-							redo: {
-								poster: data.url,
-								posterId: data.id,
-								posterThumb: data.url
-							}
-						});
-
-						LS_activeLayerDataSet[0].poster = data.url;
-						LS_activeLayerDataSet[0].posterId = data.id;
-						LS_activeLayerDataSet[0].posterThumb = data.url;
-					}
-
-					featherEditor.hideWaitIndicator();
-					featherEditor.close();
-				});
-
-				return false;
-			}
-		});
-	}
 
 	// Sublayer: sortables, draggable, etc
 	LayerSlider.addSlideSortables();

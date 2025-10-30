@@ -4,40 +4,43 @@
  * https://creativeslider.webshopworks.com
  *
  * @author    WebshopWorks <info@webshopworks.com>
- * @copyright 2015-2020 WebshopWorks
+ * @copyright 2015-2025 WebshopWorks
  * @license   One Domain Licence
  *
  * Not allowed to resell or redistribute this software
  */
-
-defined('_PS_VERSION_') or exit;
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 class LsPosts
 {
     // Stores the last query results
-    public $post = null;
-    public $posts = null;
-    public $args = null;
+    public $post;
+    public $posts;
+    public $args;
 
     /**
-     * Returns posts that matches the query params
-     * @param  array      $args Array of WP_Query attributes
-     * @return bool           Success of the query
+     * Returns posts that matches the query params.
+     *
+     * @param array $args Array of WP_Query attributes
+     *
+     * @return self
      */
-    public static function find($args = array())
+    public static function find($args = [])
     {
         // Crate new instance
-        $instance = new self;
+        $instance = new self();
         $instance->args = $args;
         if ($instance->posts = ls_get_posts($args)) {
             $instance->post = $instance->posts[0];
         }
+
         return $instance;
     }
 
     public static function getPostTypes()
     {
-
         // Get post types
         $postTypes = ls_get_post_types();
 
@@ -52,7 +55,7 @@ class LsPosts
         // Convert names to plural
         foreach ($postTypes as $key => $item) {
             if (!empty($item)) {
-                $postTypes[$key] = array();
+                $postTypes[$key] = [];
                 $postTypes[$key]['slug'] = $item;
                 $postTypes[$key]['obj'] = ls_get_post_type_object($item);
                 $postTypes[$key]['name'] = $postTypes[$key]['obj']->labels->name;
@@ -62,47 +65,55 @@ class LsPosts
         return $postTypes;
     }
 
-
     public function getParsedObject()
     {
-
         if (!$this->posts) {
-            return array();
+            return [];
         }
-        $link = Context::getContext()->link;
-        $small = ls_get_image_type_name('small');
-        $ret = array();
+        $context = $GLOBALS['context'];
+        if (version_compare(_PS_VERSION_, '1.7.6', '<')) {
+            $formatPrice = ['Tools', 'displayPrice'];
+            $currency = $context->currency;
+        } else {
+            $formatPrice = [Tools::getContextLocale($context), 'formatPrice'];
+            $currency = $context->currency->iso_code;
+        }
+        $link = $context->link;
+        $small = ImageType::{method_exists('ImageType', 'getFormattedName') ? 'getFormattedName' : 'getFormatedName'}('small');
+        $ret = [];
         foreach ($this->posts as $key => $val) {
-            $ret[$key] = array();
+            $ret[$key] = [];
             $ret[$key]['id'] = $val['id_product'];
             $ret[$key]['url'] = $link->getProductLink($val['id_product'], $val['link_rewrite']);
             $ret[$key]['date-published'] = $val['date_add'];
             $ret[$key]['date-modified'] = $val['date_upd'];
-            $image = Image::getCover($val['id_product']);
-            $ret[$key]['thumbnail'] = $link->getImageLink($val['link_rewrite'], $image['id_image'], $small);
-            $ret[$key]['image-url'] = $link->getImageLink($val['link_rewrite'], $image['id_image'], $this->args['img_size']);
-            if (empty($ret[$key]['thumbnail'])) {
-                $ret[$key]['thumbnail'] = $ret[$key]['image-url'];
+            if ($image = Image::getCover($val['id_product'])) {
+                $ret[$key]['thumbnail'] = $link->getImageLink($val['link_rewrite'], $image['id_image'], $small);
+                $ret[$key]['image-url'] = $link->getImageLink($val['link_rewrite'], $image['id_image'], $this->args['img_size']);
+
+                if (empty($ret[$key]['thumbnail'])) {
+                    $ret[$key]['thumbnail'] = $ret[$key]['image-url'];
+                }
+                $ret[$key]['image'] = '<img src="' . $ret[$key]['image-url'] . '" alt="">';
             }
-            $ret[$key]['image'] = '<img src="'.$ret[$key]['image-url'].'" alt="">';
-            $ret[$key]['price'] = Tools::displayPrice(Product::getPriceStatic($val['id_product']));
-            $ret[$key]['old-price'] = Tools::displayPrice(Product::getPriceStatic($val['id_product'], true, null, 6, null, false, false));
+            $ret[$key]['price'] = $formatPrice(Product::getPriceStatic($val['id_product']), $currency);
+            $ret[$key]['old-price'] = $formatPrice(Product::getPriceStatic($val['id_product'], true, null, 6, null, false, false), $currency);
             if ($ret[$key]['price'] === $ret[$key]['old-price']) {
                 $ret[$key]['old-price'] = '';
             }
             $ret[$key]['name'] = $val['name'];
-            $ret[$key]['title'] = $ret[$key]['name'].' '.$ret[$key]['price'];
+            $ret[$key]['title'] = $ret[$key]['name'] . ' ' . $ret[$key]['price'];
             $ret[$key]['description'] = strip_tags($val['description']);
             $ret[$key]['description-short'] = strip_tags($val['description_short']);
             $ret[$key]['author'] = $val['manufacturer'];
             $ret[$key]['manufacturer'] = $val['manufacturer'];
 
-            $catlinks = array();
-            $cats = self::_getCategory($val['id_category_default'])->getParentsCategories();
+            $catlinks = [];
+            $cats = Product::getProductCategoriesFull($val['id_product'], $context->language->id);
             foreach ($cats as &$cat) {
-                array_unshift($catlinks, '<a href="'.$link->getCategoryLink($cat['id_category'], $cat['link_rewrite']).'">'.$cat['name'].'</a>');
+                array_unshift($catlinks, '<a href="' . $link->getCategoryLink($cat['id_category'], $cat['link_rewrite']) . '">' . $cat['name'] . '</a>');
             }
-            $ret[$key]['breadcrumbs'] = '<div>'.implode(' / ', $catlinks).'</div>';
+            $ret[$key]['breadcrumbs'] = '<div>' . implode(' / ', $catlinks) . '</div>';
             $ret[$key]['category'] = array_pop($catlinks);
 
             // $taglinks = array();
@@ -112,44 +123,44 @@ class LsPosts
             // }
             // $ret[$key]['tags'] = implode(' ', $taglinks);
         }
+
         return $ret;
     }
-
 
     public function getWithFormat($str, $textlength = 0)
     {
         if (!is_array($this->post)) {
             return $str;
         }
-        $context = Context::getContext();
+        $context = $GLOBALS['context'];
 
         // Post ID
-        if (stripos($str, '[id]') !== false) {
+        if (false !== strpos($str, '[id]')) {
             $str = str_replace('[id]', $this->post['id_product'], $str);
         }
         // Post URL
-        if (stripos($str, '[url]') !== false) {
+        if (false !== strpos($str, '[url]')) {
             $url = $context->link->getProductLink($this->post['id_product'], $this->post['link_rewrite']);
             $str = str_replace('[url]', $url, $str);
         }
         // Date published
-        if (stripos($str, '[date-published]') !== false) {
+        if (false !== strpos($str, '[date-published]')) {
             $str = str_replace('[date-published]', date(ls_get_option('date_format'), strtotime($this->post['date_add'])), $str);
         }
         // Date modified
-        if (stripos($str, '[date-modified]') !== false) {
+        if (false !== strpos($str, '[date-modified]')) {
             $str = str_replace('[date-modified]', date(ls_get_option('date_format'), strtotime($this->post['date_upd'])), $str);
         }
         // Featured image
-        if (stripos($str, '[image]') !== false) {
+        if (false !== strpos($str, '[image]')) {
             $cover = Image::getCover($this->post['id_product']);
             $image = $context->link->getImageLink($this->post['link_rewrite'], $cover['id_image'], $this->args['img_size']);
             if (!empty($image)) {
-                $str = str_replace('[image]', '<img src="'.$image.'" alt="'.$this->post['name'].'">', $str);
+                $str = str_replace('[image]', '<img src="' . $image . '" alt="' . $this->post['name'] . '">', $str);
             }
         }
         // Featured image URL
-        if (stripos($str, '[image-url]') !== false) {
+        if (false !== strpos($str, '[image-url]')) {
             $cover = Image::getCover($this->post['id_product']);
             $image = $context->link->getImageLink($this->post['link_rewrite'], $cover['id_image'], $this->args['img_size']);
             if (!empty($image)) {
@@ -157,21 +168,28 @@ class LsPosts
             }
         }
         // Name
-        if (stripos($str, '[name]') !== false) {
+        if (false !== strpos($str, '[name]')) {
             $str = str_replace('[name]', $this->getTitle($textlength), $str);
         }
         // Price & old price
-        $priceTag = stripos($str, '[price]') !== false;
-        $oldPriceTag = stripos($str, '[old-price]') !== false;
+        $priceTag = false !== strpos($str, '[price]');
+        $oldPriceTag = false !== strpos($str, '[old-price]');
 
         if ($priceTag || $oldPriceTag) {
-            $price = Tools::displayPrice(Product::getPriceStatic($this->post['id_product']));
+            if (version_compare(_PS_VERSION_, '1.7.6', '<')) {
+                $formatPrice = ['Tools', 'displayPrice'];
+                $currency = $context->currency;
+            } else {
+                $formatPrice = [Tools::getContextLocale($context), 'formatPrice'];
+                $currency = $context->currency->iso_code;
+            }
+            $price = $formatPrice(Product::getPriceStatic($this->post['id_product']), $currency);
 
             if ($priceTag) {
                 $str = str_replace('[price]', $price, $str);
             }
             if ($oldPriceTag) {
-                $oldPrice = Tools::displayPrice(Product::getPriceStatic($this->post['id_product'], true, null, 6, null, false, false));
+                $oldPrice = $formatPrice(Product::getPriceStatic($this->post['id_product'], true, null, 6, null, false, false), $currency);
 
                 if ($price === $oldPrice) {
                     $oldPrice = '';
@@ -180,43 +198,42 @@ class LsPosts
             }
         }
         // Description
-        if (stripos($str, '[description]') !== false) {
+        if (false !== strpos($str, '[description]')) {
             $str = str_replace('[description]', $this->getDescription($textlength), $str);
         }
         // Description short
-        if (stripos($str, '[description-short]') !== false) {
+        if (false !== strpos($str, '[description-short]')) {
             $str = str_replace('[description-short]', $this->getDescriptionShort($textlength), $str);
         }
         // Manufacturer
-        if (stripos($str, '[manufacturer]') !== false) {
+        if (false !== strpos($str, '[manufacturer]')) {
             $str = str_replace('[manufacturer]', $this->post['manufacturer'], $str);
         }
         // Category
-        if (stripos($str, '[category]') !== false) {
+        if (false !== strpos($str, '[category]')) {
             $str = str_replace('[category]', $this->getCategory(), $str);
         }
         // Category list
-        if (stripos($str, '[breadcrumbs]') !== false) {
+        if (false !== strpos($str, '[breadcrumbs]')) {
             $str = str_replace('[breadcrumbs]', $this->getCategoryList(), $str);
         }
         // Tags list
-        // if (stripos($str, '[tags]') !== false) {
+        // if (strpos($str, '[tags]') !== false) {
         //     $str = str_replace('[tags]', $this->getTagList(), $str);
         // }
 
         return $str;
     }
 
-
     /**
-     * Returns the lastly selected post's title
+     * Returns the lastly selected post's title.
+     *
      * @return string The title of the post
      */
     public function getTitle($length = 0)
     {
-
         if (!is_array($this->post)) {
-            return false;
+            return '';
         }
 
         $title = $this->post['name'];
@@ -227,51 +244,42 @@ class LsPosts
         return $title;
     }
 
-    protected static function _getCategory($id)
-    {
-        static $cats = array();
-
-        if (!empty($cats[$id])) {
-            $cat = $cats[$id];
-        } else {
-            $cat = new Category($id, Context::getContext()->language->id);
-            $cats[$id] = $cat;
-        }
-        return $cat;
-    }
-
     public function getCategory($post = null)
     {
-        if (empty($post)) {
+        if (!$post) {
             $post = $this->post;
         }
 
-        $cat = self::_getCategory($post['id_category_default']);
-        return empty($cat->name) ? '' : '<a href="'.$cat->getLink().'">'.$cat->name.'</a>';
+        if ($cats = Product::getProductCategoriesFull($this->post['id_product'], $GLOBALS['language']->id)) {
+            $cat = array_pop($cats);
+
+            return '<a href="' . $GLOBALS['context']->link->getCategoryLink($cat['id_category'], $cat['link_rewrite']) . '">' . $cat['name'] . '</a>';
+        }
+
+        return '';
     }
 
     public function getCategoryList($post = null)
     {
-        if (empty($post)) {
+        if (!$post) {
             $post = $this->post;
         }
 
-        $cat = self::_getCategory($post['id_category_default']);
+        $link = $GLOBALS['context']->link;
 
-        if (!empty($cat->name)) {
-            $cats = $cat->getParentsCategories();
-            $link = Context::getContext()->link;
-            $list = array();
+        if ($cats = Product::getProductCategoriesFull($this->post['id_product'], $GLOBALS['language']->id)) {
+            $list = [];
             foreach ($cats as &$cat) {
-                array_unshift($list, '<a href="'.$link->getCategoryLink($cat['id_category'], $cat['link_rewrite']).'">'.$cat['name'].'</a>');
+                $list[] = '<a href="' . $link->getCategoryLink($cat['id_category'], $cat['link_rewrite']) . '">' . $cat['name'] . '</a>';
             }
-            return '<div>'.implode(' / ', $list).'</div>';
-        } else {
-            return '';
+
+            return '<div>' . implode(' / ', $list) . '</div>';
         }
+
+        return '';
     }
 
-/*
+    /*
     public function getTagList($post = null)
     {
 
@@ -290,39 +298,35 @@ class LsPosts
             return '';
         }
     }
-*/
+    */
 
     /**
      * Returns a subset of the post's content,
-     * or the first paragraph if isn't specified
-     * @param  integer $length The subset's length
-     * @return string          The content
+     * or the first paragraph if isn't specified.
+     *
+     * @param int $length The subset's length
+     *
+     * @return string The content
      */
-    public function getDescription($length = false)
+    public function getDescription($length = 0)
     {
-
         if (!is_array($this->post)) {
-            return false;
+            return '';
         }
 
-        $content = $this->post['description'];
-        if (!empty($length)) {
-            return Tools::substr(strip_tags($content), 0, $length);
-        }
-        return strip_tags($content);
+        $content = strip_tags($this->post['description']);
+
+        return $length ? Tools::substr($content, 0, $length) : $content;
     }
 
-    public function getDescriptionShort($length = false)
+    public function getDescriptionShort($length = 0)
     {
-
         if (!is_array($this->post)) {
-            return false;
+            return '';
         }
 
-        $content = ls__($this->post['description_short']);
-        if (!empty($length)) {
-            return Tools::substr(strip_tags($content), 0, $length);
-        }
-        return strip_tags($content);
+        $content = strip_tags(ls__($this->post['description_short']));
+
+        return $length ? Tools::substr($content, 0, $length) : $content;
     }
 }

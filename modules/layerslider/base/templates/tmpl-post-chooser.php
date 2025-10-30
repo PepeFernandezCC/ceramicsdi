@@ -4,31 +4,31 @@
  * https://creativeslider.webshopworks.com
  *
  * @author    WebshopWorks <info@webshopworks.com>
- * @copyright 2015-2020 WebshopWorks
+ * @copyright 2015-2025 WebshopWorks
  * @license   One Domain Licence
  *
  * Not allowed to resell or redistribute this software
  */
-
-defined('_PS_VERSION_') or exit;
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 ?>
 <script type="text/html" id="tmpl-post-chooser">
     <div id="ls-post-chooser-modal-window">
         <header>
-            <h1><?php ls_e('Select the Post, Page or Attachment you want to use', 'LayerSlider') ?></h1>
+            <h1><?php ls_e('Select the Post, Page or Attachment you want to use'); ?></h1>
             <b class="dashicons dashicons-no"></b>
         </header>
         <div class="km-ui-modal-scrollable">
             <form method="post">
-                <?php ls_nonce_field('ls_get_search_posts') ?>
                 <input type="hidden" name="action" value="ls_get_search_posts">
                 <div class="search-holder">
-                    <input type="search" name="s" placeholder="<?php ls_e('Type here to search ...', 'LayerSlider') ?>">
+                    <input type="search" name="s" placeholder="<?php ls_e('Type here to search ...'); ?>">
                 </div>
                 <select name="post_type">
-                    <option value="page"><?php ls_e('Pages', 'LayerSlider') ?></option>
-                    <option value="post"><?php ls_e('Posts', 'LayerSlider') ?></option>
-                    <option value="attachment"><?php ls_e('Attachments', 'LayerSlider') ?></option>
+                    <option value="page"><?php ls_e('Pages'); ?></option>
+                    <option value="post"><?php ls_e('Posts'); ?></option>
+                    <option value="attachment"><?php ls_e('Attachments'); ?></option>
                 </select>
             </form>
 

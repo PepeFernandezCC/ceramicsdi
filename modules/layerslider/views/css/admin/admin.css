@@ -1301,25 +1301,6 @@ a.saving {
 	text-align: justify;
 }
 
-.ls-help-pointer .wp-pointer-arrow {
-	left: auto;
-	right: 10px;
-}
-
-
-.ls-auto-update {
-	border-top: 0px;
-}
-
-.ls-auto-update input {
-	font-size: 13px;
-	line-height: 15px;
-	color: #333;
-}
-
-.ls-auto-update tfoot span {
-	margin-left: 10px;
-}
 
 .ls-builder-preview-button {
 	margin: 10px 0px 6px 0px;

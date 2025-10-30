@@ -1,6 +1,2049 @@
 /*! Creative Slider - Responsive Slideshow
  * https://creativeslider.webshopworks.com
- * Copyright 2015-2020 WebshopWorks
+ * Copyright 2015-2025 WebshopWorks
  * Not allowed to resell or redistribute this software */
 
-eval(function(p,a,c,k,e,r){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a)>35?String.fromCharCode(c+29):c.toString(36))};if(!''.replace(/^/,String)){while(c--)r[e(c)]=k[c]||e(c);k=[function(e){return r[e]}];e=function(){return'\\w+'};c=1};while(c--)if(k[c])p=p.replace(new RegExp('\\b'+e(c)+'\\b','g'),k[c]);return p}('2o 3w={"O":{"1r":2t,"2m":1e,"f":"2h"},"2l":[{"O":{"Q":"2n 28"},"P":[{"x":"2U","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{}}]},{"O":{"Q":"2n 28 1c"},"P":[{"x":"b","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"1p":"-I"}},{"x":"G","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"1p":"I"}},{"x":"e","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"1m":"-I"}},{"x":"H","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"1m":"I"}}]},{"O":{"Q":"1N 28 1c"},"P":[{"x":"b","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"1p":"b"}},{"x":"G","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"1p":"G"}},{"x":"e","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"1m":"e"}},{"x":"H","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"1m":"H"}}]},{"O":{"Q":"4G 2T 1c"},"P":[{"x":"b","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"1p":"b","J":"2k","1g":"2c"}},{"x":"G","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"1p":"G","J":"2k","1g":"2c"}},{"x":"e","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"J":"2k","1g":"2c","1m":"e"}},{"x":"H","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"1m":"H","J":"2k","1g":"2c"}}]},{"O":{"Q":"3r 1c"},"P":[{"x":"b","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"1i":"0 I% 0 0","1d":d}},{"x":"G","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"1i":"0 0 0 I%","1d":d}},{"x":"2e","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"1i":"0 5% 0 5%","1d":d}},{"x":"e","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"1i":"0 0 I% 0","1d":d}},{"x":"H","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"1i":"I% 0 0 0","1d":d}}]},{"O":{"Q":"3r & 2T 1c"},"P":[{"x":"b","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"1p":"-1D","1i":"0 0 0 I%","1d":d}},{"x":"G","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"1p":"1D","1i":"0 I% 0 0","1d":d}},{"x":"e","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"1i":"I% 0 0 0","1d":d,"1m":"-1C"}},{"x":"H","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"1m":"1C","1i":"0 0 I% 0","1d":d}}]},{"O":{"Q":"4A 1c"},"P":[{"x":"b","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"1p":"-I","1g":"1I"}},{"x":"G","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"1p":"I","1g":"1I"}},{"x":"e","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"1g":"1I","1m":"-I"}},{"x":"H","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"1g":"1I","1m":"I"}}]},{"O":{"Q":"3q"},"P":[{"x":"2r","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"4y":"2r(2R)"}}]},{"O":{"Q":"1j 1c"},"P":[{"x":"b","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"1E":d,"13":"1o","1k":"-I","17":"18 + 0","12":D}},{"x":"G","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"1E":d,"13":"1o","1k":"I","17":"18 + 0","12":D}},{"x":"e","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"1E":d,"13":"1o","1n":"-I","17":"18 + 0","12":D}},{"x":"H","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"1E":d,"13":"1o","1n":"I","17":"18 + 0","12":D}}]},{"O":{"Q":"1j 1c 2w 3l"},"P":[{"x":"1j 1c 2w 3l","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"46":"1e","J":"45","1g":"3X","13":"1o","1k":"1b|-3W|3U|-3T","1n":"-3S|3R|-I|-3Q|1b","3g":"3f(-1y,1y)","17":"18 + 0","12":D}}]},{"O":{"Q":"3L"},"P":[{"x":"1j 3e","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"13":"1o","17":"18 + 0","29":"h","1s":"3b","12":D}},{"x":"1j 3e 3z","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"1E":d,"13":"1o","3y":"10","2O":"10","17":"18 + 0","29":"2E","1s":"3b","12":D}}]},{"O":{"Q":"1j 3f 1c"},"P":[{"x":"e","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"13":"2N","1n":"-I","2O":"3","17":"18 + 0","12":D}},{"x":"H","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"13":"2N","1n":"I","2O":"3","17":"18 + 0","12":D}}]},{"O":{"Q":"1j 1c 2w 31"},"P":[{"x":"4e","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"1E":d,"13":"1o","1k":"0|0|I|-I","1n":"I|-I|0|0","17":"18 + 0","12":D}},{"x":"42","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"1E":d,"13":"3P","1k":"0|0|I|-I","1n":"I|-I|0|0","17":"18 + 0","12":D}}]},{"O":{"Q":"1j 2W 1a 2e"},"P":[{"x":"1j 2W 1a 2e","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"13":"3K","1k":"0|-30|30|-2M|2M|-2D|2D|-3s|3s|-3p|3p|-1y|-1y","17":"18 + 3o","29":"2d","1s":"20","3j":d,"12":D}}]},{"O":{"Q":"1j 2v 2J 2b"},"P":[{"x":"3J 3a 1h 2b","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"2A":"0","1v":"5% I% 0","13":"3A","3g":"2D","17":"18 + 2E","1s":"0","4C":"1I","41":"I% I% 0","3j":d,"12":D}}]},{"O":{"Q":"3Y i"},"P":[{"x":"1j 1c 2w 31","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","c-G":"15","c-H":"3","c-b":"15","K":"#y","g":"#L"},"i":{"3O":"0","J":"2d","13":"1o","1k":"0|0|I|-I","1n":"I|-I|0|0","17":"18 + 1b","12":D}},{"x":"1j 1c e","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","c-G":"15","c-H":"3","c-b":"15","K":"#y","g":"#L"},"i":{"2A":"0","J":"2d","1v":"5% 0% 0","1d":d,"1m":"-30","13":"1o","1n":"-1C","17":"18 + 1b","12":D}},{"x":"34 1a G + 7 1c b","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","c-G":"15","c-H":"3","c-b":"15","K":"#y","g":"#L"},"i":{"1i":"0 I% 0 0","J":"2d","1v":"0% 5% 0","1d":d,"13":"1W","1k":"1D","17":"18 + M","12":D}},{"x":"34 1c 3v + 4H e H","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","c-G":"15","c-H":"3","c-b":"15","K":"#y","g":"#L"},"i":{"1i":"5% 0 5% 0","J":"2d","1v":"5% -5% 0","13":"1o","1n":"-1C|1C","17":"18 + 0","12":D}}]},{"O":{"Q":"4F 3H"},"P":[{"x":"1j 3B","z":"24 25 26 1S 1M 1q 1K 1h 1J 1H\'s 27 23 22 21 1a 1Z 1a 1Y 1X 1h 1V 1U.","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":D,"j":"1","A-B-r":"a","4-o":"1P","4-l":"14","1r":"1O","2L-b":"2F 2G #2H","c-b":"20","g":"#y"},"i":{"1p":"3x","J":"1l","1g":"1F","1d":d,"13":"2N","17":"18 + 0","29":"1b","1s":"8","12":D}},{"x":"1N 28 3i 2I 1c G","z":"24 25 26 1S 1M 1q 1K 1h 1J 1H\'s 27 23 22 21 1a 1Z 1a 1Y 1X 1h 1V 1U.","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":D,"j":"1","A-B-r":"a","4-o":"1P","4-l":"14","1r":"1O","2L-b":"2F 2G #2H","c-b":"20","g":"#y"},"i":{"2A":"0","J":"1l","1g":"1F","1v":"0% 0% 0","1d":d,"13":"1W","1k":"I","17":"18 + I","29":"2E","1s":"M","12":D}},{"x":"1N 28 3i 2I 1c e","z":"24 25 26 1S 1M 1q 1K 1h 1J 1H\'s 27 23 22 21 1a 1Z 1a 1Y 1X 1h 1V 1U.","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":D,"j":"1","A-B-r":"a","4-o":"1P","4-l":"14","1r":"1O","2L-b":"2F 2G #2H","c-b":"20","g":"#y"},"i":{"1m":"-2M","2A":"0","J":"1l","1g":"1F","1v":"5% 0% 0","1d":d,"13":"1W","1n":"-20","17":"18 + I","12":D}}]},{"O":{"Q":"3Z-2I"},"P":[{"x":"2V 1c b","z":"24 25 26 1S 1M 1q 1K 1h 1J 1H\'s 27 23 22 21 1a 1Z 1a 1Y 1X 1h 1V 1U.","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":D,"j":"1","A-B-r":"a","4-o":"1P","4-l":"14","1r":"1O","g":"#y"},"i":{"1i":"0 0 0 0","J":"1l","1g":"1F","1v":"5% 0% 0","1d":d,"13":"1W","1k":"-1D","17":"18 + 0","1s":"I","12":D}},{"x":"2V 1c G","z":"24 25 26 1S 1M 1q 1K 1h 1J 1H\'s 27 23 22 21 1a 1Z 1a 1Y 1X 1h 1V 1U.","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":D,"j":"1","A-B-r":"a","4-o":"1P","4-l":"14","1r":"1O","g":"#y"},"i":{"1i":"0 0 0 0","J":"1l","1g":"1F","1v":"5% 0% 0","1d":d,"13":"1W","1k":"1D","17":"18 + 0","1s":"I","12":D}},{"x":"4h-4t","z":"24 25 26 1S 1M 1q 1K 1h 1J 1H\'s 27 23 22 21 1a 1Z 1a 1Y 1X 1h 1V 1U.","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":D,"j":"1","A-B-r":"a","4-o":"1P","4-l":"14","1r":"1O","g":"#y"},"i":{"J":"1l","1g":"1F","1v":"5% 0% 0","1d":d,"13":"1W","1k":"5|-5","17":"18 + 0","1s":"0","12":D}}]}]};2o 4z={"O":{"1r":2t,"2m":1e,"f":"2h"},"2l":[{"O":{"Q":"32"},"P":[{"x":"32","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"R":"5% 5% 0","2K":"1.1","2u":"1.1","S":"T","1f":"1b","W":"1B","U":"-1","19":D,"V":D}}]},{"O":{"Q":"2X"},"P":[{"x":"2Y","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"R":"5% 5% 0","2K":"0.8","2u":"0.8","S":"T","1f":"1b","W":"1B","U":"-1","19":D,"V":D}}]},{"O":{"Q":"1N"},"P":[{"x":"b","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"R":"5% 5% 0","2Z":"-I","S":"T","1f":"1b","W":"1B","U":"-1","19":D,"V":D}},{"x":"G","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"R":"5% 5% 0","2Z":"I","S":"T","1f":"1b","W":"1B","U":"-1","19":D,"V":D}},{"x":"e","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"R":"5% 5% 0","2a":"-I","S":"T","1f":"1b","W":"1B","U":"-1","19":D,"V":D}},{"x":"H","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"R":"5% 5% 0","2a":"I","S":"T","1f":"1b","W":"1B","U":"-1","19":D,"V":D}}]},{"O":{"Q":"43"},"P":[{"x":"47","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"R":"5% 5% 0","1Q":"1e","S":"T","U":"-1","V":D}},{"x":"4g","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"R":"5% 5% 0","1Q":"-1e","S":"T","U":"-1","V":D}},{"x":"2f-b","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"R":"5% 5% 0","1Q":"1e","S":"T","W":"1R","U":"-1","19":D,"V":D}}]},{"O":{"Q":"33 & 3a"},"P":[{"x":"2f-b","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"R":"5% 5% 0","2K":"1.2","2u":"1.2","1Q":"10","S":"T","1f":"3o","W":"1B","U":"-1","19":D,"V":D}}]},{"O":{"Q":"4E"},"P":[{"x":"35 37","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"R":"0% I% 0","38":"30","S":"T","W":"1R","U":"-1","19":D,"V":D}},{"x":"2f 37","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"R":"I% I% 0","38":"-30","S":"T","W":"1R","U":"-1","19":D,"V":D}},{"x":"35 39","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"R":"0% I% 0","1Q":"-30","S":"T","W":"1R","U":"-1","19":D,"V":D}},{"x":"2f 39","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"R":"I% I% 0","1Q":"30","S":"T","W":"1R","U":"-1","19":D,"V":D}}]},{"O":{"Q":"1x"},"P":[{"x":"1x 1q e","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"R":"5% 0% 0","1G":"1e","S":"T","1f":"1l","W":"1u","U":"-1","1L":"1b","V":D}},{"x":"1x 1q H","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"R":"5% I% 0","1G":"-1e","S":"T","1f":"1l","W":"1u","U":"-1","1L":"1b","V":D}},{"x":"1x 1q e 2J 3c","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"R":"5% 0% 0","1G":"1e","S":"T","1f":"1l","W":"1u","U":"-1","1L":"1b","19":D,"V":D}},{"x":"1x 1q H 2J 3c","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"R":"5% I% 0","1G":"-1e","S":"T","1f":"1l","W":"1u","U":"-1","1L":"1b","19":D,"V":D}},{"x":"1x 1h 2b","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"R":"5% 0% 0","1G":"1e","S":"T","1f":"1l","W":"1I","U":"-1","1L":"1b","V":D}},{"x":"3C","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"R":"5% 0% 0","1G":"1e","S":"T","1f":"1l","W":"1F","U":"-1","1L":"1b","V":D}}]},{"O":{"Q":"3D"},"P":[{"x":"3E!","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"R":"5% 5% 0","2a":"-5","S":"T","W":"3F","U":"-1","19":D,"V":D}},{"x":"2b","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"R":"5% 5% 0","2a":"-5","S":"T","1f":"1b","W":"3G","U":"-1","19":D,"V":D}},{"x":"2b & 3u","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"R":"5% 5% 0","2a":"5","2u":"0.8","S":"T","1f":"1b","W":"3I","U":"-1","19":D,"V":D}}]},{"O":{"Q":"3d"},"P":[{"x":"G-H","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"R":"5% I% 0","2q":"-10","S":"T","W":"2p","U":"-1","19":D,"V":D}},{"x":"b-H","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"R":"5% I% 0","2q":"10","S":"T","W":"2p","U":"-1","19":D,"V":D}},{"x":"G-e","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"R":"5% 0% 0","2q":"10","S":"T","W":"2p","U":"-1","19":D,"V":D}},{"x":"b-e","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"R":"5% 0% 0","2q":"-10","S":"T","W":"2p","U":"-1","19":D,"V":D}}]}]};2o 3M={"O":{"1r":2t,"2m":1e,"f":"2h"},"2l":[{"O":{"Q":"33"},"P":[{"x":"3N 2v","z":"X Z","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"J":"M","N":"Y","2j":"1.1","2i":"1.1","11":D}},{"x":"3V 2v","z":"X Z","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"J":"M","N":"Y","2j":"1.1","2i":"1.1","2g":"2B","3h":"1b","2P":"2c","40":"1R","11":D}}]},{"O":{"Q":"2X"},"P":[{"x":"2Y","z":"X Z","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"J":"M","N":"Y","2j":"0.9","2i":"0.9","11":D}}]},{"O":{"Q":"2Q"},"P":[{"x":"2Q","z":"X Z","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"J":"M","N":"Y","3k":"10","11":D}},{"x":"2Q & 2v","z":"X Z","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"J":"M","N":"Y","2j":"1.2","2i":"1.2","3k":"10","11":D}},{"x":"44","z":"X Z","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"J":"M","N":"Y","2z":"1y","2y":"1y","2x":"-1y","48":"-1y","2g":"2B","2P":"49","11":D}},{"x":"1x 4a","z":"X Z","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"J":"M","N":"Y","2y":"1e","2g":"2B","2P":"1u","11":D}},{"x":"4b 4c","z":"X Z","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"J":"M","N":"Y","2z":"1e","2g":"2B","3h":"1","11":D}}]},{"O":{"Q":"1N"},"P":[{"x":"4d","z":"X Z","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"J":"M","N":"Y","3m":"-10","11":D}},{"x":"4f","z":"X Z","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"J":"M","N":"Y","3m":"10","11":D}},{"x":"b","z":"X Z","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"J":"M","N":"Y","3n":"-20","11":D}},{"x":"G","z":"X Z","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"J":"M","N":"Y","3n":"20","11":D}}]},{"O":{"Q":"1x"},"P":[{"x":"G","z":"X Z","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"J":"M","N":"Y","2y":"10","1T":"0% 5% 0","11":D}},{"x":"b","z":"X Z","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"J":"M","N":"Y","2y":"-10","1T":"I% 5% 0","11":D}},{"x":"H","z":"X Z","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"J":"M","N":"Y","2z":"-20","1T":"5% 0% 0","11":D}},{"x":"e","z":"X Z","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"J":"M","N":"Y","2z":"20","1T":"5% I% 0","11":D}}]},{"O":{"Q":"3d"},"P":[{"x":"2e","z":"X Z","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"J":"M","N":"Y","2x":"-10","11":D}},{"x":"4i","z":"X Z","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"J":"M","N":"Y","2x":"-10","1T":"5% I% 0","11":D}},{"x":"4j","z":"X Z","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"J":"M","N":"Y","2x":"10","1T":"5% I% 0","11":D}}]},{"O":{"Q":"4k"},"P":[{"x":"j","z":"X Z","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"J":"M","N":"Y","4l":"0.6","11":D}},{"x":"K-g","z":"X Z","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"J":"M","N":"Y","4m":"#4n","11":D}},{"x":"7-g","z":"X Z","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"J":"M","N":"Y","4o":"#4p","11":D}}]},{"O":{"Q":"4q 4r"},"P":[{"x":"4s","z":"X Z","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"J":"M","N":"Y","2S":"2R","11":D}},{"x":"4u","z":"X Z","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"J":"M","N":"Y","2S":"4v","11":D}},{"x":"4w","z":"X Z","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","4-l":"36","K":"#y","g":"#L","c-G":"15","c-H":"3","c-b":"15"},"i":{"J":"M","N":"Y","2S":"5%","11":D}}]}]};2o 4x={"O":{"1r":2t,"2m":1e,"f":"2h"},"2l":[{"O":{"Q":"2n 2s"},"P":[{"x":"2U","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"J":"M","N":"16 + 0"}}]},{"O":{"Q":"2n 2s 1a"},"P":[{"x":"b","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"J":"M","1A":"-I","N":"16  ","4B":d}},{"x":"G","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"J":"M","1A":"I","N":"16  "}},{"x":"e","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"J":"M","1z":"-I","N":"16  "}},{"x":"H","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"J":"M","1z":"I","N":"16  "}}]},{"O":{"Q":"1N 2s 1a"},"P":[{"x":"b","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"J":"M","1A":"b","N":"16  "}},{"x":"G","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"J":"M","1A":"G","N":"16  "}},{"x":"e","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"J":"M","1z":"e","N":"16  "}},{"x":"H","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"J":"M","1z":"H","N":"16  "}}]},{"O":{"Q":"4D 2s 1a"},"P":[{"x":"b","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"J":"M","1A":"b","N":"16  ","2C":"1u"}},{"x":"G","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"J":"M","1A":"G","N":"16  ","2C":"1u"}},{"x":"e","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"J":"M","1z":"e","N":"16  ","2C":"1u"}},{"x":"H","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"J":"M","1z":"H","N":"16  ","2C":"1u"}}]},{"O":{"Q":"3t 1a"},"P":[{"x":"b","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"J":"M","1w":"0 I% 0 0","N":"16  ","1t":d}},{"x":"G","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"J":"M","1w":"0 0 0 I%","N":"16  ","1t":d}},{"x":"2e","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"J":"M","1w":"0 5% 0 5%","N":"16  ","1t":d}},{"x":"e","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"J":"M","1w":"0 0 I% 0","N":"16  ","1t":d}},{"x":"H","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"J":"M","1w":"I% 0 0 0","N":"16  ","1t":d}}]},{"O":{"Q":"3t & 2T 1a"},"P":[{"x":"b","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"J":"M","1A":"-1D","1w":"0 0 0 I%","N":"16  ","1t":d}},{"x":"G","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"J":"M","1A":"1D","1w":"0 I% 0 0","N":"16  ","1t":d}},{"x":"e","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"J":"M","1z":"-1C","1w":"I% 0 0 0","N":"16  ","1t":d}},{"x":"H","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"J":"M","1z":"1C","1w":"0 0 I% 0","N":"16  ","1t":d}}]},{"O":{"Q":"3q"},"P":[{"x":"2r","z":"E F","f":"p","t":{"e":"5%","b":"5%","7-m":"n","4-q":"h","4-k":"a","7-u":"v","w":d,"j":"1","A-B-r":"a","4-o":"C","g":"#y","4-l":"36"},"i":{"J":"M","N":"16 + 0","4I":"2r(2R)"}}]}]};',62,293,'||||font|50||text|||normal|left|padding|false|top|type|color|400|transition|opacity|style|size|align|initial|family||weight|mode||styles|decoration|none|wordwrap|subtitle|363636|html|mix|blend|Oswald|true|SAMPLE|TEXT|right|bottom|100|durationin|background|ffffff|200|startatout|properties|sublayers|title|looptransformorigin|loopstartat|allinend|loopcount|loop|loopeasing|HOVER|slidechangeonly|ME||hover|texttransitionin|texttypein|||transitioninend|textstartatin|transitioninstart|loopyoyo|to|500|from|fadein|360|loopduration|easingin|and|clipin|Chars|textoffsetxin|1500|offsetyin|textoffsetyin|chars_asc|offsetxin|on|width|textshiftin|fadeout|easeInOutBack|transformoriginin|clipout|Flip|180|offsetyout|offsetxout|easeInOutCubic|100lh|100lw|transitionin|easeOutExpo|looprotatex|F1|easeOutBounce|Sky|Friday|looprepeatdelay|challenger|Slide|320|Poppins|looprotate|easeInOutQuint|2018|hovertransformorigin|bosses|team|lines_asc|drivers|the|speak||there|was|Lazenby|McLaren|unveiled|their|Simon|in|textdurationin|loopoffsety|bounce|easeOutElastic|1200|middle|Right|hoverdurationin|fixed|hoverscaley|hoverscalex|2000|layers|height|Fade|var|easeInOutSine|loopskewx|blur|out|530|loopscaley|grow|all|hoverskewx|hoverrotatey|hoverrotatex|scaleyin|1000|easingout|90|800|solid|2px|ffcc00|lines|then|loopscalex|border|60|chars_rand|textscaleyin|hovereasingin|Rotate|10px|hoverborderradius|slide|fade|reveal|goes|Shrink|Animation|loopoffsetx||sides|Pulse|Grow|Bg|Left||gate|looprotatey|barrier|rotate|80|back|Skew|typewriter|random|textrotatein|hoverdurationout|by|textfadein|hoverrotate|around|hoveroffsety|hoveroffsetx|600|150|Blur|Reveal|120|Hide|shrink|mid|lsOpeningPresets|100sw|textscalexin|scale|words_asc|randomly|Paginate|Bounce|hey|easeInElastic|easeOutCubic|transitions|easeInSine|Words|chars_center|Typewriter|lsHoverPresets|Simple|scalexin|chars_desc|300|250|470|610|450|Elastic|380|easeOutQuint|Background|Multi|hovereasingout|texttransformoriginin|descending|Roll|Jelly|1600|rotatein|Clockwise|hoverskewy|easeInOutElastic|vertical|Filp|once|up|ascending|down|Counterclockwise|Zig|forward|backward|Color|hoveropacity|hoverbgcolor|249ef0|hovercolor|9cff33|Rounded|corners|small|zag|big|50px|circle|lsClosingPresets|filterin|lsLoopPresets|Drop|texttransitionout|texteasingin|Jump|Gates|Quotes|Elastistic|chars|filterout'.split('|'),0,{}))
+var lsStyle0 = {
+	top: "50%",
+	left: "50%",
+	"text-align": "initial",
+	"font-weight": 400,
+	"font-style": "normal",
+	"text-decoration": "none",
+	wordwrap: false,
+	opacity: 1,
+	"mix-blend-mode": "normal",
+	"font-family": "Oswald",
+	color: "#363636",
+	"font-size": 36
+};
+var lsStyle1 = {
+	top: "50%",
+	left: "50%",
+	"text-align": "initial",
+	"font-weight": 400,
+	"font-style": "normal",
+	"text-decoration": "none",
+	wordwrap: false,
+	opacity: 1,
+	"mix-blend-mode": "normal",
+	"font-family": "Oswald",
+	"font-size": 36,
+	"padding-right": 15,
+	"padding-bottom": 3,
+	"padding-left": 15,
+	background: "#363636",
+	color: "#ffffff"
+};
+var lsStyle2 = {
+	top: "50%",
+	left: "50%",
+	"text-align": "initial",
+	"font-weight": 400,
+	"font-style": "normal",
+	"text-decoration": "none",
+	wordwrap: true,
+	opacity: 1,
+	"mix-blend-mode": "normal",
+	"font-family": "Poppins",
+	"font-size": 14,
+	width: 320,
+	"border-left": "solid 2px #ffcc00",
+	"padding-left": 20,
+	color: "#363636"
+};
+var lsStyle3 = {
+	top: "50%",
+	left: "50%",
+	"text-align": "initial",
+	"font-weight": 400,
+	"font-style": "normal",
+	"text-decoration": "none",
+	wordwrap: true,
+	opacity: 1,
+	"mix-blend-mode": "normal",
+	"font-family": "Poppins",
+	"font-size": 14,
+	width: 320,
+	color: "#363636"
+};
+var lsStyle4 = {
+	top: "50%",
+	left: "50%",
+	"text-align": "initial",
+	"font-weight": 400,
+	"font-style": "normal",
+	"text-decoration": "none",
+	wordwrap: false,
+	opacity: 1,
+	"mix-blend-mode": "normal",
+	"font-family": "Oswald",
+	"font-size": 36,
+	background: "#363636",
+	color: "#ffffff",
+	"padding-right": 15,
+	"padding-bottom": 3,
+	"padding-left": 15
+};
+var lsOpeningPresets = {
+	properties: {
+		width: 530,
+		height: 360,
+		type: "fixed"
+	},
+	layers: [{
+		properties: {
+			title: "Fade in"
+		},
+		sublayers: [{
+			subtitle: "fade",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {}
+		}]
+	}, {
+		properties: {
+			title: "Fade in from"
+		},
+		sublayers: [{
+			subtitle: "left",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				offsetxin: "-100"
+			}
+		}, {
+			subtitle: "right",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				offsetxin: 100
+			}
+		}, {
+			subtitle: "top",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				offsetyin: "-100"
+			}
+		}, {
+			subtitle: "bottom",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				offsetyin: 100
+			}
+		}]
+	}, {
+		properties: {
+			title: "Slide in from"
+		},
+		sublayers: [{
+			subtitle: "left",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				offsetxin: "left"
+			}
+		}, {
+			subtitle: "right",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				offsetxin: "right"
+			}
+		}, {
+			subtitle: "top",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				offsetyin: "top"
+			}
+		}, {
+			subtitle: "bottom",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				offsetyin: "bottom"
+			}
+		}]
+	}, {
+		properties: {
+			title: "Elastistic slide from"
+		},
+		sublayers: [{
+			subtitle: "left",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				offsetxin: "left",
+				durationin: 2000,
+				easingin: "easeOutElastic"
+			}
+		}, {
+			subtitle: "right",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				offsetxin: "right",
+				durationin: 2000,
+				easingin: "easeOutElastic"
+			}
+		}, {
+			subtitle: "top",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				durationin: 2000,
+				easingin: "easeOutElastic",
+				offsetyin: "top"
+			}
+		}, {
+			subtitle: "bottom",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				offsetyin: "bottom",
+				durationin: 2000,
+				easingin: "easeOutElastic"
+			}
+		}]
+	}, {
+		properties: {
+			title: "Reveal from"
+		},
+		sublayers: [{
+			subtitle: "left",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				clipin: "0 100% 0 0",
+				fadein: false
+			}
+		}, {
+			subtitle: "right",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				clipin: "0 0 0 100%",
+				fadein: false
+			}
+		}, {
+			subtitle: "middle",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				clipin: "0 50% 0 50%",
+				fadein: false
+			}
+		}, {
+			subtitle: "top",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				clipin: "0 0 100% 0",
+				fadein: false
+			}
+		}, {
+			subtitle: "bottom",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				clipin: "100% 0 0 0",
+				fadein: false
+			}
+		}]
+	}, {
+		properties: {
+			title: "Reveal & slide from"
+		},
+		sublayers: [{
+			subtitle: "left",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				offsetxin: "-100lw",
+				clipin: "0 0 0 100%",
+				fadein: false
+			}
+		}, {
+			subtitle: "right",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				offsetxin: "100lw",
+				clipin: "0 100% 0 0",
+				fadein: false
+			}
+		}, {
+			subtitle: "top",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				clipin: "100% 0 0 0",
+				fadein: false,
+				offsetyin: "-100lh"
+			}
+		}, {
+			subtitle: "bottom",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				offsetyin: "100lh",
+				clipin: "0 0 100% 0",
+				fadein: false
+			}
+		}]
+	}, {
+		properties: {
+			title: "Drop from"
+		},
+		sublayers: [{
+			subtitle: "left",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				offsetxin: "-100",
+				easingin: "easeOutBounce"
+			}
+		}, {
+			subtitle: "right",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				offsetxin: 100,
+				easingin: "easeOutBounce"
+			}
+		}, {
+			subtitle: "top",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				easingin: "easeOutBounce",
+				offsetyin: "-100"
+			}
+		}, {
+			subtitle: "bottom",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				easingin: "easeOutBounce",
+				offsetyin: 100
+			}
+		}]
+	}, {
+		properties: {
+			title: "Blur"
+		},
+		sublayers: [{
+			subtitle: "blur",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				filterin: "blur(10px)"
+			}
+		}]
+	}, {
+		properties: {
+			title: "Chars from"
+		},
+		sublayers: [{
+			subtitle: "left",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				transitionin: false,
+				texttypein: "chars_asc",
+				textoffsetxin: "-100",
+				textstartatin: "transitioninstart + 0",
+				texttransitionin: true
+			}
+		}, {
+			subtitle: "right",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				transitionin: false,
+				texttypein: "chars_asc",
+				textoffsetxin: 100,
+				textstartatin: "transitioninstart + 0",
+				texttransitionin: true
+			}
+		}, {
+			subtitle: "top",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				transitionin: false,
+				texttypein: "chars_asc",
+				textoffsetyin: "-100",
+				textstartatin: "transitioninstart + 0",
+				texttransitionin: true
+			}
+		}, {
+			subtitle: "bottom",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				transitionin: false,
+				texttypein: "chars_asc",
+				textoffsetyin: 100,
+				textstartatin: "transitioninstart + 0",
+				texttransitionin: true
+			}
+		}]
+	}, {
+		properties: {
+			title: "Chars from all around"
+		},
+		sublayers: [{
+			subtitle: "Chars from all around",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				rotatein: 360,
+				durationin: 1600,
+				easingin: "easeOutQuint",
+				texttypein: "chars_asc",
+				textoffsetxin: "500|-380|450|-610",
+				textoffsetyin: "-470|250|-100|-300|500",
+				textrotatein: "random(-180,180)",
+				textstartatin: "transitioninstart + 0",
+				texttransitionin: true
+			}
+		}]
+	}, {
+		properties: {
+			title: "Typewriter"
+		},
+		sublayers: [{
+			subtitle: "Chars typewriter",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				texttypein: "chars_asc",
+				textstartatin: "transitioninstart + 0",
+				textdurationin: 400,
+				textshiftin: 80,
+				texttransitionin: true
+			}
+		}, {
+			subtitle: "Chars typewriter scale",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				transitionin: false,
+				texttypein: "chars_asc",
+				textscalexin: 10,
+				textscaleyin: 10,
+				textstartatin: "transitioninstart + 0",
+				textdurationin: 800,
+				textshiftin: 80,
+				texttransitionin: true
+			}
+		}]
+	}, {
+		properties: {
+			title: "Chars random from"
+		},
+		sublayers: [{
+			subtitle: "top",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				texttypein: "chars_rand",
+				textoffsetyin: "-100",
+				textscaleyin: 3,
+				textstartatin: "transitioninstart + 0",
+				texttransitionin: true
+			}
+		}, {
+			subtitle: "bottom",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				texttypein: "chars_rand",
+				textoffsetyin: 100,
+				textscaleyin: 3,
+				textstartatin: "transitioninstart + 0",
+				texttransitionin: true
+			}
+		}]
+	}, {
+		properties: {
+			title: "Chars from all sides"
+		},
+		sublayers: [{
+			subtitle: "ascending",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				transitionin: false,
+				texttypein: "chars_asc",
+				textoffsetxin: "0|0|100|-100",
+				textoffsetyin: "100|-100|0|0",
+				textstartatin: "transitioninstart + 0",
+				texttransitionin: true
+			}
+		}, {
+			subtitle: "descending",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				transitionin: false,
+				texttypein: "chars_desc",
+				textoffsetxin: "0|0|100|-100",
+				textoffsetyin: "100|-100|0|0",
+				textstartatin: "transitioninstart + 0",
+				texttransitionin: true
+			}
+		}]
+	}, {
+		properties: {
+			title: "Chars goes to middle"
+		},
+		sublayers: [{
+			subtitle: "Chars goes to middle",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				texttypein: "chars_center",
+				textoffsetxin: "0|-30|30|-60|60|-90|90|-120|120|-150|150|-180|-180",
+				textstartatin: "transitioninstart + 600",
+				textdurationin: 1200,
+				textshiftin: 20,
+				textfadein: false,
+				texttransitionin: true
+			}
+		}]
+	}, {
+		properties: {
+			title: "Chars grow then bounce"
+		},
+		sublayers: [{
+			subtitle: "Words rotate and bounce",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				scaleyin: 0,
+				transformoriginin: "50% 100% 0",
+				texttypein: "words_asc",
+				textrotatein: 90,
+				textstartatin: "transitioninstart + 800",
+				textshiftin: 0,
+				texteasingin: "easeOutBounce",
+				texttransformoriginin: "100% 100% 0",
+				textfadein: false,
+				texttransitionin: true
+			}
+		}]
+	}, {
+		properties: {
+			title: "Background transition"
+		},
+		sublayers: [{
+			subtitle: "Chars from all sides",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle1,
+			transition: {
+				scalexin: 0,
+				durationin: 1200,
+				texttypein: "chars_asc",
+				textoffsetxin: "0|0|100|-100",
+				textoffsetyin: "100|-100|0|0",
+				textstartatin: "transitioninstart + 500",
+				texttransitionin: true
+			}
+		}, {
+			subtitle: "Chars from top",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle1,
+			transition: {
+				scaleyin: 0,
+				durationin: 1200,
+				transformoriginin: "50% 0% 0",
+				fadein: false,
+				offsetyin: "-30",
+				texttypein: "chars_asc",
+				textoffsetyin: "-100lh",
+				textstartatin: "transitioninstart + 500",
+				texttransitionin: true
+			}
+		}, {
+			subtitle: "Bg to right + text from left",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle1,
+			transition: {
+				clipin: "0 100% 0 0",
+				durationin: 1200,
+				transformoriginin: "0% 50% 0",
+				fadein: false,
+				texttypein: "lines_asc",
+				textoffsetxin: "100lw",
+				textstartatin: "transitioninstart + 200",
+				texttransitionin: true
+			}
+		}, {
+			subtitle: "Bg from mid + chars top bottom",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle1,
+			transition: {
+				clipin: "50% 0 50% 0",
+				durationin: 1200,
+				transformoriginin: "50% -50% 0",
+				texttypein: "chars_asc",
+				textoffsetyin: "-100lh|100lh",
+				textstartatin: "transitioninstart + 0",
+				texttransitionin: true
+			}
+		}]
+	}, {
+		properties: {
+			title: "Quotes transitions"
+		},
+		sublayers: [{
+			subtitle: "Chars randomly",
+			html: "McLaren unveiled their 2018 challenger on Friday and Sky F1's Simon Lazenby was there to speak to the drivers and team bosses.",
+			type: "p",
+			styles: lsStyle2,
+			transition: {
+				offsetxin: "100sw",
+				durationin: 1500,
+				easingin: "easeOutExpo",
+				fadein: false,
+				texttypein: "chars_rand",
+				textstartatin: "transitioninstart + 0",
+				textdurationin: 500,
+				textshiftin: 8,
+				texttransitionin: true
+			}
+		}, {
+			subtitle: "Slide in by lines from right",
+			html: "McLaren unveiled their 2018 challenger on Friday and Sky F1's Simon Lazenby was there to speak to the drivers and team bosses.",
+			type: "p",
+			styles: lsStyle2,
+			transition: {
+				scaleyin: 0,
+				durationin: 1500,
+				easingin: "easeOutExpo",
+				transformoriginin: "0% 0% 0",
+				fadein: false,
+				texttypein: "lines_asc",
+				textoffsetxin: 100,
+				textstartatin: "transitioninstart + 100",
+				textdurationin: 800,
+				textshiftin: 200,
+				texttransitionin: true
+			}
+		}, {
+			subtitle: "Slide in by lines from top",
+			html: "McLaren unveiled their 2018 challenger on Friday and Sky F1's Simon Lazenby was there to speak to the drivers and team bosses.",
+			type: "p",
+			styles: lsStyle2,
+			transition: {
+				offsetyin: "-60",
+				scaleyin: 0,
+				durationin: 1500,
+				easingin: "easeOutExpo",
+				transformoriginin: "50% 0% 0",
+				fadein: false,
+				texttypein: "lines_asc",
+				textoffsetyin: "-20",
+				textstartatin: "transitioninstart + 100",
+				texttransitionin: true
+			}
+		}]
+	}, {
+		properties: {
+			title: "Multi-lines"
+		},
+		sublayers: [{
+			subtitle: "reveal from left",
+			html: "McLaren unveiled their 2018 challenger on Friday and Sky F1's Simon Lazenby was there to speak to the drivers and team bosses.",
+			type: "p",
+			styles: lsStyle3,
+			transition: {
+				clipin: "0 0 0 0",
+				durationin: 1500,
+				easingin: "easeOutExpo",
+				transformoriginin: "50% 0% 0",
+				fadein: false,
+				texttypein: "lines_asc",
+				textoffsetxin: "-100lw",
+				textstartatin: "transitioninstart + 0",
+				textshiftin: 100,
+				texttransitionin: true
+			}
+		}, {
+			subtitle: "reveal from right",
+			html: "McLaren unveiled their 2018 challenger on Friday and Sky F1's Simon Lazenby was there to speak to the drivers and team bosses.",
+			type: "p",
+			styles: lsStyle3,
+			transition: {
+				clipin: "0 0 0 0",
+				durationin: 1500,
+				easingin: "easeOutExpo",
+				transformoriginin: "50% 0% 0",
+				fadein: false,
+				texttypein: "lines_asc",
+				textoffsetxin: "100lw",
+				textstartatin: "transitioninstart + 0",
+				textshiftin: 100,
+				texttransitionin: true
+			}
+		}, {
+			subtitle: "Zig-zag",
+			html: "McLaren unveiled their 2018 challenger on Friday and Sky F1's Simon Lazenby was there to speak to the drivers and team bosses.",
+			type: "p",
+			styles: lsStyle3,
+			transition: {
+				durationin: 1500,
+				easingin: "easeOutExpo",
+				transformoriginin: "50% 0% 0",
+				fadein: false,
+				texttypein: "lines_asc",
+				textoffsetxin: "50|-50",
+				textstartatin: "transitioninstart + 0",
+				textshiftin: 0,
+				texttransitionin: true
+			}
+		}]
+	}]
+};
+var lsLoopPresets = {
+	properties: {
+		width: 530,
+		height: 360,
+		type: "responsive"
+	},
+	layers: [{
+		properties: {
+			title: "Pulse"
+		},
+		sublayers: [{
+			subtitle: "Pulse",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				loopscalex: "1.1",
+				loopscaley: "1.1",
+				loopstartat: "allinend",
+				loopduration: 500,
+				loopeasing: "easeInOutCubic",
+				loopcount: "-1",
+				loopyoyo: true,
+				loop: true
+			}
+		}]
+	}, {
+		properties: {
+			title: "Shrink"
+		},
+		sublayers: [{
+			subtitle: "Animation",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				loopscalex: "0.8",
+				loopscaley: "0.8",
+				loopstartat: "allinend",
+				loopduration: 500,
+				loopeasing: "easeInOutCubic",
+				loopcount: "-1",
+				loopyoyo: true,
+				loop: true
+			}
+		}]
+	}, {
+		properties: {
+			title: "Slide"
+		},
+		sublayers: [{
+			subtitle: "left",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				loopoffsetx: "-100",
+				loopstartat: "allinend",
+				loopduration: 500,
+				loopeasing: "easeInOutCubic",
+				loopcount: "-1",
+				loopyoyo: true,
+				loop: true
+			}
+		}, {
+			subtitle: "right",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				loopoffsetx: 100,
+				loopstartat: "allinend",
+				loopduration: 500,
+				loopeasing: "easeInOutCubic",
+				loopcount: "-1",
+				loopyoyo: true,
+				loop: true
+			}
+		}, {
+			subtitle: "top",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				loopoffsety: "-100",
+				loopstartat: "allinend",
+				loopduration: 500,
+				loopeasing: "easeInOutCubic",
+				loopcount: "-1",
+				loopyoyo: true,
+				loop: true
+			}
+		}, {
+			subtitle: "bottom",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				loopoffsety: 100,
+				loopstartat: "allinend",
+				loopduration: 500,
+				loopeasing: "easeInOutCubic",
+				loopcount: "-1",
+				loopyoyo: true,
+				loop: true
+			}
+		}]
+	}, {
+		properties: {
+			title: "Roll"
+		},
+		sublayers: [{
+			subtitle: "Clockwise",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				looprotate: 360,
+				loopstartat: "allinend",
+				loopcount: "-1",
+				loop: true
+			}
+		}, {
+			subtitle: "Counterclockwise",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				looprotate: "-360",
+				loopstartat: "allinend",
+				loopcount: "-1",
+				loop: true
+			}
+		}, {
+			subtitle: "Right-left",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				looprotate: 360,
+				loopstartat: "allinend",
+				loopeasing: "easeInOutQuint",
+				loopcount: "-1",
+				loopyoyo: true,
+				loop: true
+			}
+		}]
+	}, {
+		properties: {
+			title: "Grow & rotate"
+		},
+		sublayers: [{
+			subtitle: "Right-left",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				loopscalex: "1.2",
+				loopscaley: "1.2",
+				looprotate: 10,
+				loopstartat: "allinend",
+				loopduration: 600,
+				loopeasing: "easeInOutCubic",
+				loopcount: "-1",
+				loopyoyo: true,
+				loop: true
+			}
+		}]
+	}, {
+		properties: {
+			title: "Gates"
+		},
+		sublayers: [{
+			subtitle: "Left gate",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				looprotatey: 30,
+				loopstartat: "allinend",
+				loopeasing: "easeInOutQuint",
+				loopcount: "-1",
+				loopyoyo: true,
+				looptransformorigin: "0% 100% 0",
+				loop: true
+			}
+		}, {
+			subtitle: "Right gate",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				looprotatey: "-30",
+				loopstartat: "allinend",
+				loopeasing: "easeInOutQuint",
+				loopcount: "-1",
+				loopyoyo: true,
+				looptransformorigin: "100% 100% 0",
+				loop: true
+			}
+		}, {
+			subtitle: "Left barrier",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				looprotate: "-30",
+				loopstartat: "allinend",
+				loopeasing: "easeInOutQuint",
+				loopcount: "-1",
+				loopyoyo: true,
+				looptransformorigin: "0% 100% 0",
+				loop: true
+			}
+		}, {
+			subtitle: "Right barrier",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				looprotate: 30,
+				loopstartat: "allinend",
+				loopeasing: "easeInOutQuint",
+				loopcount: "-1",
+				loopyoyo: true,
+				looptransformorigin: "100% 100% 0",
+				loop: true
+			}
+		}]
+	}, {
+		properties: {
+			title: "Flip"
+		},
+		sublayers: [{
+			subtitle: "Flip on top",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				looprotatex: 360,
+				loopstartat: "allinend",
+				loopduration: 1500,
+				loopeasing: "easeInOutBack",
+				loopcount: "-1",
+				looprepeatdelay: 500,
+				looptransformorigin: "50% 0% 0",
+				loop: true
+			}
+		}, {
+			subtitle: "Flip on bottom",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				looprotatex: "-360",
+				loopstartat: "allinend",
+				loopduration: 1500,
+				loopeasing: "easeInOutBack",
+				loopcount: "-1",
+				looprepeatdelay: 500,
+				looptransformorigin: "50% 100% 0",
+				loop: true
+			}
+		}, {
+			subtitle: "Flip on top then back",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				looprotatex: 360,
+				loopstartat: "allinend",
+				loopduration: 1500,
+				loopeasing: "easeInOutBack",
+				loopcount: "-1",
+				looprepeatdelay: 500,
+				loopyoyo: true,
+				looptransformorigin: "50% 0% 0",
+				loop: true
+			}
+		}, {
+			subtitle: "Flip on bottom then back",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				looprotatex: "-360",
+				loopstartat: "allinend",
+				loopduration: 1500,
+				loopeasing: "easeInOutBack",
+				loopcount: "-1",
+				looprepeatdelay: 500,
+				loopyoyo: true,
+				looptransformorigin: "50% 100% 0",
+				loop: true
+			}
+		}, {
+			subtitle: "Flip and bounce",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				looprotatex: 360,
+				loopstartat: "allinend",
+				loopduration: 1500,
+				loopeasing: "easeOutBounce",
+				loopcount: "-1",
+				looprepeatdelay: 500,
+				looptransformorigin: "50% 0% 0",
+				loop: true
+			}
+		}, {
+			subtitle: "Paginate",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				looprotatex: 360,
+				loopstartat: "allinend",
+				loopduration: 1500,
+				loopeasing: "easeOutExpo",
+				loopcount: "-1",
+				looprepeatdelay: 500,
+				looptransformorigin: "50% 0% 0",
+				loop: true
+			}
+		}]
+	}, {
+		properties: {
+			title: "Bounce"
+		},
+		sublayers: [{
+			subtitle: "hey!",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				loopoffsety: "-50",
+				loopstartat: "allinend",
+				loopeasing: "easeInElastic",
+				loopcount: "-1",
+				loopyoyo: true,
+				loop: true
+			}
+		}, {
+			subtitle: "bounce",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				loopoffsety: "-50",
+				loopstartat: "allinend",
+				loopduration: 500,
+				loopeasing: "easeOutCubic",
+				loopcount: "-1",
+				loopyoyo: true,
+				loop: true
+			}
+		}, {
+			subtitle: "bounce & shrink",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				loopoffsety: 50,
+				loopscaley: "0.8",
+				loopstartat: "allinend",
+				loopduration: 500,
+				loopeasing: "easeInSine",
+				loopcount: "-1",
+				loopyoyo: true,
+				loop: true
+			}
+		}]
+	}, {
+		properties: {
+			title: "Skew"
+		},
+		sublayers: [{
+			subtitle: "right-bottom",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				loopskewx: "-10",
+				loopstartat: "allinend",
+				loopeasing: "easeInOutSine",
+				loopcount: "-1",
+				loopyoyo: true,
+				looptransformorigin: "50% 100% 0",
+				loop: true
+			}
+		}, {
+			subtitle: "left-bottom",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				loopskewx: 10,
+				loopstartat: "allinend",
+				loopeasing: "easeInOutSine",
+				loopcount: "-1",
+				loopyoyo: true,
+				looptransformorigin: "50% 100% 0",
+				loop: true
+			}
+		}, {
+			subtitle: "right-top",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				loopskewx: 10,
+				loopstartat: "allinend",
+				loopeasing: "easeInOutSine",
+				loopcount: "-1",
+				loopyoyo: true,
+				looptransformorigin: "50% 0% 0",
+				loop: true
+			}
+		}, {
+			subtitle: "left-top",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				loopskewx: "-10",
+				loopstartat: "allinend",
+				loopeasing: "easeInOutSine",
+				loopcount: "-1",
+				loopyoyo: true,
+				looptransformorigin: "50% 0% 0",
+				loop: true
+			}
+		}]
+	}]
+};
+var lsHoverPresets = {
+	properties: {
+		width: 530,
+		height: 360,
+		type: "fixed"
+	},
+	layers: [{
+		properties: {
+			title: "Grow"
+		},
+		sublayers: [{
+			subtitle: "Simple grow",
+			html: "HOVER ME",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				hoverscalex: "1.1",
+				hoverscaley: "1.1",
+				hover: true
+			}
+		}, {
+			subtitle: "Elastic grow",
+			html: "HOVER ME",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				hoverscalex: "1.1",
+				hoverscaley: "1.1",
+				hoverdurationin: 1000,
+				hoverdurationout: 500,
+				hovereasingin: "easeOutElastic",
+				hovereasingout: "easeInOutQuint",
+				hover: true
+			}
+		}]
+	}, {
+		properties: {
+			title: "Shrink"
+		},
+		sublayers: [{
+			subtitle: "Animation",
+			html: "HOVER ME",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				hoverscalex: "0.9",
+				hoverscaley: "0.9",
+				hover: true
+			}
+		}]
+	}, {
+		properties: {
+			title: "Rotate"
+		},
+		sublayers: [{
+			subtitle: "Rotate",
+			html: "HOVER ME",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				hoverrotate: 10,
+				hover: true
+			}
+		}, {
+			subtitle: "Rotate & grow",
+			html: "HOVER ME",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				hoverscalex: "1.2",
+				hoverscaley: "1.2",
+				hoverrotate: 10,
+				hover: true
+			}
+		}, {
+			subtitle: "Jelly",
+			html: "HOVER ME",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				hoverrotatex: 180,
+				hoverrotatey: 180,
+				hoverskewx: "-180",
+				hoverskewy: "-180",
+				hoverdurationin: 1000,
+				hovereasingin: "easeInOutElastic",
+				hover: true
+			}
+		}, {
+			subtitle: "Flip vertical",
+			html: "HOVER ME",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				hoverrotatey: 360,
+				hoverdurationin: 1000,
+				hovereasingin: "easeInOutBack",
+				hover: true
+			}
+		}, {
+			subtitle: "Filp once",
+			html: "HOVER ME",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				hoverrotatex: 360,
+				hoverdurationin: 1000,
+				hoverdurationout: 1,
+				hover: true
+			}
+		}]
+	}, {
+		properties: {
+			title: "Slide"
+		},
+		sublayers: [{
+			subtitle: "up",
+			html: "HOVER ME",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				hoveroffsety: "-10",
+				hover: true
+			}
+		}, {
+			subtitle: "down",
+			html: "HOVER ME",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				hoveroffsety: 10,
+				hover: true
+			}
+		}, {
+			subtitle: "left",
+			html: "HOVER ME",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				hoveroffsetx: "-20",
+				hover: true
+			}
+		}, {
+			subtitle: "right",
+			html: "HOVER ME",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				hoveroffsetx: 20,
+				hover: true
+			}
+		}]
+	}, {
+		properties: {
+			title: "Flip"
+		},
+		sublayers: [{
+			subtitle: "right",
+			html: "HOVER ME",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				hoverrotatey: 10,
+				hovertransformorigin: "0% 50% 0",
+				hover: true
+			}
+		}, {
+			subtitle: "left",
+			html: "HOVER ME",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				hoverrotatey: "-10",
+				hovertransformorigin: "100% 50% 0",
+				hover: true
+			}
+		}, {
+			subtitle: "bottom",
+			html: "HOVER ME",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				hoverrotatex: "-20",
+				hovertransformorigin: "50% 0% 0",
+				hover: true
+			}
+		}, {
+			subtitle: "top",
+			html: "HOVER ME",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				hoverrotatex: 20,
+				hovertransformorigin: "50% 100% 0",
+				hover: true
+			}
+		}]
+	}, {
+		properties: {
+			title: "Skew"
+		},
+		sublayers: [{
+			subtitle: "middle",
+			html: "HOVER ME",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				hoverskewx: "-10",
+				hover: true
+			}
+		}, {
+			subtitle: "forward",
+			html: "HOVER ME",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				hoverskewx: "-10",
+				hovertransformorigin: "50% 100% 0",
+				hover: true
+			}
+		}, {
+			subtitle: "backward",
+			html: "HOVER ME",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				hoverskewx: 10,
+				hovertransformorigin: "50% 100% 0",
+				hover: true
+			}
+		}]
+	}, {
+		properties: {
+			title: "Color"
+		},
+		sublayers: [{
+			subtitle: "opacity",
+			html: "HOVER ME",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				hoveropacity: "0.6",
+				hover: true
+			}
+		}, {
+			subtitle: "background-color",
+			html: "HOVER ME",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				hoverbgcolor: "#249ef0",
+				hover: true
+			}
+		}, {
+			subtitle: "text-color",
+			html: "HOVER ME",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				hovercolor: "#9cff33",
+				hover: true
+			}
+		}]
+	}, {
+		properties: {
+			title: "Rounded corners"
+		},
+		sublayers: [{
+			subtitle: "small",
+			html: "HOVER ME",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				hoverborderradius: "10px",
+				hover: true
+			}
+		}, {
+			subtitle: "big",
+			html: "HOVER ME",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				hoverborderradius: "50px",
+				hover: true
+			}
+		}, {
+			subtitle: "circle",
+			html: "HOVER ME",
+			type: "p",
+			styles: lsStyle4,
+			transition: {
+				durationin: 200,
+				startatout: "slidechangeonly",
+				hoverborderradius: "50%",
+				hover: true
+			}
+		}]
+	}]
+};
+var lsClosingPresets = {
+	properties: {
+		width: 530,
+		height: 360,
+		type: "responsive"
+	},
+	layers: [{
+		properties: {
+			title: "Fade out"
+		},
+		sublayers: [{
+			subtitle: "fade",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				durationin: 200,
+				startatout: "transitioninend + 0"
+			}
+		}]
+	}, {
+		properties: {
+			title: "Fade out to"
+		},
+		sublayers: [{
+			subtitle: "left",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				durationin: 200,
+				offsetxout: "-100",
+				startatout: "transitioninend  "
+			}
+		}, {
+			subtitle: "right",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				durationin: 200,
+				offsetxout: 100,
+				startatout: "transitioninend  "
+			}
+		}, {
+			subtitle: "top",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				durationin: 200,
+				offsetyout: "-100",
+				startatout: "transitioninend  "
+			}
+		}, {
+			subtitle: "bottom",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				durationin: 200,
+				offsetyout: 100,
+				startatout: "transitioninend  "
+			}
+		}]
+	}, {
+		properties: {
+			title: "Slide out to"
+		},
+		sublayers: [{
+			subtitle: "left",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				durationin: 200,
+				offsetxout: "left",
+				startatout: "transitioninend  "
+			}
+		}, {
+			subtitle: "right",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				durationin: 200,
+				offsetxout: "right",
+				startatout: "transitioninend  "
+			}
+		}, {
+			subtitle: "top",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				durationin: 200,
+				offsetyout: "top",
+				startatout: "transitioninend  "
+			}
+		}, {
+			subtitle: "bottom",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				durationin: 200,
+				offsetyout: "bottom",
+				startatout: "transitioninend  "
+			}
+		}]
+	}, {
+		properties: {
+			title: "Jump out to"
+		},
+		sublayers: [{
+			subtitle: "left",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				durationin: 200,
+				offsetxout: "left",
+				startatout: "transitioninend  ",
+				easingout: "easeInOutBack"
+			}
+		}, {
+			subtitle: "right",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				durationin: 200,
+				offsetxout: "right",
+				startatout: "transitioninend  ",
+				easingout: "easeInOutBack"
+			}
+		}, {
+			subtitle: "top",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				durationin: 200,
+				offsetyout: "top",
+				startatout: "transitioninend  ",
+				easingout: "easeInOutBack"
+			}
+		}, {
+			subtitle: "bottom",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				durationin: 200,
+				offsetyout: "bottom",
+				startatout: "transitioninend  ",
+				easingout: "easeInOutBack"
+			}
+		}]
+	}, {
+		properties: {
+			title: "Rotate"
+		},
+		sublayers: [{
+			subtitle: "left",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				durationin: 200,
+				rotateout: "-360",
+				startatout: "transitioninend + 0"
+			}
+		}, {
+			subtitle: "right",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				durationin: 200,
+				rotateout: 360,
+				startatout: "transitioninend + 0"
+			}
+		}, {
+			subtitle: "bottom-left",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				durationin: 200,
+				rotateout: 90,
+				startatout: "transitioninend + 0",
+				transformoriginout: "0% 0% 0"
+			}
+		}, {
+			subtitle: "bottom-right",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				durationin: 200,
+				rotateout: "-90",
+				startatout: "transitioninend + 0",
+				transformoriginout: "100% 0% 0"
+			}
+		}]
+	}, {
+		properties: {
+			title: "Flip"
+		},
+		sublayers: [{
+			subtitle: "left",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				durationin: 200,
+				rotateyout: "-90",
+				startatout: "transitioninend + 0",
+				transformoriginout: "0% 50% 0"
+			}
+		}, {
+			subtitle: "right",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				durationin: 200,
+				rotateyout: 90,
+				startatout: "transitioninend + 0",
+				transformoriginout: "100% 50% 0"
+			}
+		}, {
+			subtitle: "top",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				durationin: 200,
+				rotatexout: 90,
+				startatout: "transitioninend + 0",
+				transformoriginout: "50% 0% 0"
+			}
+		}, {
+			subtitle: "bottom",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				durationin: 200,
+				rotatexout: "-90",
+				startatout: "transitioninend + 0",
+				transformoriginout: "50% 100% 0"
+			}
+		}]
+	}, {
+		properties: {
+			title: "Scale"
+		},
+		sublayers: [{
+			subtitle: "left",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				durationin: 200,
+				scalexout: 0,
+				startatout: "transitioninend + 0",
+				transformoriginout: "0% 50% 0"
+			}
+		}, {
+			subtitle: "right",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				durationin: 200,
+				scalexout: 0,
+				startatout: "transitioninend + 0",
+				transformoriginout: "100% 50% 0"
+			}
+		}, {
+			subtitle: "top",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				durationin: 200,
+				scaleyout: 0,
+				startatout: "transitioninend + 0",
+				transformoriginout: "50% 0% 0"
+			}
+		}, {
+			subtitle: "bottom",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				durationin: 200,
+				scaleyout: 0,
+				startatout: "transitioninend + 0",
+				transformoriginout: "50% 100% 0"
+			}
+		}, {
+			subtitle: "up",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				durationin: 200,
+				scalexout: 5,
+				scaleyout: 5,
+				startatout: "transitioninend + 0"
+			}
+		}, {
+			subtitle: "down",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				durationin: 200,
+				scalexout: 0,
+				scaleyout: 0,
+				startatout: "transitioninend + 0"
+			}
+		}]
+	}, {
+		properties: {
+			title: "Hide to"
+		},
+		sublayers: [{
+			subtitle: "left",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				durationin: 200,
+				clipout: "0 100% 0 0",
+				startatout: "transitioninend  ",
+				fadeout: false
+			}
+		}, {
+			subtitle: "right",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				durationin: 200,
+				clipout: "0 0 0 100%",
+				startatout: "transitioninend  ",
+				fadeout: false
+			}
+		}, {
+			subtitle: "middle",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				durationin: 200,
+				clipout: "0 50% 0 50%",
+				startatout: "transitioninend  ",
+				fadeout: false
+			}
+		}, {
+			subtitle: "top",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				durationin: 200,
+				clipout: "0 0 100% 0",
+				startatout: "transitioninend  ",
+				fadeout: false
+			}
+		}, {
+			subtitle: "bottom",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				durationin: 200,
+				clipout: "100% 0 0 0",
+				startatout: "transitioninend  ",
+				fadeout: false
+			}
+		}]
+	}, {
+		properties: {
+			title: "Hide & slide to"
+		},
+		sublayers: [{
+			subtitle: "left",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				durationin: 200,
+				offsetxout: "-100lw",
+				clipout: "0 0 0 100%",
+				startatout: "transitioninend  ",
+				fadeout: false
+			}
+		}, {
+			subtitle: "right",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				durationin: 200,
+				offsetxout: "100lw",
+				clipout: "0 100% 0 0",
+				startatout: "transitioninend  ",
+				fadeout: false
+			}
+		}, {
+			subtitle: "top",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				durationin: 200,
+				offsetyout: "-100lh",
+				clipout: "100% 0 0 0",
+				startatout: "transitioninend  ",
+				fadeout: false
+			}
+		}, {
+			subtitle: "bottom",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				durationin: 200,
+				offsetyout: "100lh",
+				clipout: "0 0 100% 0",
+				startatout: "transitioninend  ",
+				fadeout: false
+			}
+		}]
+	}, {
+		properties: {
+			title: "Blur"
+		},
+		sublayers: [{
+			subtitle: "blur",
+			html: "SAMPLE TEXT",
+			type: "p",
+			styles: lsStyle0,
+			transition: {
+				durationin: 200,
+				startatout: "transitioninend + 0",
+				filterout: "blur(10px)"
+			}
+		}]
+	}]
+};

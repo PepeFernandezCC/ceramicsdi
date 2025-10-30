@@ -4,32 +4,33 @@
  * https://creativeslider.webshopworks.com
  *
  * @author    WebshopWorks <info@webshopworks.com>
- * @copyright 2015-2020 WebshopWorks
+ * @copyright 2015-2025 WebshopWorks
  * @license   One Domain Licence
  *
  * Not allowed to resell or redistribute this software
  */
-
-defined('_PS_VERSION_') or exit;
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 ?>
 <script type="text/html" id="tmpl-ls-transition-modal">
     <div id="ls-transition-window">
         <header>
-            <h1><?php ls_e('Select slide transitions', 'LayerSlider') ?></h1>
+            <h1><?php ls_e('Select slide transitions'); ?></h1>
             <b class="dashicons dashicons-no"></b>
             <div id="tryorigami">
-                <img src="<?php echo LS_VIEWS_URL ?>img/admin/origami.png" alt="Try the Origami Effect!">
+                <img src="<?php echo LS_VIEWS_URL; ?>img/admin/origami.png" alt="Try the Origami Effect!">
             </div>
             <div id="transitionmenu" class="filters">
-                <span><?php ls_e('Show transitions:', 'LayerSlider') ?></span>
+                <span><?php ls_e('Show transitions:'); ?></span>
                 <ul>
-                    <li class="active"><?php ls_e('2D', 'LayerSlider') ?></li>
-                    <li><?php ls_e('3D', 'LayerSlider') ?></li>
-                    <li><?php ls_e('Custom 2D &amp; 3D', 'LayerSlider') ?></li>
-                    <li><?php ls_e('Special Effects', 'LayerSlider') ?></li>
+                    <li class="active"><?php ls_e('2D'); ?></li>
+                    <li><?php ls_e('3D'); ?></li>
+                    <li><?php ls_e('Custom 2D &amp; 3D'); ?></li>
+                    <li><?php ls_e('Special Effects'); ?></li>
                 </ul>
-                <i><?php ls_e('Apply to others', 'LayerSlider') ?></i>
-                <i class="off"><?php ls_e('Select all', 'LayerSlider') ?></i>
+                <i><?php ls_e('Apply to others'); ?></i>
+                <i class="off"><?php ls_e('Select all'); ?></i>
             </div>
         </header>
         <div class="km-ui-modal-scrollable inner">
@@ -47,17 +48,17 @@ defined('_PS_VERSION_') or exit;
 
                 <!-- Custom 2D -->
                 <section data-tr-type="custom_2d_transitions">
-                    <h4><?php ls_e('Custom 2D transitions', 'LayerSlider') ?></h4>
+                    <h4><?php ls_e('Custom 2D transitions'); ?></h4>
                     <div>
-                        <p><?php ls_e("You haven't created any custom 2D transitions yet.", 'LayerSlider') ?></p>
+                        <p><?php ls_e("You haven't created any custom 2D transitions yet."); ?></p>
                     </div>
                 </section>
 
                 <!-- Custom 3D -->
                 <section data-tr-type="custom_3d_transitions">
-                    <h4><?php ls_e('Custom 3D transitions', 'LayerSlider') ?></h4>
+                    <h4><?php ls_e('Custom 3D transitions'); ?></h4>
                     <div>
-                        <p><?php ls_e("You haven't created any custom 3D transitions yet.", 'LayerSlider') ?></p>
+                        <p><?php ls_e("You haven't created any custom 3D transitions yet."); ?></p>
                     </div>
                 </section>
 
@@ -66,7 +67,7 @@ defined('_PS_VERSION_') or exit;
 
                 <p class="ls-description">
                     <small>
-                        <?php ls_e('Special effects are like regular slide transitions and they work in the same way. You can set them on each slide individually. Mixing them with other transitions on other slides is perfectly fine. You can also apply them on all of your slides at once by pressing the "Apply to others" button above. In case of 3D special effects, selecting additional 2D transitions can ensure backward compatibility for older browsers.', 'LayerSlider') ?>
+                        <?php ls_e('Special effects are like regular slide transitions and they work in the same way. You can set them on each slide individually. Mixing them with other transitions on other slides is perfectly fine. You can also apply them on all of your slides at once by pressing the "Apply to others" button above. In case of 3D special effects, selecting additional 2D transitions can ensure backward compatibility for older browsers.'); ?>
                     </small>
                 </p>
 
@@ -75,14 +76,14 @@ defined('_PS_VERSION_') or exit;
                         <table>
                             <tr>
                                 <td>
-                                    <h4><?php ls_e('Origami transition', 'LayerSlider') ?><a class="dashicons dashicons-star-filled" target="_blank" href="https://support.kreaturamedia.com/docs/layersliderwp/documentation.html#activation" data-help="Premium feature. Click to learn more."></a></h4>
+                                    <h4><?php ls_e('Origami transition'); ?><a class="dashicons dashicons-star-filled" target="_blank" href="https://support.kreaturamedia.com/docs/layersliderwp/documentation.html#activation" data-help="Premium feature. Click to learn more."></a></h4>
                                 </td>
                                 <td rowspan="2">
                                     <p>
-                                        <?php ls_e('Share your gorgeous photos with the world or your loved ones in a truly inspirational way and create sliders with stunning effects with Origami.', 'LayerSlider') ?>
+                                        <?php ls_e('Share your gorgeous photos with the world or your loved ones in a truly inspirational way and create sliders with stunning effects with Origami.'); ?>
                                     </p>
                                     <small>
-                                        <?php ls_e('Origami is a form of 3D transition and it works in the same way as regular slide transitions do. Besides Internet Explorer, Origami works in all the modern browsers (including Edge).', 'LayerSlider') ?>
+                                        <?php ls_e('Origami is a form of 3D transition and it works in the same way as regular slide transitions do. Besides Internet Explorer, Origami works in all the modern browsers (including Edge).'); ?>
                                     </small>
                                 </td>
                             </tr>
@@ -90,10 +91,10 @@ defined('_PS_VERSION_') or exit;
                                 <td class="center">
                                     <div class="ls-select-special-transition" data-name="transitionorigami">
                                         <span class="dashicons dashicons-yes"></span>
-                                        <?php ls_e('Use it on this slide', 'LayerSlider') ?>
+                                        <?php ls_e('Use it on this slide'); ?>
                                     </div>
                                     <div class="center ls-example-link">
-                                        <a href="https://creativeslider.webshopworks.com/origami-34" target="_blank"><?php ls_e('Click here for live example', 'LayerSlider') ?></a>
+                                        <a href="https://creativeslider.webshopworks.com/origami-34" target="_blank"><?php ls_e('Click here for live example'); ?></a>
                                     </div>
                                 </td>
                             </tr>
@@ -102,7 +103,7 @@ defined('_PS_VERSION_') or exit;
                     </div>
 
                     <div class="separated ls-future">
-                        <h4><?php ls_e('More effects are coming soon', 'LayerSlider') ?></h4>
+                        <h4><?php ls_e('More effects are coming soon'); ?></h4>
                     </div>
 
                 </section>
@@ -121,9 +122,9 @@ defined('_PS_VERSION_') or exit;
     <div class="ls-right-side">
         <div class="ls-container" style="height: 357px;"></div>
         <div class="footer">
-            <button id="ls-choose-tr" class="button ls-green-button"><?php ls_e('Choose') ?></button>
+            <button id="ls-choose-tr" class="button ls-green-button"><?php ls_e('Choose'); ?></button>
         </div>
     </div>
 </script>
 
-<script src="<?php echo LS_VIEWS_URL.'js/admin/ls-layer-presets.js' ?>"></script>
+<script src="<?php echo LS_VIEWS_URL . 'js/admin/ls-layer-presets.js'; ?>"></script>

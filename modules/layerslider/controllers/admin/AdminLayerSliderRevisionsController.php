@@ -4,13 +4,14 @@
  * https://creativeslider.webshopworks.com
  *
  * @author    WebshopWorks <info@webshopworks.com>
- * @copyright 2015-2020 WebshopWorks
+ * @copyright 2015-2025 WebshopWorks
  * @license   One Domain Licence
  *
  * Not allowed to resell or redistribute this software
  */
-
-defined('_PS_VERSION_') or exit;
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 class AdminLayerSliderRevisionsController extends ModuleAdminController
 {
@@ -33,20 +34,18 @@ class AdminLayerSliderRevisionsController extends ModuleAdminController
         parent::setMedia($isNewTheme);
 
         $GLOBALS['ls_token'] = $this->token;
-        $GLOBALS['ls_screen'] = (object) array(
-          'id' => 'layerslider_page_ls-revisions',
-          'base' => 'layerslider_page_ls-revisions'
-        );
-        // simulate wp page
-        ${'_GET'}['page'] = 'ls-revisions';
+        $GLOBALS['ls_screen'] = (object) [
+            'id' => 'layerslider_page_ls-revisions',
+            'base' => 'layerslider_page_ls-revisions',
+        ];
 
-        require_once _PS_MODULE_DIR_.$this->module->name.'/helper.php';
-        require_once _PS_MODULE_DIR_.'layerslider/views/default.php';
+        require_once _PS_MODULE_DIR_ . $this->module->name . '/helper.php';
+        require_once _PS_MODULE_DIR_ . 'layerslider/views/default.php';
     }
 
     public function display()
     {
-        $this->context->smarty->assign(array('content' => $this->content));
+        $this->context->smarty->assign(['content' => $this->content]);
         $this->display_footer = false;
 
         parent::display();
