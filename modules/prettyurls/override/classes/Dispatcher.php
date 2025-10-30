@@ -15,16 +15,47 @@
  * @category  FMM Modules
  * @package   PrettyURLs
 */
-
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 class Dispatcher extends DispatcherCore
 {
-	protected function __construct()
+	/*
+    * module: prettyurls
+    * date: 2024-09-09 06:46:04
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:52
+    * version: 3.1.0
+    */
+    protected function __construct()
 	{
 		parent::__construct();
 		$this->loadRoutes();
 	}
-
-	public $default_routes = array(
+	/*
+    * module: prettyurls
+    * date: 2024-09-09 06:46:04
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:52
+    * version: 3.1.0
+    */
+    public $default_routes = array(
 		'category_rule' => array(
 			'controller' =>	'category',
 			'rule' =>		'{rewrite}',
@@ -84,7 +115,6 @@ class Dispatcher extends DispatcherCore
 				'controller' =>		array('regexp' => '[_a-zA-Z0-9_-]+', 'param' => 'controller'),
 			),
 			'params' => array(
-
 				'fc' => 'module',
 			),
 		),
@@ -107,13 +137,13 @@ class Dispatcher extends DispatcherCore
 				'tags' =>			array('regexp' => '[a-zA-Z0-9-\pL]*'),
 			),
 		),
-		/*	Must be after the product and category rules in order to avoid conflict	*/
+		
 		'layered_rule' => array(
 			'controller' =>	'category',
 			'rule' =>		'{rewrite}/filter{selected_filters}',
 			'keywords' => array(
 				'id' =>				array('regexp' => '[0-9]+'),
-				/*	Selected filters is used by the module blocklayered	*/
+				
 				'selected_filters' =>		array('regexp' => '.*', 'param' => 'selected_filters'),
 				'rewrite' => array('regexp' => '[_a-zA-Z0-9-\pL]*', 'param' => 'category_rewrite'),
 				'meta_keywords' => array('regexp' => '[_a-zA-Z0-9-\pL]*'),
@@ -121,10 +151,24 @@ class Dispatcher extends DispatcherCore
 			),
 		),
 	);
-
-	protected function loadRoutes($id_shop = null)
+	/*
+    * module: prettyurls
+    * date: 2024-09-09 06:46:04
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:52
+    * version: 3.1.0
+    */
+    protected function loadRoutes($id_shop = null)
 	{
-		/* Old Category URL Checking */
+		
 		$cat_pattern = '/.*?\/([0-9]+)\-([_a-zA-Z0-9-\pL]*)/';
 		preg_match($cat_pattern, $_SERVER['REQUEST_URI'], $url_array);
 		if (!empty($url_array)) {
@@ -132,42 +176,37 @@ class Dispatcher extends DispatcherCore
 				$this->default_routes['category_rule']['rule'] = '{rewrite}';
 			}
 		}
-		/* Old Product URL Checking */
+		
 		$prod_pattern = '/.*?\/([0-9]+)\-([_a-zA-Z0-9-\pL]*)/';
 		preg_match($prod_pattern, $_SERVER['REQUEST_URI'], $pro_array);
 		if (!empty($pro_array)) {
 			$this->default_routes['product_rule']['rule'] = '{categories:/}{rewrite}';
 		}
-
-		/* Old Supplier URL Checking */
+		
 		$sup_pattern = '/.*?([0-9]+)\_\_([_a-zA-Z0-9-\pL]*)/';
 		preg_match($sup_pattern, $_SERVER['REQUEST_URI'], $sup_array);
-
 		if (!empty($sup_array)) {
 			$this->default_routes['supplier_rule']['rule'] = '{rewrite}';
 		}
-
-		/* Old Manufacturer URL Checking */
+		
 		$man_pattern = '/.*?([0-9]+)\_([_a-zA-Z0-9-\pL]*)/';
 		preg_match($man_pattern, $_SERVER['REQUEST_URI'], $man_array);
 		if (!empty($man_array)) {
 			$this->default_routes['manufacturer_rule']['rule'] = '{rewrite}';
 		}
-
-		/* Old CMS Page URL Checking */
+		
 		$cms_pattern = '/.*?content\/([0-9]+)\-([_a-zA-Z0-9-\pL]*)/';
 		preg_match($cms_pattern, $_SERVER['REQUEST_URI'], $cms_array);
 		if (!empty($cms_array)) {
 			$this->default_routes['cms_rule']['rule'] = 'content/{rewrite}';
 		}
-		/* Old CMS Category URL Checking */
+		
 		$cms_cat_pattern = '/.*?content\/category\/([0-9]+)\-([_a-zA-Z0-9-\pL]*)/';
 		preg_match($cms_cat_pattern, $_SERVER['REQUEST_URI'], $cms_cat_array);
 		if (!empty($cms_cat_array)) {
 			if (strstr($_SERVER['REQUEST_URI'], '/content/category/'))
 				$this->default_routes['cms_category_rule']['rule'] = 'content/category/{rewrite}';
 		}
-		// Load custom routes from modules
         $modules_routes = Hook::exec('moduleRoutes', array('id_shop' => $id_shop), null, true, false);
         if (is_array($modules_routes) && count($modules_routes)) {
             foreach ($modules_routes as $module_route) {
@@ -184,7 +223,7 @@ class Dispatcher extends DispatcherCore
                 }
             }
         }
-		/* Set default routes */
+		
 		foreach (Language::getLanguages() as $lang)
 			foreach ($this->default_routes as $id => $route)
 				$this->addRoute(
@@ -196,10 +235,10 @@ class Dispatcher extends DispatcherCore
 					isset($route['params']) ? $route['params'] : array(),
 					$id_shop
 				);
-		/* Load the custom routes prior the defaults to avoid infinite loops */
+		
 		if ($this->use_routes)
 		{
-			/* Load routes from meta table */
+			
 			$sql = 'SELECT m.page, ml.url_rewrite, ml.id_lang
 					FROM `'._DB_PREFIX_.'meta` m
 					LEFT JOIN `'._DB_PREFIX_.'meta_lang` ml ON (m.id_meta = ml.id_meta'.Shop::addSqlRestrictionOnLang('ml', (int)$id_shop).')
@@ -210,15 +249,14 @@ class Dispatcher extends DispatcherCore
 					if ($row['url_rewrite'])
 						$this->addRoute($row['page'], $row['url_rewrite'], $row['page'], $row['id_lang'], array(), array(), $id_shop);
 				}
-			/* Set default empty route if  no empty route (that's weird I know) */
+			
 			if (!$this->empty_route)
 				$this->empty_route = array(
 					'routeID' =>	'index',
 					'rule' =>		'',
 					'controller' =>	'index',
 				);
-			/* Load custom routes */
-
+			
 			foreach ($this->default_routes as $route_id => $route_data)
 				if ($custom_route = Configuration::get('PS_ROUTE_'.$route_id, null, null, $id_shop))
 					foreach (Language::getLanguages() as $lang)
@@ -233,8 +271,22 @@ class Dispatcher extends DispatcherCore
 						);
 		}
 	}
-
-	public function getController($id_shop = null)
+	/*
+    * module: prettyurls
+    * date: 2024-09-09 06:46:04
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:52
+    * version: 3.1.0
+    */
+    public function getController($id_shop = null)
 	{
 		if (defined('_PS_ADMIN_DIR_')) {
 			$_GET['controllerUri'] = Tools::getvalue('controller');
@@ -243,13 +295,11 @@ class Dispatcher extends DispatcherCore
 			$_GET['controller'] = $this->controller;
 			return $this->controller;
 		}
-		//~~~~~~Check for PS-1.7.x.x~~~~~~~
 		$ps_17 = (Tools::version_compare(_PS_VERSION_, '1.7.0.0', '>=') == true) ? 1 : 0;
 		if (isset(Context::getContext()->shop) && $id_shop === null) {
 			$id_shop = (int)Context::getContext()->shop->id;
 		}
 		$controller = Tools::getValue('controller');
-
 		if (isset($controller) && is_string($controller) && preg_match('/^([0-9a-z_-]+)\?(.*)=(.*)$/Ui', $controller, $m)) {
 			$controller = $m[1];
 			if (isset($_GET['controller'])) {
@@ -259,30 +309,23 @@ class Dispatcher extends DispatcherCore
 				$_POST[$m[2]] = $m[3];
 			}
 		}
-
 		if (!Validate::isControllerName($controller)) {
 			$controller = false;
 		}
-		// Use routes ? (for url rewriting)
 		if ($this->use_routes && !$controller && !defined('_PS_ADMIN_DIR_')) {
 			if (!$this->request_uri) {
 				return Tools::strtolower($this->controller_not_found);
 			}
 			$controller = $this->controller_not_found;
 			$test_request_uri = preg_replace('/(=http:\/\/)/', '=', $this->request_uri);
-			// If the request_uri matches a static file, then there is no need to check the routes, we keep "controller_not_found" (a static file should not go through the dispatcher)
             if (!preg_match('/\.(gif|jpe?g|png|css|js|ico)$/i', parse_url($test_request_uri, PHP_URL_PATH))) {
-                // Add empty route as last route to prevent this greedy regexp to match request uri before right time
                 if ($this->empty_route) {
                     $this->addRoute($this->empty_route['routeID'], $this->empty_route['rule'], $this->empty_route['controller'], Context::getContext()->language->id, array(), array(), $id_shop);
                 }
-
                 list($uri) = explode('?', $this->request_uri);
-
                 if (isset($this->routes[$id_shop][Context::getContext()->language->id])) {
                     foreach ($this->routes[$id_shop][Context::getContext()->language->id] as $route) {
                         if (preg_match($route['regexp'], $uri, $m)) {
-                            // Route found ! Now fill $_GET with parameters of uri
                             foreach ($m as $k => $v) {
                                 if (!is_numeric($k)) {
                                     $_GET[$k] = $v;
@@ -294,7 +337,6 @@ class Dispatcher extends DispatcherCore
                                     $_GET[$k] = $v;
                                 }
                             }
-                            // A patch for module friendly urls
                             if (preg_match('#module-([a-z0-9_-]+)-([a-z0-9_]+)$#i', $controller, $m)) {
                                 $_GET['module'] = $m[1];
                                 $_GET['fc'] = 'module';
@@ -322,19 +364,14 @@ class Dispatcher extends DispatcherCore
 					$controller = $get_controller_page;
 			}
 		}
-		//~~~~~~~~~~Fixes for FRONT only~~~~~~~~~~ - Make sure its FO
 		if (!defined('_PS_ADMIN_DIR_')) {
-			//FIX for ending slash
 			$ender = Tools::substr($this->request_uri, -1);
             if ($ender == '/') {
 				$this->request_uri = rtrim($this->request_uri, '/');
             }
-			//Finally Check for 404 page
 			if ($controller == '404' || $controller == 404 || $controller == 'page-not-found' || $controller == 'pagenotfound' || (isset($_GET['controller']) && $_GET['controller'] == 'pagenotfound')) {
 				$controller = 'pagenotfound';
-				//Another check added in Link.php |getPageLink| for correct 404 page
 			}
-			//Fix for Category/Products with parameters
 			if (preg_match('/\?/', $this->request_uri) && !preg_match('/module/', $this->request_uri)) {
 				$req_uri_qmark = explode('?', $this->request_uri);
 				if (Tools::substr($req_uri_qmark[0], -1) == '/') {
@@ -436,8 +473,25 @@ class Dispatcher extends DispatcherCore
 				$get_id = (int)Tools::getValue('id_category');
 				$get_id = ($get_id <= 0) ? (int)Tools::getValue('id_product') : $get_id;
 				if ($get_id < 1) {
+					if (preg_match('/.*?\/([0-9]+)\-([0-9\pL]*)\-([_a-zA-Z0-9-\pL]*)(?:\.html)?/', $this->request_uri)) {
+						$prod_pattern = '/.*?\/([0-9]+)\-([0-9\pL]*)\-([_a-zA-Z0-9-\pL]*)(?:\.html)?/';
+    					preg_match($prod_pattern, $_SERVER['REQUEST_URI'], $url_array);
+
+						
+						// $prod_pattern = '/.*?\/([0-9]+)\-([0-9\pL]*)\-([_a-zA-Z0-9-\pL]*)/';
+						// preg_match($prod_pattern, $_SERVER['REQUEST_URI'], $url_array);
+						if (is_array($url_array) && isset($url_array[1]) && (int)$url_array[1] > 0) {
+							$_POST['id_product'] = (int)$url_array[1];
+							if (isset($url_array[2]) && (int)$url_array[2] > 0) {
+								$_POST['id_product_attribute'] = (int)$url_array[2];
+							}
+						}
+					}
 					$simple_uri = explode('/', $this->request_uri);
+
 					$simple_uri = end($simple_uri);
+					$simple_uri = preg_replace('/\.html$/', '', $simple_uri);
+					
 					$get_id = (int)$this->getCategoryId($simple_uri);
 					if ($get_id > 0) {
 						$_POST['id_category'] = $get_id;
@@ -451,10 +505,48 @@ class Dispatcher extends DispatcherCore
 						}
 					}
 				}
+			} elseif (($controller == 'cms') && !preg_match('/\?/', $this->request_uri)) {
+				
+				$get_id = (int)Tools::getValue('id_cms');
+				if ($get_id < 1) {
+					$simple_uri = explode('/', $this->request_uri);
+					$simple_uri = end($simple_uri);
+					$get_id = (int)$this->getCmsId($simple_uri);
+					if ($get_id > 0) {
+						$_POST['id_cms'] = $get_id;
+						$controller = 'cms';
+					}
+				}
+			} elseif (($controller == 'manufacturer') && !preg_match('/\?/', $this->request_uri)) {
+				$get_id = (int)Tools::getValue('id_manufacturer');
+				if ($get_id < 1) {
+					$simple_uri = explode('/', $this->request_uri);
+					$simple_uri = end($simple_uri);
+					if (preg_match('/^\d+-/', $simple_uri)) {
+					    $simple_uri = $simple_uri;
+					} else {
+					    $simple_uri = str_replace('-', ' ', $simple_uri);
+					}
+					$get_id = (int)$this->getKeyExistanceManufNew($simple_uri);
+					if ($get_id > 0) {
+						$_POST['id_manufacturer'] = $get_id;
+						$controller = 'manufacturer';
+					}
+				}
+			} elseif (($controller == 'supplier') && !preg_match('/\?/', $this->request_uri)) {
+				$get_id = (int)Tools::getValue('id_supplier');
+				if ($get_id < 1) {
+					$simple_uri = explode('/', $this->request_uri);
+					$simple_uri = end($simple_uri);
+					$simple_uri = str_replace('-', ' ', $simple_uri);
+					$get_id = (int)$this->getKeyExistanceSuppl($simple_uri);
+					if ($get_id > 0) {
+						$_POST['id_supplier'] = $get_id;
+						$controller = 'supplier';
+					}
+				}
 			}
-			//FIX for Advance CMS module
 			if (preg_match('/cms/', $this->request_uri) && $controller != 'cms') {
-				//Lets make sure its a module
 				$module = (int)$this->getModule('advancedcms');
 				if ($module > 0) {
 					$this->front_controller = self::FC_MODULE;
@@ -469,9 +561,7 @@ class Dispatcher extends DispatcherCore
 					}
 				}
 			}
-			//FIX for Form Maker module
 			if (preg_match('/forms/', $this->request_uri) && !preg_match('/module/', $this->request_uri)) {
-				//Lets make sure its a module
 				$module = (int)$this->getModule('formmaker');
 				if ($module > 0) {
 					$this->front_controller = self::FC_MODULE;
@@ -495,15 +585,12 @@ class Dispatcher extends DispatcherCore
 					}
 				}
 			}
-			//FIX for Form Maker module
 			if (preg_match('/formmaker/', $this->request_uri) && preg_match('/module/', $this->request_uri)) {
 				$this->front_controller = self::FC_MODULE;
 				$_GET['module'] = 'formmaker';
 				$controller = 'formsuccess';
 			}
-			//FIX for Gallerique Image Gallery module
 			if (preg_match('/gallery/', $this->request_uri)) {
-				//Lets make sure its a module
 				$module = (int)$this->getModule('gallerique');
 				if ($module > 0) {
 					$this->front_controller = self::FC_MODULE;
@@ -518,9 +605,7 @@ class Dispatcher extends DispatcherCore
 					}
 				}
 			}
-			//FIX for Gallerique Image Gallery module
 			if (preg_match('/galleries/', $this->request_uri)) {
-				//Lets make sure its a module
 				$module = (int)$this->getModule('gallerique');
 				if ($module > 0) {
 					$this->front_controller = self::FC_MODULE;
@@ -533,9 +618,7 @@ class Dispatcher extends DispatcherCore
 					}
 				}
 			}
-			//ONLY for PS-1.7
 			if ((int)$ps_17 > 0) {
-				//Fix for PS-1.7 attributes change
 				if (isset($_POST['action']) && isset($_POST['ajax']) && isset($_GET['quantity_wanted'])) {
 					$id_unique_ipa = (int)Context::getContext()->cookie->__get('id_unique_ipa');
 					if ($id_unique_ipa > 0) {
@@ -548,8 +631,25 @@ class Dispatcher extends DispatcherCore
 						$_POST['id_product_attribute'] = $id_unique_ipa;
 					}
 				}
-				//FIX for PS-1.7 Layered Nav filters
 				if (($controller == 'category' || $controller == 'pagenotfound') && isset($_GET['q']) && isset($_GET['from-xhr'])) {
+					$cat_id_req_uri = explode('?', $this->request_uri);
+					$_cleanup_uri = str_replace('/', '', $cat_id_req_uri[0]);
+					$_page_id = (int)$this->getCategoryId($_cleanup_uri);
+					if ($_page_id > 0) {
+						$_GET['id_category'] = $_page_id;
+						$controller = 'category';
+					}
+				}
+				if (($controller == 'category' || $controller == 'pagenotfound') && isset($_GET['q'])) {
+					$cat_id_req_uri = explode('?', $this->request_uri);
+					$_cleanup_uri = str_replace('/', '', $cat_id_req_uri[0]);
+					$_page_id = (int)$this->getCategoryId($_cleanup_uri);
+					if ($_page_id > 0) {
+						$_GET['id_category'] = $_page_id;
+						$controller = 'category';
+					}
+				}
+				if (($controller == 'category' || $controller == 'pagenotfound') && isset($_GET['from-xhr'])) {
 					$cat_id_req_uri = explode('?', $this->request_uri);
 					$_cleanup_uri = str_replace('/', '', $cat_id_req_uri[0]);
 					$_page_id = (int)$this->getCategoryId($_cleanup_uri);
@@ -561,12 +661,10 @@ class Dispatcher extends DispatcherCore
 			}
 			$test_request_uri = preg_replace('/(=http:\/\/)/', '=', $this->request_uri);
 			if (!preg_match('/\.(gif|jpe?g|png|css|js|ico)$/i', parse_url($test_request_uri, PHP_URL_PATH))) {
-				//Fix module routes dynamically-----------------------------
 				if (preg_match('/module/', $this->request_uri) && $controller == 'pagenotfound' && !isset($_GET['fc']) && preg_match('/\?/', $this->request_uri)) {
 					$_disperse_uri = explode('?', $this->request_uri);
 					$_disperse_uri = $_disperse_uri[0];
 					$three_parts = array_values(array_filter(explode('/', $_disperse_uri)));
-					//THE BIG THREE PARTS --------
 					$_GET['fc'] = $three_parts[0];
 					$_GET['module'] = $three_parts[1];
 					$_GET['controller'] = $three_parts[2];
@@ -579,11 +677,9 @@ class Dispatcher extends DispatcherCore
 					$_disperse_uri = explode('?', $this->request_uri);
 					$_disperse_uri = $_disperse_uri[0];
 					$three_parts = array_values(array_filter(explode('/', $_disperse_uri)));
-					//Just make sure its correct module.
 					$_GET['module'] = $three_parts[1];
 				}
 			}
-			//FIX Friendly Module Routes
 			if (preg_match('/module/', $controller)) {
 					if (isset($_GET['category_rewrite']) && !empty($_GET['category_rewrite'])) {
 						$_mod_uri = $_GET['category_rewrite'];
@@ -603,22 +699,15 @@ class Dispatcher extends DispatcherCore
 						$this->front_controller = self::FC_MODULE;
 					}
 			}
-			//Universal All Blogs fix - BETA
 			if (preg_match('/blog/', $this->request_uri)) {
 				$modules_routes = Hook::exec('moduleRoutes', array('id_shop' => $id_shop), null, true, false);
-				//Check if Blog is FMM's Advance Blog
 				$module_exists = Module::isEnabled('advanceblog');
-				//Check for PrestBlog
 				$module_exists_prestablog = Module::isEnabled('prestablog');
-				//Check for PH Simple Blog
 				$module_exists_ph_simpleblog = Module::isEnabled('ph_simpleblog');
-				//Check for ST Blog
 				$module_exists_stblog = Module::isEnabled('stblog');
-                //Check for PS Blog
                 $module_exists_psblog = Module::isEnabled('psblog');
 				$this->request_uri = ltrim($this->request_uri, '/');
 				if ($module_exists == true) {
-					//Its a FMM Blog
 					$_blogpost_rule = '/.*blog\/([0-9]+)\-([_a-zA-Z0-9-\pL]*)/';
 					$_blogcategory_rule = '/.*blog\/category\/([0-9]+)\-([_a-zA-Z0-9-\pL]*)/';
 					preg_match($_blogpost_rule, $this->request_uri, $_result_pattern);
@@ -631,7 +720,6 @@ class Dispatcher extends DispatcherCore
 							if (is_array($module_route) && count($module_route)) {
 								foreach ($module_route as $route => $route_details) {
 									if ($route_details['rule'] == $this->request_uri) {
-										//its a blog landing page
 										$_GET['module'] = $route_details['params']['module'];
 										$_GET['fc'] = $route_details['params']['fc'];
 										$controller = $route_details['controller'];
@@ -640,7 +728,6 @@ class Dispatcher extends DispatcherCore
 										unset($_GET['category_rewrite']);
 									}
 									elseif (isset($_result_pattern[1]) && (int)$_result_pattern[1] > 0) {
-										//Its a blog detail page
 										if ($route_details['rule'] == 'blog{/:id}-{post}') {
 											$_GET['module'] = $route_details['params']['module'];
 											$_GET['fc'] = $route_details['params']['fc'];
@@ -652,7 +739,6 @@ class Dispatcher extends DispatcherCore
 										}
 									}
 									elseif (isset($_result_pattern_cat[1]) && (int)$_result_pattern_cat[1] > 0) {
-										//Its a blog category page
 										if ($route_details['rule'] == 'blog/category{/:id}-{cat}') {
 											$_GET['module'] = $route_details['params']['module'];
 											$_GET['fc'] = $route_details['params']['fc'];
@@ -664,7 +750,6 @@ class Dispatcher extends DispatcherCore
 										}
 									}
 									elseif (isset($_GET['arc']) && $route_details['rule'] == 'blog') {
-										//its an archive page
 										$_GET['module'] = $route_details['params']['module'];
 										$_GET['fc'] = $route_details['params']['fc'];
 										$controller = $route_details['controller'];
@@ -673,7 +758,6 @@ class Dispatcher extends DispatcherCore
 										unset($_GET['category_rewrite']);
 									}
 									elseif (isset($_GET['blog_rss']) && $route_details['rule'] == 'rss') {
-										//its an archive page
 										$_GET['module'] = $route_details['params']['module'];
 										$_GET['fc'] = $route_details['params']['fc'];
 										$controller = $route_details['controller'];
@@ -709,7 +793,6 @@ class Dispatcher extends DispatcherCore
 							if (is_array($module_route) && count($module_route)) {
 								foreach ($module_route as $route => $route_details) {
 									if ($route_details['rule'] == '{controller}' && $this->request_uri == 'blog') {
-										//its a blog landing page
 										$_GET['module'] = $route_details['params']['module'];
 										$_GET['fc'] = $route_details['params']['fc'];
 										$controller = 'blog';//$route_details['controller'];
@@ -718,7 +801,6 @@ class Dispatcher extends DispatcherCore
 										unset($_GET['category_rewrite']);
 									}
 									elseif (isset($p_result_pattern[2]) && (int)$p_result_pattern[2] > 0) {
-										//Its a blog detail page
 										if ($route_details['rule'] == '{controller}/{urlnews}-n{n}') {
 											$_GET['module'] = $route_details['params']['module'];
 											$_GET['fc'] = $route_details['params']['fc'];
@@ -772,7 +854,6 @@ class Dispatcher extends DispatcherCore
 							if (is_array($module_route) && count($module_route)) {
 								foreach ($module_route as $route => $route_details) {
 									if ($route_details['rule'] == 'blog' && $this->request_uri == 'blog') {
-										//its a blog landing page
 										$_GET['module'] = $route_details['params']['module'];
 										$_GET['fc'] = $route_details['params']['fc'];
 										$controller = 'list';
@@ -781,7 +862,6 @@ class Dispatcher extends DispatcherCore
 										unset($_GET['category_rewrite']);
 									}
 									elseif (isset($ph_blogpost_rule_result[1]) && isset($ph_blogpost_rule_result[2]) && !isset($_GET['p']) && $ph_blogpost_rule_result[2] != 'page') {
-										//Its a blog detail page
 										if ($route_details['rule'] == 'blog/{sb_category}/{rewrite}') {
 											$_GET['module'] = $route_details['params']['module'];
 											$_GET['fc'] = $route_details['params']['fc'];
@@ -794,7 +874,6 @@ class Dispatcher extends DispatcherCore
 										}
 									}
 									elseif (isset($ph_blogcategory_rule_result[1]) && !isset($_GET['p'])) {
-										//Its a blog category page
 										if ($route_details['rule'] == 'blog/{sb_category}') {
 											$_GET['module'] = $route_details['params']['module'];
 											$_GET['fc'] = $route_details['params']['fc'];
@@ -824,7 +903,6 @@ class Dispatcher extends DispatcherCore
 							if (is_array($module_route) && count($module_route)) {
 								foreach ($module_route as $route => $route_details) {
 									if ($route_details['rule'] == 'blog' && $this->request_uri == 'blog') {
-										//its a blog landing page
 										$_GET['module'] = $route_details['params']['module'];
 										$_GET['fc'] = $route_details['params']['fc'];
 										$controller = 'default';
@@ -833,7 +911,6 @@ class Dispatcher extends DispatcherCore
 										unset($_GET['category_rewrite']);
 									}
 									elseif (isset($result_pattern_st[1]) && (int)$result_pattern_st[1] > 0) {
-										//Its a blog detail page
 										if ($route_details['rule'] == 'blog/{id_st_blog_category}-{rewrite}') {
 											$_GET['module'] = $route_details['params']['module'];
 											$_GET['fc'] = $route_details['params']['fc'];
@@ -868,7 +945,6 @@ class Dispatcher extends DispatcherCore
 							if (is_array($module_route) && count($module_route)) {
 								foreach ($module_route as $route => $route_details) {
 									if ($route_details['rule'] == 'blog' && $this->request_uri == 'blog') {
-										//its a blog landing page
 										$_GET['module'] = $route_details['params']['module'];
 										$_GET['fc'] = $route_details['params']['fc'];
 										$controller = 'blog';
@@ -877,7 +953,6 @@ class Dispatcher extends DispatcherCore
 										unset($_GET['category_rewrite']);
 									}
 									elseif (isset($result_pattern_ybc_p[1]) && !empty($result_pattern_ybc_p[1]) && (int)$result_pattern_ybc_p[1] > 0) {
-										//Its a blog detail page
 										if ($route_details['rule'] == 'blog/{page}') {
 											$_GET['module'] = $route_details['params']['module'];
 											$_GET['fc'] = $route_details['params']['fc'];
@@ -889,7 +964,6 @@ class Dispatcher extends DispatcherCore
 										}
 									}
 									elseif (isset($result_pattern_ybc_tag[1]) && !empty($result_pattern_ybc_tag[1])) {
-										//Its a blog detail page
 										if ($route_details['rule'] == 'blog/tag/{tag}') {
 											$_GET['module'] = $route_details['params']['module'];
 											$_GET['fc'] = $route_details['params']['fc'];
@@ -901,7 +975,6 @@ class Dispatcher extends DispatcherCore
 										}
 									}
 									elseif (isset($result_pattern_ybc_search[1]) && !empty($result_pattern_ybc_search[1])) {
-										//Its a blog detail page
 										if ($route_details['rule'] == 'blog/search/{search}') {
 											$_GET['module'] = $route_details['params']['module'];
 											$_GET['fc'] = $route_details['params']['fc'];
@@ -913,7 +986,6 @@ class Dispatcher extends DispatcherCore
 										}
 									}
 									elseif (isset($result_pattern_ybc_gallery[1]) && !empty($result_pattern_ybc_gallery[1]) && $result_pattern_ybc_gallery[1] == 'gallery') {
-										//Its a blog detail page
 										if ($route_details['rule'] == 'blog/gallery') {
 											$_GET['module'] = $route_details['params']['module'];
 											$_GET['fc'] = $route_details['params']['fc'];
@@ -924,7 +996,6 @@ class Dispatcher extends DispatcherCore
 										}
 									}
 									elseif (isset($result_pattern_ybc_author[2]) && !isset($result_pattern_ybc_author_p[3]) && !empty($result_pattern_ybc_author[2])) {
-										//Its a blog detail page
 										if ($route_details['rule'] == 'blog/author/{id_author}-{author_name}') {
 											$_GET['module'] = $route_details['params']['module'];
 											$_GET['fc'] = $route_details['params']['fc'];
@@ -937,7 +1008,6 @@ class Dispatcher extends DispatcherCore
 										}
 									}
 									elseif (isset($result_pattern_ybc_author_p[3]) && !empty($result_pattern_ybc_author_p[3])) {
-										//Its a blog detail page
 										if ($route_details['rule'] == 'blog/author/{page}/{id_author}-{author_name}') {
 											$_GET['module'] = $route_details['params']['module'];
 											$_GET['fc'] = $route_details['params']['fc'];
@@ -956,9 +1026,7 @@ class Dispatcher extends DispatcherCore
 					}
 				}
 			}
-			//FIX for PM-Advance-Pack module
 			if (preg_match('/pack/', $this->request_uri) && isset($_GET['rand'])) {
-				//Check if PM Advance Pack Module is active
 				$pack_module_exists = Module::isEnabled('pm_advancedpack');
 				if ($pack_module_exists == true) {
 					$modules_routes = Hook::exec('moduleRoutes', array('id_shop' => $id_shop), null, true, false);
@@ -969,7 +1037,6 @@ class Dispatcher extends DispatcherCore
 							foreach ($modules_routes as $module_route) {
 								if (is_array($module_route) && count($module_route)) {
 									foreach ($module_route as $route => $route_details) {
-										//FIX for newer versions of pm advancepack module
 										if (strpos($route_details['rule'], 'ap5')) {
 												if ($_result_pack[1] == 'update' && $route_details['rule'] == 'pack/update/{id_pack}/ap5') {
 												$_GET['module'] = $route_details['params']['module'];
@@ -1010,7 +1077,6 @@ class Dispatcher extends DispatcherCore
 				}
 			}
 			elseif (preg_match('/packs/', $this->request_uri) || preg_match('/pack/', $this->request_uri)) {
-				//FIX for NDK-Pack module
 				$ndkpack_module_exists = Module::isEnabled('ndk_steppingpack');
 				if ($ndkpack_module_exists == true) {
 					$ndk_pack_rule = '/.*packs\/([_a-zA-Z0-9-\pL]*)/';
@@ -1034,16 +1100,12 @@ class Dispatcher extends DispatcherCore
 					}
 				}
 			}
-			//FIX for PM Advance Search module
 			if (preg_match('/s-/', $this->request_uri) && ($controller == 'pagenotfound' || $controller == 'product' || $controller == 'searchresults')) {
 				$pm_advancedsearch_module_exists = (int)Module::isEnabled('pm_advancedsearch4');
 				if ($pm_advancedsearch_module_exists && $pm_advancedsearch_module_exists > 0) {
-					//$pm_search_rule = '/.*([_a-zA-Z0-9-\pL]+)\/s\-([0-9]*)/';
 					$pm_search_rule = '/.*\/s\-([0-9]*)/';
 					preg_match($pm_search_rule, $this->request_uri, $result_pmsearch);
-					//Make really sure its PM Search URL
 					if (!empty($result_pmsearch) && (int)$result_pmsearch[1] > 0) {
-						//Now check if a pm advance search exists for the matched
 						$pm_as_id = (int)$this->getPmAdvanceSearchIdExistance($result_pmsearch[1]);
 						if ($pm_as_id > 0) {
 							$simplify_source = ltrim($result_pmsearch[0], '/');
@@ -1051,7 +1113,6 @@ class Dispatcher extends DispatcherCore
 							$exploded_url_rewrite = $exploded_url_rewrite[0];
 							$id_pm_search_cat = (int)$this->getCategoryId($exploded_url_rewrite);
 							if ($id_pm_search_cat > 0) {
-								//Its a category search
 								$_GET['controller'] = 'searchresults';
 								$controller = 'searchresults';
 								$_GET['fc'] = 'module';
@@ -1071,12 +1132,10 @@ class Dispatcher extends DispatcherCore
 								$this->front_controller = self::FC_MODULE;
 							}
 							else {
-								//Check if its Manufacturer page
 								$manufacturer_route = Configuration::get('PS_ROUTE_manufacturer_rule', null, null, Context::getContext()->shop->id);
 								$manufacturer_route = explode('/', $manufacturer_route);
 								$manufacturer_route = $manufacturer_route[0];
 								if ($exploded_url_rewrite == $manufacturer_route || $exploded_url_rewrite == 'manufacturer') {
-									//Its a manufacturer search
 									$m_source = ltrim($result_pmsearch[0], '/');
 									$m_source = explode('/', $m_source);
 									$m_source_key = $m_source[1];
@@ -1108,7 +1167,6 @@ class Dispatcher extends DispatcherCore
 					}
 				}
 			}
-			//FIX for PM Advance Search module - SEO urls
 			if ($controller == 'pagenotfound' || $controller == 'product' || $controller == 'searchresults') {
 				$pm_advancedsearch_module_exists = (int)Module::isEnabled('pm_advancedsearch4');
 				if ($pm_advancedsearch_module_exists && $pm_advancedsearch_module_exists > 0) {
@@ -1129,7 +1187,6 @@ class Dispatcher extends DispatcherCore
 					}
 				}
 			}
-			//Fix for LookBook by DevHub
 			if ($controller == 'pagenotfound' || $controller == 'module-productlookbooks-list') {
 				$lookbook_module_exists = (int)Module::isEnabled('productlookbooks');
 				if ($lookbook_module_exists && $lookbook_module_exists > 0) {
@@ -1150,7 +1207,6 @@ class Dispatcher extends DispatcherCore
 					$this->front_controller = self::FC_MODULE;
 				}
 			}
-            //Fix for Marketplace module by Webkul
             $webkul_market_module_exists = (int)Module::isEnabled('marketplace');
             if ($webkul_market_module_exists > 0) {
                 $webkul_seo_enabled = (int)Configuration::get('WK_MP_URL_REWRITE_ADMIN_APPROVE');
@@ -1197,7 +1253,6 @@ class Dispatcher extends DispatcherCore
                     }
                 }
             }
-			//FIX for AMP modules
 			if (Module::isEnabled('pk_amp') == true) {
 				$amp_settings = Tools::unSerialize(Configuration::get('AMP_CONFIG'));
 				$amp_slug = $amp_settings['general_slug'];
@@ -1206,7 +1261,6 @@ class Dispatcher extends DispatcherCore
 					$slug_uri = explode('/', $slug_uri);
 					$slug_uri = $slug_uri[0];
 				}
-				//Making sure its pk-amp module
 				if ($slug_uri == $amp_slug) {
                     $modules_routes = Hook::exec('moduleRoutes', array('id_shop' => $id_shop), null, true, false);
 					if (is_array($modules_routes) && count($modules_routes)) {
@@ -1223,7 +1277,6 @@ class Dispatcher extends DispatcherCore
 								foreach ($module_route as $route => $route_details) {
 									$slug_uri_trimmed = ltrim($this->request_uri, '/');
 									if ($route_details['rule'] == $slug_uri_trimmed) {
-										//its a blog landing page
 										$_GET['module'] = $route_details['params']['module'];
 										$_GET['fc'] = $route_details['params']['fc'];
 										$controller = 'home';
@@ -1273,7 +1326,6 @@ class Dispatcher extends DispatcherCore
 					}
 				}
 			}
-			//Fix for Home Comments module by Lineven
 			if (Module::isEnabled('homecomments') == true) {
 				$homecomments_url_rewrite = (int)Configuration::get('LINEVEN_HCOM_SEO_ACTIVE_RWRT');
 				if ($homecomments_url_rewrite > 0) {
@@ -1297,7 +1349,6 @@ class Dispatcher extends DispatcherCore
 					}
 				}
 			}
-			//FIX for onepagecheckoutps module by Presteamshop
 			if (preg_match('/checkout/', $this->request_uri) && Module::isEnabled('onepagecheckoutps')) {
 				$this->request_uri = ltrim($this->request_uri, '/');
 				$modules_routes = Hook::exec('moduleRoutes', array('id_shop' => $id_shop), null, true, false);
@@ -1309,7 +1360,6 @@ class Dispatcher extends DispatcherCore
 									$_GET['module'] = $route_details['params']['module'];
 									$_GET['fc'] = $route_details['params']['fc'];
 									$_GET['action'] = $route_details['params']['action'];
-
 									$controller = $route_details['controller'];
 									$this->front_controller = self::FC_MODULE;
 									unset($_GET['product_rewrite']);
@@ -1320,7 +1370,6 @@ class Dispatcher extends DispatcherCore
 					}
 				}
 			}
-            //FIX for {categories} route for category URLs
             if ($controller == 'category') {
                     $id_category = (int)Tools::getValue('id_category');
                     $cataegory_rule = Configuration::get('PS_ROUTE_category_rule');
@@ -1335,7 +1384,6 @@ class Dispatcher extends DispatcherCore
 							$_disperse_uri = $this->request_uri;
 						}
 						$three_parts = array_values(array_filter(explode('/', $_disperse_uri)));
-						//THE BIG THREE PARTS --------
 						$_GET['fc'] = $three_parts[0];
 						$_GET['module'] = $three_parts[1];
 						$_GET['controller'] = $three_parts[2];
@@ -1369,7 +1417,6 @@ class Dispatcher extends DispatcherCore
                 }
             }
 		}
-		//FIx for Iqit front editor - BETA
 		if (preg_match('/Preview/', $this->request_uri) && preg_match('/module/', $this->request_uri) && isset($_GET['id_employee']) && $controller != 'Widget') {
 			$module_iqit_exists = Module::isEnabled('iqitelementor');
 			if ($module_iqit_exists == true) {
@@ -1379,29 +1426,142 @@ class Dispatcher extends DispatcherCore
 				$this->front_controller = self::FC_MODULE;
 			}
 		}
-		//~~~~~~~~CLOSED~~~~~~~~~ only Front office fixes
 		$this->controller = str_replace('-', '', $controller);
 		$_GET['controller'] = $this->controller;
 		return $this->controller;
 	}
-
-	private function getCategoryId($request)
+	/*
+    * module: prettyurls
+    * date: 2024-09-09 06:46:04
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:52
+    * version: 3.1.0
+    */
+    protected function setRequestUri()
+    {
+		$prettyUrlsIso = (int) Configuration::get('FMM_PRETTY_ISO');
+		$idLangDefault = (int) Configuration::get('PS_LANG_DEFAULT');
+        if ($prettyUrlsIso > 0) {
+            if (isset($_SERVER['REQUEST_URI'])) {
+                $this->request_uri = $_SERVER['REQUEST_URI'];
+            } elseif (isset($_SERVER['HTTP_X_REWRITE_URL'])) {
+                $this->request_uri = $_SERVER['HTTP_X_REWRITE_URL'];
+            }
+            $this->request_uri = rawurldecode($this->request_uri);
+            if (isset(Context::getContext()->shop) && is_object(Context::getContext()->shop)) {
+                $this->request_uri = preg_replace('#^' . preg_quote(Context::getContext()->shop->getBaseURI(), '#') . '#i', '/', $this->request_uri);
+            }
+            if ($this->use_routes && Language::isMultiLanguageActivated()) {
+                if (preg_match('#^/([a-z]{2})(?:/.*)?$#', $this->request_uri, $m)) {
+                    $_GET['isolang'] = $m[1];
+                    $this->request_uri = Tools::substr($this->request_uri, 3);
+                } else {
+                    $default_language = new Language($idLangDefault);
+                    $_GET['isolang'] = $default_language->iso_code;
+                }
+            }
+        } else {
+        	
+            return parent::setRequestUri();
+        }
+    }
+	
+	/*
+    * module: prettyurls
+    * date: 2024-09-09 06:46:04
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:52
+    * version: 3.1.0
+    */
+    private function getCategoryId($request)
 	{
+		if (preg_match('/^\d+-/', $request)) {
+		    $request = preg_replace('/^\d+-/', '', $request);
+		} else {
+		    $request = $request;
+		}
 		$id_lang = Context::getContext()->language->id;
 		$id_shop = Context::getContext()->shop->id;
 		$sql = 'SELECT id_category FROM '._DB_PREFIX_.'category_lang
 				WHERE link_rewrite = "'.pSQL($request).'" AND id_lang = '.(int)$id_lang.' AND id_shop = '.(int)$id_shop;
 		return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
 	}
-
-	private function getControllerPageById($id)
+	/*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:52
+    * version: 3.1.0
+    */
+    private function getCmsId($request)
+	{
+		if (preg_match('/^\d+-/', $request)) {
+		    $request = preg_replace('/^\d+-/', '', $request);
+		} else {
+		    $request = $request;
+		}
+		$id_lang = Context::getContext()->language->id;
+		$id_shop = Context::getContext()->shop->id;
+		$sql = 'SELECT id_cms FROM '._DB_PREFIX_.'cms_lang
+				WHERE link_rewrite = "'.pSQL($request).'" AND id_lang = '.(int)$id_lang.' AND id_shop = '.(int)$id_shop;
+		return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+	}
+	/*
+    * module: prettyurls
+    * date: 2024-09-09 06:46:04
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:52
+    * version: 3.1.0
+    */
+    private function getControllerPageById($id)
 	{
 		return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('SELECT `page` 
 				FROM '._DB_PREFIX_.'meta
 				WHERE id_meta = '.(int)$id);
 	}
-
-	private function getKeyExistance($req_uri)
+	/*
+    * module: prettyurls
+    * date: 2024-09-09 06:46:04
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:52
+    * version: 3.1.0
+    */
+    private function getKeyExistance($req_uri)
 	{
 		$id_lang = Context::getContext()->language->id;
 		$id_shop = Context::getContext()->shop->id;
@@ -1422,8 +1582,22 @@ class Dispatcher extends DispatcherCore
 					AND `id_lang` = '.(int)$id_lang.' AND `id_shop` = '.(int)$id_shop);
 		}
 	}
-
-	private function getProductExistance($request)
+	/*
+    * module: prettyurls
+    * date: 2024-09-09 06:46:04
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:52
+    * version: 3.1.0
+    */
+    private function getProductExistance($request)
 	{
 		$id_lang = Context::getContext()->language->id;
 		$id_shop = Context::getContext()->shop->id;
@@ -1433,8 +1607,22 @@ class Dispatcher extends DispatcherCore
 		AND `id_lang` = '.(int)$id_lang.'
 		AND `id_shop` = '.(int)$id_shop);
 	}
-
-	private function getKeyExistanceCMS($request)
+	/*
+    * module: prettyurls
+    * date: 2024-09-09 06:46:04
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:52
+    * version: 3.1.0
+    */
+    private function getKeyExistanceCMS($request)
 	{
 		$id_lang = Context::getContext()->language->id;
 		$id_shop = Context::getContext()->shop->id;
@@ -1444,8 +1632,22 @@ class Dispatcher extends DispatcherCore
 		AND `id_lang` = '.(int)$id_lang.'
 		AND `id_shop` = '.(int)$id_shop);
 	}
-
-	private function getKeyExistanceCMSCategory($request)
+	/*
+    * module: prettyurls
+    * date: 2024-09-09 06:46:04
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:52
+    * version: 3.1.0
+    */
+    private function getKeyExistanceCMSCategory($request)
 	{
 		$id_lang = Context::getContext()->language->id;
 		$id_shop = Context::getContext()->shop->id;
@@ -1456,14 +1658,76 @@ class Dispatcher extends DispatcherCore
 		AND `id_shop` = '.(int)$id_shop);
 	}
 	
-	private function getKeyExistanceManuf($request)
+	/*
+    * module: prettyurls
+    * date: 2024-09-09 06:46:04
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:52
+    * version: 3.1.0
+    */
+    private function getKeyExistanceManufNew($request)
+	{
+		if (preg_match('/^\d+-/', $request)) {
+		    $request = preg_replace('/^\d+-/', '', $request);
+		} else {
+		    $request = $request;
+		}
+		$request = str_replace('-', ' ', $request);
+		return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('SELECT `id_manufacturer`
+				FROM '._DB_PREFIX_.'manufacturer
+				WHERE `name` LIKE "'.pSQL($request).'"');
+	}
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:52
+    * version: 3.1.0
+    */
+    private function getKeyExistanceManuf($request)
 	{
 		return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('SELECT `id_manufacturer`
 				FROM '._DB_PREFIX_.'manufacturer
 				WHERE `name` LIKE "'.pSQL($request).'"');
 	}
-
-	private function getProductExistanceByRewrite($id)
+	/*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:52
+    * version: 3.1.0
+    */
+    private function getKeyExistanceSuppl($request)
+	{
+		return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('SELECT `id_supplier`
+				FROM '._DB_PREFIX_.'supplier
+				WHERE `name` LIKE "'.pSQL($request).'"');
+	}
+	/*
+    * module: prettyurls
+    * date: 2024-09-09 06:46:04
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:52
+    * version: 3.1.0
+    */
+    private function getProductExistanceByRewrite($id)
 	{
 		$id_lang = Context::getContext()->language->id;
 		$id_shop = Context::getContext()->shop->id;
@@ -1474,35 +1738,110 @@ class Dispatcher extends DispatcherCore
 			AND `id_shop` = '.(int)$id_shop);
 	}
 	
-	private function getIdAdvanceCms($request)
+	/*
+    * module: prettyurls
+    * date: 2024-09-09 06:46:04
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:52
+    * version: 3.1.0
+    */
+    private function getIdAdvanceCms($request)
 	{
 		return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('SELECT `id_ad_cms`
 				FROM '._DB_PREFIX_.'ad_cms_lang
 				WHERE `link_rewrite` = "'.pSQL($request).'"');
 	}
 	
-	private function getIdFormsMod($request)
+	/*
+    * module: prettyurls
+    * date: 2024-09-09 06:46:04
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:52
+    * version: 3.1.0
+    */
+    private function getIdFormsMod($request)
 	{
 		return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('SELECT `id_fm_form`
 				FROM '._DB_PREFIX_.'fm_form_lang
 				WHERE `link_rewrite` = "'.pSQL($request).'"');
 	}
 	
-	private function getIdGallery($request)
+	/*
+    * module: prettyurls
+    * date: 2024-09-09 06:46:04
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:52
+    * version: 3.1.0
+    */
+    private function getIdGallery($request)
 	{
 		return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('SELECT `id_gallery`
 				FROM '._DB_PREFIX_.'gallery_lang
 				WHERE `link_rewrite` = "'.pSQL($request).'"');
 	}
 	
-	private function getModule($module)
+	/*
+    * module: prettyurls
+    * date: 2024-09-09 06:46:04
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:52
+    * version: 3.1.0
+    */
+    private function getModule($module)
 	{
 		return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('SELECT `active`
 		FROM '._DB_PREFIX_.'module
 		WHERE `name` = "'.pSQL($module).'"');
 	}
 	
-	private function getFriendlyModRoute($uri)
+	/*
+    * module: prettyurls
+    * date: 2024-09-09 06:46:04
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:52
+    * version: 3.1.0
+    */
+    private function getFriendlyModRoute($uri)
 	{
 		$id_lang = Context::getContext()->language->id;
 		$id_shop = Context::getContext()->shop->id;
@@ -1519,24 +1858,87 @@ class Dispatcher extends DispatcherCore
 		}
 	}
 	
-	private function getPmAdvanceSearchIdExistance($id)
+	/*
+    * module: prettyurls
+    * date: 2024-09-09 06:46:04
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:52
+    * version: 3.1.0
+    */
+    private function getPmAdvanceSearchIdExistance($id)
 	{
 		return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('SELECT `active`
 		FROM '._DB_PREFIX_.'pm_advancedsearch
 		WHERE `id_search` = '.(int)$id);
 	}
 	
-	private function getPmAdvanceSearchSeoIdExistance($id)
+	/*
+    * module: prettyurls
+    * date: 2024-09-09 06:46:04
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:52
+    * version: 3.1.0
+    */
+    private function getPmAdvanceSearchSeoIdExistance($id)
 	{
 		return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('SELECT `id_search`
 		FROM '._DB_PREFIX_.'pm_advancedsearch_seo
 		WHERE `id_seo` = '.(int)$id);
 	}
     
+    /*
+    * module: prettyurls
+    * date: 2024-09-09 06:46:04
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:52
+    * version: 3.1.0
+    */
     private function getSellerIdWebkul($url)
 	{
 		return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('SELECT `id_seller`
 		FROM '._DB_PREFIX_.'wk_mp_seller
 		WHERE `link_rewrite` = "'.pSQL($url).'"');
+	}
+	/*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:52
+    * version: 3.1.0
+    */
+    protected function getManufacturerIdByRewrite($rewrite)
+	{
+	    $sql = new DbQuery();
+	    $sql->select('`id_manufacturer`');
+	    $sql->from('manufacturer');
+	    $sql->where('`link_rewrite` = "'.pSQL($rewrite).'"');
+	    return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
 	}
 }

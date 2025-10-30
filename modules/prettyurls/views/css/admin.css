@@ -1,1 +1,42 @@
 .icon-AdminPrettyUrls:before { content: "\f071"; }
+/*-------- As of Version 3.0.0 ---------*/
+#prettyurls_head_tabs {}
+
+#prettyurls_head_tabs ul.tab { border: 1px solid #d3d8db; border-radius: 4px; overflow: hidden; margin: 0; padding: 0; background: #fff; display: block;
+color: #555555;}
+#prettyurls_head_tabs ul.tab a,
+#prettyurls_head_tabs ul.tab li { display: block;color: #555555; text-transform: capitalize;}
+#prettyurls_head_tabs ul.tab a { padding: 12px; border-bottom: 1px solid #d3d8db;}
+#prettyurls_head_tabs ul.tab a i { display: inline-block; vertical-align: middle; font-size: 20px;}
+#prettyurls_head_tabs ul.tab li.last a { border-bottom: none;}
+#prettyurls_head_tabs ul.tab a:hover,
+#prettyurls_head_tabs ul.tab a:active,
+#prettyurls_head_tabs ul.tab a:focus { text-decoration: none; outline: none;}
+#prettyurls_head_tabs ul.tab li.active a { color: #ffffff; background: #25b9d7}
+.fmm_pretty_robots_textblk { max-height: 500px; overflow-y: scroll}
+.fmm_pretty_urls_btn_red { background: #f54c3e !important; color: #fff !important;}
+
+.advseo_extra_opts {list-style: none; padding: 0px; margin: 0px;}
+
+#advanceseo_chk_blk ul {list-style: none; padding: 0px; margin: 0px; clear: both;}
+#advanceseo_chk_blk ul li { display: inline-block; width: 49%; vertical-align: top;}
+ul.advseo_selector { padding: 10px; display: block;}
+ul.advseo_selector li { width: auto;}
+ul.advseo_selector a,
+ul.advseo_selector a:hover,
+ul.advseo_selector a:focus { color: #fff; outline: none; text-decoration: none; padding: 5px 10px; background: #25b9d7;}
+ul#advseo_pages_excl { padding-top: 20px}
+.advseo_warning { font-style: italic; padding-top: 10px;}
+
+
+#fmm_pretty_urlredirects_admin_blk { clear: both; width: 100%; padding-top: 40px;}
+
+#fmm_pretty_urlredirects_admin_blk ul { padding: 0; margin: 0}
+
+#fmm_pretty_urlredirects_admin_blk ul li { list-style: none; display: block; clear: both; padding-bottom: 10px; min-height: 80px}
+
+#fmm_pretty_urlredirects_admin_blk a { color: #6c868e; border: 1px solid #6c868e; border-radius: 4px; padding: 10px 20px; font-size: 15px;}
+
+#fmm_pretty_urlredirects_admin_blk a:hover { color: #fff; background: #6c868e; text-decoration: none; outline: none;}
+#fmm_pretty_urlredirects_admin_blk a:focus {text-decoration: none; outline: none;}
+#fmm_pretty_urlredirects_admin_blk a i { vertical-align: middle; font-size: 18px}

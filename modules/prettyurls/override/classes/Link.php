@@ -15,28 +15,36 @@
  * @category  FMM Modules
  * @package   PrettyURLs
 */
-
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 class Link extends LinkCore
 {
-	public function getCategoryLink($category, $alias = null, $id_lang = null, $selected_filters = null, $id_shop = null, $relative_protocol = false)
+	/*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:51
+    * version: 3.1.0
+    */
+    public function getCategoryLink($category, $alias = null, $id_lang = null, $selected_filters = null, $id_shop = null, $relative_protocol = false)
 	{
 		if (!$id_lang) {
 			$id_lang = Context::getContext()->language->id;
 		}
 		$url = $this->getBaseLink($id_shop, null, $relative_protocol).$this->getLangLink($id_lang, null, $id_shop);
-
 		if (!is_object($category)) {
 			$category = new Category($category, $id_lang);
 		}
-		// Set available keywords
 		$params = array();
 		$params['id'] = $category->id;
 		$params['rewrite'] = (!$alias) ? $category->link_rewrite : $alias;
 		$params['meta_keywords'] =	@Tools::str2url($category->meta_keywords);
 		$params['meta_title'] = @Tools::str2url($category->meta_title);
-		// Selected filters is used by the module blocklayered
 		$selected_filters = is_null($selected_filters) ? '' : $selected_filters;
-
 		if (empty($selected_filters)) {
 			$rule = 'category_rule';
 		} else {
@@ -48,7 +56,6 @@ class Link extends LinkCore
 		$parent_categories = is_array($parent_categories) === true ? array_reverse($parent_categories) : $parent_categories;
 		$skip_list = array(Configuration::get('PS_HOME_CATEGORY'), Configuration::get('PS_ROOT_CATEGORY'));
 		$skip_list[] = $category->id;
-
 		foreach ($parent_categories as $parent_cat) {
 			if (!in_array($parent_cat['id_category'], $skip_list)) {
 				$cat_array[] = $parent_cat['link_rewrite'];
@@ -67,12 +74,20 @@ class Link extends LinkCore
 		$r_url = $url.Dispatcher::getInstance()->createUrl($rule, $id_lang, $params, $this->allow, '', $id_shop);
 		return $r_url;
 	}
-
-	public function getAllParentCategories($id_current = null, $id_lang = null)
+	/*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:51
+    * version: 3.1.0
+    */
+    public function getAllParentCategories($id_current = null, $id_lang = null)
 	{
 		$context = Context::getContext()->cloneContext();
 		$context->shop = clone($context->shop);
-
 		if (is_null($id_lang)) {
 			$id_lang = $context->language->id;
 		}
@@ -104,19 +119,16 @@ class Link extends LinkCore
 				AND cs.`id_shop` = '.(int)$context->shop->id;
 			}
 			$root_category = Category::getRootCategory();
-
 			$f_active = Shop::isFeatureActive();
 			$submit_id_cat = Tools::isSubmit('id_category');
 			$g_id_cat = (int)Tools::getValue('id_category');
 			$r_cat_id = (int)$root_category->id;
 			$c_id_cat = (int)$context->shop->id_category;
-
 			if ($f_active && Shop::getContext() == Shop::CONTEXT_SHOP && (!$submit_id_cat || $g_id_cat == $r_cat_id || $r_cat_id == $c_id_cat)) {
 				$sql .= ' AND c.`id_parent` != 0';
 			}
 			$result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
-
-			if (Tools::getIsset($result[0])) {
+			if (!empty($result) && Tools::getIsset($result[0])) {
 				$categories[] = $result[0];
 			}
 			else if (!$categories) {
@@ -128,8 +140,17 @@ class Link extends LinkCore
 			$id_current = $result[0]['id_parent'];
 		}
 	}
-
-	public function getPaginationLink($type, $id_object, $nb = false, $sort = false, $pagination = false, $array = false)
+	/*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:51
+    * version: 3.1.0
+    */
+    public function getPaginationLink($type, $id_object, $nb = false, $sort = false, $pagination = false, $array = false)
 	{
 		if (!$type && !$id_object) {
 			$method_name = 'get'.Dispatcher::getInstance()->getController().'Link';
@@ -138,7 +159,6 @@ class Link extends LinkCore
 				$id_object = Tools::getValue('id_'.$type);
 			}
 		}
-
 		if ($type && $id_object) {
 			$url = $this->{'get'.$type.'Link'}($id_object, null);
 		} else {
@@ -147,14 +167,12 @@ class Link extends LinkCore
 			} else {
 				$name = Dispatcher::getInstance()->getController();
 			}
-
 			if ($name == 'category') {
 				$url = $this->getCategoryLink(Tools::getValue('id_category'));
 			} else {
 				$url = $this->getPageLink($name);
 			}
 		}
-
 		$vars = array();
 		$vars_nb = array('n', 'search_query');
 		$vars_sort = array('orderby', 'orderway');
@@ -179,7 +197,6 @@ class Link extends LinkCore
 				}
 			}
 		}
-
 		if ($name == 'category') {
 			unset($vars['categories_rewrite']);
 			unset($vars['category_rewrite']);
@@ -215,15 +232,12 @@ class Link extends LinkCore
 			else
 				return $url;
 		$vars['requestUrl'] = $url;
-
 		if ($type && $id_object) {
 			$vars['id_'.$type] = (is_object($id_object) ? (int)$id_object->id : (int)$id_object);
 		}
-
 		if (!$this->allow == 1) {
 			$vars['controller'] = Dispatcher::getInstance()->getController();
 		}
-
 		if ($name == 'newproducts' || $name == 'pricesdrop' || $name == 'bestsales') {
 				if (preg_match('/index/', $vars['requestUrl'])) {
 					if (array_key_exists('p', $vars)) {
@@ -246,16 +260,23 @@ class Link extends LinkCore
 		}
 		return $vars;
 	}
-
-	public function getManufacturerLink($manufacturer, $alias = null, $id_lang = null, $id_shop = null, $relative_protocol = false)
+	/*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:51
+    * version: 3.1.0
+    */
+    public function getManufacturerLink($manufacturer, $alias = null, $id_lang = null, $id_shop = null, $relative_protocol = false)
 	{
 		if (!$id_lang) {
 			$id_lang = Context::getContext()->language->id;
 		}
 		$url = $this->getBaseLink($id_shop, null, $relative_protocol).$this->getLangLink($id_lang, null, $id_shop);
-
 		$dispatcher = Dispatcher::getInstance();
-
 		if (!is_object($manufacturer)) {
 			$d_man_rule_keywords = $dispatcher->hasKeyword('manufacturer_rule', $id_lang, 'meta_keywords', $id_shop);
 			$d_man_rule_title = $dispatcher->hasKeyword('manufacturer_rule', $id_lang, 'meta_title', $id_shop);
@@ -265,7 +286,6 @@ class Link extends LinkCore
 			}
 			$manufacturer = new Manufacturer($manufacturer, $id_lang);
 		}
-		// Set available keywords
 		$link_rewrite = (!$alias) ? $manufacturer->link_rewrite : $alias;
 		$params = array();
 		$params['id'] = $manufacturer->id;
@@ -275,13 +295,23 @@ class Link extends LinkCore
 		$man_pattern = '/.*?([0-9]+)\_([_a-zA-Z0-9-\pL]*)/';
 		preg_match($man_pattern, $_SERVER['REQUEST_URI'], $url_array);
 		if (!empty($url_array)) {
-			return $url.'manufacturer/'.$dispatcher->createUrl('manufacturer_rule', $id_lang, $params, $this->allow, '', $id_shop);
+			// return $url.'manufacturer/'.$dispatcher->createUrl('manufacturer_rule', $id_lang, $params, $this->allow, '', $id_shop);
+			return $url.$dispatcher->createUrl('manufacturer_rule', $id_lang, $params, $this->allow, '', $id_shop);
 		} else {
 			return $url.$dispatcher->createUrl('manufacturer_rule', $id_lang, $params, $this->allow, '', $id_shop);
 		}
 	}
-
-	public function getSupplierLink($supplier, $alias = null, $id_lang = null, $id_shop = null, $relative_protocol = false)
+	/*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:51
+    * version: 3.1.0
+    */
+    public function getSupplierLink($supplier, $alias = null, $id_lang = null, $id_shop = null, $relative_protocol = false)
 	{
 		if (!$id_lang) {
 			$id_lang = Context::getContext()->language->id;
@@ -296,7 +326,6 @@ class Link extends LinkCore
 			}
 			$supplier = new Supplier($supplier, $id_lang);
 		}
-		// Set available keywords
 		$params = array();
 		$params['id'] = $supplier->id;
 		$params['rewrite'] = (!$alias) ? $supplier->link_rewrite : $alias;
@@ -310,8 +339,17 @@ class Link extends LinkCore
 			return $url.$dispatcher->createUrl('supplier_rule', $id_lang, $params, $this->allow, '', $id_shop);
 		}
 	}
-
-	public function getLanguageLink($id_lang, Context $context = null)
+	/*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:51
+    * version: 3.1.0
+    */
+    public function getLanguageLink($id_lang, Context $context = null)
 	{
 		if (!$context) {
 			$context = Context::getContext();
@@ -324,12 +362,10 @@ class Link extends LinkCore
 			unset($params['id_lang']);
 		}
 		$controller = Dispatcher::getInstance()->getController();
-
 		if (!empty(Context::getContext()->controller->php_self)) {
 			$controller = Context::getContext()->controller->php_self;
 		}
 		$def_page = (int)$this->checkKeyExistance($controller);
-		//dump($params); exit;
 		if ($controller == 'manufacturer') {
 			$manuf_uri = explode('/', $_SERVER['REQUEST_URI']);
 			$manuf_end = end($manuf_uri);
@@ -368,7 +404,6 @@ class Link extends LinkCore
 			}
 		}
 		elseif ($controller == 'category' && isset($params['category_rewrite']) && !empty($params['category_rewrite'])) {
-			//Fix for accented chars URLs
 			$allow_accented_chars = (int)Configuration::get('PS_ALLOW_ACCENTED_CHARS_URL');
 			if ($allow_accented_chars > 0) {
 				$id_category = (int)Tools::getValue('id_category');
@@ -400,7 +435,6 @@ class Link extends LinkCore
 			}
 		}
 		elseif ($controller == 'product' && isset($params['product_rewrite']) && !empty($params['product_rewrite'])) {
-			//Fix for accented chars URLs
 			$allow_accented_chars = (int)Configuration::get('PS_ALLOW_ACCENTED_CHARS_URL');
 			if ($allow_accented_chars > 0) {
 				$id_product = (int)Tools::getValue('id_product');
@@ -408,9 +442,17 @@ class Link extends LinkCore
 					$params['id_product'] = $id_product;
 				}
 			}
+			elseif (preg_match('/.*?\/([0-9]+)\-([0-9\pL]*)\-([_a-zA-Z0-9-\pL]*)/', $_SERVER['REQUEST_URI']) && (int)Tools::getValue('id_product') > 0) {
+				$params['id_product'] = (int)Tools::getValue('id_product');
+				$params['id_product_attribute'] = (int)Tools::getValue('id_product_attribute');
+			}
+		}
+		elseif ($controller == 'cms') {
+		    if (!isset($params['id_cms'])) {
+		        $params['id_cms'] = $_POST['id_cms'];
+		    }
 		}
 		elseif ($controller == 'cms' && isset($params['cms_rewrite']) && !empty($params['cms_rewrite'])) {
-			//Fix for accented chars URLs
 			$allow_accented_chars = (int)Configuration::get('PS_ALLOW_ACCENTED_CHARS_URL');
 			if ($allow_accented_chars > 0) {
 				$id_cms = (int)Tools::getValue('id_cms');
@@ -445,7 +487,6 @@ class Link extends LinkCore
 			}
 		}
 		if ($controller == 'supplier' && isset($params['supplier_rewrite']) && !empty($params['supplier_rewrite'])) {
-			//Fix for accented chars URLs
 			$allow_accented_chars = (int)Configuration::get('PS_ALLOW_ACCENTED_CHARS_URL');
 			if ($allow_accented_chars > 0) {
 				$id_supp = (int)Tools::getValue('id_supplier');
@@ -455,7 +496,6 @@ class Link extends LinkCore
 			}
 		}
 		if ($controller == 'manufacturer' && isset($params['manufacturer_rewrite']) && !empty($params['manufacturer_rewrite'])) {
-			//Fix for accented chars URLs
 			$allow_accented_chars = (int)Configuration::get('PS_ALLOW_ACCENTED_CHARS_URL');
 			if ($allow_accented_chars > 0) {
 				$id_manufacturer = (int)Tools::getValue('id_manufacturer');
@@ -464,7 +504,6 @@ class Link extends LinkCore
 				}
 			}
 		}
-		//check for LookBook module
 		if ($controller == 'list' && isset($params['module']) && $params['module'] == 'productlookbooks') {
 			unset($params['category_rewrite']);
 			unset($params['product_rewrite']);
@@ -474,7 +513,12 @@ class Link extends LinkCore
 			unset($params['product_rewrite']);
 		}
 		if ($controller == 'product' && isset($params['id_product'])) {
-			return $this->getProductLink((int)$params['id_product'], null, null, null, (int)$id_lang);
+			if (isset($params['id_product_attribute'])) {
+				return $this->getProductLink((int)$params['id_product'], null, null, null, (int)$id_lang, null, (int)$params['id_product_attribute']);
+			}
+			else {
+				return $this->getProductLink((int)$params['id_product'], null, null, null, (int)$id_lang);
+			}
 		}
 		elseif ($controller == 'category' && isset($params['id_category'])) {
 			return $this->getCategoryLink((int)$params['id_category'], null, (int)$id_lang);
@@ -504,26 +548,31 @@ class Link extends LinkCore
 		}
 		return $this->getPageLink($controller, null, $id_lang, $params);
 	}
-
-	public function getPageLink($controller, $ssl = null, $idLang = null, $request = null, $requestUrlEncode = false, $idShop = null, $relativeProtocol = false)
+	/*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:51
+    * version: 3.1.0
+    */
+    public function getPageLink($controller, $ssl = null, $idLang = null, $request = null, $requestUrlEncode = false, $idShop = null, $relativeProtocol = false)
     {
 		if ($controller == 'page-not-found') {
 			$controller = 'pagenotfound';
 		}
-        //If $controller contains '&' char, it means that $controller contains request data and must be parsed first
         $p = strpos($controller, '&');
         if ($p !== false) {
             $request = substr($controller, $p + 1);
             $requestUrlEncode = false;
             $controller = substr($controller, 0, $p);
         }
-
         $controller = Tools::strReplaceFirst('.php', '', $controller);
         if (!$idLang) {
             $idLang = (int) Context::getContext()->language->id;
         }
-
-        //need to be unset because getModuleLink need those params when rewrite is enable
         if (is_array($request)) {
             if (isset($request['module'])) {
                 unset($request['module']);
@@ -532,18 +581,15 @@ class Link extends LinkCore
                 unset($request['controller']);
             }
         } else {
-            // @FIXME html_entity_decode has been added due to '&amp;' => '%3B' ...
             $request = html_entity_decode($request);
             if ($requestUrlEncode) {
                 $request = urlencode($request);
             }
             parse_str($request, $request);
         }
-
         if ($controller === 'cart' && (!empty($request['add']) || !empty($request['delete'])) && Configuration::get('PS_TOKEN_ENABLE')) {
             $request['token'] = Tools::getToken(false);
         }
-		//Check for PM Advance search module
 		$pm_advancedsearch_module_exists = (int)Module::isEnabled('pm_advancedsearch4');
 		if (empty($request) && $pm_advancedsearch_module_exists > 0) {
 			if (isset($_GET['id_search'])) {
@@ -556,27 +602,205 @@ class Link extends LinkCore
 			}
 		}
         $uriPath = Dispatcher::getInstance()->createUrl($controller, $idLang, $request, false, '', $idShop);
-
         return $this->getBaseLink($idShop, $ssl, $relativeProtocol).$this->getLangLink($idLang, null, $idShop).ltrim($uriPath, '/');
     }
 	
-	private function checkKeyExistance($controller)
+	/*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:51
+    * version: 3.1.0
+    */
+    public function getProductLink(
+        $product,
+        $alias = null,
+        $category = null,
+        $ean13 = null,
+        $idLang = null,
+        $idShop = null,
+        $idProductAttribute = null,
+        $force_routes = false,
+        $relativeProtocol = false,
+        $withIdInAnchor = false,
+        $extraParams = [],
+        bool $addAnchor = true
+    ) {
+        $dispatcher = Dispatcher::getInstance();
+        if (!$idLang) {
+            $idLang = Context::getContext()->language->id;
+        }
+        $url = $this->getBaseLink($idShop, null, $relativeProtocol) . $this->getLangLink($idLang, null, $idShop);
+		if (!$product) {//product with IDs urls
+			$prod_pattern = '/.*?\/([0-9]+)\-([0-9\pL]*)\-([_a-zA-Z0-9-\pL]*)/';
+			preg_match($prod_pattern, $_SERVER['REQUEST_URI'], $url_array);
+			if (is_array($url_array) && isset($url_array[1]) && (int)$url_array[1] > 0) {
+				$product = (int)$url_array[1];
+			}
+		}
+        $params = [];
+        if (!is_object($product)) {
+            if (is_array($product) && isset($product['id_product'])) {
+                $params['id'] = $product['id_product'];
+            } elseif ((int) $product) {
+                $params['id'] = $product;
+            } else {
+                throw new PrestaShopException('Invalid product vars');
+            }
+        } else {
+            $params['id'] = $product->id;
+        }
+        if (empty($idProductAttribute)) {
+            $idProductAttribute = null;
+        }
+        $params['id_product_attribute'] = $idProductAttribute;
+        if (!$alias) {
+            $product = $this->getProductObject($product, $idLang, $idShop);
+        }
+        $params['rewrite'] = (!$alias) ? $product->getFieldByLang('link_rewrite') : $alias;
+        if (!$ean13) {
+            $product = $this->getProductObject($product, $idLang, $idShop);
+        }
+        $params['ean13'] = (!$ean13) ? $product->ean13 : $ean13;
+        if ($dispatcher->hasKeyword('product_rule', $idLang, 'meta_keywords', $idShop)) {
+            $product = $this->getProductObject($product, $idLang, $idShop);
+            $params['meta_keywords'] = Tools::str2url($product->getFieldByLang('meta_keywords'));
+        }
+        if ($dispatcher->hasKeyword('product_rule', $idLang, 'meta_title', $idShop)) {
+            $product = $this->getProductObject($product, $idLang, $idShop);
+            $params['meta_title'] = Tools::str2url($product->getFieldByLang('meta_title'));
+        }
+        if ($dispatcher->hasKeyword('product_rule', $idLang, 'manufacturer', $idShop)) {
+            $product = $this->getProductObject($product, $idLang, $idShop);
+            $params['manufacturer'] = Tools::str2url($product->isFullyLoaded ? $product->manufacturer_name : Manufacturer::getNameById($product->id_manufacturer));
+        }
+        if ($dispatcher->hasKeyword('product_rule', $idLang, 'supplier', $idShop)) {
+            $product = $this->getProductObject($product, $idLang, $idShop);
+            $params['supplier'] = Tools::str2url($product->isFullyLoaded ? $product->supplier_name : Supplier::getNameById($product->id_supplier));
+        }
+        if ($dispatcher->hasKeyword('product_rule', $idLang, 'price', $idShop)) {
+            $product = $this->getProductObject($product, $idLang, $idShop);
+            $params['price'] = $product->isFullyLoaded ? $product->price : Product::getPriceStatic($product->id, false, null, 6, null, false, true, 1, false, null, null, null, $product->specificPrice);
+        }
+        if ($dispatcher->hasKeyword('product_rule', $idLang, 'tags', $idShop)) {
+            $product = $this->getProductObject($product, $idLang, $idShop);
+            $params['tags'] = Tools::str2url($product->getTags($idLang));
+        }
+        if ($dispatcher->hasKeyword('product_rule', $idLang, 'category', $idShop)) {
+            if (!$category) {
+                $product = $this->getProductObject($product, $idLang, $idShop);
+            }
+            $params['category'] = (!$category) ? $product->category : $category;
+        }
+        if ($dispatcher->hasKeyword('product_rule', $idLang, 'reference', $idShop)) {
+            $product = $this->getProductObject($product, $idLang, $idShop);
+            $params['reference'] = Tools::str2url($product->reference);
+        }
+        if ($dispatcher->hasKeyword('product_rule', $idLang, 'categories', $idShop)) {
+            $product = $this->getProductObject($product, $idLang, $idShop);
+            $params['category'] = (!$category) ? $product->category : $category;
+            $cats = [];
+            foreach ($product->getParentCategories($idLang) as $cat) {
+                if (!in_array($cat['id_category'], Link::$category_disable_rewrite)) {
+                    $cats[] = $cat['link_rewrite'];
+                }
+            }
+            $params['categories'] = implode('/', $cats);
+        }
+        if ($idProductAttribute) {
+            $product = $this->getProductObject($product, $idLang, $idShop);
+        }
+        $anchor = $addAnchor && $idProductAttribute ? $product->getAnchor((int) $idProductAttribute, (bool) $withIdInAnchor) : '';
+		$aliasOfLink = (int) Configuration::get('FMM_PRETTY_ATTR_ALIAS');
+		if ($aliasOfLink > 0) {
+			$anchor = '';
+		}
+		
+        return $url . $dispatcher->createUrl('product_rule', $idLang, array_merge($params, $extraParams), $force_routes, $anchor, $idShop);
+    }
+	
+	/*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:51
+    * version: 3.1.0
+    */
+    protected function getLangLink($idLang = null, Context $context = null, $idShop = null)
+    {
+        static $psRewritingSettings = null;
+        if ($psRewritingSettings === null) {
+            $psRewritingSettings = (int) Configuration::get('PS_REWRITING_SETTINGS', null, null, $idShop);
+        }
+        if (!$context) {
+            $context = Context::getContext();
+        }
+		$prettyUrlsIso = (int) Configuration::get('FMM_PRETTY_ISO', null, null, $idShop);
+		$idLangDefault = (int) Configuration::get('PS_LANG_DEFAULT');
+		if ($prettyUrlsIso > 0 && $idLangDefault === (int) $idLang) {//removing default ISO
+			return '';
+		}
+		
+        if ((!$this->allow && in_array($idShop, [$context->shop->id,  null])) || !Language::isMultiLanguageActivated($idShop) || !$psRewritingSettings) {
+            return '';
+        }
+        if (!$idLang) {
+            $idLang = $context->language->id;
+        }
+        return Language::getIsoById($idLang) . '/';
+    }
+	
+	/*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:51
+    * version: 3.1.0
+    */
+    private function checkKeyExistance($controller)
 	{
 			$sql = 'SELECT id_meta 
 					FROM '._DB_PREFIX_.'meta
 					WHERE page = "'.pSQL($controller).'"';
 		return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
 	}
-
-	private function getKeyExistanceManuf($request)
+	/*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:51
+    * version: 3.1.0
+    */
+    private function getKeyExistanceManuf($request)
 	{
 		$sql = 'SELECT `id_manufacturer`
 					FROM '._DB_PREFIX_.'manufacturer
 					WHERE `name` LIKE "'.pSQL($request).'"';
 		return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
 	}
-
-	private function getKeyExistanceSup($request)
+	/*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:51
+    * version: 3.1.0
+    */
+    private function getKeyExistanceSup($request)
 	{
 		$sql = 'SELECT `id_supplier`
 					FROM '._DB_PREFIX_.'supplier
@@ -584,7 +808,17 @@ class Link extends LinkCore
 		return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
 	}
 	
-	private function getCategoryId($request)
+	/*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:51
+    * version: 3.1.0
+    */
+    private function getCategoryId($request)
 	{
 		$id_lang = Context::getContext()->language->id;
 		$id_shop = Context::getContext()->shop->id;
@@ -593,7 +827,17 @@ class Link extends LinkCore
 		return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
 	}
 	
-	private function getProductExistance($request)
+	/*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:51
+    * version: 3.1.0
+    */
+    private function getProductExistance($request)
 	{
 		$id_lang = Context::getContext()->language->id;
 		$id_shop = Context::getContext()->shop->id;
@@ -604,7 +848,17 @@ class Link extends LinkCore
 				AND `id_shop` = '.(int)$id_shop);
 	}
 	
-	private function getKeyExistanceCMS($request)
+	/*
+    * module: prettyurls
+    * date: 2024-09-12 06:21:40
+    * version: 3.0.2
+    */
+    /*
+    * module: prettyurls
+    * date: 2025-01-06 01:24:51
+    * version: 3.1.0
+    */
+    private function getKeyExistanceCMS($request)
 	{
 		$id_lang = Context::getContext()->language->id;
 		$id_shop = Context::getContext()->shop->id;

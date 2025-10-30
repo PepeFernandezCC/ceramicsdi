@@ -25,9 +25,9 @@
   <div class="col-lg-7 fmm_promo_modules">
     <ol>
       <li class="fmm_promo_maylike">Modules you may like...</li>
-      <li><a href="https://addons.prestashop.com/en/seo-natural-search-engine-optimization/17273-seo-optimizer-add-meta-sitemap-robots-url-redirect.html" target="_blank" title="SEO Optimizer"><img src="https://www.fmemodules.com/1662-home_default/advance-seo.jpg" alt="" /><i>SEO Optimizer Module</i></a></li>
-      <li><a href="https://addons.prestashop.com/en/social-widgets/45053-twitter-card-and-facebook-graph.html" target="_blank" title="Twitter Card and Facebook Graph"><img src="https://www.fmemodules.com/1588-home_default/twitter-card-and-facebook-graph-prestashop-module.jpg" alt="" /><i>Twitter Card and Facebook Graph Module</i></a></li>
-      <li><a href="https://addons.prestashop.com/en/mobile/45898-prestamobapp-native-app-builder-for-android-and-ios.html" target="_blank" title="Presta Mob App"><img src="https://www.fmemodules.com/2322-home_default/prestamobapp-native-app-builder-module-for-android-and-ios.jpg" alt="" /><i>PrestaMobApp - IOS and Android Module</i></a></li>
+      <li><a href="https://addons.prestashop.com/en/seo-natural-search-engine-optimization/17273-seo-optimizer-add-meta-sitemap-robots-url-redirect.html" target="_blank" title="SEO Optimizer"><img src="{$smarty.const.__PS_BASE_URI__|escape:'htmlall':'UTF-8'}modules/prettyurls/views/img/seo-optimizer-module.jpg" alt="" /><i>SEO Optimizer Module</i></a></li>
+      <li><a href="https://addons.prestashop.com/en/customer-administration/85264-customer-address-on-registration-get-user-address.html" target="_blank" title="Customer Address on Registration"><img src="{$smarty.const.__PS_BASE_URI__|escape:'htmlall':'UTF-8'}modules/prettyurls/views/img/customer-address-on-registration.png" alt="" /><i>Customer Address on Registration Module</i></a></li>
+      <li><a href="https://addons.prestashop.com/en/mobile/45898-prestamobapp-native-app-builder-for-android-and-ios.html" target="_blank" title="Presta Mob App"><img src="{$smarty.const.__PS_BASE_URI__|escape:'htmlall':'UTF-8'}modules/prettyurls/views/img/prestamobapp-native-app-builder-module-for-android-and-ios.jpg" alt="" /><i>PrestaMobApp - IOS and Android Module</i></a></li>
     </ol>
   </div>
   <div class="col-lg-2 fmm_promo_basecamp">
