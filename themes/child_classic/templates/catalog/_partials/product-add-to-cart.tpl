@@ -62,6 +62,8 @@
 
 <div class="product-add-to-cart js-product-add-to-cart">
      <input type="hidden" id="cartId" name="cartId" value="{Context::getContext()->cart->id}" />
+     {assign var="amountDiscount" value=Product::getAmountDiscount($product.id)}
+     <div id="amount-discount" style="display:none" data-discount="{$amountDiscount.discount}" data-amount="{$amountDiscount.amount}"></div>
     {if !$configuration.is_catalog}
 
         {block name='product_quantity'}

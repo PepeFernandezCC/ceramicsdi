@@ -1013,9 +1013,19 @@ $( document ).ready( function () {
            $m2TotalMeters.text(totalSurface);
   
            setQuantitiesValue(numberInput.value);
+
+           let discount = 1;
+           let amount = document.getElementById('amount-discount').dataset.discount;
+
+           if (amount > 0) {
+               let discountPercentage = document.getElementById('amount-discount').dataset.discount;
+               if(numberInput.value >= amount) {
+                  discount = parseFloat(1 - (discountPercentage / 100) );
+               }
+           }
   
-           $eurosInput.val( ( numberInput.value * price ).toFixed( 2 ) );
-           $m2TotalPrice.text( ( numberInput.value * price ).toFixed( 2 ) );
+           $eurosInput.val( ( numberInput.value * price * discount ).toFixed( 2 ) );
+           $m2TotalPrice.text( ( numberInput.value * price * discount ).toFixed( 2 ) );
           
         }
   
@@ -1034,9 +1044,19 @@ $( document ).ready( function () {
            $m2TotalMeters.text(totalSurface);
   
            setQuantitiesValue(quantity)
+
+            let discount = 1;
+            let amount = document.getElementById('amount-discount').dataset.discount;
+
+            if (amount > 0) {
+                  let discountPercentage = document.getElementById('amount-discount').dataset.discount;
+                  if(numberInput.value >= amount) {
+                     discount = parseFloat(1 - (discountPercentage / 100) );
+                  }
+            }
   
-           $eurosInput.val( ( numberInput.value * price ).toFixed( 2 ) );
-           $m2TotalPrice.text( ( numberInput.value * price ).toFixed( 2 ) );
+           $eurosInput.val( ( numberInput.value * price * discount ).toFixed( 2 ) );
+           $m2TotalPrice.text( ( numberInput.value * price * discount ).toFixed( 2 ) );
   
   
         }
@@ -1082,7 +1102,19 @@ $( document ).ready( function () {
          document.getElementById('incrementQuantity').addEventListener('click', function() {
 
             inputQuantityBox.value = parseInt(inputQuantityBox.value) + 1;
-            $eurosInput.val( ( inputQuantityBox.value * price ).toFixed( 2 ) );
+
+            let discount = 1;
+            let amount = document.getElementById('amount-discount').dataset.discount;
+
+            if (amount > 0) {
+               let discountPercentage = document.getElementById('amount-discount').dataset.discount;
+               if(inputQuantityBox.value >= amount) {
+                  discount = parseFloat(1 - (discountPercentage / 100) );
+               }
+            }
+  
+
+            $eurosInput.val( ( inputQuantityBox.value * price * discount ).toFixed( 2 ) );
   
 
          });
@@ -1092,14 +1124,35 @@ $( document ).ready( function () {
             if(document.getElementById('quantity-input').value > 0) {
    
                inputQuantityBox.value = parseInt(inputQuantityBox.value) - 1;
-               $eurosInput.val( ( inputQuantityBox.value * price ).toFixed( 2 ) );
+
+               let discount = 1;
+               let amount = document.getElementById('amount-discount').dataset.discount;
+
+               if (amount > 0) {
+                  let discountPercentage = document.getElementById('amount-discount').dataset.discount;
+                  if(inputQuantityBox.value >= amount) {
+                     discount = parseFloat(1 - (discountPercentage / 100) );
+                  }
+               }
+  
+               $eurosInput.val( ( inputQuantityBox.value * price * discount ).toFixed( 2 ) );
   
             }
          });
 
          $('#quantity-input').keyup( function() {
    
-            $eurosInput.val( ( inputQuantityBox.value * price ).toFixed( 2 ) );
+            let discount = 1;
+            let amount = document.getElementById('amount-discount').dataset.discount;
+
+            if (amount > 0) {
+               let discountPercentage = document.getElementById('amount-discount').dataset.discount;
+               if(inputQuantityBox.value >= amount) {
+                  discount = parseFloat(1 - (discountPercentage / 100) );
+               }
+            }
+  
+            $eurosInput.val( ( inputQuantityBox.value * price * discount ).toFixed( 2 ) );
          })
       }
 
@@ -1218,9 +1271,20 @@ $( document ).ready( function () {
             $pieceTotalMeters.text(totalPieces);
    
             setPiecesQuantitiesValue(inputPieces.value);
+
+            let discount = 1;
+            let amount = document.getElementById('amount-discount').dataset.discount;
+
+            if (amount > 0) {
+               let discountPercentage = document.getElementById('amount-discount').dataset.discount;
+               if(inputPieces.value >= amount) {
+                  discount = parseFloat(1 - (discountPercentage / 100) );
+               }
+            }
+  
    
-            $eurosInput.val( ( inputPieces.value * price ).toFixed( 2 ) );
-            $m2TotalPrice.text( ( inputPiecesBox.value * price ).toFixed( 2 ) );
+            $eurosInput.val( ( inputPieces.value * price * discount ).toFixed( 2 ) );
+            $m2TotalPrice.text( ( inputPiecesBox.value * price * discount ).toFixed( 2 ) );
 
          }
    
@@ -1237,8 +1301,18 @@ $( document ).ready( function () {
             $pieceTotalMeters.text(totalPieces);
    
             setPiecesQuantitiesValue(quantity);
+
+            let discount = 1;
+            let amount = document.getElementById('amount-discount').dataset.discount;
+
+            if (amount > 0) {
+               let discountPercentage = document.getElementById('amount-discount').dataset.discount;
+               if(inputPieces.value >= amount) {
+                  discount = parseFloat(1 - (discountPercentage / 100) );
+               }
+            }
    
-            $eurosInput.val( ( inputPieces.value * price ).toFixed( 2 ) );
+            $eurosInput.val( ( inputPieces.value * price * discount).toFixed( 2 ) );
             $m2TotalPrice.text( ( inputPiecesBox.value * price ).toFixed( 2 ) );
    
          }

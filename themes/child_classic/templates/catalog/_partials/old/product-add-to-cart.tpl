@@ -65,24 +65,15 @@
     {if !$configuration.is_catalog}
 
         {block name='product_quantity'}
-            {* PLANATEC *}
+            
             {assign var="m2_caja" value="0"}
             {assign var="piezas_caja" value="0"}
-            {assign var="junta_recomendada" value="0"}
-            {assign var="dias_plazo" value=""}
-            {assign var="texto_muestra" value=""}
             {assign var="muestra_de_pago" value=""}
             {foreach from=$product.grouped_features item=feature}
                 {if $FEATURE_M2_CAJA_ID === $feature.id_feature}
                     {assign var="m2_caja" value="{$feature.value}"}
                 {elseif $FEATURE_PIEZAS_CAJA_ID === $feature.id_feature}
                     {assign var="piezas_caja" value="{$feature.value}"}
-                {elseif $FEATURE_JUNTA_RECOMENDADA_ID === $feature.id_feature}
-                    {assign var="junta_recomendada" value="{$feature.value}"}
-                {elseif $FEATURE_DIAS_PLAZO_ENTREGA_ID === $feature.id_feature}
-                    {assign var="dias_plazo" value="{$feature.value}"}
-                {elseif $FEATURE_TEXTO_MUESTRA_ID === $feature.id_feature}
-                    {assign var="texto_muestra" value="{$feature.value}"}
                 {elseif $FEATURE_MUESTRA_DE_PAGO_ID === $feature.id_feature}
                     {assign var="muestra_de_pago" value="{$feature.value}"}
                 {/if}
@@ -121,156 +112,228 @@
 
                     {if $isByPiece}
 
-                        <div class="row mx-auto row-calculator" style="margin-top: -25px">
+                        <div class="inputs-calculator">
 
-                            <div class="col-xl-6 col-xs-12 item-calculator">
-                                    <label class="surface-quantities" for="pieces-input" style="width: 100%">
-                                        <div class="capacity-format">
-                                            <div>
-                                                <strong>{l s='Pieces' d='Shop.Theme.Actions'}</strong>
-                                            </div>
-                                            <div>
-                                                {foreach from=$product.features item='feature'}
-                                                    {if isset($feature.id_feature) && $feature.id_feature == $FEATURE_M2_PIEZA_ID}
-                                                        <span>m<sup>2</sup>/{l s='piece' d='Shop.Theme.Catalog'}{l s=': ' d='Shop.Theme.Catalog'}<strong>{$feature.value}</strong></span>
-                                                    {/if}
-                                                {/foreach}
-                                            </div>                    
-                                        </div>                                
-                                    </label>
-                                    <input
-                                        type="number"
-                                        name="pieces"
-                                        id="pieces-input"
-                                        inputmode="numeric"
-                                        step="0.01"
-                                        min="0.01"
-                                        class="input-group boxInput"
-                                        aria-label="{l s='Quantity' d='Shop.Theme.Actions'}"
-                                        data-piezas-caja="{$piezas_caja}"
-                                        placeholder="{l s='pieces needed' d='Shop.Theme.Actions'}"
-                                        rquired
-                                >
-                            
-                            </div>
+                            <div class="row mx-auto row-calculator margin-calculator">
 
-                            <div class="col-xl-6 col-xs-12 item-calculator">
-                                    {if $category->id_category != $CATEGORY_INSTALACION_Y_MONTAJE_ID}
-                                        <div class="recomendation">
+                                <div class="item-calculator request-quantity">
+                                        <div class="label-query">
+                                            <div class="queryCalculator">
+                                                <strong>
+                                                    {l s='How many pieces do you need?' d='Shop.Theme.Catalog'}
+                                                </strong>
+                                            </div>  
+                                        </div>                              
+                                
 
-                                            <div style="padding-right: 15px">
-                                                <input class="toggle" type="checkbox" id="recomendation-check-pieces" name="recomendation-check" />
-                                                <label class="switch" for="recomendation-check-pieces"></label>
-                                            </div>
-
-                                        <div>
-                                            {l s='It is recommended to order between 10 and 15% more material than needed' d='Shop.Theme.Global'}
-                                             <a href="#" id="openModal" data-toggle="modal" data-target="#wasteModal" style="text-decoration: underline;font-weight: 800">{l s='More Information' d='Shop.Theme.Catalog'}</a>
-                                        </div>
-
-                                        </div>
-                                    {/if}
-                            </div>
-
-                        </div>
-
-                        <div class="row mx-auto row-calculator">
-
-                            <div class="col-xl-6 col-xs-6 item-calculator">
-                                <div style="text-transform: uppercase">
-                                    <label>
-                                        <strong>{l s='total pieces' d='Shop.Theme.Actions'}:</strong>
-                                    </label>
-                                </div>
-                                <div>
-                                    <input type="text" id="pieces-real" disabled class="input-group boxInput cc-background-color-secondary">
-                                </div>
-                            </div>
-
-                            <div class="col-xl-6 col-xs-6 item-calculator" style="padding-left: 20px">
-
-                                    <div style="text-transform: uppercase">
-                                        <label>
-                                            <strong>{l s='pieces' d='Shop.Theme.Catalog'}:</strong>
-                                        </label>
-                                    </div>
-                                    <div class="box-container">
-                                        <button type="button" id="decrementPieces" class="boxButton" style="width:40px; background-color: #eac133">
-                                            <i class="fa-solid fa-minus"></i>
-                                        </button>                            
-                                        <input type="number" id="inputPiecesBox" value="0" class="boxInput max-widt-box" inputmode="decimal">
-                                        <button type="button" id="incrementPieces" class="boxButton" style="width:40px; background-color: #eac133">
-                                            <i class="fa-solid fa-plus"></i>
-                                        </button>
-                                    </div>
-            
-                            </div>
-
-                        </div>
-
-                    {else}
-
-                        <div class="row mx-auto row-calculator" style="margin-top: -25px">
-
-                            <div class="col-xl-6 col-xs-12 item-calculator">
-                                    <label class="surface-quantities" for="surface-input" style="width: 100%">
-                                        <div class="capacity-format">
-                                            <div>
-                                                {foreach from=$product.features item='feature'}
-                                                    {if isset($feature.id_feature) && $feature.id_feature == $FEATURE_M2_CAJA_ID}
-                                                        <span>m<sup>2</sup>/{l s='box' d='Shop.Theme.Catalog'}{l s=': ' d='Shop.Theme.Catalog'}<strong>{$feature.value}</strong></span>
-                                                    {/if}
-                                                {/foreach}
-                                            </div>   
-                                            <div>
-                                                <strong>m<sup>2</sup></strong>
-                                            </div>                 
-                                        </div>                                
-                                    </label>
-
-                                    <input
+                                        <input
                                             type="number"
-                                            name="surface"
-                                            id="surface-input"
+                                            name="pieces"
+                                            id="pieces-input"
                                             inputmode="numeric"
                                             step="0.01"
                                             min="0.01"
                                             class="input-group boxInput"
-                                            aria-label="{l s='Surface' d='Shop.Theme.Actions'}"
-                                            data-m2-caja="{$m2_caja}"
-                                            placeholder="{l s='m2 needed' d='Shop.Theme.Actions'}"
-                                            style="border: 2px solid #eac133;"
-                                    >
+                                            aria-label="{l s='Quantity' d='Shop.Theme.Actions'}"
+                                            data-piezas-caja="{$piezas_caja}"
+                                            placeholder="{l s='pieces needed' d='Shop.Theme.Actions'}"
+                                            rquired
+                                        >
+                                
+                                </div>
+
+                                <div class="m2cajaInfo">
+                                    
+                                    {foreach from=$product.features item='feature'}
+                                        {if isset($feature.id_feature) && $feature.id_feature == $FEATURE_M2_PIEZA_ID}
+                                            <span>{l s='pieces' d='Shop.Theme.Catalog'}/{l s='box' d='Shop.Theme.Catalog'}:<strong>{$piezas_caja}</strong></span>
+                                        {/if}
+                                    {/foreach}
+                                    
+                                    
+                                </div>
                             </div>
-                            <div class="col-xl-6 col-xs-12 item-calculator">
-                                {if $category->id_category != $CATEGORY_INSTALACION_Y_MONTAJE_ID}
-                                    <div class="recomendation">
 
-                                        <div style="padding-right: 15px">
-                                            <input class="toggle" type="checkbox" id="recomendation-check" name="recomendation-check" />
-                                            <label class="switch" for="recomendation-check"></label>
-                                        </div>
+                            <div class="actionButtons">
+                                <div class="row mx-auto row-calculator">
+                                    <div class="item-calculator">
 
-                                        <div>
-                                            {l s='It is recommended to order between 10 and 15% more material than needed' d='Shop.Theme.Global'}
-                                             <a href="#" id="openModal" data-toggle="modal" data-target="#wasteModal" style="text-decoration: underline;">{l s='More Information' d='Shop.Theme.Catalog'}</a>
-                                        </div>
-
+                                            <div class="boxTextTitle">
+                                                <strong>{l s='pieces' d='Shop.Theme.Catalog'}:</strong>
+                                            </div>
+                                            <div class="box-container">
+                                                <button type="button" id="decrementPieces" class="boxButton" style="width:60px; background-color: #eac133">
+                                                    <i class="fa-solid fa-minus"></i>
+                                                </button>                            
+                                                <input type="number" id="inputPiecesBox" value="0" class="boxInput max-widt-box" inputmode="decimal">
+                                                <button type="button" id="incrementPieces" class="boxButton" style="width:60px; background-color: #eac133">
+                                                    <i class="fa-solid fa-plus"></i>
+                                                </button>
+                                            </div>
+                    
                                     </div>
-                                {/if}
+                                </div>
+                                <div class="row mx-auto box-recommendation">
+                                    {if $category->id_category != $CATEGORY_INSTALACION_Y_MONTAJE_ID}
+                                        <div class="recomendation">
+
+                                            <div class="wasteSwitch" style="padding-right: 15px">
+                                                <input class="toggle" type="checkbox" id="recomendation-check-pieces" name="recomendation-check" />
+                                                <label class="switch" for="recomendation-check-pieces" style="margin-bottom:0"></label>
+                                            </div>
+
+                                             <div class="ptd-10" style="font-weight:500; display:flex">
+                                                <div class="addWasteInfo">
+                                                {l s='Add 10–15% extra' d='Shop.Theme.Catalog'}
+                                                </div>
+                                                <div class="wasteLink" style="padding-left:5px">
+                                                    <a href="#" id="openModal" data-toggle="modal" data-target="#wasteModal"  style="display:flex; font-weight: bold">
+                                                        + INFO <span style="color:#eac133; padding-left:3px; font-size:21px"><i class="fa-solid fa-angle-right"></i></span>
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    {/if}
+                                </div>
                             </div>
 
                         </div>
 
-                        <div class="row mx-auto row-calculator">
 
+
+                        <hr>
+
+                        <div class="row mx-auto" style="display:none">
                             <div class="col-xl-6 col-xs-6 item-calculator">
                                 <div style="text-transform: uppercase">
                                     <label>
                                         <strong>
-                                        {* l s='rounded up to full boxes' d='Shop.Theme.Actions' *}
-                                        
-                                          {l s='Total' d='Shop.Theme.Actions'}:</strong>
+                                            {l s='Total' d='Shop.Theme.Actions'}:
+                                        </strong>
+                                    </label>
+                                </div>
+                                <div>
+                                    <div style="position:relative;">
+                                        <div>    
+                                            <input type="text" id="pieces-real" disabled class="input-group boxInput cc-background-color-secondary">
+                                        </div>
+                                        <div class="position-coin" style="font-size: 16px">
+                                           {l s='pieces' d='Shop.Theme.Catalog'}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="subtotal-product" style="padding-bottom:15px; display:none">
+                            <div class="subtotal-title-product">{l s='Total Boxes' d='Shop.Theme.Catalog'}:</div>
+                            <div class="subtotal-quantity-product"><span id="pieceSubtotalBoxes">0</span> {l s='Boxes' d='Shop.Theme.Catalog'}</div>
+                        </div>
+                        <div class="subtotal-product">
+                            <div class="subtotal-title-product">{l s='Total pieces' d='Shop.Theme.Catalog'}:</sup></div>
+                            <div class="subtotal-quantity-product"><span id="pieceTotalMeters">0.00</span> {l s='pieces' d='Shop.Theme.Catalog'}</div>
+                        </div>
+                    {else}
+
+                        <div class="inputs-calculator">
+
+                            <div class="row mx-auto row-calculator margin-calculator">
+
+                                <div class="item-calculator request-quantity">
+                                        <div class="label-query">
+                                            <div class="queryCalculator">
+                                                <strong>
+                                                    {l s='How many m2 do you need' d='Shop.Theme.Catalog'}
+                                                </strong>
+                                            </div>                                
+                                        </div>
+
+                                        <input
+                                                type="number"
+                                                name="surface"
+                                                id="surface-input"
+                                                inputmode="numeric"
+                                                step="0.01"
+                                                min="0.01"
+                                                class="input-group boxInput"
+                                                aria-label="{l s='Surface' d='Shop.Theme.Actions'}"
+                                                data-m2-caja="{$m2_caja}"
+                                                placeholder="{l s='m2 needed' d='Shop.Theme.Actions'}"
+                                        >
+                                </div>
+
+                                <div class="m2cajaInfo">
+                                    {foreach from=$product.features item='feature'}
+                                        {if isset($feature.id_feature) && $feature.id_feature == $FEATURE_M2_CAJA_ID}
+                                            <span>m<sup>2</sup>/{l s='box' d='Shop.Theme.Catalog'}{l s=': ' d='Shop.Theme.Catalog'}<strong>{$feature.value}</strong></span>
+                                        {/if}
+                                    {/foreach}
+                                </div> 
+
+                            </div>
+
+                            <div class="actionButtons">
+
+                                <div class="row mx-auto row-calculator">
+
+                                    <div class="item-calculator">
+        
+                                        <div class="boxTextTitle">
+                                            <strong>{l s='Number of Boxes' d='Shop.Theme.Catalog'}:</strong>
+                                        </div>
+                                        <div class="box-container">
+                                            <button type="button" id="decrementButton" class="boxButton" style="width:60px; background-color: #eac133">
+                                                <i class="fa-solid fa-minus"></i>
+                                            </button>                            
+                                            <input type="number" id="numberInput" value="0" class="boxInput max-widt-box" inputmode="decimal">
+                                            <button type="button" id="incrementButton" class="boxButton" style="width:60px; background-color: #eac133">
+                                                <i class="fa-solid fa-plus"></i>
+
+                                            </button>
+                                        </div>
+
+                                    </div> 
+
+                                </div>
+
+                                <div class="row mx-auto box-recommendation">
+                                    {if $category->id_category != $CATEGORY_INSTALACION_Y_MONTAJE_ID}
+                                        <div class="recomendation">
+
+                                            <div class="wasteSwitch" style="padding-right: 15px">
+                                                <input class="toggle" type="checkbox" id="recomendation-check" name="recomendation-check" />
+                                                <label class="switch" for="recomendation-check" style="margin-bottom:0"></label>
+                                            </div>
+
+                                            <div class="ptd-10" style="font-weight:500; display:flex">
+                                                <div class="addWasteInfo">{l s='Add 10–15% extra' d='Shop.Theme.Catalog'}</div>
+                                                <div class="wasteLink" style="padding-left:5px">
+                                                    <a href="#" id="openModal" data-toggle="modal" data-target="#wasteModal" style="display:flex; font-weight: bold">
+                                                    + INFO<span style="color:#eac133; padding-left:3px; font-size:21px"><i class="fa-solid fa-angle-right"></i></span>
+                                                    </a>
+                                                </div>
+                                                
+                                                
+                                            </div>
+
+                                        </div>
+                                    {/if}
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <hr>
+
+                        <div class="row mx-auto" style="display:none">
+                            <div class="col-xl-6 col-xs-6 item-calculator">
+                                <div style="text-transform: uppercase">
+                                    <label>
+                                        <strong>
+                                            {l s='Total' d='Shop.Theme.Actions'}:
+                                        </strong>
                                     </label>
                                 </div>
                                 <div>
@@ -284,31 +347,21 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-                            <div class="col-xl-6 col-xs-6 item-calculator" style="padding-left: 20px">
-  
-                                <div style="text-transform: uppercase">
-                                    <label>
-                                        <strong>{l s='Boxes' d='Shop.Theme.Catalog'}:</strong>
-                                    </label>
-                                </div>
-                                <div class="box-container">
-                                    <button type="button" id="decrementButton" class="boxButton" style="width:40px; background-color: #eac133">
-                                        <i class="fa-solid fa-minus"></i>
-                                    </button>                            
-                                    <input type="number" id="numberInput" value="0" class="boxInput max-widt-box" inputmode="decimal">
-                                    <button type="button" id="incrementButton" class="boxButton" style="width:40px; background-color: #eac133">
-                                        <i class="fa-solid fa-plus"></i>
-                                    </button>
-                                </div>
-
-                            </div>
-
+                        <div class="subtotal-product" style="padding-bottom:15px">
+                            <div class="subtotal-title-product">{l s='Total Boxes' d='Shop.Theme.Catalog'}:</div>
+                            <div class="subtotal-quantity-product"><span id="m2SubtotalBoxes">0</span> {l s='Boxes' d='Shop.Theme.Catalog'}</div>
+                        </div>
+                        <div class="subtotal-product">
+                            <div class="subtotal-title-product">{l s='Total' d='Shop.Theme.Catalog'} M<sup>2:</sup></div>
+                            <div class="subtotal-quantity-product"><span id="m2TotalMeters">0.00</span> M<sup>2</sup></div>
                         </div>
 
                     {/if}
 
-                    <div id="quantity-wrapper" class="row mx-auto row-calculator">
+
+                    <div id="quantity-wrapper" class="row mx-auto row-calculator" style="display:none">
                         <div class="col-xl-6 col-xs-12">
 
                             <label class="font-weight-bold" for="quantity-input" style="width: 100%">
@@ -359,7 +412,7 @@
                         
                     </div>
 
-                    <div id="variants-wrapper" class="row">
+                    <div id="variants-wrapper" class="row" style="display:none">
                         {* PLANATEC *}
                         {block name='product_variants'}
                             {include file='catalog/_partials/product-variants.tpl'}
@@ -367,159 +420,75 @@
                         {* END PLANATEC *}
                     </div>
 
-                    <div id="add-wrapper" class="row mx-auto">
-                        <div class="col-xl-9 col-xs-12">
-                            <div class="add">
-                                <button
-                                        id="add-to-cart-submit"
-                                        class="btn btn-primary add-to-cart"
-                                        data-button-action="add-to-cart"
-                                        type="submit"
-                                        {if !$product.add_to_cart_url || $muestraEnCarrito}
-                                            disabled
-                                        {/if}
-                                >
-                                    {l s='Add to cart' d='Shop.Theme.Actions'}
-                                </button>
-                            </div>
-                        </div>
+                    <hr>
 
-                        {* PLANATEC *}
-                        
-                        <div class="col-xl-9 col-xs-12">
-                            {if $hasSample}
-                                <div class="add-sample">
-                                    <button 
-                                            id="add-sample-to-cart-button"
-                                            class="btn btn-primary add-to-cart add-to-cart-sample"
-                                            data-button-action="add-to-cart-sample"
-                                            type="button"
-                                            {if !$product.add_to_cart_url || $muestraEnCarrito || $maxProductsInCart || $productoEnCarrito}
+                    <div class="total-product">
+                        <div class="total-title-product">{l s='Total' d='Shop.Theme.Catalog'}:</div>
+                        <div class="total-quantity-product"><span id="m2TotalPrice">0.00</span> €</div>
+                    </div>
+
+                   
+
+                    
+                    <div style="position:relative">
+                        <div id="add-wrapper" class="buy-buttons-box">
+
+                            <div class="col-xl-6 col-xs-6" style="padding: 0">
+                                {if $hasSample}
+                                    <div class="add-sample">
+                                        <button 
+                                                id="add-sample-to-cart-button"
+                                                class="btn btn-primary add-to-cart add-to-cart-sample add-sample-to-cart"
+                                                data-button-action="add-to-cart-sample"
+                                                type="button"
+                                                {if !$product.add_to_cart_url || $muestraEnCarrito || $maxProductsInCart || $productoEnCarrito}
+                                                    disabled
+                                                {/if}
+                                        >
+                                            {if $muestra_de_pago !== ''}
+                                                {l s='Request sample' d='Shop.Theme.Actions'}
+                                            {else}
+                                                {l s='Request free sample' d='Shop.Theme.Actions'}
+                                            {/if}
+                                        </button>
+                                    </div>
+                                    <div id="sample-in-cart" {if !$muestraEnCarrito}style="display:none"{/if}>
+                                        {* l s='sample in cart' d='Shop.Theme.Actions' *}
+                                        <img class="sample-in-cart-img" src="/themes/child_classic/assets/img/cc_cart.png" loading="lazy" alt="shopping cart icon">
+                                    </div>
+                                {/if}
+
+                            </div>
+
+                            <div class="col-xl-6 col-xs-6" style="padding: 0">
+                                <div class="add">
+                                    <button
+                                            id="add-to-cart-submit"
+                                            class="btn btn-primary add-to-cart add-product-to-cart"
+                                            data-button-action="add-to-cart"
+                                            type="submit"
+                                            {if !$product.add_to_cart_url || $muestraEnCarrito}
                                                 disabled
                                             {/if}
                                     >
-                                        {if $muestra_de_pago !== ''}
-                                            {l s='Request sample' d='Shop.Theme.Actions'}
-                                        {else}
-                                            {l s='Request free sample' d='Shop.Theme.Actions'}
-                                        {/if}
+                                        {l s='Add to cart' d='Shop.Theme.Actions'}
                                     </button>
                                 </div>
-                                <div id="sample-in-cart" {if !$muestraEnCarrito}style="display:none"{/if}> {l s='sample in cart' d='Shop.Theme.Actions'}</div>
-                            {/if}
-
-                            {if $maxProductsInCart}
-                                <p id="max-samples-reached" style="text-align: center; font-weight: bold; color: red; margin-top: 10px; font-size: 12px; margin-bottom: 0;">
-                            {else}
-                                <p id="max-samples-reached" style="text-align: center; font-weight: bold; color: red; margin-top: 10px; font-size: 12px; margin-bottom: 0; display:none;">
-                            {/if}
-                                {l s='You have reached the maximum number of samples allowed in the same purchase, if necessary, contact customer service.' d='Shop.Theme.Global'}
-                            </p>
-                        </div>
-                        {* END PLANATEC *}
-                    </div>
-
-                    {* PLANATEC *}
-                    <div id="transport-wrapper" class="row mx-auto" style="margin-top:25px;margin-bottom:10px">
-                        <div class="col-xl-12 col-xs-12">
-                            <div class="product-transport">
-                                <div style="width: 100%;">
-                                    {if $dias_plazo !== '' or $texto_muestra !== ''}
-                                    
-                                        {if $texto_muestra !== ''}
-                                            
-                                            <div>
-                                                <div style="text-transform: uppercase; font-weight: 500">
-                                                   <span style="color: #a3a3a3; font-size: large "><i class="fa-solid fa-circle-exclamation"></i></span> {l s='Samples' d='Shop.Theme.Catalog'}
-                                                </div>
-                                                <div>
-                                                    {if $hasSample}
-                                                        {$productTransportSamples|replace:'{texto_muestra}':$texto_muestra nofilter}
-                                                    {else}
-                                                        <p>{$sampleTextWarning}<p>
-                                                    {/if}
-                                                </div>
-                                            </div>
-                                        {/if}
-                                        {if $dias_plazo !== ''}
-                                            <div>
-                                                <div style="text-transform: uppercase; font-weight: 500">
-                                                  <span style="color: #a3a3a3; font-size: large"><i class="fa-solid fa-truck"></i></span> {l s='Transport' d='Shop.Theme.Catalog'}
-                                                </div>
-                                                <div>{$productTransport|replace:'{dias_plazo}':$dias_plazo nofilter}</div>
-                                            </div>
-                                        {/if}
-                                    {/if}
-                                    {if $product.attachments}
-                                        {foreach from=$product.attachments item=attachment}
-                                            {if ($attachment.name == 'PDF Técnico' && $language.id == 1)
-                                                || ($attachment.name == 'PDF technique' && $language.id == 2)
-                                                || ($attachment.name == 'Technical PDF' && $language.id == 3)
-                                                || ($attachment.name == 'PDF Technical' && $language.id == 4)
-                                                || ($attachment.name == 'PDF Tecnico' && $language.id == 5)
-                                                || ($attachment.name == 'PDF-techniek' && $language.id == 6)
-                                            }
-                                                <div id="product-attachment-pdf-tecnico">
-                                                    <div>
-                                                        <span style="color: #a3a3a3; font-size: large"><i class="fa-solid fa-file"></i></span>
-                                                        <a href="{url entity='attachment' params=['id_attachment' => $attachment.id_attachment]}"
-                                                        target="_blank"
-                                                        style="text-transform: uppercase;font-weight: 500;font-size: 14px !important;">
-                                                            {l s='Download' d='Shop.Theme.Actions'} {l s='Technical PDF' d='Shop.Theme.Catalog'}
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            {/if}
-                                        {/foreach}
-                                    {/if}
-
-                                    {$junta_recomendada_nombre = Product::getProductName($junta_recomendada)}
-                                    {$imageCoverUrl= Product::getImageByPosition(1, $junta_recomendada)}
-                                    {$imageDustUrl= Product::getImageByPosition(2, $junta_recomendada)}
-                                    {assign var='hasCover' value=true}
-                                    {assign var='hasDust' value=true}
-                                    {if strpos($imageCoverUrl, 'no-hay-cover') !== false}
-                                        {assign var='hasCover' value=false}
-                                    {/if}
-
-                                    {if strpos($imageDustUrl, 'no-hay-cover') !== false}
-                                        {assign var='hasDust' value=false}
-                                    {/if}
-
-                                    {if !empty($junta_recomendada) && !empty($junta_recomendada_nombre)}
-                                        <div style="padding-top:25px">
-                                            <div id="recommended-board-wrapper" style="text-transform: uppercase; font-weight: 500">
-                                                <span style="padding-right:10px">{l s='Recommended board' d='Shop.Theme.Catalog'}{l s=':' d='Shop.Theme.Catalog'}</span> 
-                                                <a href="{Context::getContext()->link->getProductLink($junta_recomendada)}" style="font-size:.92rem;">
-                                                    {$junta_recomendada_nombre}
-                                                </a>
-                                            </div>
-                                            <div class="mobile-text-center">
-                                                <a href="{Context::getContext()->link->getProductLink($junta_recomendada)}">
-                                                    {if $hasCover}
-                                                        <img loading="lazy" src="{$imageCoverUrl}" style="max-width:155px" alt="{$junta_recomendada_nombre} - cover"/>
-                                                    {/if}
-                                                    {if $hasDust}
-                                                        <img loading="lazy" src="{$imageDustUrl}" style="max-width:155px" alt="{$junta_recomendada_nombre} - sample"/>
-                                                    {/if}
-                                                </a>
-                                            </div>
-                                        </div>
-                                    {/if}
-                                </div>
                             </div>
+
+
+                            
                         </div>
                     </div>
-
-                    {* END PLANATEC *}
+                    <div id="sticky-sentinel"></div>
                 </div>
             
                 {block name='waste_modal'}
                     {include file='catalog/_partials/_modal-waste.tpl'}
-                {/block}
+                {/block}                
 
             {/if}
-            {* END PLANATEC *}
+            
             {if $normalSell}
                 <div class="product-quantity-wrapper clearfix">
                     <div id="variants-wrapper" class="row">
@@ -593,13 +562,13 @@
                                 </label>
                             </div>
                             <div class="box-container">
-                                <button type="button" id="decrementQuantity" class="boxButton" style="width:40px; background-color: #eac133">
+                                <button type="button" id="decrementQuantity" class="boxButton" style="width:65px; background-color: #eac133">
                                     <i class="fa-solid fa-minus"></i>
                                 </button>
 
                                 <input type="number" name="qty" id="quantity-input" inputmode="decimal" class="input-group boxInput" value="0">
 
-                                <button type="button" id="incrementQuantity" class="boxButton" style="width:40px; background-color: #eac133">
+                                <button type="button" id="incrementQuantity" class="boxButton" style="width:65px; background-color: #eac133">
                                     <i class="fa-solid fa-plus"></i>
                                 </button>
                             </div>
@@ -607,7 +576,7 @@
                         <div class="col-xl-8 col-xs-12" style="padding-bottom: 15px">
                             <label class="font-weight-bold" for="euros-input" style="width: 100%">
                                 <div class="capacity-format">
-                                    <div>
+                                    <div style="text-transform: uppercase">
                                         {l s='Total' d='Shop.Theme.Actions'}{l s=': ' d='Shop.Theme.Catalog'}
                                     </div>
                                 </div>
@@ -637,142 +606,69 @@
                         </div>
                     </div>
                     
-                    <div id="add-wrapper" class="row">
-                        <div class="col-xl-9 col-xs-12">
-                            <div class="add">
-                                <button
-                                        class="btn btn-primary add-to-cart"
-                                        data-button-action="add-to-cart"
-                                        type="submit"
-                                        {if !$product.add_to_cart_url}
-                                            disabled
-                                        {/if}
-                                >
-                                    {l s='Add to cart' d='Shop.Theme.Actions'}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
                     {if $product.id_category_default == $CATEGORY_ARTICULATIONS}
-                        <div class="col-md-12 col-xs-12 joint-advertisement">
-                            <div class="calculator-advertisement">
-                                {if $language.id == 1}
-                                    <span style="font-weight:bold">Aviso:</span> El cálculo se basa en el volumen y la densidad del producto.
-                                    Debido a que algunos factores pueden influir en el consumo real (como la rugosidad de las baldosas, la cantidad de residuos, las superficies no planas, etc.), 
-                                    <span style="font-weight:bold">los datos suministrados son meramente indicativos y solo a efectos de estimación.</span>
-                                {elseif $language.id == 2}
-                                    <span style="font-weight:bold">Avis :</span> Le calcul est basé sur le volume et la densité du produit.
-                                    Comme certains facteurs peuvent influencer la consommation réelle (comme la rugosité des carreaux, la quantité de déchets, les surfaces irrégulières, etc.),
-                                    <span style="font-weight:bold">les données fournies sont uniquement indicatives et à des fins d'estimation.</span>
-                                {elseif $language.id == 3}
-                                    <span style="font-weight:bold">Notice:</span> The calculation is based on the volume and density of the product.
-                                    Since some factors may influence actual consumption (such as tile roughness, amount of waste, uneven surfaces, etc.),
-                                    <span style="font-weight:bold">the data provided are merely indicative and for estimation purposes only.</span>
-                                {elseif $language.id == 4}
-                                    <span style="font-weight:bold">Hinweis:</span> Die Berechnung basiert auf dem Volumen und der Dichte des Produkts.
-                                    Da einige Faktoren den tatsächlichen Verbrauch beeinflussen können (wie z.B. die Rauheit der Fliesen, die Menge des Abfalls, unebene Oberflächen usw.),
-                                    <span style="font-weight:bold">die bereitgestellten Daten sind nur indikativ und dienen nur zu Schätzungszwecken.</span>
-                                {elseif $language.id == 5}
-                                    <span style="font-weight:bold">Aviso:</span> O cálculo baseia-se no volume e na densidade do produto.
-                                    Como alguns fatores podem influenciar o consumo real (como a rugosidade das telhas, a quantidade de resíduos, superfícies irregulares, etc.),
-                                    <span style="font-weight:bold">os dados fornecidos são meramente indicativos e apenas para efeitos de estimativa.</span>
-                                {elseif $language.id == 6}
-                                    <span style="font-weight:bold">Opmerking:</span> De berekening is gebaseerd op het volume en de dichtheid van het product.
-                                    Omdat sommige factoren invloed kunnen hebben op het daadwerkelijke verbruik (zoals de ruwheid van tegels, de hoeveelheid afval, oneffen oppervlakken, enz.),
-                                    <span style="font-weight:bold">zijn de verstrekte gegevens slechts indicatief en alleen voor schattingsdoeleinden.</span>
-                                {else}
-                                    <span style="font-weight:bold; color: red">ERROR:: LANGUAGE NOT DETECTED</span>
-                                {/if}
-                            </div>
-                        </div>
-                    {/if}
+                        <div class="row mx-auto">
 
-                    <div id="transport-wrapper" class="row mx-auto" style="margin-bottom:30px">
-                        <div class="col-xl-12 col-xs-12">
-                            <div class="product-transport">
-                                <div style="width: 100%">
-                                    {if $dias_plazo !== '' or $texto_muestra !== ''}
-                                        {if $dias_plazo !== ''}
-                                            <div>
-                                                <div style="text-transform: uppercase; font-weight: 500">
-                                                    <span style="color: #a3a3a3; font-size: large"><i class="fa-solid fa-truck"></i></span> {l s='Transport' d='Shop.Theme.Catalog'}
-                                                </div>
-                                                <div>{$productTransport|replace:'{dias_plazo}':$dias_plazo nofilter}</div>
-                                            </div>
-                                        {/if}
-                                        {if $texto_muestra !== ''}
-                                            <div>
-                                                <div>
-                                                    <span style="color: #a3a3a3 "><i class="fa-solid fa-circle-exclamation"></i></span>
-                                                </div>
-                                            <div>
-                                            {if $hasSample}
-                                                {$productTransportSamples|replace:'{texto_muestra}':$texto_muestra nofilter}
-                                            {else}
-                                                <p>{$sampleTextWarning}</p>
-                                            {/if}
-                                        {/if}
-                                    {/if}
-                                    {if $product.attachments}
-                                        {foreach from=$product.attachments item=attachment}
-                                            {if ($attachment.name == 'PDF Técnico' && $language.id == 1)
-                                            || ($attachment.name == 'PDF technique' && $language.id == 2)
-                                            || ($attachment.name == 'Technical PDF' && $language.id == 3)
-                                            || ($attachment.name == 'PDF Technical' && $language.id == 4)
-                                            || ($attachment.name == 'PDF Tecnico' && $language.id == 5)
-                                            || ($attachment.name == 'PDF-techniek' && $language.id == 6)
-                                            }
-                                                <div id="product-attachment-pdf-tecnico">
-                                                    <div>
-                                                        <span style="color: #a3a3a3; font-size: large"><i class="fa-solid fa-file"></i></span>
-                                                        <a href="{url entity='attachment' params=['id_attachment' => $attachment.id_attachment]}"
-                                                        target="_blank"
-                                                        style="text-transform: uppercase;font-weight: 500;font-size: 14px !important;">
-                                                            {l s='Download' d='Shop.Theme.Actions'} {l s='Technical PDF' d='Shop.Theme.Catalog'}
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            {/if}
-                                        {/foreach}
+                            <div class="col-md-12 col-xs-12 joint-advertisement">
+                                <div class="calculator-advertisement">
+                                    {if $language.id == 1}
+                                        <span style="font-weight:bold">Aviso:</span> El cálculo se basa en el volumen y la densidad del producto.
+                                        Debido a que algunos factores pueden influir en el consumo real (como la rugosidad de las baldosas, la cantidad de residuos, las superficies no planas, etc.), 
+                                        <span style="font-weight:bold">los datos suministrados son meramente indicativos y solo a efectos de estimación.</span>
+                                    {elseif $language.id == 2}
+                                        <span style="font-weight:bold">Avis :</span> Le calcul est basé sur le volume et la densité du produit.
+                                        Comme certains facteurs peuvent influencer la consommation réelle (comme la rugosité des carreaux, la quantité de déchets, les surfaces irrégulières, etc.),
+                                        <span style="font-weight:bold">les données fournies sont uniquement indicatives et à des fins d'estimation.</span>
+                                    {elseif $language.id == 3}
+                                        <span style="font-weight:bold">Notice:</span> The calculation is based on the volume and density of the product.
+                                        Since some factors may influence actual consumption (such as tile roughness, amount of waste, uneven surfaces, etc.),
+                                        <span style="font-weight:bold">the data provided are merely indicative and for estimation purposes only.</span>
+                                    {elseif $language.id == 4}
+                                        <span style="font-weight:bold">Hinweis:</span> Die Berechnung basiert auf dem Volumen und der Dichte des Produkts.
+                                        Da einige Faktoren den tatsächlichen Verbrauch beeinflussen können (wie z.B. die Rauheit der Fliesen, die Menge des Abfalls, unebene Oberflächen usw.),
+                                        <span style="font-weight:bold">die bereitgestellten Daten sind nur indikativ und dienen nur zu Schätzungszwecken.</span>
+                                    {elseif $language.id == 5}
+                                        <span style="font-weight:bold">Aviso:</span> O cálculo baseia-se no volume e na densidade do produto.
+                                        Como alguns fatores podem influenciar o consumo real (como a rugosidade das telhas, a quantidade de resíduos, superfícies irregulares, etc.),
+                                        <span style="font-weight:bold">os dados fornecidos são meramente indicativos e apenas para efeitos de estimativa.</span>
+                                    {elseif $language.id == 6}
+                                        <span style="font-weight:bold">Opmerking:</span> De berekening is gebaseerd op het volume en de dichtheid van het product.
+                                        Omdat sommige factoren invloed kunnen hebben op het daadwerkelijke verbruik (zoals de ruwheid van tegels, de hoeveelheid afval, oneffen oppervlakken, enz.),
+                                        <span style="font-weight:bold">zijn de verstrekte gegevens slechts indicatief en alleen voor schattingsdoeleinden.</span>
+                                    {else}
+                                        <span style="font-weight:bold; color: red">ERROR:: LANGUAGE NOT DETECTED</span>
                                     {/if}
                                 </div>
                             </div>
+
                         </div>
+                    {/if}
+
+                    <div class="row mx-auto">
+                        <div style="position:relative">
+                            <div id="add-wrapper" class="normal-buy-buttons">
+                                <div class="col-xl-12 col-xs-12" style="padding-top: 0; padding-bottom: 0">
+                                    <div class="add" style="padding:10px">
+                                        <button
+                                                class="btn btn-primary add-to-cart add-product-to-cart"
+                                                data-button-action="add-to-cart"
+                                                type="submit"
+                                                {if !$product.add_to_cart_url}
+                                                    disabled
+                                                {/if}
+                                        >
+                                            {l s='Add to cart' d='Shop.Theme.Actions'}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="sticky-sentinel"></div>
                     </div>
+
+
+
                 </div>
-
-                {$junta_recomendada_nombre = Product::getProductName($junta_recomendada)}
-                                            
-                {$imageUrl= Product::getImageByPosition(2, $junta_recomendada)}
-                {assign var='hasCover' value=true}
-                {if strpos($imageUrl, 'no-hay-cover') !== false}
-                    {assign var='hasCover' value=false}
-                {/if}
-
-                {if !empty($junta_recomendada) && !empty($junta_recomendada_nombre)}
-                    <div id="recommended-board-wrapper" class="row" style="display:flex; align-items: center">
-                        <div class="col-xl-6 col-xs-12" style="display: flex;align-items: center;justify-content: space-between;">
-                            <label for="">{l s='Recommended board' d='Shop.Theme.Catalog'}{l s=':' d='Shop.Theme.Catalog'}</label>
-                            <a class="hidden-sm-up"
-                               href="{Context::getContext()->link->getProductLink($junta_recomendada)}">
-                                {if $hasCover}
-                                    <img src="{Product::getImageByPosition(2, $junta_recomendada)}" style="margin-left:10px;max-width:50px" alt="{$junta_recomendada_nombre}"/>
-                                {/if} 
-                                {$junta_recomendada_nombre}
-                            </a>
-                        </div>
-                        <div class="col-xl-6 col-xs-12 hidden-xs-down">
-                            <a href="{Context::getContext()->link->getProductLink($junta_recomendada)}">
-                                {if $hasCover}
-                                    <img src="{Product::getImageByPosition(2, $junta_recomendada)}" style="margin-left:10px;max-width:50px" alt="{$junta_recomendada_nombre}"/>
-                                {/if}
-                                {$junta_recomendada_nombre}
-                            </a>
-                        </div>
-                    </div>
-                {/if}
-
             {/if}
 
             {hook h='displayProductActions' product=$product}

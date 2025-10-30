@@ -23,7 +23,7 @@ foreach ($results as $row) {
     $id_lang = $row['id_lang'];
     $metaTitle = $row['meta_title'];
     $name = htmlspecialchars($row['name']); // Evitar HTML roto
-    $category_url = $link->getCategoryLink($id_category, null, null, null, $id_lang);
+    $category_url = $link->getCategoryLink($id_category, null, $id_lang);
 
     echo '<tr>';
     echo '<td>' . $id_category . '</td>';
