@@ -4,10 +4,11 @@
  *
  * @author Mathias Reker
  * @copyright Mathias Reker
- * @license Commercial Software License
+ * @license Academic Free License (AFL 3.0)
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Additionally, this module is subject to a proprietary End User License Agreement (EULA).
+ * For the full copyright, open source license, and EULA information, please view the LICENSE
+ * that were distributed with this source code.
  */
 
 declare(strict_types=1);
@@ -36,6 +37,10 @@ use PrestaShop\Module\PerformancePro\web\form\ResourceLoadingForm;
 use PrestaShop\Module\PerformancePro\web\form\ServerAnalyticsForm;
 use PrestaShop\Module\PerformancePro\web\form\SystemAnalyticsForm;
 use PrestaShop\Module\PerformancePro\web\form\ToolsConfigurationForm;
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 final class AdminPerformanceProController extends ModuleAdminController
 {
@@ -77,20 +82,6 @@ final class AdminPerformanceProController extends ModuleAdminController
         }
 
         return $result . $this->renderAdminForm();
-    }
-
-    public function displayDemoNotification(): string
-    {
-        $error = $this->module->l('The configuration has been disabled in the demo mode.');
-
-        return $this->module->getSuccessTemplate($error);
-    }
-
-    public function displaySaveNotification(): string
-    {
-        $error = $this->module->l('Settings saved.');
-
-        return $this->module->getSuccessTemplate($error);
     }
 
     private function submitInputData(): bool
@@ -155,6 +146,13 @@ final class AdminPerformanceProController extends ModuleAdminController
         }
     }
 
+    public function displaySaveNotification(): string
+    {
+        $error = $this->module->l('Settings saved.');
+
+        return $this->module->getSuccessTemplate($error);
+    }
+
     private function displayErrorNotification(): string
     {
         $result = '';
@@ -164,6 +162,13 @@ final class AdminPerformanceProController extends ModuleAdminController
         }
 
         return $result;
+    }
+
+    public function displayDemoNotification(): string
+    {
+        $error = $this->module->l('The configuration has been disabled in the demo mode.');
+
+        return $this->module->getSuccessTemplate($error);
     }
 
     private function renderAdminForm(): string

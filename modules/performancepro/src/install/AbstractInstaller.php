@@ -4,25 +4,28 @@
  *
  * @author Mathias Reker
  * @copyright Mathias Reker
- * @license Commercial Software License
+ * @license Academic Free License (AFL 3.0)
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Additionally, this module is subject to a proprietary End User License Agreement (EULA).
+ * For the full copyright, open source license, and EULA information, please view the LICENSE
+ * that were distributed with this source code.
  */
 
 declare(strict_types=1);
 
 namespace PrestaShop\Module\PerformancePro\install;
 
-use Module;
 use PrestaShop\Module\PerformancePro\resources\config\Field;
 use PrestaShop\Module\PerformancePro\resources\config\Hook;
-use ReflectionClass;
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 abstract class AbstractInstaller
 {
     /**
-     * @var Module
+     * @var \Module
      */
     protected $module;
 
@@ -44,7 +47,7 @@ abstract class AbstractInstaller
     /**
      * @var string[]
      */
-    public function __construct(Module $module)
+    public function __construct(\Module $module)
     {
         $this->module = $module;
 
@@ -52,7 +55,7 @@ abstract class AbstractInstaller
 
         $this->fieldValues = Field::getFieldValues();
 
-        $this->className = (new ReflectionClass($this))->getShortName();
+        $this->className = (new \ReflectionClass($this))->getShortName();
     }
 
     abstract public function execute(): bool;

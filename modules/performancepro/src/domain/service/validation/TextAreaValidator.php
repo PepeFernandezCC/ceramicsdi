@@ -4,18 +4,20 @@
  *
  * @author Mathias Reker
  * @copyright Mathias Reker
- * @license Commercial Software License
+ * @license Academic Free License (AFL 3.0)
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Additionally, this module is subject to a proprietary End User License Agreement (EULA).
+ * For the full copyright, open source license, and EULA information, please view the LICENSE
+ * that were distributed with this source code.
  */
 
 declare(strict_types=1);
 
 namespace PrestaShop\Module\PerformancePro\domain\service\validation;
 
-use Tools;
-use Validate;
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 final class TextAreaValidator implements Validator
 {
@@ -51,7 +53,7 @@ final class TextAreaValidator implements Validator
         $temp = [];
 
         foreach ($this->array as $singleArray) {
-            if (Validate::isUrl($singleArray)) {
+            if (\Validate::isUrl($singleArray)) {
                 $temp[] = $singleArray;
             }
         }
@@ -63,7 +65,7 @@ final class TextAreaValidator implements Validator
 
     public function removeDuplicates(): self
     {
-        $this->array = Tools::arrayUnique($this->array);
+        $this->array = \Tools::arrayUnique($this->array);
 
         return $this;
     }
@@ -71,6 +73,11 @@ final class TextAreaValidator implements Validator
     public function execute(): string
     {
         return $this->arrayToText();
+    }
+
+    private function arrayToText(): string
+    {
+        return implode($this->separator, $this->array);
     }
 
     public function removeWhitespace(): self
@@ -93,10 +100,5 @@ final class TextAreaValidator implements Validator
         $this->array = explode($separator, $this->field);
 
         return $this;
-    }
-
-    private function arrayToText(): string
-    {
-        return implode($this->separator, $this->array);
     }
 }

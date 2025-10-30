@@ -4,42 +4,57 @@
  *
  * @author Mathias Reker
  * @copyright Mathias Reker
- * @license Commercial Software License
+ * @license Academic Free License (AFL 3.0)
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Additionally, this module is subject to a proprietary End User License Agreement (EULA).
+ * For the full copyright, open source license, and EULA information, please view the LICENSE
+ * that were distributed with this source code.
  */
 
 declare(strict_types=1);
 
 namespace PrestaShop\Module\PerformancePro\web\form;
 
-use Configuration;
 use PrestaShop\Module\PerformancePro\domain\service\log\LogService;
 use PrestaShop\Module\PerformancePro\domain\service\provider\PHPVersionProvider;
 use PrestaShop\Module\PerformancePro\domain\service\provider\PrestaShopVersionProvider;
 use PrestaShop\Module\PerformancePro\exception\PerformanceProInvalidResourceException;
 use PrestaShop\Module\PerformancePro\web\util\View;
-use Tools;
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 final class SystemAnalyticsForm extends AbstractForm
 {
     /**
-     * @var null|mixed
+     * @var mixed|null
      */
     public $module;
 
     /**
-     * @var null|mixed
+     * @var mixed|null
      */
     public $className;
+
+    /**
+     * @var View
+     */
+    private $view;
+
+    public function __construct(\Module $module)
+    {
+        parent::__construct($module);
+
+        $this->view = new View();
+    }
 
     /**
      * @return array{form: array{legend: array{title: mixed, icon: string}, description: mixed, input: array<int, array{type: string, label: string, html_content: string, col: int, name: string}>}}
      */
     public function getFields(): array
     {
-        $iconBolt = View::displayBoltIcon();
+        $iconBolt = $this->view->displayBoltIcon();
 
         $prestaShopVersionProvider = new PrestaShopVersionProvider();
 
@@ -77,7 +92,7 @@ final class SystemAnalyticsForm extends AbstractForm
                     'PHP version (%s). It is recommended to upgrade to the latest PHP version as new PHP includes bug fixes, performance improvements and security fixes.',
                     $this->className
                 ),
-                Tools::checkPhpVersion()
+                \Tools::checkPhpVersion()
             ),
             $phpVersion->isPhpVersionUpToDate(),
             sprintf(
@@ -91,8 +106,8 @@ final class SystemAnalyticsForm extends AbstractForm
                 'Enable SSL. If you own an SSL certificate for your websites domain name, you can activate SSL encryption (https://) for customer account identification and order processing.',
                 $this->className
             ),
-            (bool) Configuration::get('PS_SSL_ENABLED'),
-            View::displayBtnAjax(
+            (bool) \Configuration::get('PS_SSL_ENABLED'),
+            $this->view->displayBtnAjax(
                 'configurationUpdate',
                 sprintf($this->module->l('%s Execute', $this->className), $iconBolt),
                 $this->module->l('Are you sure?', $this->className),
@@ -105,8 +120,8 @@ final class SystemAnalyticsForm extends AbstractForm
                 'Enable SSL on all pages. When enabled, all the pages of your webshop will be SSL-secured.',
                 $this->className
             ),
-            (bool) Configuration::get('PS_SSL_ENABLED_EVERYWHERE'),
-            View::displayBtnAjax(
+            (bool) \Configuration::get('PS_SSL_ENABLED_EVERYWHERE'),
+            $this->view->displayBtnAjax(
                 'configurationUpdate',
                 sprintf($this->module->l('%s Execute', $this->className), $iconBolt),
                 $this->module->l('Are you sure?', $this->className),
@@ -116,8 +131,8 @@ final class SystemAnalyticsForm extends AbstractForm
 
         $smartyCache = [
             $this->module->l('Smarty Cache. It should be enabled except for debugging.', $this->className),
-            (bool) Configuration::get('PS_SMARTY_CACHE'),
-            View::displayBtnAjax(
+            (bool) \Configuration::get('PS_SMARTY_CACHE'),
+            $this->view->displayBtnAjax(
                 'configurationUpdate',
                 sprintf($this->module->l('%s Execute', $this->className), $iconBolt),
                 $this->module->l('Are you sure?', $this->className),
@@ -130,8 +145,8 @@ final class SystemAnalyticsForm extends AbstractForm
                 'Multi-front optimizations. It should be enabled if you want to avoid storing the smarty cache on NFS. In most cases, it is best to disable it.',
                 $this->className
             ),
-            !(bool) Configuration::get('PS_SMARTY_LOCAL'),
-            View::displayBtnAjax(
+            !(bool) \Configuration::get('PS_SMARTY_LOCAL'),
+            $this->view->displayBtnAjax(
                 'configurationUpdate',
                 sprintf($this->module->l('%s Execute', $this->className), $iconBolt),
                 $this->module->l('Are you sure?', $this->className),
@@ -141,8 +156,8 @@ final class SystemAnalyticsForm extends AbstractForm
 
         $smartyType = [
             $this->module->l('Caching type should be set to file system.', $this->className),
-            'filesystem' === Configuration::get('PS_SMARTY_CACHING_TYPE'),
-            View::displayBtnAjax(
+            'filesystem' === \Configuration::get('PS_SMARTY_CACHING_TYPE'),
+            $this->view->displayBtnAjax(
                 'configurationUpdate',
                 sprintf($this->module->l('%s Execute', $this->className), $iconBolt),
                 $this->module->l('Are you sure?', $this->className),
@@ -155,8 +170,8 @@ final class SystemAnalyticsForm extends AbstractForm
                 'The clear cache should be set to never clear cache files. This is faster in production, but you must clear the cache manually once Smarty templates change.',
                 $this->className
             ),
-            'never' === Configuration::get('PS_SMARTY_CLEAR_CACHE'),
-            View::displayBtnAjax(
+            'never' === \Configuration::get('PS_SMARTY_CLEAR_CACHE'),
+            $this->view->displayBtnAjax(
                 'configurationUpdate',
                 sprintf($this->module->l('%s Execute', $this->className), $iconBolt),
                 $this->module->l('Are you sure?', $this->className),
@@ -166,8 +181,8 @@ final class SystemAnalyticsForm extends AbstractForm
 
         $cssThemeCache = [
             $this->module->l('Smart cache for CSS.', $this->className),
-            (bool) Configuration::get('PS_CSS_THEME_CACHE'),
-            View::displayBtnAjax(
+            (bool) \Configuration::get('PS_CSS_THEME_CACHE'),
+            $this->view->displayBtnAjax(
                 'configurationUpdate',
                 sprintf($this->module->l('%s Execute', $this->className), $iconBolt),
                 $this->module->l('Are you sure?', $this->className),
@@ -177,8 +192,8 @@ final class SystemAnalyticsForm extends AbstractForm
 
         $jsThemeCache = [
             $this->module->l('Smart cache for JavaScript.', $this->className),
-            (bool) Configuration::get('PS_JS_THEME_CACHE'),
-            View::displayBtnAjax(
+            (bool) \Configuration::get('PS_JS_THEME_CACHE'),
+            $this->view->displayBtnAjax(
                 'configurationUpdate',
                 sprintf($this->module->l('%s Execute', $this->className), $iconBolt),
                 $this->module->l('Are you sure?', $this->className),
@@ -191,8 +206,8 @@ final class SystemAnalyticsForm extends AbstractForm
                 'Apache optimization. This will add directives to your .htaccess file, improving caching and compression.',
                 $this->className
             ),
-            (bool) Configuration::get('PS_HTACCESS_CACHE_CONTROL'),
-            View::displayBtnAjax(
+            (bool) \Configuration::get('PS_HTACCESS_CACHE_CONTROL'),
+            $this->view->displayBtnAjax(
                 'configurationUpdate',
                 sprintf($this->module->l('%s Execute', $this->className), $iconBolt),
                 $this->module->l('Are you sure?', $this->className),
@@ -206,7 +221,7 @@ final class SystemAnalyticsForm extends AbstractForm
                 $this->className
             ),
             !_PS_MODE_DEV_,
-            View::displayBtnAjax(
+            $this->view->displayBtnAjax(
                 'configurationUpdateConfigValue',
                 sprintf($this->module->l('%s Execute', $this->className), $iconBolt),
                 $this->module->l('Are you sure?', $this->className),
@@ -220,7 +235,7 @@ final class SystemAnalyticsForm extends AbstractForm
                 $this->className
             ),
             !_PS_DEBUG_PROFILING_,
-            View::displayBtnAjax(
+            $this->view->displayBtnAjax(
                 'configurationUpdateConfigValue',
                 sprintf($this->module->l('%s Execute', $this->className), $iconBolt),
                 $this->module->l('Are you sure?', $this->className),
@@ -228,7 +243,7 @@ final class SystemAnalyticsForm extends AbstractForm
             ),
         ];
 
-        $result = View::displayArrayAsTable(
+        $result = $this->view->displayTable(
             $this->createTableSettings([
                 $sslEnabled,
                 $sslEnabledEverywhere,
@@ -244,7 +259,7 @@ final class SystemAnalyticsForm extends AbstractForm
             ])
         );
 
-        $result .= View::displayArrayAsTable(
+        $result .= $this->view->displayTable(
             $this->createTableVersions([$prestaShopVersionProvider, $phpVersion])
         );
 
@@ -281,10 +296,10 @@ final class SystemAnalyticsForm extends AbstractForm
         foreach ($rows as $row) {
             $result[] = [
                 $this->module->l('Status', $this->className) => $row[1]
-                    ? View::displayLabelSuccess($this->module->l('Well done!', $this->className))
-                    : View::displayLabelInfo($this->module->l('Can be improved', $this->className)),
+                    ? $this->view->displayLabelSuccess($this->module->l('Well done!', $this->className))
+                    : $this->view->displayLabelInfo($this->module->l('Can be improved', $this->className)),
                 $this->module->l('Check', $this->className) => $row[0],
-                View::displayAlign($this->module->l('How to fix', $this->className)) => View::displayAlign($row[2]),
+                $this->view->displayAlign($this->module->l('How to fix', $this->className)) => $this->view->displayAlign($row[2]),
             ];
         }
 
@@ -301,8 +316,8 @@ final class SystemAnalyticsForm extends AbstractForm
         foreach ($rows as $row) {
             $result[] = [
                 $this->module->l('Status', $this->className) => $row[1]
-                    ? View::displayLabelSuccess($this->module->l('Well done!', $this->className))
-                    : View::displayLabelInfo($this->module->l('Can be improved', $this->className)),
+                    ? $this->view->displayLabelSuccess($this->module->l('Well done!', $this->className))
+                    : $this->view->displayLabelInfo($this->module->l('Can be improved', $this->className)),
                 $this->module->l('Check', $this->className) => $row[0],
                 $this->module->l('How to fix', $this->className) => $row[2],
             ];

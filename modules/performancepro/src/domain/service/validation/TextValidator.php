@@ -4,20 +4,23 @@
  *
  * @author Mathias Reker
  * @copyright Mathias Reker
- * @license Commercial Software License
+ * @license Academic Free License (AFL 3.0)
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Additionally, this module is subject to a proprietary End User License Agreement (EULA).
+ * For the full copyright, open source license, and EULA information, please view the LICENSE
+ * that were distributed with this source code.
  */
 
 declare(strict_types=1);
 
 namespace PrestaShop\Module\PerformancePro\domain\service\validation;
 
-use Module;
 use PrestaShop\Module\PerformancePro\exception\PerformanceProValidationException;
 use PrestaShop\Module\PerformancePro\resources\config\Config;
-use Validate;
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 final class TextValidator implements Validator
 {
@@ -36,7 +39,7 @@ final class TextValidator implements Validator
      */
     public function mustBeEmptyOrAnInteger(): self
     {
-        if (!empty($this->field) && !Validate::isInt($this->field)) {
+        if (!empty($this->field) && !\Validate::isInt($this->field)) {
             $message = $this->getModuleInstance()->l('The value must be empty or an integer.');
 
             throw new PerformanceProValidationException($message);
@@ -45,9 +48,14 @@ final class TextValidator implements Validator
         return $this;
     }
 
+    private function getModuleInstance()
+    {
+        return \Module::getInstanceByName(Config::MODULE_NAME);
+    }
+
     public function mustBeBetween(int $from, int $to, int $default): self
     {
-        if ($this->field < $from || $this->field > $to || !Validate::isInt($this->field)) {
+        if ($this->field < $from || $this->field > $to || !\Validate::isInt($this->field)) {
             $this->field = (string) $default;
         }
 
@@ -59,7 +67,7 @@ final class TextValidator implements Validator
      */
     public function mustBeAColor(): self
     {
-        if (!Validate::isColor($this->field)) {
+        if (!\Validate::isColor($this->field)) {
             $message = $this->getModuleInstance()->l('The value must be of a valid color format.');
 
             throw new PerformanceProValidationException($message);
@@ -71,10 +79,5 @@ final class TextValidator implements Validator
     public function execute(): string
     {
         return $this->field;
-    }
-
-    private function getModuleInstance()
-    {
-        return Module::getInstanceByName(Config::MODULE_NAME);
     }
 }

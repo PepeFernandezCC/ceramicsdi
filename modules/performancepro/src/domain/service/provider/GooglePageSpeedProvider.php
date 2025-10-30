@@ -4,18 +4,22 @@
  *
  * @author Mathias Reker
  * @copyright Mathias Reker
- * @license Commercial Software License
+ * @license Academic Free License (AFL 3.0)
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Additionally, this module is subject to a proprietary End User License Agreement (EULA).
+ * For the full copyright, open source license, and EULA information, please view the LICENSE
+ * that were distributed with this source code.
  */
 
 declare(strict_types=1);
 
 namespace PrestaShop\Module\PerformancePro\domain\service\provider;
 
-use Exception;
 use PrestaShop\Module\PerformancePro\domain\service\http\proxy\SimpleCache;
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 final class GooglePageSpeedProvider
 {
@@ -30,9 +34,9 @@ final class GooglePageSpeedProvider
     private $url;
 
     /**
-     * @throws Exception
-     *
      * @return array<string>
+     *
+     * @throws \Exception
      */
     public function getFontDisplay(): array
     {
@@ -40,26 +44,9 @@ final class GooglePageSpeedProvider
     }
 
     /**
-     * @throws Exception
-     *
      * @return array<string>
-     */
-    public function getUserRelPreconnect(): array
-    {
-        return $this->getGooglePageSpeedResult('uses-rel-preconnect');
-    }
-
-    public function setUrl(string $url): self
-    {
-        $this->url = $url;
-
-        return $this;
-    }
-
-    /**
-     * @throws Exception
      *
-     * @return array<string>
+     * @throws \Exception
      */
     private function getGooglePageSpeedResult(string $type): array
     {
@@ -83,7 +70,7 @@ final class GooglePageSpeedProvider
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     private function getGooglePageSpeedReport(): string
     {
@@ -95,5 +82,22 @@ final class GooglePageSpeedProvider
         return (new SimpleCache())
             ->expiresAfter(3600)
             ->get(self::GOOGLE_PAGE_SPEED_API, self::GOOGLE_PAGE_SPEED_API . '?' . http_build_query($params));
+    }
+
+    /**
+     * @return array<string>
+     *
+     * @throws \Exception
+     */
+    public function getUserRelPreconnect(): array
+    {
+        return $this->getGooglePageSpeedResult('uses-rel-preconnect');
+    }
+
+    public function setUrl(string $url): self
+    {
+        $this->url = $url;
+
+        return $this;
     }
 }

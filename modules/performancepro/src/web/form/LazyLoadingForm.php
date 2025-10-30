@@ -4,10 +4,11 @@
  *
  * @author Mathias Reker
  * @copyright Mathias Reker
- * @license Commercial Software License
+ * @license Academic Free License (AFL 3.0)
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Additionally, this module is subject to a proprietary End User License Agreement (EULA).
+ * For the full copyright, open source license, and EULA information, please view the LICENSE
+ * that were distributed with this source code.
  */
 
 declare(strict_types=1);
@@ -16,17 +17,33 @@ namespace PrestaShop\Module\PerformancePro\web\form;
 
 use PrestaShop\Module\PerformancePro\web\util\View;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 final class LazyLoadingForm extends AbstractForm
 {
     /**
-     * @var null|mixed
+     * @var mixed|null
      */
     public $module;
 
     /**
-     * @var null|mixed
+     * @var mixed|null
      */
     public $className;
+
+    /**
+     * @var View
+     */
+    private $view;
+
+    public function __construct(\Module $module)
+    {
+        parent::__construct($module);
+
+        $this->view = new View();
+    }
 
     /**
      * @return array{form: array{legend: array{title: mixed, icon: string}, description: mixed, input: array<int, array{type: string, label: mixed, name: string, is_bool: true, desc: mixed, values: array<int, array{id: string, value: bool, label: mixed}>}>, submit: array{title: mixed}}}
@@ -51,7 +68,7 @@ final class LazyLoadingForm extends AbstractForm
                         'is_bool' => true,
                         'desc' => sprintf(
                             $this->module->l('Lazy load all images. %s.', $this->className),
-                            View::displayLink(
+                            $this->view->displayLink(
                                 'https://web.dev/browser-level-image-lazy-loading/',
                                 $this->module->l('Read more', $this->className)
                             )
@@ -76,7 +93,7 @@ final class LazyLoadingForm extends AbstractForm
                         'is_bool' => true,
                         'desc' => sprintf(
                             $this->module->l('Lazy load all iframes. %s.', $this->className),
-                            View::displayLink(
+                            $this->view->displayLink(
                                 'https://web.dev/iframe-lazy-loading/',
                                 $this->module->l('Read more', $this->className)
                             )
@@ -120,7 +137,7 @@ final class LazyLoadingForm extends AbstractForm
                         'is_bool' => true,
                         'desc' => sprintf(
                             $this->module->l('Lazy load all videos. %s.', $this->className),
-                            View::displayLink(
+                            $this->view->displayLink(
                                 'https://web.dev/lazy-loading-video/',
                                 $this->module->l('Read more', $this->className)
                             )

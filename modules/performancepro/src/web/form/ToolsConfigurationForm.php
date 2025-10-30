@@ -4,10 +4,11 @@
  *
  * @author Mathias Reker
  * @copyright Mathias Reker
- * @license Commercial Software License
+ * @license Academic Free License (AFL 3.0)
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Additionally, this module is subject to a proprietary End User License Agreement (EULA).
+ * For the full copyright, open source license, and EULA information, please view the LICENSE
+ * that were distributed with this source code.
  */
 
 declare(strict_types=1);
@@ -16,20 +17,24 @@ namespace PrestaShop\Module\PerformancePro\web\form;
 
 use PrestaShop\Module\PerformancePro\resources\config\Config;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 final class ToolsConfigurationForm extends AbstractForm
 {
     /**
-     * @var null|mixed
+     * @var mixed|null
      */
     public $module;
 
     /**
-     * @var null|mixed
+     * @var mixed|null
      */
     public $className;
 
     /**
-     * @return array{form: array{legend: array{title: mixed, icon: string}, description: mixed, input: array{type: string, col: int, label: mixed, desc: string, name: string}[]|array{type: string, desc: mixed, name: string, label: mixed, suffix: string, class: string}[], submit: array{title: mixed}}}
+     * @return array{form: array{legend: array{title: mixed, icon: string}, description: mixed, input: array{type: string, desc: mixed, name: string, label: mixed, suffix: string, class: string}[]|array{type: string, col: int, label: mixed, desc: string, name: string}[], submit: array{title: mixed}}}
      */
     public function getFields(): array
     {

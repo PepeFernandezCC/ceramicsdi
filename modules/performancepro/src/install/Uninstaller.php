@@ -4,19 +4,22 @@
  *
  * @author Mathias Reker
  * @copyright Mathias Reker
- * @license Commercial Software License
+ * @license Academic Free License (AFL 3.0)
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Additionally, this module is subject to a proprietary End User License Agreement (EULA).
+ * For the full copyright, open source license, and EULA information, please view the LICENSE
+ * that were distributed with this source code.
  */
 
 declare(strict_types=1);
 
 namespace PrestaShop\Module\PerformancePro\install;
 
-use Configuration;
 use PrestaShop\Module\PerformancePro\resources\config\Config;
-use Tab;
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 final class Uninstaller extends AbstractInstaller
 {
@@ -34,13 +37,13 @@ final class Uninstaller extends AbstractInstaller
         }
 
         foreach (array_keys($this->fieldValues) as $name) {
-            Configuration::deleteByName($name);
+            \Configuration::deleteByName($name);
         }
     }
 
     private function uninstallTab(): bool
     {
-        return (new TabBuilder(new Tab()))
+        return (new TabBuilder(new \Tab()))
             ->className(Config::CONTROLLER_NAME)
             ->uninstall();
     }

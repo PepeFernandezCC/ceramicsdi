@@ -4,24 +4,22 @@
  *
  * @author Mathias Reker
  * @copyright Mathias Reker
- * @license Commercial Software License
+ * @license Academic Free License (AFL 3.0)
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Additionally, this module is subject to a proprietary End User License Agreement (EULA).
+ * For the full copyright, open source license, and EULA information, please view the LICENSE
+ * that were distributed with this source code.
  */
 
 declare(strict_types=1);
 
 namespace PrestaShop\Module\PerformancePro\domain\service\image;
 
-use Countable;
-use FilesystemIterator;
-use Image;
 use PrestaShop\Module\PerformancePro\domain\service\log\LogService;
-use PrestaShopException;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
-use Tools;
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 final class ImageCleaner
 {
@@ -29,12 +27,12 @@ final class ImageCleaner
     {
         $result = 0;
 
-        $rows = Image::getAllImages();
+        $rows = \Image::getAllImages();
 
         foreach ($rows as $row) {
             $imageId = $row['id_image'];
 
-            $imgFolder = _PS_PROD_IMG_DIR_ . Image::getImgFolderStatic($imageId);
+            $imgFolder = _PS_PROD_IMG_DIR_ . \Image::getImgFolderStatic($imageId);
 
             $imgPath = $imgFolder . $imageId;
 
@@ -47,10 +45,10 @@ final class ImageCleaner
 
             if (!$analyse) {
                 try {
-                    if ((new Image($imageId))->delete()) {
+                    if ((new \Image($imageId))->delete()) {
                         ++$result;
                     }
-                } catch (PrestaShopException $prestaShopException) {
+                } catch (\PrestaShopException $prestaShopException) {
                     LogService::error($prestaShopException->getMessage(), $prestaShopException->getTrace());
                 }
             } else {
@@ -65,9 +63,9 @@ final class ImageCleaner
     {
         $result = 0;
 
-        $realImages = Tools::scandir(_PS_PROD_IMG_DIR_, 'jpg', '', true);
+        $realImages = \Tools::scandir(_PS_PROD_IMG_DIR_, 'jpg', '', true);
 
-        $imagesData = Image::getAllImages();
+        $imagesData = \Image::getAllImages();
 
         $dbImages = array_column($imagesData, 'id_image');
 
@@ -98,10 +96,10 @@ final class ImageCleaner
 
     public function deleteEmptyImagesFolder(array $extensions = ['jpg', 'png', 'webp']): int
     {
-        $iterator = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator(_PS_PROD_IMG_DIR_, FilesystemIterator::SKIP_DOTS),
-            RecursiveIteratorIterator::CHILD_FIRST,
-            RecursiveIteratorIterator::CATCH_GET_CHILD // Ignore "Permission denied"
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator(_PS_PROD_IMG_DIR_, \FilesystemIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::CHILD_FIRST,
+            \RecursiveIteratorIterator::CATCH_GET_CHILD // Ignore "Permission denied"
         );
 
         $result = 0;
@@ -111,14 +109,14 @@ final class ImageCleaner
                 $countImages = 0;
 
                 foreach ($extensions as $extension) {
-                    $directory = Tools::scandir($path->getRealPath(), $extension, '', true);
-                    $countImages += \is_array($directory) || $directory instanceof Countable ? \count($directory) : 0;
+                    $directory = \Tools::scandir($path->getRealPath(), $extension, '', true);
+                    $countImages += \is_array($directory) || $directory instanceof \Countable ? \count($directory) : 0;
                 }
 
                 if (0 === $countImages) {
                     ++$result;
 
-                    Tools::deleteDirectory($path->getRealPath(), true);
+                    \Tools::deleteDirectory($path->getRealPath(), true);
                 }
             }
         }

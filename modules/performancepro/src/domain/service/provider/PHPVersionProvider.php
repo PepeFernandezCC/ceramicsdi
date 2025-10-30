@@ -4,10 +4,11 @@
  *
  * @author Mathias Reker
  * @copyright Mathias Reker
- * @license Commercial Software License
+ * @license Academic Free License (AFL 3.0)
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Additionally, this module is subject to a proprietary End User License Agreement (EULA).
+ * For the full copyright, open source license, and EULA information, please view the LICENSE
+ * that were distributed with this source code.
  */
 
 declare(strict_types=1);
@@ -16,7 +17,10 @@ namespace PrestaShop\Module\PerformancePro\domain\service\provider;
 
 use PrestaShop\Module\PerformancePro\domain\service\http\proxy\SimpleCache;
 use PrestaShop\Module\PerformancePro\resources\config\Database;
-use Tools;
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 final class PHPVersionProvider
 {
@@ -27,8 +31,8 @@ final class PHPVersionProvider
 
     public function isPhpVersionUpToDate(): bool
     {
-        return (bool) Tools::version_compare(
-            Tools::checkPhpVersion(),
+        return (bool) \Tools::version_compare(
+            \Tools::checkPhpVersion(),
             $this->getNewestPhpVersionForThisPsVersion(),
             '>='
         );
@@ -39,7 +43,7 @@ final class PHPVersionProvider
         $latestVersion = '';
 
         foreach (Database::getRecommendedDatabaseVersions() as $version => $phpVersion) {
-            if (Tools::version_compare(_PS_VERSION_, $version, '>=')) {
+            if (\Tools::version_compare(_PS_VERSION_, $version, '>=')) {
                 $latestVersion = $phpVersion;
             }
         }

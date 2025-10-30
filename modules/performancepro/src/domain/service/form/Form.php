@@ -4,41 +4,41 @@
  *
  * @author Mathias Reker
  * @copyright Mathias Reker
- * @license Commercial Software License
+ * @license Academic Free License (AFL 3.0)
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Additionally, this module is subject to a proprietary End User License Agreement (EULA).
+ * For the full copyright, open source license, and EULA information, please view the LICENSE
+ * that were distributed with this source code.
  */
 
 declare(strict_types=1);
 
 namespace PrestaShop\Module\PerformancePro\domain\service\form;
 
-use Configuration;
-use HelperForm;
-use Language;
-use Module;
 use PrestaShop\Module\PerformancePro\resources\config\Config;
 use PrestaShop\Module\PerformancePro\resources\config\Field;
-use Tools;
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 final class Form
 {
     /**
-     * @var Module
+     * @var \Module
      */
     private $module;
 
     /**
-     * @var HelperForm
+     * @var \HelperForm
      */
     private $helperForm;
 
-    public function __construct(Module $module)
+    public function __construct(\Module $module)
     {
         $this->module = $module;
 
-        $this->helperForm = new HelperForm();
+        $this->helperForm = new \HelperForm();
     }
 
     public function render(array $forms, string $submitName): string
@@ -47,7 +47,7 @@ final class Form
 
         $this->helperForm->default_form_language = $this->module->getContext()->language->id;
 
-        $this->helperForm->allow_employee_form_lang = Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG', 0);
+        $this->helperForm->allow_employee_form_lang = \Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG', 0);
 
         $this->helperForm->name_controller = Config::CONTROLLER_NAME;
 
@@ -55,7 +55,7 @@ final class Form
 
         $this->helperForm->currentIndex = $this->module->getContext()->link->getAdminLink(Config::CONTROLLER_NAME, false, false);
 
-        $this->helperForm->token = Tools::getAdminTokenLite(Config::CONTROLLER_NAME);
+        $this->helperForm->token = \Tools::getAdminTokenLite(Config::CONTROLLER_NAME);
 
         $this->helperForm->tpl_vars = [
             'fields_value' => $this->getConfigFormValues(),
@@ -71,13 +71,13 @@ final class Form
      */
     private function getConfigFormValues(): array
     {
-        $languages = Language::getLanguages(false);
+        $languages = \Language::getLanguages(false);
 
         $result = [];
 
         foreach (Field::getFieldValues() as $key => $multiLang) {
             if ($multiLang) {
-                $confKey = Configuration::get($key);
+                $confKey = \Configuration::get($key);
 
                 if ($confKey) {
                     $fields = (array) json_decode($confKey, true);
@@ -89,7 +89,7 @@ final class Form
                     }
                 }
             } else {
-                $result[$key] = Configuration::get($key);
+                $result[$key] = \Configuration::get($key);
             }
         }
 

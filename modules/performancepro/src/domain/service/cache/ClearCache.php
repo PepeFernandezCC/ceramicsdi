@@ -4,28 +4,30 @@
  *
  * @author Mathias Reker
  * @copyright Mathias Reker
- * @license Commercial Software License
+ * @license Academic Free License (AFL 3.0)
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Additionally, this module is subject to a proprietary End User License Agreement (EULA).
+ * For the full copyright, open source license, and EULA information, please view the LICENSE
+ * that were distributed with this source code.
  */
 
 declare(strict_types=1);
 
 namespace PrestaShop\Module\PerformancePro\domain\service\cache;
 
-use Category;
-use Media;
 use PrestaShop\Module\PerformancePro\data\repository\QueryCacheRepository;
 use PrestaShop\Module\PerformancePro\domain\service\util\DirectoryService;
 use PrestaShop\Module\PerformancePro\resources\config\Config;
-use Tools;
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 final class ClearCache
 {
     public function clearImgCache(): void
     {
-        Tools::deleteDirectory(Config::getImgCachePath(), false);
+        \Tools::deleteDirectory(Config::getImgCachePath(), false);
 
         // Clear HTTP cache to avoid image problems.
         HTTPCache::getInstance()->clear();
@@ -33,7 +35,7 @@ final class ClearCache
 
     public function clearXmlCache(): void
     {
-        Tools::clearXMLCache();
+        \Tools::clearXMLCache();
     }
 
     public function resetQueryCache(): void
@@ -74,7 +76,7 @@ final class ClearCache
 
     public function clearMediaCache(): void
     {
-        Media::clearCache();
+        \Media::clearCache();
 
         // Clear the HTTP cache to avoid CSS problems.
         HTTPCache::getInstance()->clear();
@@ -82,13 +84,20 @@ final class ClearCache
 
     public function clearSmartyCacheAndSfCache(): void
     {
-        Tools::clearSmartyCache();
+        \Tools::clearSmartyCache();
 
-        Tools::clearSf2Cache('dev');
+        \Tools::clearSf2Cache('dev');
 
-        Tools::clearSf2Cache('prod');
+        \Tools::clearSf2Cache('prod');
 
         self::regenerateCache();
+    }
+
+    private function regenerateCache(): void
+    {
+        \Tools::generateIndex();
+
+        \Category::regenerateEntireNtree();
     }
 
     public function clearLogs(bool $analyze = false): int
@@ -98,22 +107,15 @@ final class ClearCache
         $result = (new DirectoryService($logPath))->countFilesInDirectory();
 
         if (!$analyze) {
-            Tools::deleteDirectory($logPath, false);
+            \Tools::deleteDirectory($logPath, false);
         }
 
         return $result;
     }
 
-    private function regenerateCache(): void
-    {
-        Tools::generateIndex();
-
-        Category::regenerateEntireNtree();
-    }
-
     private function getLogPath(): string
     {
-        if (Tools::version_compare(_PS_VERSION_, '1.7.3.0', '<=')) {
+        if (\Tools::version_compare(_PS_VERSION_, '1.7.3.0', '<=')) {
             return '/app/logs/';
         }
 

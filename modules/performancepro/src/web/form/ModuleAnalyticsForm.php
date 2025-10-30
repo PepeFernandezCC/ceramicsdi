@@ -4,22 +4,25 @@
  *
  * @author Mathias Reker
  * @copyright Mathias Reker
- * @license Commercial Software License
+ * @license Academic Free License (AFL 3.0)
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Additionally, this module is subject to a proprietary End User License Agreement (EULA).
+ * For the full copyright, open source license, and EULA information, please view the LICENSE
+ * that were distributed with this source code.
  */
 
 declare(strict_types=1);
 
 namespace PrestaShop\Module\PerformancePro\web\form;
 
-use Module;
 use PrestaShop\Module\PerformancePro\domain\service\log\LogService;
 use PrestaShop\Module\PerformancePro\domain\service\util\DirectoryService;
 use PrestaShop\Module\PerformancePro\resources\config\Modules;
 use PrestaShop\Module\PerformancePro\web\util\View;
-use PrestaShopException;
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 final class ModuleAnalyticsForm extends AbstractForm
 {
@@ -29,14 +32,26 @@ final class ModuleAnalyticsForm extends AbstractForm
     private const ERROR_MODULES = ['blockwishlist'];
 
     /**
-     * @var null|mixed
+     * @var mixed|null
      */
     public $module;
 
     /**
-     * @var null|mixed
+     * @var mixed|null
      */
     public $className;
+
+    /**
+     * @var View
+     */
+    private $view;
+
+    public function __construct(\Module $module)
+    {
+        parent::__construct($module);
+
+        $this->view = new View();
+    }
 
     /**
      * @return array<string, array<string, mixed>>
@@ -46,14 +61,14 @@ final class ModuleAnalyticsForm extends AbstractForm
         $result = [];
 
         try {
-            $modules = Module::getModulesDirOnDisk();
-        } catch (PrestaShopException $prestaShopException) {
+            $modules = \Module::getModulesDirOnDisk();
+        } catch (\PrestaShopException $prestaShopException) {
             LogService::error($prestaShopException->getMessage(), $prestaShopException->getTrace());
 
             return $result;
         }
 
-        $enabledBadPerformanceModules = View::filterModules(Modules::BAD_PERFORMANCE_MODULES);
+        $enabledBadPerformanceModules = $this->view->filterModules(Modules::BAD_PERFORMANCE_MODULES);
 
         if (empty($enabledBadPerformanceModules)) {
             $warning = null;
@@ -63,12 +78,12 @@ final class ModuleAnalyticsForm extends AbstractForm
                     'Statistic modules slow down your website. Using a Google Analytics module like %s is much faster. It is recommended to disable/uninstall the following modules:',
                     $this->className
                 ),
-                View::formatStrong('PrestaShop Metrics')
+                $this->view->formatStrong('PrestaShop Metrics')
             )
-                . '<br>' . View::arrayToStringList($enabledBadPerformanceModules);
+                . '<br>' . $this->view->displayList($enabledBadPerformanceModules);
         }
 
-        $enabledErrorModules = View::filterModules(self::ERROR_MODULES);
+        $enabledErrorModules = $this->view->filterModules(self::ERROR_MODULES);
 
         if (empty($enabledErrorModules)) {
             $error = null;
@@ -77,7 +92,7 @@ final class ModuleAnalyticsForm extends AbstractForm
                 'It is highly recommended to disable/uninstall the following modules as they are known to display a non-proper HTML markup:',
                 $this->className
             )
-                . '<br>' . View::arrayToStringList($enabledErrorModules);
+                . '<br>' . $this->view->displayList($enabledErrorModules);
         }
 
         if (null !== $modules) {
@@ -87,14 +102,14 @@ final class ModuleAnalyticsForm extends AbstractForm
                 $path = _PS_MODULE_DIR_ . $name;
 
                 $result[] = [
-                    $this->module->l('Display module name', $this->className) => Module::getModuleName($name),
+                    $this->module->l('Display module name', $this->className) => \Module::getModuleName($name),
                     $this->module->l('Technical module name', $this->className) => $name,
                     $this->module->l('Size', $this->className) => (new DirectoryService($path))
                         ->calcDirectorySize()
                         ->getAsBytes(),
-                    View::displayAlign($this->module->l('Status', $this->className)) => Module::isEnabled($name)
-                        ? View::displayAlign(View::displayLabelInfo($this->module->l('Enabled', $this->className)))
-                        : View::displayAlign(View::displayLabelInfo($this->module->l('Disabled', $this->className))),
+                    $this->view->displayAlign($this->module->l('Status', $this->className)) => \Module::isEnabled($name)
+                        ? $this->view->displayAlign($this->view->displayLabelInfo($this->module->l('Enabled', $this->className)))
+                        : $this->view->displayAlign($this->view->displayLabelInfo($this->module->l('Disabled', $this->className))),
                 ];
             }
         }
@@ -115,7 +130,7 @@ final class ModuleAnalyticsForm extends AbstractForm
                     [
                         'type' => 'html',
                         'label' => '',
-                        'html_content' => View::displayArrayAsTable($result),
+                        'html_content' => $this->view->displayTable($result),
                         'col' => 12,
                         'name' => '',
                     ],

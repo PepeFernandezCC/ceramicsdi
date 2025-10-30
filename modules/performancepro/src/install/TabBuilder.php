@@ -4,20 +4,22 @@
  *
  * @author Mathias Reker
  * @copyright Mathias Reker
- * @license Commercial Software License
+ * @license Academic Free License (AFL 3.0)
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Additionally, this module is subject to a proprietary End User License Agreement (EULA).
+ * For the full copyright, open source license, and EULA information, please view the LICENSE
+ * that were distributed with this source code.
  */
 
 declare(strict_types=1);
 
 namespace PrestaShop\Module\PerformancePro\install;
 
-use Language;
 use PrestaShop\Module\PerformancePro\domain\service\log\LogService;
-use PrestaShopException;
-use Tab;
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 final class TabBuilder
 {
@@ -47,11 +49,11 @@ final class TabBuilder
     private $parentClassName;
 
     /**
-     * @var Tab
+     * @var \Tab
      */
     private $tab;
 
-    public function __construct(Tab $tab)
+    public function __construct(\Tab $tab)
     {
         $this->tab = $tab;
     }
@@ -93,7 +95,7 @@ final class TabBuilder
 
     public function install(): bool
     {
-        $languages = Language::getLanguages(false);
+        $languages = \Language::getLanguages(false);
 
         $tabName = [];
 
@@ -107,7 +109,7 @@ final class TabBuilder
 
         $this->tab->icon = $this->icon;
 
-        $this->tab->id_parent = (int) Tab::getIdFromClassName($this->parentClassName);
+        $this->tab->id_parent = (int) \Tab::getIdFromClassName($this->parentClassName);
 
         $this->tab->module = $this->moduleName;
 
@@ -116,7 +118,7 @@ final class TabBuilder
 
     public function uninstall(): bool
     {
-        $tabId = Tab::getIdFromClassName($this->className);
+        $tabId = \Tab::getIdFromClassName($this->className);
 
         if (!$tabId) {
             return true;
@@ -124,7 +126,7 @@ final class TabBuilder
 
         try {
             return $this->tab->delete();
-        } catch (PrestaShopException $prestaShopException) {
+        } catch (\PrestaShopException $prestaShopException) {
             LogService::error($prestaShopException->getMessage(), $prestaShopException->getTrace());
 
             return false;

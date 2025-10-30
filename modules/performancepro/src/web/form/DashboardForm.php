@@ -4,10 +4,11 @@
  *
  * @author Mathias Reker
  * @copyright Mathias Reker
- * @license Commercial Software License
+ * @license Academic Free License (AFL 3.0)
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Additionally, this module is subject to a proprietary End User License Agreement (EULA).
+ * For the full copyright, open source license, and EULA information, please view the LICENSE
+ * that were distributed with this source code.
  */
 
 declare(strict_types=1);
@@ -17,15 +18,31 @@ namespace PrestaShop\Module\PerformancePro\web\form;
 use PrestaShop\Module\PerformancePro\domain\service\util\LinkService;
 use PrestaShop\Module\PerformancePro\web\util\View;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 final class DashboardForm extends AbstractForm
 {
     /**
-     * @var null|mixed
+     * @var View
+     */
+    private $view;
+
+    public function __construct(\Module $module)
+    {
+        parent::__construct($module);
+
+        $this->view = new View();
+    }
+
+    /**
+     * @var mixed|null
      */
     public $module;
 
     /**
-     * @var null|mixed
+     * @var mixed|null
      */
     public $className;
 
@@ -37,32 +54,32 @@ final class DashboardForm extends AbstractForm
         $result = [];
 
         $result[]
-            = View::displayHeader($this->module->l('Cache', $this->className), true)
-            . View::displayArrayAsTable($this->generateTable($this->getCacheFields()));
+            = $this->view->displayHeader($this->module->l('Cache', $this->className), true)
+            . $this->view->displayTable($this->generateTable($this->getCacheFields()));
 
         $result[]
-            = View::displayHeader($this->module->l('Cache warmer', $this->className))
-            . View::displayArrayAsTable($this->generateTable($this->getCacheWarmerFields()));
+            = $this->view->displayHeader($this->module->l('Cache warmer', $this->className))
+            . $this->view->displayTable($this->generateTable($this->getCacheWarmerFields()));
 
         $result[]
-            = View::displayHeader($this->module->l('Logs', $this->className))
-            . View::displayArrayAsTable($this->generateTable($this->getLogFields()));
+            = $this->view->displayHeader($this->module->l('Logs', $this->className))
+            . $this->view->displayTable($this->generateTable($this->getLogFields()));
 
         $result[]
-            = View::displayHeader($this->module->l('Database', $this->className))
-            . View::displayArrayAsTable($this->generateTable($this->getTableFields()));
+            = $this->view->displayHeader($this->module->l('Database', $this->className))
+            . $this->view->displayTable($this->generateTable($this->getTableFields()));
 
         $result[]
-            = View::displayHeader($this->module->l('Statistics', $this->className))
-            . View::displayArrayAsTable($this->generateTable($this->getStatisticFields()));
+            = $this->view->displayHeader($this->module->l('Statistics', $this->className))
+            . $this->view->displayTable($this->generateTable($this->getStatisticFields()));
 
         $result[]
-            = View::displayHeader($this->module->l('Images', $this->className))
-            . View::displayArrayAsTable($this->generateTable($this->getImageFields()));
+            = $this->view->displayHeader($this->module->l('Images', $this->className))
+            . $this->view->displayTable($this->generateTable($this->getImageFields()));
 
         $result[]
-            = View::displayHeader($this->module->l('Tools', $this->className))
-            . View::displayArrayAsTable($this->generateTable($this->getToolFields()));
+            = $this->view->displayHeader($this->module->l('Tools', $this->className))
+            . $this->view->displayTable($this->generateTable($this->getToolFields()));
 
         return [
             'form' => [
@@ -112,14 +129,14 @@ final class DashboardForm extends AbstractForm
         foreach ($rows as $row) {
             $result[] = [
                 $this->module->l('Title', $this->className) => $row[0],
-                $this->module->l('Cronjob (for advanced users)', $this->className) => View::displayMonospaceLink(
+                $this->module->l('Cronjob (for advanced users)', $this->className) => $this->view->displayMonospaceLink(
                     LinkService::createCronLink($row[1], null, false),
                     true
                 ),
-                View::displayAlign($this->module->l('Action', $this->className)) => View::displayAlign(
-                    View::displayBtnAjax(
+                $this->view->displayAlign($this->module->l('Action', $this->className)) => $this->view->displayAlign(
+                    $this->view->displayBtnAjax(
                         $row[1],
-                        sprintf($this->module->l('%s Execute', $this->className), View::displayBoltIcon()),
+                        sprintf($this->module->l('%s Execute', $this->className), $this->view->displayBoltIcon()),
                         $this->module->l('Are you sure?', $this->className)
                     )
                 ),

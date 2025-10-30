@@ -4,10 +4,11 @@
  *
  * @author Mathias Reker
  * @copyright Mathias Reker
- * @license Commercial Software License
+ * @license Academic Free License (AFL 3.0)
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Additionally, this module is subject to a proprietary End User License Agreement (EULA).
+ * For the full copyright, open source license, and EULA information, please view the LICENSE
+ * that were distributed with this source code.
  */
 
 declare(strict_types=1);
@@ -16,27 +17,30 @@ namespace PrestaShop\Module\PerformancePro\domain\service\db;
 
 use PrestaShop\Module\PerformancePro\data\repository\DatabaseSettingsRepository;
 use PrestaShop\Module\PerformancePro\exception\PerformanceProDatabaseException;
-use Tools;
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 final class DatabaseSettings
 {
     public function updateValue(string $key, string $value): void
     {
-        $value = (string) Tools::convertBytes($value);
+        $value = (string) \Tools::convertBytes($value);
 
         (new DatabaseSettingsRepository())->updateValue($key, $value);
     }
 
     /**
-     * @throws PerformanceProDatabaseException
-     *
      * @return array<string>
+     *
+     * @throws PerformanceProDatabaseException
      */
     public function formatConfigKey(string $key, string $recommended, string $url, bool $check): array
     {
         $current = $this->getValue($key);
 
-        return [$key, $check ? $current : Tools::formatBytes($current, 0), $recommended, $url];
+        return [$key, $check ? $current : \Tools::formatBytes($current, 0), $recommended, $url];
     }
 
     /**

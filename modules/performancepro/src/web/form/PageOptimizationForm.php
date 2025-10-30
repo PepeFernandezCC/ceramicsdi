@@ -4,46 +4,62 @@
  *
  * @author Mathias Reker
  * @copyright Mathias Reker
- * @license Commercial Software License
+ * @license Academic Free License (AFL 3.0)
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Additionally, this module is subject to a proprietary End User License Agreement (EULA).
+ * For the full copyright, open source license, and EULA information, please view the LICENSE
+ * that were distributed with this source code.
  */
 
 declare(strict_types=1);
 
 namespace PrestaShop\Module\PerformancePro\web\form;
 
-use Configuration;
 use PrestaShop\Module\PerformancePro\web\util\View;
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 final class PageOptimizationForm extends AbstractForm
 {
     /**
-     * @var null|mixed
+     * @var mixed|null
      */
     public $module;
 
     /**
-     * @var null|mixed
+     * @var mixed|null
      */
     public $className;
+
+    /**
+     * @var View
+     */
+    private $view;
+
+    public function __construct(\Module $module)
+    {
+        parent::__construct($module);
+
+        $this->view = new View();
+    }
 
     /**
      * @return array{form: array<string, mixed>}
      */
     public function getFields(): array
     {
-        $enabledIncompatibleModules = View::filterModules(['pm_advancedsearch4']);
+        $enabledIncompatibleModules = $this->view->filterModules(['pm_advancedsearch4']);
 
-        if (empty($enabledIncompatibleModules) || !Configuration::get('PP_ORIGIN_AGENT_CLUSTER')) {
+        if (empty($enabledIncompatibleModules) || !\Configuration::get('PP_ORIGIN_AGENT_CLUSTER')) {
             $error = null;
         } else {
             $error = $this->module->l(
                 'Following installed modules are not compatible with "Origin Agent Cluster":',
                 $this->className
             )
-                . '<br>' . View::arrayToStringList($enabledIncompatibleModules);
+                . '<br>' . $this->view->displayList($enabledIncompatibleModules);
         }
 
         return [
@@ -68,7 +84,7 @@ final class PageOptimizationForm extends AbstractForm
                                 'Improve scrolling performance by adding a passive flag to every passive event listener. %s.',
                                 $this->className
                             ),
-                            View::displayLink(
+                            $this->view->displayLink(
                                 'https://web.dev/uses-passive-event-listeners/',
                                 $this->module->l('Read more', $this->className)
                             )
@@ -96,7 +112,7 @@ final class PageOptimizationForm extends AbstractForm
                                 'Enable Gzip/DEFLATE output filter that allows output from your server to be compressed before being sent to the client over the network (Apache only). %s.',
                                 $this->className
                             ),
-                            View::displayLink(
+                            $this->view->displayLink(
                                 'https://httpd.apache.org/docs/2.4/mod/mod_deflate.html',
                                 $this->module->l('Read more', $this->className)
                             )
@@ -124,7 +140,7 @@ final class PageOptimizationForm extends AbstractForm
                                 'HTTP/2 server push sends the CSS in the same request as HTML in the first request. After the first request, the CSS is loaded from the browser cache instead. %s.',
                                 $this->className
                             ),
-                            View::displayLink(
+                            $this->view->displayLink(
                                 'https://medium.com/@mena.meseha/http-2-server-push-tutorial-d8714154ef9a',
                                 $this->module->l('Read more', $this->className)
                             )
@@ -152,7 +168,7 @@ final class PageOptimizationForm extends AbstractForm
                                 'Instructs the browser to prevent synchronous scripting access between same-site cross-origin pages. %s.',
                                 $this->className
                             ),
-                            View::displayLink('https://web.dev/origin-agent-cluster/', $this->module->l(
+                            $this->view->displayLink('https://web.dev/origin-agent-cluster/', $this->module->l(
                                 'Read more',
                                 $this->className
                             ))
@@ -161,7 +177,7 @@ final class PageOptimizationForm extends AbstractForm
                                 '%s Warning: Not all modules are compatible with this feature.',
                                 $this->className
                             ),
-                            View::displayWarningIcon()
+                            $this->view->displayWarningIcon()
                         ),
                         'values' => [
                             [
@@ -186,7 +202,7 @@ final class PageOptimizationForm extends AbstractForm
                                 'Improve the site\'s performance by adding rel="noopener" to all links. %s.',
                                 $this->className
                             ),
-                            View::displayLink(
+                            $this->view->displayLink(
                                 'https://web.dev/external-anchors-use-rel-noopener/',
                                 $this->module->l('Read more', $this->className)
                             )

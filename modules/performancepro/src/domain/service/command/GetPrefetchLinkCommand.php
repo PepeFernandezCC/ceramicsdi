@@ -4,21 +4,24 @@
  *
  * @author Mathias Reker
  * @copyright Mathias Reker
- * @license Commercial Software License
+ * @license Academic Free License (AFL 3.0)
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Additionally, this module is subject to a proprietary End User License Agreement (EULA).
+ * For the full copyright, open source license, and EULA information, please view the LICENSE
+ * that were distributed with this source code.
  */
 
 declare(strict_types=1);
 
 namespace PrestaShop\Module\PerformancePro\domain\service\command;
 
-use Countable;
-use Exception;
 use PrestaShop\Module\PerformancePro\domain\service\log\LogService;
 use PrestaShop\Module\PerformancePro\domain\service\provider\GooglePageSpeedProvider;
 use PrestaShop\Module\PerformancePro\domain\service\util\LinkService;
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 final class GetPrefetchLinkCommand implements Command
 {
@@ -42,10 +45,10 @@ final class GetPrefetchLinkCommand implements Command
                 ->setUrl(LinkService::getBaseLink())
                 ->getFontDisplay();
 
-            $amount = \is_array($results) || $results instanceof Countable ? \count($results) : 0;
+            $amount = \is_array($results) || $results instanceof \Countable ? \count($results) : 0;
 
             $content = implode('|', $results);
-        } catch (Exception $exception) {
+        } catch (\Exception $exception) {
             LogService::error($exception->getMessage(), $exception->getTrace());
 
             $amount = 0;

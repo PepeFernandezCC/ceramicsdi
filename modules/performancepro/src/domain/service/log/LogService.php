@@ -4,21 +4,25 @@
  *
  * @author Mathias Reker
  * @copyright Mathias Reker
- * @license Commercial Software License
+ * @license Academic Free License (AFL 3.0)
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Additionally, this module is subject to a proprietary End User License Agreement (EULA).
+ * For the full copyright, open source license, and EULA information, please view the LICENSE
+ * that were distributed with this source code.
  */
 
 declare(strict_types=1);
 
 namespace PrestaShop\Module\PerformancePro\domain\service\log;
 
-use Configuration;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
 use PrestaShop\Module\PerformancePro\domain\service\util\PathService;
 use PrestaShop\Module\PerformancePro\resources\config\Config;
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 final class LogService
 {
@@ -34,11 +38,23 @@ final class LogService
      */
     public static function error(string $message, array $context = []): void
     {
-        if (!Configuration::get('PP_LOG_EXCEPTIONS')) {
+        if (!\Configuration::get('PP_LOG_EXCEPTIONS')) {
             return;
         }
 
         self::getLogger()->addError($message, $context);
+    }
+
+    /**
+     * Returns the Monolog instance.
+     */
+    private static function getLogger(): Logger
+    {
+        if (!self::$logger) {
+            self::getInstance();
+        }
+
+        return self::$logger;
     }
 
     /**
@@ -57,17 +73,5 @@ final class LogService
         $logger->pushHandler(new RotatingFileHandler($fileName, 5));
 
         self::$logger = $logger;
-    }
-
-    /**
-     * Returns the Monolog instance
-     */
-    private static function getLogger(): Logger
-    {
-        if (!self::$logger) {
-            self::getInstance();
-        }
-
-        return self::$logger;
     }
 }

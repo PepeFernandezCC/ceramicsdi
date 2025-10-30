@@ -1,3 +1,15 @@
+/**
+ * This file is part of the performancepro package.
+ *
+ * @author Mathias Reker
+ * @copyright Mathias Reker
+ * @license Academic Free License (AFL 3.0)
+ *
+ * Additionally, this module is subject to a proprietary End User License Agreement (EULA).
+ * For the full copyright, open source license, and EULA information, please view the LICENSE
+ * that were distributed with this source code.
+ */
+
 .js-qv-product-cover, .product-cover-modal, .product-images img, .product-line-grid-left img, .imageFeaturedLink img, #order-items img {
     height: auto;
     max-height: none !important;

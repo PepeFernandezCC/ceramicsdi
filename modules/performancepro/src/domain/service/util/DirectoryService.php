@@ -4,20 +4,20 @@
  *
  * @author Mathias Reker
  * @copyright Mathias Reker
- * @license Commercial Software License
+ * @license Academic Free License (AFL 3.0)
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Additionally, this module is subject to a proprietary End User License Agreement (EULA).
+ * For the full copyright, open source license, and EULA information, please view the LICENSE
+ * that were distributed with this source code.
  */
 
 declare(strict_types=1);
 
 namespace PrestaShop\Module\PerformancePro\domain\service\util;
 
-use FilesystemIterator;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
-use Tools;
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 final class DirectoryService
 {
@@ -40,9 +40,9 @@ final class DirectoryService
     {
         $result = 0;
 
-        $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(
+        $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(
             $this->path,
-            FilesystemIterator::SKIP_DOTS
+            \FilesystemIterator::SKIP_DOTS
         ));
 
         foreach ($files as $file) {
@@ -56,11 +56,11 @@ final class DirectoryService
 
     public function getAsBytes(): string
     {
-        return Tools::formatBytes($this->size);
+        return \Tools::formatBytes($this->size);
     }
 
     public function countFilesInDirectory(): int
     {
-        return iterator_count(new FilesystemIterator($this->path, FilesystemIterator::SKIP_DOTS));
+        return iterator_count(new \FilesystemIterator($this->path, \FilesystemIterator::SKIP_DOTS));
     }
 }

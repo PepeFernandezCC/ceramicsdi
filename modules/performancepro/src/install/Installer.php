@@ -4,21 +4,23 @@
  *
  * @author Mathias Reker
  * @copyright Mathias Reker
- * @license Commercial Software License
+ * @license Academic Free License (AFL 3.0)
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Additionally, this module is subject to a proprietary End User License Agreement (EULA).
+ * For the full copyright, open source license, and EULA information, please view the LICENSE
+ * that were distributed with this source code.
  */
 
 declare(strict_types=1);
 
 namespace PrestaShop\Module\PerformancePro\install;
 
-use Configuration;
 use PrestaShop\Module\PerformancePro\resources\config\Config;
 use PrestaShop\Module\PerformancePro\resources\config\Field;
-use Tab;
-use Tools;
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 final class Installer extends AbstractInstaller
 {
@@ -43,7 +45,7 @@ final class Installer extends AbstractInstaller
 
     private function checkPhpVersion(): void
     {
-        if (Tools::version_compare(Tools::checkPhpVersion(), Config::MINIMUM_PHP_VERSION)) {
+        if (\Tools::version_compare(\Tools::checkPhpVersion(), Config::MINIMUM_PHP_VERSION)) {
             $error = sprintf(
                 $this->module->l('The module requires PHP %s or higher.', $this->className),
                 Config::MINIMUM_PHP_VERSION
@@ -62,7 +64,7 @@ final class Installer extends AbstractInstaller
         }
 
         foreach ($configs as $key => $value) {
-            if (!Configuration::updateValue($key, $value)) {
+            if (!\Configuration::updateValue($key, $value)) {
                 $error = sprintf(
                     $this->module->l('The configuration %s has not been installed.', $this->className),
                     $key
@@ -75,7 +77,7 @@ final class Installer extends AbstractInstaller
 
     private function installTab(): bool
     {
-        return (new TabBuilder(new Tab()))
+        return (new TabBuilder(new \Tab()))
             ->module($this->module->name)
             ->displayName($this->module->displayName)
             ->className(Config::CONTROLLER_NAME)

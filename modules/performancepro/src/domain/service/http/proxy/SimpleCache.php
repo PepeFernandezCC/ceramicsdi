@@ -4,10 +4,11 @@
  *
  * @author Mathias Reker
  * @copyright Mathias Reker
- * @license Commercial Software License
+ * @license Academic Free License (AFL 3.0)
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Additionally, this module is subject to a proprietary End User License Agreement (EULA).
+ * For the full copyright, open source license, and EULA information, please view the LICENSE
+ * that were distributed with this source code.
  */
 
 declare(strict_types=1);
@@ -19,7 +20,10 @@ use PrestaShop\Module\PerformancePro\domain\service\log\LogService;
 use PrestaShop\Module\PerformancePro\domain\service\util\PathService;
 use PrestaShop\Module\PerformancePro\exception\PerformanceProDownloadResourceException;
 use PrestaShop\Module\PerformancePro\resources\config\Config;
-use Tools;
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 final class SimpleCache
 {
@@ -43,7 +47,7 @@ final class SimpleCache
         if ($this->isHit($key)) {
             $filename = $this->getFilename($key);
 
-            return Tools::file_get_contents($filename);
+            return \Tools::file_get_contents($filename);
         }
 
         try {
@@ -60,13 +64,6 @@ final class SimpleCache
         }
 
         return '';
-    }
-
-    public function expiresAfter(int $ttl): self
-    {
-        $this->ttl = $ttl;
-
-        return $this;
     }
 
     private function isHit(string $key): bool
@@ -86,5 +83,12 @@ final class SimpleCache
         $filename = $this->getFilename($key);
 
         file_put_contents($filename, $data);
+    }
+
+    public function expiresAfter(int $ttl): self
+    {
+        $this->ttl = $ttl;
+
+        return $this;
     }
 }

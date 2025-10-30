@@ -4,10 +4,11 @@
  *
  * @author Mathias Reker
  * @copyright Mathias Reker
- * @license Commercial Software License
+ * @license Academic Free License (AFL 3.0)
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Additionally, this module is subject to a proprietary End User License Agreement (EULA).
+ * For the full copyright, open source license, and EULA information, please view the LICENSE
+ * that were distributed with this source code.
  */
 
 declare(strict_types=1);
@@ -18,7 +19,10 @@ use PrestaShop\Module\PerformancePro\domain\service\http\client\CURLClient;
 use PrestaShop\Module\PerformancePro\exception\PerformanceProDownloadResourceException;
 use PrestaShop\Module\PerformancePro\exception\PerformanceProInvalidResourceException;
 use Symfony\Component\Translation\Exception\InvalidResourceException;
-use Tools;
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 final class SVG extends AbstractImageFactory
 {
@@ -47,7 +51,7 @@ final class SVG extends AbstractImageFactory
 
     private function convert(string $path, string $output): void
     {
-        $content = Tools::file_get_contents($path);
+        $content = \Tools::file_get_contents($path);
 
         if (!$content) {
             throw new InvalidResourceException('The file is not readable.');

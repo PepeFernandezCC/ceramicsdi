@@ -4,10 +4,11 @@
  *
  * @author Mathias Reker
  * @copyright Mathias Reker
- * @license Commercial Software License
+ * @license Academic Free License (AFL 3.0)
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Additionally, this module is subject to a proprietary End User License Agreement (EULA).
+ * For the full copyright, open source license, and EULA information, please view the LICENSE
+ * that were distributed with this source code.
  */
 
 declare(strict_types=1);
@@ -24,7 +25,10 @@ use Phpfastcache\Exceptions\PhpfastcacheInvalidConfigurationException;
 use PrestaShop\Module\PerformancePro\domain\service\log\LogService;
 use PrestaShop\Module\PerformancePro\domain\service\util\PathService;
 use PrestaShop\Module\PerformancePro\resources\config\Config;
-use ReflectionException;
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 final class HTTPCache
 {
@@ -34,12 +38,12 @@ final class HTTPCache
     private const TTL = 604800;
 
     /**
-     * @var null|HTTPCache
+     * @var HTTPCache|null
      */
     private static $httpCache;
 
     /**
-     * @var null|ExtendedCacheItemPoolInterface
+     * @var ExtendedCacheItemPoolInterface|null
      */
     private $extendedCacheItemPool;
 
@@ -49,7 +53,7 @@ final class HTTPCache
     }
 
     /**
-     * @return null|ExtendedCacheItemPoolInterface
+     * @return ExtendedCacheItemPoolInterface|null
      */
     public function getCache()
     {
@@ -63,7 +67,7 @@ final class HTTPCache
                 )
             );
         } catch (PhpfastcacheInvalidConfigurationException|
-        ReflectionException $e) {
+        \ReflectionException $e) {
             LogService::error($e->getMessage(), $e->getTrace());
         }
 
@@ -75,8 +79,6 @@ final class HTTPCache
         PhpfastcacheInvalidConfigurationException $e) {
             LogService::error($e->getMessage(), $e->getTrace());
         }
-
-        return null;
     }
 
     public static function getInstance(): self
@@ -113,7 +115,7 @@ final class HTTPCache
     }
 
     /**
-     * @return null|mixed
+     * @return mixed|null
      */
     public function getItem(string $key)
     {
@@ -126,7 +128,5 @@ final class HTTPCache
                 $phpfastcacheInvalidArgumentException->getTrace()
             );
         }
-
-        return null;
     }
 }

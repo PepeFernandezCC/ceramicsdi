@@ -4,10 +4,11 @@
  *
  * @author Mathias Reker
  * @copyright Mathias Reker
- * @license Commercial Software License
+ * @license Academic Free License (AFL 3.0)
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Additionally, this module is subject to a proprietary End User License Agreement (EULA).
+ * For the full copyright, open source license, and EULA information, please view the LICENSE
+ * that were distributed with this source code.
  */
 
 declare(strict_types=1);
@@ -17,17 +18,33 @@ namespace PrestaShop\Module\PerformancePro\web\form;
 use PrestaShop\Module\PerformancePro\resources\config\Config;
 use PrestaShop\Module\PerformancePro\web\util\View;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 final class ResourceLoadingForm extends AbstractForm
 {
     /**
-     * @var null|mixed
+     * @var mixed|null
      */
     public $module;
 
     /**
-     * @var null|mixed
+     * @var mixed|null
      */
     public $className;
+
+    /**
+     * @var View
+     */
+    private $view;
+
+    public function __construct(\Module $module)
+    {
+        parent::__construct($module);
+
+        $this->view = new View();
+    }
 
     /**
      * @return array{form: array{legend: array{title: mixed, icon: string}, description: mixed, input: array{type: string, col: int, label: mixed, desc: string, name: string}[]|array{type: string, label: mixed, name: string, is_bool: true, desc: string, values: array<int, array{id: string, value: bool, label: mixed}>}[], submit: array{title: mixed}}}
@@ -55,7 +72,7 @@ final class ResourceLoadingForm extends AbstractForm
                                 "Tells the browser to download, cache, and compile fonts as soon as possible. It's helpful to have imported fonts inside a stylesheet and load your app faster. %s.",
                                 $this->className
                             ),
-                            View::displayLink(
+                            $this->view->displayLink(
                                 'https://web.dev/codelab-preload-web-fonts/',
                                 $this->module->l('Read more', $this->className)
                             )
@@ -83,11 +100,11 @@ final class ResourceLoadingForm extends AbstractForm
                         ) . ' ' . sprintf(
                             $this->module->l('Separate each URL by a pipe "%s" without spaces.'),
                             Config::PIPE_SEPARATOR
-                        ) . '<br>' . View::displayBtnAjax(
+                        ) . '<br>' . $this->view->displayBtnAjax(
                             'getPrefetchLink',
                             sprintf(
                                 $this->module->l('%s Autofill links', $this->className),
-                                View::displayMagicIcon()
+                                $this->view->displayMagicIcon()
                             ),
                             $this->module->l('Are you sure?', $this->className)
                         ),
@@ -103,7 +120,7 @@ final class ResourceLoadingForm extends AbstractForm
                                 "Asks the browser to perform a connection to a domain in advance. It's helpful when you know you'll download something from that domain soon, but you don't know what exactly, and you want to speed up the initial connection. %s.",
                                 $this->className
                             ),
-                            View::displayLink(
+                            $this->view->displayLink(
                                 'https://web.dev/uses-rel-preconnect/',
                                 $this->module->l('Read more', $this->className)
                             )
@@ -131,11 +148,11 @@ final class ResourceLoadingForm extends AbstractForm
                         ) . ' ' . sprintf(
                             $this->module->l('Separate each URL by a pipe "%s" without spaces.'),
                             Config::PIPE_SEPARATOR
-                        ) . '<br>' . View::displayBtnAjax(
+                        ) . '<br>' . $this->view->displayBtnAjax(
                             'getPreConnectLinks',
                             sprintf(
                                 $this->module->l('%s Autofill links', $this->className),
-                                View::displayMagicIcon()
+                                $this->view->displayMagicIcon()
                             ),
                             $this->module->l('Are you sure?', $this->className)
                         ),
@@ -151,7 +168,7 @@ final class ResourceLoadingForm extends AbstractForm
                                 "Asks the browser to download and cache a page in the background when a link hovers for 100ms. The download happens with a low priority, so it doesn't interfere with more critical resources. However, it's helpful when you know you'll need that resource on a subsequent page and want to cache it ahead of time. Most chromium-powered browsers support this technique. %s.",
                                 $this->className
                             ),
-                            View::displayLink('https://web.dev/codelab-quicklink/', $this->module->l(
+                            $this->view->displayLink('https://web.dev/codelab-quicklink/', $this->module->l(
                                 'Read more',
                                 $this->className
                             ))
@@ -160,7 +177,7 @@ final class ResourceLoadingForm extends AbstractForm
                                 '%s Warning: With this feature enabled, the server uses more resources.',
                                 $this->className
                             ),
-                            View::displayWarningIcon()
+                            $this->view->displayWarningIcon()
                         ),
                         'values' => [
                             [

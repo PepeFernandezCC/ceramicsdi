@@ -4,19 +4,23 @@
  *
  * @author Mathias Reker
  * @copyright Mathias Reker
- * @license Commercial Software License
+ * @license Academic Free License (AFL 3.0)
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Additionally, this module is subject to a proprietary End User License Agreement (EULA).
+ * For the full copyright, open source license, and EULA information, please view the LICENSE
+ * that were distributed with this source code.
  */
 
 declare(strict_types=1);
 
 namespace PrestaShop\Module\PerformancePro\domain\service\cache;
 
-use DOMDocument;
 use PrestaShop\Module\PerformancePro\domain\service\http\proxy\SimpleCache;
 use PrestaShop\Module\PerformancePro\resources\config\Config;
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 final class CacheWarmer
 {
@@ -78,9 +82,9 @@ final class CacheWarmer
         }
     }
 
-    private function getDom(string $sitemap): DOMDocument
+    private function getDom(string $sitemap): \DOMDocument
     {
-        $domDocument = new DOMDocument('1.0', 'UTF-8');
+        $domDocument = new \DOMDocument('1.0', 'UTF-8');
 
         $domDocument->preserveWhiteSpace = false;
 
@@ -118,18 +122,18 @@ final class CacheWarmer
         $curlHandle = curl_init();
 
         $options = [
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_HEADER => false,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_REFERER => '',
-            CURLOPT_CONNECTTIMEOUT => 5,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_MAXREDIRS => 5,
-            CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_SSL_VERIFYHOST => false,
-            CURLOPT_USERAGENT => $this->userAgent,
+            \CURLOPT_URL => $url,
+            \CURLOPT_RETURNTRANSFER => true,
+            \CURLOPT_HEADER => false,
+            \CURLOPT_FOLLOWLOCATION => true,
+            \CURLOPT_ENCODING => '',
+            \CURLOPT_REFERER => '',
+            \CURLOPT_CONNECTTIMEOUT => 5,
+            \CURLOPT_TIMEOUT => 30,
+            \CURLOPT_MAXREDIRS => 5,
+            \CURLOPT_SSL_VERIFYPEER => false,
+            \CURLOPT_SSL_VERIFYHOST => false,
+            \CURLOPT_USERAGENT => $this->userAgent,
         ];
 
         curl_setopt_array($curlHandle, $options);

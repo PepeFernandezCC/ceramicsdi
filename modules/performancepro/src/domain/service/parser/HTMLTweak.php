@@ -4,20 +4,17 @@
  *
  * @author Mathias Reker
  * @copyright Mathias Reker
- * @license Commercial Software License
+ * @license Academic Free License (AFL 3.0)
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Additionally, this module is subject to a proprietary End User License Agreement (EULA).
+ * For the full copyright, open source license, and EULA information, please view the LICENSE
+ * that were distributed with this source code.
  */
 
 declare(strict_types=1);
 
 namespace PrestaShop\Module\PerformancePro\domain\service\parser;
 
-use Configuration;
-use DOMDocument;
-use DOMElement;
-use Exception;
 use FasterImage\FasterImage;
 use PrestaShop\Module\PerformancePro\domain\service\image\ImageFactory\SVG;
 use PrestaShop\Module\PerformancePro\domain\service\image\ImageFactory\WebP;
@@ -27,7 +24,10 @@ use PrestaShop\Module\PerformancePro\domain\service\util\LinkService;
 use PrestaShop\Module\PerformancePro\domain\service\util\PathService;
 use PrestaShop\Module\PerformancePro\exception\PerformanceProInvalidResourceException;
 use PrestaShop\Module\PerformancePro\resources\config\Config;
-use Tools;
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 final class HTMLTweak
 {
@@ -119,7 +119,7 @@ final class HTMLTweak
             return $this;
         }
 
-        $domDocument = new DOMDocument('1.0', 'UTF-8');
+        $domDocument = new \DOMDocument('1.0', 'UTF-8');
 
         $previous = libxml_use_internal_errors(true);
         $domDocument->loadHTML('<?xml encoding="utf-8"?>' . $this->html);
@@ -141,7 +141,7 @@ final class HTMLTweak
         return $this;
     }
 
-    private function parseByImgTag(DOMDocument $domDocument): void
+    private function parseByImgTag(\DOMDocument $domDocument): void
     {
         $doOptimizeWebp = !empty($this->extension);
 
@@ -174,7 +174,7 @@ final class HTMLTweak
         }
     }
 
-    private function addImgSizes(DOMElement $domElement): void
+    private function addImgSizes(\DOMElement $domElement): void
     {
         $src = $domElement->getAttribute('src');
 
@@ -188,7 +188,7 @@ final class HTMLTweak
 
         try {
             $image = (new FasterImage())->batch([$src]);
-        } catch (Exception $exception) {
+        } catch (\Exception $exception) {
             LogService::error($exception->getMessage(), $exception->getTrace());
 
             return;
@@ -205,9 +205,9 @@ final class HTMLTweak
         }
 
         if (empty($widthAtt) && empty($heightAtt)) {
-            $domElement->setAttribute('width', (string)$width);
+            $domElement->setAttribute('width', (string) $width);
 
-            $domElement->setAttribute('height', (string)$height);
+            $domElement->setAttribute('height', (string) $height);
 
             return;
         }
@@ -215,15 +215,15 @@ final class HTMLTweak
         if (empty($heightAtt)) {
             $ratio = $height / $width;
 
-            $domElement->setAttribute('height', (string)((float)$widthAtt * $ratio));
+            $domElement->setAttribute('height', (string) ((float) $widthAtt * $ratio));
         } else {
             $ratio = $width / $height;
 
-            $domElement->setAttribute('width', (string)((float)$heightAtt * $ratio));
+            $domElement->setAttribute('width', (string) ((float) $heightAtt * $ratio));
         }
     }
 
-    private function convertImgToWebp(DOMElement $domElement, WebP $webP): void
+    private function convertImgToWebp(\DOMElement $domElement, WebP $webP): void
     {
         $options = [
             'fail' => 'throw',
@@ -245,12 +245,12 @@ final class HTMLTweak
             'redirect-to-self-instead-of-serving' => false,
             'png' => [
                 'encoding' => 'auto',
-                'quality' => (int)Configuration::get('PP_CONVERT_PNG_TO_WEBP_QUALITY'),
+                'quality' => (int) \Configuration::get('PP_CONVERT_PNG_TO_WEBP_QUALITY'),
                 'sharp-yuv' => true,
             ],
             'jpeg' => [
                 'encoding' => 'auto',
-                'quality' => (int)Configuration::get('PP_CONVERT_JPEG_TO_WEBP_QUALITY'),
+                'quality' => (int) \Configuration::get('PP_CONVERT_JPEG_TO_WEBP_QUALITY'),
                 'auto-limit' => true,
                 'sharp-yuv' => true,
             ],
@@ -269,11 +269,11 @@ final class HTMLTweak
         foreach ($attributes as $attribute) {
             $src = $domElement->getAttribute($attribute);
 
-            if ($src === "") {
+            if ('' === $src) {
                 continue;
             }
 
-            if ($attribute === 'srcset') {
+            if ('srcset' === $attribute) {
                 $re = '/(https?:\/\/.*\.(?:png|jpe?g))/mU';
 
                 preg_match_all($re, $src, $matches);
@@ -283,7 +283,7 @@ final class HTMLTweak
 
                     $ext = $this->getPathExtension($srcNoParams);
 
-                    if (!empty($srcNoParams) && in_array($ext, $this->extension, true)) {
+                    if (!empty($srcNoParams) && \in_array($ext, $this->extension, true)) {
                         $absoluteLink = LinkService::createAbsoluteLink($srcNoParams);
 
                         $relativeUrl = LinkService::createRelativeLink($absoluteLink);
@@ -291,7 +291,7 @@ final class HTMLTweak
                         $imgCacheFile = urldecode(Config::getImgCachePath() . $this->convertExtensionToWebp($relativeUrl));
 
                         if (!file_exists($imgCacheFile)) {
-                            PathService::createPath(dirname($imgCacheFile));
+                            PathService::createPath(\dirname($imgCacheFile));
 
                             try {
                                 $webP->create($absoluteLink, $imgCacheFile, $options);
@@ -320,7 +320,7 @@ final class HTMLTweak
 
             $ext = $this->getPathExtension($srcNoParams);
 
-            if (!empty($srcNoParams) && in_array($ext, $this->extension, true)) {
+            if (!empty($srcNoParams) && \in_array($ext, $this->extension, true)) {
                 $absoluteLink = LinkService::createAbsoluteLink($srcNoParams);
 
                 $relativeUrl = LinkService::createRelativeLink($absoluteLink);
@@ -328,7 +328,7 @@ final class HTMLTweak
                 $imgCacheFile = urldecode(Config::getImgCachePath() . $this->convertExtensionToWebp($relativeUrl));
 
                 if (!file_exists($imgCacheFile)) {
-                    PathService::createPath(dirname($imgCacheFile));
+                    PathService::createPath(\dirname($imgCacheFile));
 
                     try {
                         $webP->create($absoluteLink, $imgCacheFile, $options);
@@ -353,27 +353,27 @@ final class HTMLTweak
 
     private function removeParams(string $src): string
     {
-        return (string)strtok($src, '?');
+        return (string) strtok($src, '?');
     }
 
     private function getPathExtension(string $path): string
     {
-        return mb_strtolower(pathinfo($path, PATHINFO_EXTENSION));
+        return mb_strtolower(pathinfo($path, \PATHINFO_EXTENSION));
     }
 
     private function convertExtensionToWebp(string $link): string
     {
-        $str = (int)mb_strrpos($link, '.');
+        $str = (int) mb_strrpos($link, '.');
 
         return mb_substr($link, 0, $str) . '.webp';
     }
 
-    private function decodeImgAsync(DOMElement $domElement): void
+    private function decodeImgAsync(\DOMElement $domElement): void
     {
         $domElement->setAttribute('decoding', 'async');
     }
 
-    private function lazyLoad(DOMElement $domElement): void
+    private function lazyLoad(\DOMElement $domElement): void
     {
         $hasLoadingAttribute = $domElement->getAttribute('loading');
 
@@ -382,7 +382,7 @@ final class HTMLTweak
         }
     }
 
-    private function minifySvg(DOMElement $domElement): void
+    private function minifySvg(\DOMElement $domElement): void
     {
         $src = $domElement->getAttribute('src');
 
@@ -393,7 +393,7 @@ final class HTMLTweak
         }
 
         if (!empty($src)) {
-            $svgImgUrl = $this->imgUri . parse_url(LinkService::createAbsoluteLink($src), PHP_URL_PATH);
+            $svgImgUrl = $this->imgUri . parse_url(LinkService::createAbsoluteLink($src), \PHP_URL_PATH);
 
             if (!file_exists($svgImgUrl)) {
                 (new SVG())->create(LinkService::createAbsoluteLink($src), $svgImgUrl);
@@ -407,7 +407,7 @@ final class HTMLTweak
         }
     }
 
-    private function parseByIframeTag(DOMDocument $domDocument): void
+    private function parseByIframeTag(\DOMDocument $domDocument): void
     {
         $domNodeList = $domDocument->getElementsByTagName('iframe');
 
@@ -418,7 +418,7 @@ final class HTMLTweak
         }
     }
 
-    private function parseByVideoTag(DOMDocument $domDocument): void
+    private function parseByVideoTag(\DOMDocument $domDocument): void
     {
         $domNodeList = $domDocument->getElementsByTagName('video');
 
@@ -429,7 +429,12 @@ final class HTMLTweak
         }
     }
 
-    private function parseByAudioTag(DOMDocument $domDocument): void
+    private function lazyLoadVideoAndAudio(\DOMElement $domElement): void
+    {
+        $domElement->setAttribute('preload', 'none');
+    }
+
+    private function parseByAudioTag(\DOMDocument $domDocument): void
     {
         $domNodeList = $domDocument->getElementsByTagName('audio');
 
@@ -440,12 +445,7 @@ final class HTMLTweak
         }
     }
 
-    private function lazyLoadVideoAndAudio(DOMElement $domElement): void
-    {
-        $domElement->setAttribute('preload', 'none');
-    }
-
-    private function parseByTargetTag(DOMDocument $domDocument): void
+    private function parseByTargetTag(\DOMDocument $domDocument): void
     {
         if ($this->optimizeNoopener) {
             $domNodeList = $domDocument->getElementsByTagName('target');
@@ -456,9 +456,9 @@ final class HTMLTweak
         }
     }
 
-    private function parseByScriptTag(DOMDocument $domDocument): void
+    private function parseByScriptTag(\DOMDocument $domDocument): void
     {
-        $jsThemeCache = Configuration::get('PS_JS_THEME_CACHE');
+        $jsThemeCache = \Configuration::get('PS_JS_THEME_CACHE');
 
         $domNodeList = $domDocument->getElementsByTagName('script');
 
@@ -494,7 +494,7 @@ final class HTMLTweak
         return ContextService::getController()->getJavascript()['bottom']['external']['bottom-js-ccc']['uri'];
     }
 
-    private function parseByATag(DOMDocument $domDocument): void
+    private function parseByATag(\DOMDocument $domDocument): void
     {
         if ($this->optimizeNoopener) {
             $domNodeList = $domDocument->getElementsByTagName('a');
@@ -513,7 +513,7 @@ final class HTMLTweak
     {
         $components = parse_url($url);
 
-        return !empty($components['host']) && strcasecmp($components['host'], Tools::getHttpHost());
+        return !empty($components['host']) && strcasecmp($components['host'], \Tools::getHttpHost());
     }
 
     public function doMinifySvg(bool $opt = false): self
@@ -557,6 +557,7 @@ final class HTMLTweak
 
         return $this;
     }
+
     public function doOptimizeNoopener(bool $opt): self
     {
         $this->optimizeNoopener = $opt;

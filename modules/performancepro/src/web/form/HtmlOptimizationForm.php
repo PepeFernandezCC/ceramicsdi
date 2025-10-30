@@ -4,10 +4,11 @@
  *
  * @author Mathias Reker
  * @copyright Mathias Reker
- * @license Commercial Software License
+ * @license Academic Free License (AFL 3.0)
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Additionally, this module is subject to a proprietary End User License Agreement (EULA).
+ * For the full copyright, open source license, and EULA information, please view the LICENSE
+ * that were distributed with this source code.
  */
 
 declare(strict_types=1);
@@ -17,17 +18,33 @@ namespace PrestaShop\Module\PerformancePro\web\form;
 use PrestaShop\Module\PerformancePro\domain\service\util\LinkService;
 use PrestaShop\Module\PerformancePro\web\util\View;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 final class HtmlOptimizationForm extends AbstractForm
 {
     /**
-     * @var null|mixed
+     * @var mixed|null
      */
     public $module;
 
     /**
-     * @var null|mixed
+     * @var mixed|null
      */
     public $className;
+
+    /**
+     * @var View
+     */
+    private $view;
+
+    public function __construct(\Module $module)
+    {
+        parent::__construct($module);
+
+        $this->view = new View();
+    }
 
     /**
      * @return array{form: array{legend: array{title: mixed, icon: string}, description: string, warning: mixed, input: array<int, array{type: string, label: mixed, name: string, is_bool: true, desc: string, values: array<int, array{id: string, value: bool, label: mixed}>}>, submit: array{title: mixed}}}
@@ -66,7 +83,7 @@ final class HtmlOptimizationForm extends AbstractForm
                         'Safely reduce the size of your HTML code, making your websites load faster. These features can also optimize the HTML document to follow modern HTML5 markups. You can scan your web application to see the difference using the %s.',
                         $this->className
                     ),
-                    View::displayLink($link, $this->module->l('W3C validator', $this->className))
+                    $this->view->displayLink($link, $this->module->l('W3C validator', $this->className))
                 ),
                 'warning' => $this->module->l(
                     'Testing the website with and without the HTML optimization features is recommended. This is because, in some cases, some of these features could negatively affect the performance.',
@@ -79,7 +96,7 @@ final class HtmlOptimizationForm extends AbstractForm
                         'name' => 'PP_MINIFY_HTML',
                         'is_bool' => true,
                         'desc' => '</p>'
-                            . View::displayList($minifyHtml, 'help-block')
+                            . $this->view->displayList($minifyHtml, 'help-block')
                             . '<p>',
                         'values' => [
                             [
@@ -100,7 +117,7 @@ final class HtmlOptimizationForm extends AbstractForm
                         'name' => 'PP_OPTIMIZE_ATTRIBUTES',
                         'is_bool' => true,
                         'desc' => '</p>'
-                            . View::displayList($optimizeAttributes, 'help-block')
+                            . $this->view->displayList($optimizeAttributes, 'help-block')
                             . '<p>',
                         'values' => [
                             [
@@ -125,7 +142,7 @@ final class HtmlOptimizationForm extends AbstractForm
                                 'Improve site\'s performance by adding "defer" tag to the external combined javascript bundle. %s.',
                                 $this->className
                             ),
-                            View::displayLink(
+                            $this->view->displayLink(
                                 'https://web.dev/efficiently-load-third-party-javascript/',
                                 $this->module->l('Read more', $this->className)
                             )
@@ -153,7 +170,7 @@ final class HtmlOptimizationForm extends AbstractForm
                                 'Decode the image asynchronously. Rendering of pages and decoding of the image is done in parallel. This makes the page render faster. %s.',
                                 $this->className
                             ),
-                            View::displayLink(
+                            $this->view->displayLink(
                                 'https://usefulangle.com/post/277/img-decoding-attribute',
                                 $this->module->l('Read more', $this->className)
                             )
@@ -178,7 +195,7 @@ final class HtmlOptimizationForm extends AbstractForm
                         'is_bool' => true,
                         'desc' => sprintf(
                             $this->module->l('Add missing size attributes to the images. %s.', $this->className),
-                            View::displayLink(
+                            $this->view->displayLink(
                                 'https://web.dev/optimize-cls/',
                                 $this->module->l('Read more', $this->className)
                             )

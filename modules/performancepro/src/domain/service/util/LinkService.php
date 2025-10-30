@@ -4,10 +4,11 @@
  *
  * @author Mathias Reker
  * @copyright Mathias Reker
- * @license Commercial Software License
+ * @license Academic Free License (AFL 3.0)
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Additionally, this module is subject to a proprietary End User License Agreement (EULA).
+ * For the full copyright, open source license, and EULA information, please view the LICENSE
+ * that were distributed with this source code.
  */
 
 declare(strict_types=1);
@@ -15,7 +16,10 @@ declare(strict_types=1);
 namespace PrestaShop\Module\PerformancePro\domain\service\util;
 
 use PrestaShop\Module\PerformancePro\resources\config\Config;
-use Tools;
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 final class LinkService
 {
@@ -27,7 +31,7 @@ final class LinkService
     {
         $tokenKey = $ajax ? 'ajax' : 'cron';
 
-        $token = Tools::hashIV(Config::MODULE_NAME . '/' . $tokenKey . $technicalName);
+        $token = \Tools::hashIV(Config::MODULE_NAME . '/' . $tokenKey . $technicalName);
 
         return ContextService::getLink()->getModuleLink(
             Config::MODULE_NAME,
@@ -39,6 +43,11 @@ final class LinkService
                 'key' => $key,
             ]
         );
+    }
+
+    public static function getLink(bool $http = true): string
+    {
+        return \Tools::getHttpHost($http, true, true);
     }
 
     public static function createNormalizedLink(string $url): string
@@ -103,11 +112,6 @@ final class LinkService
     public static function getBaseLink(): string
     {
         return self::getLink() . __PS_BASE_URI__;
-    }
-
-    public static function getLink(bool $http = true): string
-    {
-        return Tools::getHttpHost($http, true, true);
     }
 
     private static function createLink(array $parts): string

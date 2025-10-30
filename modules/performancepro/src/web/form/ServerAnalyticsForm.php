@@ -4,10 +4,11 @@
  *
  * @author Mathias Reker
  * @copyright Mathias Reker
- * @license Commercial Software License
+ * @license Academic Free License (AFL 3.0)
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Additionally, this module is subject to a proprietary End User License Agreement (EULA).
+ * For the full copyright, open source license, and EULA information, please view the LICENSE
+ * that were distributed with this source code.
  */
 
 declare(strict_types=1);
@@ -17,17 +18,33 @@ namespace PrestaShop\Module\PerformancePro\web\form;
 use PrestaShop\Module\PerformancePro\domain\service\validation\ServerSettingsValidator;
 use PrestaShop\Module\PerformancePro\web\util\View;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 final class ServerAnalyticsForm extends AbstractForm
 {
     /**
-     * @var null|mixed
+     * @var mixed|null
      */
     public $module;
 
     /**
-     * @var null|mixed
+     * @var mixed|null
      */
     public $className;
+
+    /**
+     * @var View
+     */
+    private $view;
+
+    public function __construct(\Module $module)
+    {
+        parent::__construct($module);
+
+        $this->view = new View();
+    }
 
     /**
      * @return array{form: array{legend: array{title: mixed, icon: string}, description: mixed, input: array<int, array{type: string, label: string, html_content: string, col: int, name: string}>}}
@@ -82,16 +99,16 @@ final class ServerAnalyticsForm extends AbstractForm
 
         foreach ($checkGridTotal as $singleCheckGridTotal) {
             $result[] = [
-                $this->module->l('Current setting', $this->className) => View::displayMonospaceLink(
+                $this->module->l('Current setting', $this->className) => $this->view->displayMonospaceLink(
                     $singleCheckGridTotal[0] . ' = ' . $singleCheckGridTotal[1]
                 ),
-                $this->module->l('Recommended setting', $this->className) => View::displayMonospaceLink(
+                $this->module->l('Recommended setting', $this->className) => $this->view->displayMonospaceLink(
                     $singleCheckGridTotal[0] . ' = ' . $singleCheckGridTotal[2],
                     true
                 ),
-                View::displayAlign($this->module->l('Status', $this->className)) => $singleCheckGridTotal[3]
-                    ? View::displayAlign(View::displayLabelInfo($this->module->l('Can be improved', $this->className)))
-                    : View::displayAlign(View::displayLabelSuccess($this->module->l('Well done!', $this->className))),
+                $this->view->displayAlign($this->module->l('Status', $this->className)) => $singleCheckGridTotal[3]
+                    ? $this->view->displayAlign($this->view->displayLabelInfo($this->module->l('Can be improved', $this->className)))
+                    : $this->view->displayAlign($this->view->displayLabelSuccess($this->module->l('Well done!', $this->className))),
             ];
         }
 
@@ -109,7 +126,7 @@ final class ServerAnalyticsForm extends AbstractForm
                     [
                         'type' => 'html',
                         'label' => '',
-                        'html_content' => View::displayArrayAsTable($result),
+                        'html_content' => $this->view->displayTable($result),
                         'col' => 12,
                         'name' => '',
                     ],

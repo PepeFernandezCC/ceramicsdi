@@ -4,10 +4,11 @@
  *
  * @author Mathias Reker
  * @copyright Mathias Reker
- * @license Commercial Software License
+ * @license Academic Free License (AFL 3.0)
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Additionally, this module is subject to a proprietary End User License Agreement (EULA).
+ * For the full copyright, open source license, and EULA information, please view the LICENSE
+ * that were distributed with this source code.
  */
 
 declare(strict_types=1);
@@ -60,6 +61,10 @@ use PrestaShop\Module\PerformancePro\domain\service\util\DefineValueService;
 use PrestaShop\Module\PerformancePro\resources\config\Config;
 use PrestaShop\Module\PerformancePro\web\util\View;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 final class PerformanceProCronModuleFrontController extends ModuleFrontController
 {
     /**
@@ -67,13 +72,30 @@ final class PerformanceProCronModuleFrontController extends ModuleFrontControlle
      */
     public $ssl = true;
 
+    /**
+     * @var View
+     */
+    private $view;
+
+    /**
+     * @var CronRemoteControl
+     */
+    private $cronRemoteControl;
+
+    /**
+     * @var string
+     */
+    private $className;
+
     public function __construct()
     {
+        parent::__construct();
+
         $this->cronRemoteControl = new CronRemoteControl();
 
         $this->className = 'cron';
 
-        parent::__construct();
+        $this->view = new View();
     }
 
     public function displayAjax(): void
@@ -89,16 +111,6 @@ final class PerformanceProCronModuleFrontController extends ModuleFrontControlle
         } catch (PrestaShopException $prestaShopException) {
             LogService::error($prestaShopException->getMessage(), $prestaShopException->getTrace());
         }
-    }
-
-    public function display(): void
-    {
-        $this->runAsCron();
-    }
-
-    public function formatStrong(string $text): string
-    {
-        return $text;
     }
 
     private function verifyAccess(string $key): void
@@ -155,6 +167,11 @@ final class PerformanceProCronModuleFrontController extends ModuleFrontControlle
         return lcfirst(str_replace('-', '', ucwords($string, '-')));
     }
 
+    public function display(): void
+    {
+        $this->runAsCron();
+    }
+
     private function runAsCron(): void
     {
         $this->module->cron = true;
@@ -194,7 +211,7 @@ final class PerformanceProCronModuleFrontController extends ModuleFrontControlle
      */
     private function buildCache(): array
     {
-        $sitemaps = explode(config::PIPE_SEPARATOR, Configuration::get('PP_CACHE_WARMER_SITEMAPS'));
+        $sitemaps = explode(Config::PIPE_SEPARATOR, Configuration::get('PP_CACHE_WARMER_SITEMAPS'));
 
         $response = $this->cronRemoteControl
             ->setCommand(new CacheWarmerCommand(new CacheWarmer($sitemaps)))
@@ -204,7 +221,7 @@ final class PerformanceProCronModuleFrontController extends ModuleFrontControlle
         return [
             'result' => sprintf(
                 $this->module->l('%s pages warmed up.', $this->className),
-                View::formatStrong((string) $response['amount'])
+                $this->view->formatStrong((string) $response['amount'])
             ),
         ];
     }
@@ -327,7 +344,7 @@ final class PerformanceProCronModuleFrontController extends ModuleFrontControlle
         return [
             'result' => sprintf(
                 $this->module->l('%s log(s) removed.', $this->className),
-                View::formatStrong((string) $response['amount'])
+                $this->view->formatStrong((string) $response['amount'])
             ),
         ];
     }
@@ -345,7 +362,7 @@ final class PerformanceProCronModuleFrontController extends ModuleFrontControlle
         return [
             'result' => sprintf(
                 $this->module->l('%s row(s) fixed.', $this->className),
-                View::formatStrong((string) $response['amount'])
+                $this->view->formatStrong((string) $response['amount'])
             ),
         ];
     }
@@ -363,7 +380,7 @@ final class PerformanceProCronModuleFrontController extends ModuleFrontControlle
         return [
             'result' => sprintf(
                 $this->module->l('%s cart(s) removed.', $this->className),
-                View::formatStrong((string) $response['amount'])
+                $this->view->formatStrong((string) $response['amount'])
             ),
         ];
     }
@@ -381,7 +398,7 @@ final class PerformanceProCronModuleFrontController extends ModuleFrontControlle
         return [
             'result' => sprintf(
                 $this->module->l('%s row(s) removed.', $this->className),
-                View::formatStrong((string) $response['amount'])
+                $this->view->formatStrong((string) $response['amount'])
             ),
         ];
     }
@@ -399,7 +416,7 @@ final class PerformanceProCronModuleFrontController extends ModuleFrontControlle
         return [
             'result' => sprintf(
                 $this->module->l('%s row(s) removed.', $this->className),
-                View::formatStrong((string) $response['amount'])
+                $this->view->formatStrong((string) $response['amount'])
             ),
         ];
     }
@@ -417,7 +434,7 @@ final class PerformanceProCronModuleFrontController extends ModuleFrontControlle
         return [
             'result' => sprintf(
                 $this->module->l('%s row(s) removed.', $this->className),
-                View::formatStrong((string) $response['amount'])
+                $this->view->formatStrong((string) $response['amount'])
             ),
         ];
     }
@@ -435,7 +452,7 @@ final class PerformanceProCronModuleFrontController extends ModuleFrontControlle
         return [
             'result' => sprintf(
                 $this->module->l('%s row(s) removed.', $this->className),
-                View::formatStrong((string) $response['amount'])
+                $this->view->formatStrong((string) $response['amount'])
             ),
         ];
     }
@@ -453,7 +470,7 @@ final class PerformanceProCronModuleFrontController extends ModuleFrontControlle
         return [
             'result' => sprintf(
                 $this->module->l('%s row(s) removed.', $this->className),
-                View::formatStrong((string) $response['amount'])
+                $this->view->formatStrong((string) $response['amount'])
             ),
         ];
     }
@@ -501,8 +518,8 @@ final class PerformanceProCronModuleFrontController extends ModuleFrontControlle
         return [
             'result' => sprintf(
                 $this->module->l('The setting %s has been updated to %s.', $this->className),
-                View::formatStrong($key),
-                View::formatStrong((string) $response['value'])
+                $this->view->formatStrong($key),
+                $this->view->formatStrong((string) $response['value'])
             ),
             'amount' => $response['value'],
         ];
@@ -521,7 +538,7 @@ final class PerformanceProCronModuleFrontController extends ModuleFrontControlle
         return [
             'result' => sprintf(
                 $this->module->l('%s link(s) has been added.', $this->className),
-                View::formatStrong((string) $response['amount'])
+                $this->view->formatStrong((string) $response['amount'])
             ),
             'content' => $response['content'],
         ];
@@ -540,7 +557,7 @@ final class PerformanceProCronModuleFrontController extends ModuleFrontControlle
         return [
             'result' => sprintf(
                 $this->module->l('%s table(s) has been converted to InnoDb.', $this->className),
-                View::formatStrong((string) $response['amount'])
+                $this->view->formatStrong((string) $response['amount'])
             ),
         ];
     }
@@ -558,7 +575,7 @@ final class PerformanceProCronModuleFrontController extends ModuleFrontControlle
         return [
             'result' => sprintf(
                 $this->module->l('%s table(s) has been repaired.', $this->className),
-                View::formatStrong((string) $response['amount'])
+                $this->view->formatStrong((string) $response['amount'])
             ),
         ];
     }
@@ -576,7 +593,7 @@ final class PerformanceProCronModuleFrontController extends ModuleFrontControlle
         return [
             'result' => sprintf(
                 $this->module->l('%s table(s) has been optimized.', $this->className),
-                View::formatStrong((string) $response['amount'])
+                $this->view->formatStrong((string) $response['amount'])
             ),
         ];
     }
@@ -594,7 +611,7 @@ final class PerformanceProCronModuleFrontController extends ModuleFrontControlle
         return [
             'result' => sprintf(
                 $this->module->l('%s row(s) has been removed.', $this->className),
-                View::formatStrong((string) $response['amount'])
+                $this->view->formatStrong((string) $response['amount'])
             ),
         ];
     }
@@ -612,7 +629,7 @@ final class PerformanceProCronModuleFrontController extends ModuleFrontControlle
         return [
             'result' => sprintf(
                 $this->module->l('%s folder(s) has been removed.', $this->className),
-                View::formatStrong((string) $response['amount'])
+                $this->view->formatStrong((string) $response['amount'])
             ),
         ];
     }
@@ -630,7 +647,7 @@ final class PerformanceProCronModuleFrontController extends ModuleFrontControlle
         return [
             'result' => sprintf(
                 $this->module->l('%s row(s) has been removed.', $this->className),
-                View::formatStrong((string) $response['amount'])
+                $this->view->formatStrong((string) $response['amount'])
             ),
         ];
     }
@@ -648,7 +665,7 @@ final class PerformanceProCronModuleFrontController extends ModuleFrontControlle
         return [
             'result' => sprintf(
                 $this->module->l('%s row(s) has been removed.', $this->className),
-                View::formatStrong((string) $response['amount'])
+                $this->view->formatStrong((string) $response['amount'])
             ),
         ];
     }
@@ -666,7 +683,7 @@ final class PerformanceProCronModuleFrontController extends ModuleFrontControlle
         return [
             'result' => sprintf(
                 $this->module->l('%s image(s) has been removed.', $this->className),
-                View::formatStrong((string) $response['amount'])
+                $this->view->formatStrong((string) $response['amount'])
             ),
         ];
     }
@@ -684,7 +701,7 @@ final class PerformanceProCronModuleFrontController extends ModuleFrontControlle
         return [
             'result' => sprintf(
                 $this->module->l('%s image(s) has been removed.', $this->className),
-                View::formatStrong((string) $response['amount'])
+                $this->view->formatStrong((string) $response['amount'])
             ),
         ];
     }
@@ -702,7 +719,7 @@ final class PerformanceProCronModuleFrontController extends ModuleFrontControlle
         return [
             'result' => sprintf(
                 $this->module->l('%s link(s) has been added.', $this->className),
-                View::formatStrong((string) $response['amount'])
+                $this->view->formatStrong((string) $response['amount'])
             ),
             'content' => $response['content'],
         ];

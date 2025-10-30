@@ -4,19 +4,23 @@
  *
  * @author Mathias Reker
  * @copyright Mathias Reker
- * @license Commercial Software License
+ * @license Academic Free License (AFL 3.0)
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Additionally, this module is subject to a proprietary End User License Agreement (EULA).
+ * For the full copyright, open source license, and EULA information, please view the LICENSE
+ * that were distributed with this source code.
  */
 
 declare(strict_types=1);
 
 namespace PrestaShop\Module\PerformancePro\domain\service\h2;
 
-use Exception;
 use PrestaShop\Module\PerformancePro\domain\service\log\LogService;
 use PrestaShop\Module\PerformancePro\domain\service\util\ContextService;
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 final class ServerPush
 {
@@ -57,7 +61,7 @@ final class ServerPush
             ContextService::getCookie()->__set(self::COOKIE_KEY, '1');
 
             ContextService::getCookie()->write();
-        } catch (Exception $exception) {
+        } catch (\Exception $exception) {
             LogService::error($exception->getMessage(), $exception->getTrace());
         }
     }

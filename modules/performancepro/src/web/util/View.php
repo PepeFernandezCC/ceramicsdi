@@ -4,152 +4,147 @@
  *
  * @author Mathias Reker
  * @copyright Mathias Reker
- * @license Commercial Software License
+ * @license Academic Free License (AFL 3.0)
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Additionally, this module is subject to a proprietary End User License Agreement (EULA).
+ * For the full copyright, open source license, and EULA information, please view the LICENSE
+ * that were distributed with this source code.
  */
 
 declare(strict_types=1);
 
 namespace PrestaShop\Module\PerformancePro\web\util;
 
-use Module;
 use PrestaShop\Module\PerformancePro\domain\service\util\ContextService;
 use PrestaShop\Module\PerformancePro\domain\service\util\LinkService;
-use Tools;
+use PrestaShop\Module\PerformancePro\resources\config\Config;
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 final class View
 {
-    public static function displayArrayAsTable(array $array, bool $table = true, bool $top = false): string
+    public function displayTable(array $array, bool $table = true, bool $top = false): string
     {
-        $result = [];
+        $smarty = ContextService::getSmarty();
 
-        if ($top) {
-            $result[] = '<div style="padding-top: 20px"></div>';
-        }
+        $smarty->assign([
+            'pp_dataHtml' => $array, // This contains HTML, but it is already escaped at this point.
+            'pp_table' => $table,
+            'pp_top' => $top,
+        ]);
 
-        $tableHeader = '';
-
-        foreach ($array as $singleArray) {
-            if (\is_array($singleArray)) {
-                if ('' === $tableHeader) {
-                    $tableHeader = sprintf(
-                        '<th><strong>%s</strong></th>',
-                        implode('</strong></th><th><strong>', array_keys($singleArray))
-                    );
-                }
-
-                $result[] = '<tr>' . self::displayArrayAsTable($singleArray, false) . '</tr>';
-            } else {
-                $result[] = '<td height="30">' . $singleArray . '</td>';
-            }
-        }
-
-        if ($table) {
-            return sprintf(
-                '<table class="table"><thead><tr>%s</tr></thead>%s</table>',
-                $tableHeader,
-                implode('', $result)
-            );
-        }
-
-        return implode('', $result);
+        return $smarty->fetch(_PS_MODULE_DIR_ . Config::MODULE_NAME . '/views/templates/admin/displayTable.tpl');
     }
 
-    public static function displayHeader(string $text, bool $noTop = false): string
+    public function displayHeader(string $text, bool $noTop = false): string
     {
-        if ($noTop) {
-            return '<h2 style="margin-top: -10px">' . $text . '</h2>';
-        }
+        $smarty = ContextService::getSmarty();
 
-        return '<h2>' . $text . '</h2>';
-    }
+        $smarty->assign([
+            'pp_text' => $text,
+            'pp_noTop' => $noTop,
+        ]);
 
-    public static function displayParagraph(string $text, bool $italic = false): string
-    {
-        if ($italic) {
-            return '<p style="font-size: 13px; font-style: italic;">'
-                . $text
-                . '</p>';
-        }
-
-        return '<p style="font-size: 13px;">' . $text . '</p>';
+        return $smarty->fetch(_PS_MODULE_DIR_ . Config::MODULE_NAME . '/views/templates/admin/displayHeader.tpl');
     }
 
     /**
      * @param array<string> $array
      */
-    public static function displayList(array $array, string $class = ''): string
+    public function displayList(array $array, string $class = ''): string
     {
-        return '<ul class="'
-            . $class
-            . '"><li>'
-            . implode('</li><li>', $array)
-            . '</li></ul>';
+        $smarty = ContextService::getSmarty();
+
+        $smarty->assign([
+            'pp_array' => $array,
+            'pp_class' => $class,
+        ]);
+
+        return $smarty->fetch(_PS_MODULE_DIR_ . Config::MODULE_NAME . '/views/templates/admin/displayList.tpl');
     }
 
-    public static function displayBtnLink(string $link, string $href): string
+    public function displayBtnLink(string $text, string $href): string
     {
-        return '<a class="btn btn-default" href="'
-            . $href
-            . '" target="_blank" rel="noopener noreferrer nofollow">'
-            . $link
-            . '</a>';
+        $smarty = ContextService::getSmarty();
+
+        $smarty->assign([
+            'pp_html' => $text, // This contains HTML, but it is already escaped at this point.
+            'pp_href' => $href,
+        ]);
+
+        return $smarty->fetch(_PS_MODULE_DIR_ . Config::MODULE_NAME . '/views/templates/admin/displayBtnLink.tpl');
     }
 
-    public static function displayLinkCopy(string $text): string
+    public function displayLabelInfo(string $text): string
     {
-        return '<span style="white-space:nowrap;"><kbd>'
-            . $text
-            . '</kbd><a href="javascript:void(0)" onclick="copyToClipboard(\''
-            . $text
-            . '\')" <i class="icon icon-clipboard"></i></a></span>';
+        return $this->displayLabel('info', $text);
     }
 
-    public static function displayLabelInfo(string $text): string
+    public function displayLabel(string $type, string $text): string
     {
-        return '<span class="label label-info">' . $text . '</span>';
+        $smarty = ContextService::getSmarty();
+
+        $smarty->assign([
+            'pp_type' => $type,
+            'pp_text' => $text,
+        ]);
+
+        return $smarty->fetch(_PS_MODULE_DIR_ . Config::MODULE_NAME . '/views/templates/admin/displayLabel.tpl');
     }
 
-    public static function displayLabelDanger(string $text): string
+    public function displayLabelSuccess(string $text): string
     {
-        return '<span class="label label-danger">' . $text . '</span>';
+        return $this->displayLabel('success', $text);
     }
 
-    public static function displayLabelSuccess(string $text): string
+    public function displayMagicIcon(): string
     {
-        return '<span class="label label-success">' . $text . '</span>';
+        return $this->displayIcon('magic');
     }
 
-    public static function displayAlign(string $text): string
+    public function displayIcon(string $icon): string
+    {
+        $smarty = ContextService::getSmarty();
+
+        $smarty->assign([
+            'pp_icon' => $icon,
+        ]);
+
+        return $smarty->fetch(_PS_MODULE_DIR_ . Config::MODULE_NAME . '/views/templates/admin/displayIcon.tpl');
+    }
+
+    public function displayBoltIcon(): string
+    {
+        return $this->displayIcon('bolt');
+    }
+
+    public function displayInformationIcon(): string
+    {
+        return $this->displayIcon('info-circle');
+    }
+
+    public function displayWarningIcon(): string
+    {
+        return $this->displayIcon('warning');
+    }
+
+    public function displayAlign(string $text): string
     {
         $align = ContextService::getLanguage()->is_rtl ? 'left' : 'right';
 
-        return '<span style="float:' . $align . ';white-space:nowrap;">' . $text . '</span>';
+        $smarty = ContextService::getSmarty();
+
+        $smarty->assign([
+            'pp_align' => $align,
+            'pp_html' => $text, // This contains HTML, but it is already escaped at this point.
+        ]);
+
+        return $smarty->fetch(_PS_MODULE_DIR_ . Config::MODULE_NAME . '/views/templates/admin/displayAlign.tpl');
     }
 
-    public static function displayMagicIcon(): string
-    {
-        return '<i class="icon icon-magic"></i>';
-    }
-
-    public static function displayBoltIcon(): string
-    {
-        return '<i class="icon icon-bolt"></i>';
-    }
-
-    public static function displayInformationIcon(): string
-    {
-        return '<i class="icon icon-info-circle"></i>';
-    }
-
-    public static function displayWarningIcon(): string
-    {
-        return '<i class="icon icon-warning"></i>';
-    }
-
-    public static function displayBtnAjax(
+    public function displayBtnAjax(
         string $technicalName,
         string $displayName,
         string $confMsg,
@@ -157,76 +152,70 @@ final class View
     ): string {
         $link = LinkService::createCronLink($technicalName, $key, true);
 
-        $id = Tools::hashIV($technicalName . $key);
+        $id = \Tools::hashIV($technicalName . $key);
 
-        return '<button id="ajaxCall-'
-            . $id
-            . '" class="btn btn-default" onclick="callAjax(\''
-            . $link
-            . "', '"
-            . $id
-            . "', '"
-            . $confMsg
-            . '\'); return false;" id="'
-            . $id
-            . '">'
-            . $displayName
-            . '</button>';
+        $smarty = ContextService::getSmarty();
+
+        $smarty->assign([
+            'pp_id' => $id,
+            'pp_link' => $link,
+            'pp_confMsg' => $confMsg,
+            'pp_displayNameHtml' => $displayName, // This contains HTML, but it is already escaped at this point.
+        ]);
+
+        return $smarty->fetch(_PS_MODULE_DIR_ . Config::MODULE_NAME . '/views/templates/admin/displayBtnAjax.tpl');
     }
 
-    public static function displayLink(string $href, $link = null, bool $target = true): string
+    public function displayLink(string $href, $link = null, bool $blank = true): string
     {
         if (null === $link) {
             $link = $href;
         }
 
-        $blank = $target ? 'target="_blank"' : '';
+        $smarty = ContextService::getSmarty();
 
-        return '<a style="white-space:nowrap;" href="'
-            . $href
-            . '"'
-            . $blank
-            . ' rel="noopener noreferrer nofollow"><i class="icon-external-link-sign"></i> '
-            . $link
-            . '</a>';
+        $smarty->assign([
+            'pp_href' => $href,
+            'pp_link' => $link,
+            'pp_blank' => $blank,
+        ]);
+
+        return $smarty->fetch(_PS_MODULE_DIR_ . Config::MODULE_NAME . '/views/templates/admin/displayLink.tpl');
     }
 
-    public static function displayMonospaceLink(string $text, bool $copy = false): string
+    public function displayMonospaceLink(string $text, bool $copy = false): string
     {
-        $result = '<span style="white-space:nowrap;">';
+        $smarty = ContextService::getSmarty();
 
-        $result .= '<kbd>' . $text . '</kbd>';
+        $smarty->assign([
+            'pp_text' => $text,
+            'pp_copy' => $copy,
+        ]);
 
-        if ($copy) {
-            $result
-                .= ' <a href="javascript:void(0)" onclick="copyToClipboard(\''
-                . $text
-                . '\')" <i class="icon icon-clipboard"></i></a>';
-        }
-
-        return $result . '</span>';
+        return $smarty->fetch(_PS_MODULE_DIR_ . Config::MODULE_NAME . '/views/templates/admin/displayMonospaceLink.tpl');
     }
 
-    public static function formatStrong(string $text): string
+    public function formatStrong(string $text): string
     {
-        return '<strong>' . $text . '</strong>';
-    }
+        $smarty = ContextService::getSmarty();
 
-    public static function arrayToStringList(array $array): string
-    {
-        return '<ul><li>' . implode('</li><li>', $array) . '</li></ul>';
+        $smarty->assign([
+            'pp_text' => $text,
+        ]);
+
+        return $smarty->fetch(_PS_MODULE_DIR_ . Config::MODULE_NAME . '/views/templates/admin/formatStrong.tpl');
     }
 
     /**
      * @return string[]
      */
-    public static function filterModules(array $modules): array
+    public function filterModules(array $modules): array
     {
         $result = [];
 
         foreach ($modules as $module) {
-            if (Module::isEnabled($module)) {
-                $result[] = Module::getModuleName($module) . ' (' . $module . ')';
+            if (\Module::isEnabled($module)) {
+                $result[] = \Module::getModuleName($module) . ' (' . $module . ')';
             }
         }
 

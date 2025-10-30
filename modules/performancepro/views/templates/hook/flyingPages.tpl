@@ -1,12 +1,17 @@
 {**
-* This file is part of the performancepro package.
-*
-* @author Mathias Reker
-* @copyright Mathias Reker
-* @license Commercial Software License
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
+ * This file is part of the performancepro package.
+ *
+ * @author Mathias Reker
+ * @copyright Mathias Reker
+ * @license Academic Free License (AFL 3.0)
+ *
+ * Additionally, this module is subject to a proprietary End User License Agreement (EULA).
+ * For the full copyright, open source license, and EULA information, please view the LICENSE
+ * that were distributed with this source code.
 *}
 
-<script>window.FPConfig={literal}{{/literal}delay: 3600, ignoreKeywords: ['{"', '"|implode:$pp_ignoreKeywords nofilter}'], maxRPS: 3, hoverDelay: 100,{literal}}{/literal};</script>
+<script>window.FPConfig = {literal}{{/literal}
+        delay: 3600,
+        ignoreKeywords: [{$pp_ignoreKeywords|escape:'htmlall':'UTF-8'}],
+        maxRPS: 3,
+        hoverDelay: 100,{literal}}{/literal};</script>

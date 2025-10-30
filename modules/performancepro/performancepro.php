@@ -4,10 +4,11 @@
  *
  * @author Mathias Reker
  * @copyright Mathias Reker
- * @license Commercial Software License
+ * @license Academic Free License (AFL 3.0)
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Additionally, this module is subject to a proprietary End User License Agreement (EULA).
+ * For the full copyright, open source license, and EULA information, please view the LICENSE
+ * that were distributed with this source code.
  */
 
 declare(strict_types=1);
@@ -27,6 +28,10 @@ use PrestaShop\Module\PerformancePro\resources\config\Config;
 use PrestaShop\Module\PerformancePro\web\util\HTTP;
 use voku\helper\HtmlMin;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 final class PerformancePro extends Module
 {
     /**
@@ -40,7 +45,7 @@ final class PerformancePro extends Module
 
         $this->tab = 'front_office_features';
 
-        $this->version = '2.6.0';
+        $this->version = '2.6.1';
 
         $this->author = 'Mathias R.';
 
@@ -78,19 +83,19 @@ final class PerformancePro extends Module
     public static function parseHtml(string $html): string
     {
         $configuration = [
-            'noopener' => (bool)Configuration::get('PP_ADD_NOOPENER'),
-            'loadScriptAsync' => (bool)Configuration::get('PP_LOAD_SCRIPT_ASYNC'),
-            'minifySvg' => (bool)Configuration::get('PP_MINIFY_SVG'),
-            'decodeImgAsync' => (bool)Configuration::get('PP_DECODE_IMG_ASYNC'),
-            'lazyLoadImg' => (bool)Configuration::get('PP_LAZY_LOAD_IMG'),
-            'lazyLoadIframe' => (bool)Configuration::get('PP_LAZY_LOAD_IFRAME'),
-            'lazyLoadVideo' => (bool)Configuration::get('PP_LAZY_LOAD_VIDEO'),
-            'lazyLoadAudio' => (bool)Configuration::get('PP_LAZY_LOAD_AUDIO'),
-            'imgSizes' => (bool)Configuration::get('PP_IMG_SIZE'),
-            'imgExtJpg' => (bool)Configuration::get('PP_CONVERT_TO_WEBP_JPEG'),
-            'imgExtPng' => (bool)Configuration::get('PP_CONVERT_TO_WEBP_PNG'),
-            'minifyHtml' => (bool)Configuration::get('PP_MINIFY_HTML'),
-            'optimizeAttributes' => (bool)Configuration::get('PP_OPTIMIZE_ATTRIBUTES'),
+            'noopener' => (bool) Configuration::get('PP_ADD_NOOPENER'),
+            'loadScriptAsync' => (bool) Configuration::get('PP_LOAD_SCRIPT_ASYNC'),
+            'minifySvg' => (bool) Configuration::get('PP_MINIFY_SVG'),
+            'decodeImgAsync' => (bool) Configuration::get('PP_DECODE_IMG_ASYNC'),
+            'lazyLoadImg' => (bool) Configuration::get('PP_LAZY_LOAD_IMG'),
+            'lazyLoadIframe' => (bool) Configuration::get('PP_LAZY_LOAD_IFRAME'),
+            'lazyLoadVideo' => (bool) Configuration::get('PP_LAZY_LOAD_VIDEO'),
+            'lazyLoadAudio' => (bool) Configuration::get('PP_LAZY_LOAD_AUDIO'),
+            'imgSizes' => (bool) Configuration::get('PP_IMG_SIZE'),
+            'imgExtJpg' => (bool) Configuration::get('PP_CONVERT_TO_WEBP_JPEG'),
+            'imgExtPng' => (bool) Configuration::get('PP_CONVERT_TO_WEBP_PNG'),
+            'minifyHtml' => (bool) Configuration::get('PP_MINIFY_HTML'),
+            'optimizeAttributes' => (bool) Configuration::get('PP_OPTIMIZE_ATTRIBUTES'),
         ];
 
         if (!in_array(true, $configuration, true)) {
@@ -294,7 +299,7 @@ final class PerformancePro extends Module
     {
         $styleSheets = $this->context->controller->getStylesheets();
 
-        if (null === $styleSheets) {
+        if (null === $styleSheets || !isset($styleSheets['external']['theme-ccc']['uri'])) {
             return null;
         }
 
@@ -336,7 +341,9 @@ final class PerformancePro extends Module
         }
 
         $params = [
-            'pp_ignoreKeywords' => $ignoreKeywords,
+            'pp_ignoreKeywords' => implode(', ', array_map(function ($keyword) {
+                return "'" . $keyword . "'";
+            }, $ignoreKeywords)),
         ];
 
         return $this->renderTemplate('flyingPages.tpl', $params);
@@ -396,20 +403,22 @@ final class PerformancePro extends Module
 
     public function getSuccessTemplate(string $message): string
     {
-        $params = [
-            'pp_message' => $message,
-        ];
-
-        return $this->renderTemplate('success.tpl', $params);
+        return $this->displayMessage($message, 'notice');
     }
 
     public function getWarningTemplate(string $message): string
     {
-        $params = [
-            'pp_message' => $message,
-        ];
+        return $this->displayMessage($message, 'warning');
+    }
 
-        return $this->renderTemplate('warning.tpl', $params);
+    private function displayMessage(string $message, string $type = 'notice'): string
+    {
+        $this->context->smarty->assign([
+            'pp_message' => $message,
+            'pp_type' => $type,
+        ]);
+
+        return $this->context->smarty->fetch(_PS_MODULE_DIR_ . $this->name . '/views/templates/admin/displayMessage.tpl');
     }
 
     public function hookDisplayBeforeBodyClosingTag(): void
@@ -514,7 +523,7 @@ final class PerformancePro extends Module
 
     private function hasProductsInCart(): bool
     {
-        return (int)Cart::getNbProducts($this->context->cookie->id_cart) > 0;
+        return (int) Cart::getNbProducts($this->context->cookie->id_cart) > 0;
     }
 
     private function isCacheablePage(): bool
@@ -621,8 +630,7 @@ final class PerformancePro extends Module
             ],
         ]);
 
-        $this->context->controller->addJS([Config::getJsLink() . 'back.js', Config::getJsLink() . 'menu.js']);
-
+        $this->context->controller->addJS([Config::getJsLink() . 'back.js', Config::getJsLink() . 'menu.js', Config::getJsLink() . 'messages.js']);
         $this->context->controller->addCSS(Config::getCssLink() . 'back.css');
     }
 

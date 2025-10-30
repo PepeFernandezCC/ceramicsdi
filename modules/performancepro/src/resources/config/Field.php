@@ -4,10 +4,11 @@
  *
  * @author Mathias Reker
  * @copyright Mathias Reker
- * @license Commercial Software License
+ * @license Academic Free License (AFL 3.0)
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Additionally, this module is subject to a proprietary End User License Agreement (EULA).
+ * For the full copyright, open source license, and EULA information, please view the LICENSE
+ * that were distributed with this source code.
  */
 
 declare(strict_types=1);
@@ -15,7 +16,10 @@ declare(strict_types=1);
 namespace PrestaShop\Module\PerformancePro\resources\config;
 
 use PrestaShop\Module\PerformancePro\domain\service\util\LinkService;
-use Shop;
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 final class Field
 {
@@ -91,7 +95,7 @@ final class Field
      */
     private static function getSitemapUrls(): array
     {
-        $shops = Shop::getShops(true, null, true);
+        $shops = \Shop::getShops(true, null, true);
 
         $result = [];
 
