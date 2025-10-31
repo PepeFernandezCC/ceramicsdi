@@ -61,7 +61,7 @@
             <input class="mm_search_product" name="mm_search_product" {if isset($input.placeholder)}placeholder="{$input.placeholder|escape:'html':'UTF-8'}"{/if} autocomplete="off" type="text" />
             <input class="mm_product_ids" name="id_products" value="{$fields_value[$input.name]|escape:'html':'UTF-8'}" type="hidden" />
             <ul class="mm_products">
-                {hook h='displayMMProductList' ids = $fields_value[$input.name]}
+                {Module::getInstanceByName('ets_megamenu')->hookDisplayMMProductList(['ids'=>$fields_value[$input.name]]) nofilter}
                 <li class="mm_product_loading"></li>
             </ul>
         </div>
@@ -88,6 +88,76 @@
                 </button>
             </span>
         </div>
+        {elseif $input.type == 'file_lang'}
+            {if $languages|count > 1}
+              <div class="form-group">
+            {/if}
+            {foreach from=$languages item=language}
+                {if $languages|count > 1}
+                    <div class="translatable-field lang-{$language.id_lang|intval}" {if $language.id_lang != $defaultFormLanguage}style="display:none"{/if}>
+                    <div class="col-lg-9">
+                {else}
+                    <div class="col-lg-12">
+                {/if}
+                       <div class="dummyfile input-group sass">
+                            <input id="{$input.name|escape:'html':'UTF-8'}_{$language.id_lang|intval}" type="file" name="{$input.name|escape:'html':'UTF-8'}_{$language.id_lang|intval}" class="hide-file-upload" />
+                            <span class="input-group-addon"><i class="icon-file"></i></span>
+                            <input id="{$input.name|escape:'html':'UTF-8'}_{$language.id_lang|intval}-name" type="text" class="disabled" name="filename" readonly />
+                            <span class="input-group-btn">
+                                <button id="{$input.name|escape:'html':'UTF-8'}_{$language.id_lang|intval}-selectbutton" type="button" name="submitAddAttachments" class="btn btn-default">
+                                    <i class="icon-folder-open"></i> {l s='Select a file' mod='ets_megamenu'}
+                                </button>
+                            </span>
+                        </div>
+                        {if isset($fields_value[$input.name]) && $fields_value[$input.name] && $fields_value[$input.name][$language.id_lang]}
+                            <div class="clearfix"></div>
+                            <div class="preview_img">
+                                <img style="display: inline-block; max-width: 200px;" src="{$image_baseurl|escape:'html':'UTF-8'}{$fields_value[$input.name][$language.id_lang]|escape:'html':'UTF-8'}" />
+                                {if $input.name=='thumb' &&  isset($thumb_del_link) && $thumb_del_link && !(isset($input.required) && $input.required)}
+                                    <a class="delete_url"  style="display: inline-block; text-decoration: none!important;" href="{$thumb_del_link|escape:'html':'UTF-8'}&id_lang={$language.id_lang|intval}"><span style="color: #666"><i style="font-size: 20px;" class="process-icon-delete"></i></span></a>
+                                {/if}
+                                {if $input.name=='image' &&  isset($img_del_link) && $img_del_link && !(isset($input.required) && $input.required)}
+                                    <a class="delete_url"  style="display: inline-block; text-decoration: none!important;" href="{$img_del_link|escape:'html':'UTF-8'}&id_lang={$language.id_lang|intval}"><span style="color: #666"><i style="font-size: 20px;" class="process-icon-delete"></i></span></a>
+                                {/if}
+                            </div>
+
+                        {/if}
+                    </div>
+                {if $languages|count > 1}
+                    <div class="col-lg-2">
+                        <button type="button" class="btn btn-default dropdown-toggle" tabindex="-1" data-toggle="dropdown">
+                            {$language.iso_code|escape:'html':'UTF-8'}
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            {foreach from=$languages item=lang}
+                            <li><a href="javascript:hideOtherLanguage({$lang.id_lang|intval});" tabindex="-1">{$lang.name|escape:'html':'UTF-8'}</a></li>
+                            {/foreach}
+                        </ul>
+                    </div>
+                {/if}
+                {if $languages|count > 1}
+                    </div>
+                {/if}
+                <script>
+                $(document).ready(function(){
+                    $("#{$input.name|escape:'html':'UTF-8'}_{$language.id_lang|intval}-selectbutton").click(function(e){
+                        $("#{$input.name|escape:'html':'UTF-8'}_{$language.id_lang|intval}").trigger('click');
+                    });
+                    $("#{$input.name|escape:'html':'UTF-8'}_{$language.id_lang|intval}-name").click(function(e){
+                        $("#{$input.name|escape:'html':'UTF-8'}_{$language.id_lang|intval}").trigger('click');
+                    });
+                    $("#{$input.name|escape:'html':'UTF-8'}_{$language.id_lang|intval}").change(function(e){
+                        var val = $(this).val();
+                        var file = val.split(/[\\/]/);
+                        $("#{$input.name|escape:'html':'UTF-8'}_{$language.id_lang|intval}-name").val(file[file.length-1]);
+                    });
+                });
+            </script>
+            {/foreach}
+        {if $languages|count > 1}
+          </div>
+        {/if}
     {else}
         {$smarty.block.parent} 
         {if $input.name=='ETS_MM_CACHE_LIFE_TIME'}
@@ -101,7 +171,7 @@
     	{if $input.type == 'file' &&  isset($input.display_img) && $input.display_img}
             <label class="control-label col-lg-3 uploaded_image_label" style="font-style: italic;">{l s='Uploaded image: ' mod='ets_megamenu'}</label>
             <div class="col-lg-9 uploaded_img_wrapper">
-        		<a  class="ets_mm_fancy" href="{$input.display_img|escape:'html':'UTF-8'}"><img title="{l s='Click to see full size image' mod='ets_megamenu'}" style="display: inline-block; max-width: 200px;" src="{$input.display_img|escape:'html':'UTF-8'}" /></a>
+        		<a  class="ets_mm_fancy" href="{$input.display_img|escape:'html':'UTF-8'}"><img style="display: inline-block; max-width: 200px;" src="{$input.display_img|escape:'html':'UTF-8'}" /></a>
                 {if (!isset($input.hide_delete) || isset($input.hide_delete) && !$input.hide_delete) && isset($input.img_del_link) && $input.img_del_link && !(isset($input.required) && $input.required)}
                     <a class="delete_url" style="display: inline-block; text-decoration: none!important;" href="{$input.img_del_link|escape:'html':'UTF-8'}"><span style="color: #666"><i style="font-size: 20px;" class="process-icon-delete"></i></span></a>
                 {/if}
@@ -122,7 +192,7 @@
             {/if}
             {if isset($fieldset['form']['submit']) && !empty($fieldset['form']['submit'])}
             <div class="img_loading_wrapper hidden">
-                <img src="{$image_baseurl|escape:'html':'UTF-8'}ajax-loader.gif" title="{l s='Loading' mod='ets_megamenu'}" class="ets_megamenu_loading" />
+                <img src="{$image_module_baseurl|escape:'html':'UTF-8'}ajax-loader.gif" title="{l s='Loading' mod='ets_megamenu'}" class="ets_megamenu_loading" />
             </div>
             <input type="hidden" name="mm_object" value="{$mm_object|escape:'html':'UTF-8'}" />
             {if isset($list_item) && $list_item}

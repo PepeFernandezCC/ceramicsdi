@@ -18,8 +18,7 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 
-if (!defined('_PS_VERSION_'))
-    exit;
+if (!defined('_PS_VERSION_')) { exit; }
 require_once(dirname(__FILE__).'/../classes/MM_Config.php');
 function upgrade_module_2_0_6($object)
 {

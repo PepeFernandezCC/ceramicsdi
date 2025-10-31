@@ -18,8 +18,7 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 
-if (!defined('_PS_VERSION_'))
-	exit;
+if (!defined('_PS_VERSION_')) { exit; }
 class MM_Tab extends MM_Obj
 {
     public $id_tab;
@@ -43,6 +42,10 @@ class MM_Tab extends MM_Obj
     public $id_manufacturer;
     public $id_supplier;
     public $url;
+    /**
+     * @var array
+     */
+    public $fields_form = [];
     public static $definition = array(
 		'table' => 'ets_mm_tab',
 		'primary' => 'id_tab',
@@ -69,13 +72,15 @@ class MM_Tab extends MM_Obj
             'id_cms' => array('type' => self::TYPE_INT),         
         )
 	);
-    public function l($string)
+    public function l($string, $fileName="")
     {
-        return Translate::getModuleTranslation('ets_megamenu', $string, pathinfo(__FILE__, PATHINFO_FILENAME));
+        return Translate::getModuleTranslation('ets_megamenu', $string, $fileName ?: pathinfo(__FILE__, PATHINFO_FILENAME));
     }
     protected static $formFields;
     public function getFormField()
     {
+        /** @var Ets_megamenu $megamenu */
+        $megamenu = Module::getInstanceByName('ets_megamenu');
         if(!self::$formFields)
             self::$formFields =  array(
             'form' => array(
@@ -143,18 +148,18 @@ class MM_Tab extends MM_Obj
                     'type' => 'text',
                     'lang' => true,
                     'showRequired' => true,
-                    'validate'=> 'isUrl'
+                    'validate'=> 'isCleanHtml'
                 ),
                 'id_manufacturer' => array(
                     'label' => $this->l('Manufacturer'),
                     'type' => 'radio',
-                    'values' => self::getManufacturers(),
+                    'values' => $megamenu->getManufacturers(),
                     'showRequired' => true,
                 ),
                 'id_supplier' => array(
                     'label' => $this->l('Supplier'),
                     'type' => 'radio',
-                    'values' => self::getSuppliers(),
+                    'values' => $megamenu->getSuppliers(),
                     'showRequired' => true,
                 ),
                 'id_category' => array(
@@ -173,7 +178,7 @@ class MM_Tab extends MM_Obj
                 'id_cms' => array(
                     'label' => $this->l('CMS page'),
                     'type' => 'radio',
-                    'values' => self::getCMSs(),
+                    'values' => $megamenu->getCMSs(),
                     'showRequired' => true,
                 ),
                 'tab_icon' => array(
@@ -299,9 +304,8 @@ class MM_Tab extends MM_Obj
         );
         return self::$formFields;
     }
-    public static function getTabs($id_menu = false, $id_tab = false, $id_lang = false)
+    public static function getTabs($context, $id_menu = false, $id_tab = false, $id_lang = false)
     {
-        $context = Context::getContext();
         $tabs = Db::getInstance()->executeS("
             SELECT *
             FROM `" . _DB_PREFIX_ . "ets_mm_tab` t
@@ -317,7 +321,7 @@ class MM_Tab extends MM_Obj
                     $tab['tab_img_link'] = $context->link->getMediaLink(_PS_ETS_MM_IMG_ . $tab['tab_img_link']);
                 if ($tab['background_image'])
                     $tab['background_image'] = $context->link->getMediaLink(_PS_ETS_MM_IMG_ . $tab['background_image']);
-                $tab['url'] = self::getTabLink($tab);
+                $tab['url'] = self::getTabLink($context, $tab);
                 if ($context->language->is_rtl) {
                     $tab['position_background'] = str_replace(array('right'), array('_right'), $tab['position_background']);
                     $tab['position_background'] = str_replace(array('left'), array('_left'), $tab['position_background']);
@@ -329,9 +333,8 @@ class MM_Tab extends MM_Obj
 
         return $id_tab && $tabs ? $tabs[0] : $tabs;
     }
-    public static function getTabLink($tab)
+    public static function getTabLink($context, $tab)
     {
-        $context = Context::getContext();
         if (isset($tab['link_type'])) {
             switch ($tab['link_type']) {
                 case 'CUSTOM':
@@ -343,11 +346,7 @@ class MM_Tab extends MM_Obj
                 case 'MNFT':
                     $manufacturer = new Manufacturer((int)$tab['id_manufacturer'], (int)$context->language->id);
                     if (Validate::isLoadedObject($manufacturer)) {
-                        if ((int)Configuration::get('PS_REWRITING_SETTINGS'))
-                            $manufacturer->link_rewrite = Tools::link_rewrite($manufacturer->name);
-                        else
-                            $manufacturer->link_rewrite = 0;
-                        return $context->link->getManufacturerLink((int)$tab['id_manufacturer'], $manufacturer->link_rewrite);
+                        return $context->link->getManufacturerLink((int)$tab['id_manufacturer']);
                     }
                     return '#';
                 case 'MNSP':

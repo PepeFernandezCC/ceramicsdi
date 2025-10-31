@@ -18,24 +18,95 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 
-if (!defined('_PS_VERSION_'))
-	exit;
+if (!defined('_PS_VERSION_')) { exit; }
 class MM_Config
 {
-    public function __construct()
+    public $fields_form = [];
+    public function l($string, $fileName="")
     {
-        $this->context=Context::getContext();
-    }
-    public function l($string)
-    {
-        return Translate::getModuleTranslation('ets_megamenu', $string, pathinfo(__FILE__, PATHINFO_FILENAME));
+        return Translate::getModuleTranslation('ets_megamenu', $string, $fileName ?: pathinfo(__FILE__, PATHINFO_FILENAME));
     }
     protected static $formFields;
+
+    /**
+     * @return array
+     */
+    private function getMenuAlignment()
+    {
+        return [
+            'options' => [
+                [
+                    'id_option' => 'left',
+                    'name' => $this->l('Left')
+                ],
+                [
+                    'id_option' => 'center',
+                    'name' => $this->l('Center')
+                ],
+                [
+                    'id_option' => 'right',
+                    'name' => $this->l('Right')
+                ],
+            ],
+            'default' => 'left',
+        ];
+    }
+
     public function getFormField()
     {
+        $opacityOptions = [
+            'query' => array(
+                ['id_option' => 0, 'name' => $this->l('Transparent')],
+                ['id_option' => 0.025, 'name' => '2.5%'],
+                ['id_option' => 0.05, 'name' => '5%'],
+                ['id_option' => 0.075, 'name' => '7.5%'],
+                ['id_option' => 0.1, 'name' => '10%'],
+                ['id_option' => 0.125, 'name' => '12.5%'],
+                ['id_option' => 0.15, 'name' => '15%'],
+                ['id_option' => 0.175, 'name' => '17.5%'],
+                ['id_option' => 0.2, 'name' => '20%'],
+                ['id_option' => 0.225, 'name' => '22.5%'],
+                ['id_option' => 0.25, 'name' => '25%'],
+                ['id_option' => 0.275, 'name' => '27.5%'],
+                ['id_option' => 0.3, 'name' => '30%'],
+                ['id_option' => 0.325, 'name' => '32.5%'],
+                ['id_option' => 0.35, 'name' => '35%'],
+                ['id_option' => 0.375, 'name' => '37.5%'],
+                ['id_option' => 0.4, 'name' => '40%'],
+                ['id_option' => 0.425, 'name' => '42.5%'],
+                ['id_option' => 0.45, 'name' => '45%'],
+                ['id_option' => 0.475, 'name' => '47.5%'],
+                ['id_option' => 0.5, 'name' => '50%'],
+                ['id_option' => 0.525, 'name' => '52.5%'],
+                ['id_option' => 0.55, 'name' => '55%'],
+                ['id_option' => 0.575, 'name' => '57.5%'],
+                ['id_option' => 0.6, 'name' => '60%'],
+                ['id_option' => 0.625, 'name' => '62.5%'],
+                ['id_option' => 0.65, 'name' => '65%'],
+                ['id_option' => 0.675, 'name' => '67.5%'],
+                ['id_option' => 0.7, 'name' => '70%'],
+                ['id_option' => 0.725, 'name' => '72.5%'],
+                ['id_option' => 0.75, 'name' => '75%'],
+                ['id_option' => 0.775, 'name' => '77.5%'],
+                ['id_option' => 0.8, 'name' => '80%'],
+                ['id_option' => 0.825, 'name' => '82.5%'],
+                ['id_option' => 0.85, 'name' => '85%'],
+                ['id_option' => 0.875, 'name' => '87.5%'],
+                ['id_option' => 0.9, 'name' => '90%'],
+                ['id_option' => 0.925, 'name' => '92.5%'],
+                ['id_option' => 0.95, 'name' => '95%'],
+                ['id_option' => 0.975, 'name' => '97.5%'],
+                ['id_option' => 1, 'name' => '100%']
+            ),
+            'id' => 'id_option',
+            'name' => 'name',
+        ];
         if(!self::$formFields)
         {
-            $imageTypes = Module::getInstanceByName('ets_megamenu')->imageTypes(true);
+            /** @var Ets_megamenu $megamenu */
+            $megamenu =Module::getInstanceByName('ets_megamenu');
+            $imageTypes = $megamenu->imageTypes(true);
+            $menuAlignment = $this->getMenuAlignment();
             self::$formFields = array(
                 'form' => array(
                     'legend' => array(
@@ -155,6 +226,16 @@ class MM_Config
                             'name' => 'name'
                         ),
                         'default' => $imageTypes[1],
+                    ),
+                    'ETS_MM_MENU_ALIGNMENT' => array(
+                        'type' => 'select',
+                        'label' => $this->l('Menu alignment'),
+                        'options' => array(
+                            'query' => $menuAlignment['options'],
+                            'id' => 'id_option',
+                            'name' => 'name'
+                        ),
+                        'default' => $menuAlignment['default'],
                     ),
                     'ETS_MM_DISPLAY_SUBMENU_BY_CLICK' => array(
                         'type' => 'switch',
@@ -301,7 +382,25 @@ class MM_Config
                         ),
                         'default' => 1,
                     ),
-
+                    'ETS_MM_CLEAR_CACHE_SPEED' => array(
+                        'type' => 'switch',
+                        'label' => $this->l('Automatically clear the cache when modifying the mega menu'),
+                        'is_bool' => true,
+                        'values' => array(
+                            array(
+                                'id' => 'active_on',
+                                'value' => 1,
+                                'label' => $this->l('Yes')
+                            ),
+                            array(
+                                'id' => 'active_off',
+                                'value' => 0,
+                                'label' => $this->l('No')
+                            )
+                        ),
+                        'desc' => $this->l('When enabled, this feature works in conjunction with the \'Super Speed\' module. After modifying and saving the contents of your mega menu, the entire site\'s cache will be automatically cleared, ensuring an instant display of the updated menu data on the front office.'),
+                        'default' => 1,
+                    ),
                     'ETS_MM_CACHE_ENABLED' => array(
                         'type' => 'switch',
                         'label' => $this->l('Enable cache'),
@@ -319,6 +418,7 @@ class MM_Config
                             )
                         ),
                         'default' => 0,
+                        'desc' => $this->l('The module uses PrestaShop Smarty Cache, so please make sure that PrestaShop Smarty Cache is enabled to use this feature'),
                     ),
                     'ETS_MM_CACHE_LIFE_TIME' => array(
                         'type' => 'text',
@@ -389,7 +489,7 @@ class MM_Config
                         'default' => 'inherit',
                     ),
                     'ETS_MM_TEXTTITLE_FONT_SIZE' => array(
-                        'label' => $this->l('Title submenu font size'),
+                        'label' => $this->l('Submenu title font size'),
                         'type' => 'text',
                         'default' => '16',
                         'suffix' => 'px',
@@ -437,6 +537,20 @@ class MM_Config
                         'label' => $this->l('Sub-menu background color'),
                         'validate' => 'isColor',
                         'default' => '#ffffff',
+                        'form_group_class' => 'custom_color layout1'
+                    ),
+                    'ETS_MM_COLOR_BACKDROP_1' => array(
+                        'type' => 'color',
+                        'label' => $this->l('Sub-menu overlay color'),
+                        'validate' => 'isColor',
+                        'default' => '#000000',
+                        'form_group_class' => 'custom_color layout1'
+                    ),
+                    'ETS_MM_OPACITY_BACKDROP_1' => array(
+                        'type' => 'select',
+                        'label' => $this->l('Sub-menu overlay opacity'),
+                        'options' => $opacityOptions,
+                        'default' => 0.5,
                         'form_group_class' => 'custom_color layout1'
                     ),
                     'ETS_MM_COLOR_36' => array(
@@ -496,6 +610,20 @@ class MM_Config
                         'default' => '#ffffff',
                         'form_group_class' => 'custom_color layout2'
                     ),
+                    'ETS_MM_COLOR_BACKDROP_2' => array(
+                        'type' => 'color',
+                        'label' => $this->l('Sub-menu overlay color'),
+                        'validate' => 'isColor',
+                        'default' => '#000000',
+                        'form_group_class' => 'custom_color layout2'
+                    ),
+                    'ETS_MM_OPACITY_BACKDROP_2' => array(
+                        'type' => 'select',
+                        'label' => $this->l('Sub-menu overlay opacity'),
+                        'options' => $opacityOptions,
+                        'default' => 0.5,
+                        'form_group_class' => 'custom_color layout2'
+                    ),
                     'ETS_MM_COLOR_37' => array(
                         'type' => 'color',
                         'label' => $this->l('Sub-menu title color'),
@@ -551,6 +679,20 @@ class MM_Config
                         'label' => $this->l('Sub-menu background color'),
                         'validate' => 'isColor',
                         'default' => '#000000',
+                        'form_group_class' => 'custom_color layout3'
+                    ),
+                    'ETS_MM_COLOR_BACKDROP_3' => array(
+                        'type' => 'color',
+                        'label' => $this->l('Sub-menu overlay color'),
+                        'validate' => 'isColor',
+                        'default' => '#000000',
+                        'form_group_class' => 'custom_color layout3'
+                    ),
+                    'ETS_MM_OPACITY_BACKDROP_3' => array(
+                        'type' => 'select',
+                        'label' => $this->l('Sub-menu overlay opacity'),
+                        'options' => $opacityOptions,
+                        'default' => 0.5,
                         'form_group_class' => 'custom_color layout3'
                     ),
                     'ETS_MM_COLOR_38' => array(
@@ -610,6 +752,20 @@ class MM_Config
                         'default' => '#ffffff',
                         'form_group_class' => 'custom_color layout4'
                     ),
+                    'ETS_MM_COLOR_BACKDROP_4' => array(
+                        'type' => 'color',
+                        'label' => $this->l('Sub-menu overlay color'),
+                        'validate' => 'isColor',
+                        'default' => '#000000',
+                        'form_group_class' => 'custom_color layout4'
+                    ),
+                    'ETS_MM_OPACITY_BACKDROP_4' => array(
+                        'type' => 'select',
+                        'label' => $this->l('Sub-menu overlay opacity'),
+                        'options' => $opacityOptions,
+                        'default' => 0.5,
+                        'form_group_class' => 'custom_color layout4'
+                    ),
                     'ETS_MM_COLOR_39' => array(
                         'type' => 'color',
                         'label' => $this->l('Sub-menu title color'),
@@ -665,6 +821,20 @@ class MM_Config
                         'label' => $this->l('Sub-menu background color'),
                         'validate' => 'isColor',
                         'default' => '#ffffff',
+                        'form_group_class' => 'custom_color layout5'
+                    ),
+                    'ETS_MM_COLOR_BACKDROP_5' => array(
+                        'type' => 'color',
+                        'label' => $this->l('Sub-menu overlay color'),
+                        'validate' => 'isColor',
+                        'default' => '#000000',
+                        'form_group_class' => 'custom_color layout5'
+                    ),
+                    'ETS_MM_OPACITY_BACKDROP_5' => array(
+                        'type' => 'select',
+                        'label' => $this->l('Sub-menu overlay opacity'),
+                        'options' => $opacityOptions,
+                        'default' => 0.5,
                         'form_group_class' => 'custom_color layout5'
                     ),
                     'ETS_MM_COLOR_40' => array(
@@ -808,6 +978,10 @@ class MM_Config
                 if (!Module::getInstanceByName('blockuserinfo') || !Module::isEnabled('blockuserinfo'))
                     unset(self::$formFields['configs']['ETS_MM_DISPLAY_CUSTOMER_INFO']);
             }
+            if((!Module::getInstanceByName('ets_superspeed') || !Module::isEnabled('ets_superspeed')) && (!Module::getInstanceByName('ets_pagecache') || !Module::isEnabled('ets_pagecache')) )
+            {
+                unset(self::$formFields['configs']['ETS_MM_CLEAR_CACHE_SPEED']);
+            }
         }
         return self::$formFields;
     }
@@ -832,7 +1006,7 @@ class MM_Config
         }
         return $googlefonts;
     }
-    public function renderForm()
+    public function renderForm($context)
     {
         $formFields = $this->getFormField();
         $helper = new HelperForm();
@@ -870,11 +1044,10 @@ class MM_Config
                         $confFields['tree']['selected_categories'] = array(Configuration::get($key));
                 }                    
                 if(!$confFields['suffix'])
-                    unset($confFields['suffix']);                
+                    unset($confFields['suffix']);
                 $fields_form['form']['input'][] = $confFields;
             }
-        }      
-        
+        }
 		$helper->show_toolbar = false;
 		$helper->table = false;
 		$lang = new Language((int)Configuration::get('PS_LANG_DEFAULT'));
@@ -906,32 +1079,40 @@ class MM_Config
             }
         }
         $helper->tpl_vars = array(
-			'base_url' => Context::getContext()->shop->getBaseURL(),
+			'base_url' => $context->shop->getBaseURL(),
 			'language' => array(
 				'id_lang' => $language->id,
 				'iso_code' => $language->iso_code
 			),
 			'fields_value' => $fields,
-			'languages' => Context::getContext()->controller->getLanguages(),
-			'id_language' => Context::getContext()->language->id,            
+			'languages' => $context->controller->getLanguages(),
+			'id_language' => $context->language->id,
             'mm_object' => 'MM_'.Tools::ucfirst($fields_form['form']['name']),
-            'image_baseurl' => $helper->module->modulePath().'views/img/',  
+            'image_baseurl' => _PS_ETS_MM_IMG_,
+            'image_module_baseurl' => $helper->module->modulePath().'views/img/',
             'mm_clear_cache_url' => $helper->module->baseAdminUrl(),
             'reset_default' => true,                
         );        
         return str_replace(array('id="ets_mm_menu_form"','id="fieldset_0"'),'',$helper->generateForm(array($fields_form)));	
     }
-    public function getConfig()
+    protected static $configs;
+    public function getConfig($id_lang)
     {
-        $fields = $this->getFormField();
-        $configs = $fields['configs'];
-        $data = array();
-        if($configs)
-            foreach($configs as $key => $config)
+        if(!self::$configs)
+        {
+            $fields = $this->getFormField();
+            $configs = $fields['configs'];
+            $data = array();
+            if($configs)
             {
-                $data[$key] = isset($config['lang']) && $config['lang'] ? Configuration::get($key,$this->context->language->id) : Configuration::get($key);
+                foreach($configs as $key => $config)
+                {
+                    $data[$key] = isset($config['lang']) && $config['lang'] ? Configuration::get($key,$id_lang) : Configuration::get($key);
+                }
             }
-        return $data;
+            self::$configs = $data;
+        }
+        return self::$configs;
     }
     public function installConfigs($upgrade = false)
     {
@@ -951,15 +1132,16 @@ class MM_Config
                     }
                     if ($upgrade &&  !Configuration::hasKey($key) || !$upgrade)
                     {
-                        Configuration::updateValue($key, $values, true);
+                        Configuration::updateGlobalValue($key, $values, true);
                     }
                 }
                 elseif ($upgrade &&  !Configuration::hasKey($key) || !$upgrade)
                 {
-                    Configuration::updateValue($key, isset($config['default']) ? $config['default'] : '',true);
+                    Configuration::updateGlobalValue($key, isset($config['default']) ? $config['default'] : '',true);
                 }
             }
         }
+        Configuration::updateGlobalValue('ETS_MM_CLEAR_CACHE_SPEED',1);
         return true;
     }
     public function unInstallConfigs()

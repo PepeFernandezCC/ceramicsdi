@@ -66,33 +66,42 @@
         </div>
     </div>
     <div class="mm_menus">
-        {if $menus}
-            <ul class="mm_menus_ul">
-                {foreach from=$menus item='menu'}
-                    <li class="mm_menus_li item{$menu.id_menu|intval} {if !$menu.enabled}mm_disabled{/if}" data-id-menu="{$menu.id_menu|intval}" data-obj="menu">
-                        {hook h='displayMMItemMenu' menu=$menu}
-                    </li>
-                {/foreach}
-            </ul>
-        {/if}        
-        <div class="mm_useful_buttons">
-            <div class="mm_add_menu btn btn-default">{l s='Add menu' mod='ets_megamenu'}</div>
-        </div>
+        <ul class="mm_menus_ul">
+            {if $menus}
+                    {foreach from=$menus item='menu'}
+                        <li class="mm_menus_li item{$menu.id_menu|intval} {if !$menu.enabled}mm_disabled{/if}" data-id-menu="{$menu.id_menu|intval}" data-obj="menu">
+                            {Module::getInstanceByName('ets_megamenu')->hookDisplayMMItemMenu(['menu' => $menu]) nofilter}
+                        </li>
+                    {/foreach}
+            {/if}
+            <li class="btn-new">
+                <div class="mm_useful_buttons">
+                    <div class="mm_add_menu btn btn-default">{l s='Add menu' mod='ets_megamenu'}</div>
+                </div>
+            </li>
+        </ul>
+
     </div>
     <div class="mm_loading_icon">
         <span></span>
     </div>
     <!-- popup forms -->
     <div class="mm_forms hidden mm_popup_overlay">
-        <div class="mm_menu_form hidden mm_pop_up">
-            <div class="mm_close">{l s='Close' mod='ets_megamenu'}</div>
-            <div class="mm_form"></div>
+        <div class="mm_table">
+            <div class="mm_table-cell">
+                <div class="mm_form_content">
+                    <div class="mm_menu_form hidden mm_pop_up">
+                        <div class="mm_close">{l s='Close' mod='ets_megamenu'}</div>
+                        <div class="mm_form"></div>
+                    </div>
+                    <div class="mm_menu_form_new hidden">{$menuForm nofilter}</div>
+                    <div class="mm_tab_form_new hidden">{$tabForm nofilter}</div>
+                    <div class="mm_column_form_new hidden">{$columnForm nofilter}</div>
+                    <div class="mm_block_form_new hidden">{$blockForm nofilter}</div>
+                    <div class="mm_icon_form_new hidden">{$iconForm nofilter}</div>
+                </div>
+            </div>
         </div>
-        <div class="mm_menu_form_new hidden">{$menuForm nofilter}</div>
-        <div class="mm_tab_form_new hidden">{$tabForm nofilter}</div>
-        <div class="mm_column_form_new hidden">{$columnForm nofilter}</div>
-        <div class="mm_block_form_new hidden">{$blockForm nofilter}</div>
-        <div class="mm_icon_form_new hidden">{$iconForm nofilter}</div>
     </div>
     <div class="mm_popup_overlay hidden">
         <div class="mm_config_form mm_pop_up">

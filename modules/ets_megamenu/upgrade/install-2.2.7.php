@@ -18,8 +18,7 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 
-if (!defined('_PS_VERSION_'))
-    exit;
+if (!defined('_PS_VERSION_')) { exit; }
 function upgrade_module_2_2_7()
 {
     mmg_check_colum('ets_mm_tab', 'link_type', 'VARCHAR(32) NOT NULL AFTER `sort_order`');

@@ -18,14 +18,12 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 
-if (!defined('_PS_VERSION_'))
-    exit;
+if (!defined('_PS_VERSION_')) { exit; }
 require_once(dirname(__FILE__) . '/classes/MM_Obj.php');
 require_once(dirname(__FILE__) . '/classes/MM_Menu.php');
 require_once(dirname(__FILE__) . '/classes/MM_Column.php');
 require_once(dirname(__FILE__) . '/classes/MM_Block.php');
 require_once(dirname(__FILE__) . '/classes/MM_Config.php');
-require_once(dirname(__FILE__) . '/classes/MM_Cache.php');
 require_once(dirname(__FILE__) . '/classes/MM_Tab.php');
 require_once(dirname(__FILE__) . '/classes/MM_Products.php');
 require_once(dirname(__FILE__) . '/classes/Ets_megamenu_defines.php');
@@ -45,28 +43,27 @@ class Ets_megamenu extends Module
 {
     private $_html;
     public $alerts;
+    public $is8 = false;
     public $is17 = false;
-    public $multiLayout = false;
     public $errors = array();
+    public $image_dir;
     public function __construct()
     {
         $this->name = 'ets_megamenu';
         $this->tab = 'front_office_features';
-        $this->version = '2.4.4';
+        $this->version = '2.6.5';
         $this->author = 'PrestaHero';
         $this->module_key = 'be9f54484806a4f886bf7e45aefed605';
-        $this->author_address = '0xd81C21A85a637315C623D9c1F9D4f5Bb3144A617';
         $this->need_instance = 0;
-        $this->secure_key = Tools::encrypt($this->name);
         $this->bootstrap = true;
         parent::__construct();
         $this->displayName = $this->l('Mega Menu PRO');
         $this->description = $this->l('Visual drag and drop mega menu builder');
-        $this->ps_versions_compliancy = array('min' => '1.6.0.0', 'max' => _PS_VERSION_);
-        $this->shortlink = 'https://mf.short-link.org/';
-        $configure = Tools::getValue('configure');
-        $this->multiLayout = MM_Obj::multiLayoutExist();
+        $this->ps_versions_compliancy = array('min' => '1.6.0.6', 'max' => _PS_VERSION_);
         $this->image_dir = _PS_CAT_IMG_DIR_;
+        if (version_compare(_PS_VERSION_, '8.0', '>=')) {
+            $this->is8 = true;
+        }
         if (version_compare(_PS_VERSION_, '1.7', '>='))
             $this->is17 = true;
         $this->context->smarty->assign(
@@ -76,7 +73,6 @@ class Ets_megamenu extends Module
             )
         );
     }
-
     public function imageTypes($setDefault)
     {
         $types = ImageType::getImagesTypes('products');
@@ -94,12 +90,11 @@ class Ets_megamenu extends Module
                 $default[$imgType] = $imgType;
             }
         }
-        if (isset($default) && !$default && isset($result[0]) && ($item = $result[0])) {
+        if (isset($default) && !$default && isset($result[0])) {
+            $item = $result[0];
             $default[$item['id_option']] = trim($item['id_option']);
             return array($result, $default);
         }
-        if (!$result)
-            return isset($default) ? array(false, false) : array();
         return isset($default) ? array($result, isset($default['home']) ? $default['home'] : (isset($default['large']) ? $default['large'] : $default['medium'])) : $result;
     }
 
@@ -154,6 +149,7 @@ class Ets_megamenu extends Module
             && $this->registerHook('displayCartTop')
             && $this->registerHook('displayMMProductList')
             && $this->registerHook('displayNavFullWidth')
+            && $this->registerHook('actionObjectLanguageAddAfter')
             && $this->installDb()
             && $this->initMenu();
     }
@@ -163,12 +159,30 @@ class Ets_megamenu extends Module
      */
     public function uninstall()
     {
-        self::clearAllCache();
+            self::clearAllCache();
         $this->rrmdir(_PS_ETS_MM_IMG_DIR_);
         $this->rrmdir(_ETS_MEGAMENU_CACHE_DIR_);
         $config = new MM_Config();
         $config->unInstallConfigs();
-        return parent::uninstall() && Ets_megamenu_defines::deleteDb() && $this->activeModuleExtra();
+        return parent::uninstall()
+            && $this->unregisterHook('displayHeader')
+            && $this->unregisterHook('displayTop')
+            && $this->unregisterHook('displayBlock')
+            && $this->unregisterHook('displayBackOfficeHeader')
+            && $this->unregisterHook('displayMMItemMenu')
+            && $this->unregisterHook('displayMMItemColumn')
+            && $this->unregisterHook('displayMegaMenu')
+            && $this->unregisterHook('displayMMItemBlock')
+            && $this->unregisterHook('displayMMItemTab')
+            && $this->unregisterHook('displayCustomMenu')
+            && $this->unregisterHook('displayCustomerInforTop')
+            && $this->unregisterHook('displaySearch')
+            && $this->unregisterHook('displayCartTop')
+            && $this->unregisterHook('displayMMProductList')
+            && $this->unregisterHook('displayNavFullWidth')
+            && $this->unregisterHook('actionObjectLanguageAddAfter')
+            && Ets_megamenu_defines::deleteDb() && $this->activeModuleExtra();
+
     }
 
     public function initMenu()
@@ -207,15 +221,15 @@ class Ets_megamenu extends Module
                     $res &= $menu->add(true, false, (int)$shop['id_shop']);
             }
         } else
-            $res &= $menu->add();
+            $res &= $menu->add(true, false, $this->context->shop->id);
         return $res;
     }
 
     public function getContent()
     {
-
+        $this->registerPlugins();
         if (!$this->active) {
-            $this->_html .= $this->displayWarning($this->l('You have to enable Mega menu PRO module to configure its features'));
+            return  $this->displayWarning($this->l('You have to enable Mega menu PRO module to configure its features'));
         }
         $this->proccessPost();
         $this->requestForm();
@@ -233,70 +247,45 @@ class Ets_megamenu extends Module
         $block = new MM_Block();
         $config = new MM_Config();
         $this->smarty->assign(array(
-            'menuForm' => $menu->renderForm(),
-            'columnForm' => $column->renderForm(),
-            'tabForm' => $tab->renderForm(),
-            'blockForm' => $block->renderForm(),
-            'configForm' => $config->renderForm(),
-            'menus' => MM_Menu::getMenus(false),
+            'menuForm' => $menu->renderForm($this->context),
+            'columnForm' => $column->renderForm($this->context),
+            'tabForm' => $tab->renderForm($this->context),
+            'blockForm' => $block->renderForm($this->context),
+
+            'configForm' => $config->renderForm($this->context),
+            'menus' => MM_Menu::getMenus($this->context, false),
             'mmBaseAdminUrl' => $this->baseAdminUrl(),
             'layoutDirection' => $this->layoutDirection(),
-            'multiLayout' => $this->multiLayout,
+            'multiLayout' => MM_Obj::multiLayoutExist(),
             'mm_img_dir' => $this->_path . 'views/img/',
             'mm_backend_layout' => $this->context->language->is_rtl ? 'rtl' : 'ltr',
             'iconForm' => $this->display(__FILE__, 'admin-icon.tpl'),
         ));
         return $this->display(__FILE__, 'admin-form.tpl');
     }
-
-    public static function getBaseModLink()
-    {
-        $context = Context::getContext();
-        return (Configuration::get('PS_SSL_ENABLED_EVERYWHERE') ? 'https://' : 'http://') . $context->shop->domain . $context->shop->getBaseURI();
-    }
-
-
-    public static function file_get_contents($url, $use_include_path = false, $stream_context = null, $curl_timeout = 60)
-    {
-        if ($stream_context == null && preg_match('/^https?:\/\//', $url)) {
-            $stream_context = stream_context_create(array(
-                "http" => array(
-                    "timeout" => $curl_timeout,
-                    "max_redirects" => 101,
-                    "header" => 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36'
-                ),
-                "ssl" => array(
-                    "allow_self_signed" => true,
-                    "verify_peer" => false,
-                    "verify_peer_name" => false,
-                ),
-            ));
-        }
-        if (function_exists('curl_init')) {
-            $curl = curl_init();
-            curl_setopt_array($curl, array(
-                CURLOPT_RETURNTRANSFER => 1,
-                CURLOPT_URL => html_entity_decode($url),
-                CURLOPT_USERAGENT => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36',
-                CURLOPT_SSL_VERIFYHOST => false,
-                CURLOPT_SSL_VERIFYPEER => false,
-                CURLOPT_TIMEOUT => $curl_timeout,
-                CURLOPT_MAXREDIRS => 10,
-                CURLOPT_FOLLOWLOCATION => true,
-            ));
-            $content = curl_exec($curl);
-            curl_close($curl);
-            return $content;
-        } elseif (in_array(ini_get('allow_url_fopen'), array('On', 'on', '1')) || !preg_match('/^https?:\/\//', $url)) {
-            return Tools::file_get_contents($url, $use_include_path, $stream_context);
-        } else {
-            return false;
-        }
-    }
-
     public function baseAdminUrl()
     {
         return $this->context->link->getAdminLink('AdminModules', true) . '&configure=' . $this->name;
+    }
+    public function getFormattedName($name)
+    {
+        $themeName = $this->context->shop->theme_name;
+        $nameWithoutThemeName = str_replace(['_' . $themeName, $themeName . '_'], '', $name);
+
+        //check if the theme name is already in $name if yes only return $name
+        if ($themeName !== null && strstr($name, $themeName) && ImageType::getByNameNType($name)) {
+            return $name;
+        }
+
+        if (ImageType::getByNameNType($nameWithoutThemeName . '_' . $themeName)) {
+            return $nameWithoutThemeName . '_' . $themeName;
+        }
+
+        if (ImageType::getByNameNType($themeName . '_' . $nameWithoutThemeName)) {
+            return $themeName . '_' . $nameWithoutThemeName;
+        }
+
+        return $nameWithoutThemeName . '_default';
     }
     public function getMmType($name = false)
     {
@@ -307,7 +296,7 @@ class Ets_megamenu extends Module
             $nameType = ImageType::typeAlreadyExists($name) ? $name : $mmType;
         if (!(isset($nameType)) || !$nameType)
             $nameType = $mmType;
-        return $this->is17 ? ImageType::getFormattedName($nameType) : ImageType::getFormatedName($nameType);
+        return $this->getFormattedName($nameType);
     }
     public function saveDataConfig($config)
     {
@@ -394,10 +383,9 @@ class Ets_megamenu extends Module
                     }
                     elseif($config['type']=='file')
                     {
-                        //Upload file
                         if(isset($_FILES[$key]['tmp_name']) && isset($_FILES[$key]['name']) && $_FILES[$key]['name'])
                         {
-                            $_FILES[$key]['name'] = str_replace(' ','_',$_FILES[$key]['name']);
+                            $_FILES[$key]['name'] = str_replace(array(' ','(',')','!','@','#','+'),'_',$_FILES[$key]['name']);
                             $salt = Tools::substr(sha1(microtime()),0,10);
                             $type = Tools::strtolower(Tools::substr(strrchr($_FILES[$key]['name'], '.'), 1));
                             $imageName = @file_exists(_PS_ETS_MM_IMG_DIR_.Tools::strtolower($_FILES[$key]['name'])) ? $salt.'-'.Tools::strtolower($_FILES[$key]['name']) : Tools::strtolower($_FILES[$key]['name']);
@@ -427,22 +415,21 @@ class Ets_megamenu extends Module
                                         $errors[] = $this->l('Cannot upload file');
                                     elseif (!ImageManager::resize($temp_name, $fileName, null, null, $type))
                                         $errors[] = $this->l('An error occurred during the image upload process.');
-                                    if (isset($temp_name) && file_exists($temp_name))
-                                        @unlink($temp_name);
+                                    if (file_exists($temp_name))
+                                        Ets_megamenu_defines::unlink($temp_name);
                                     if(!$errors)
                                     {
                                         if(Configuration::get($key)!='')
                                         {
                                             $oldImage = _PS_ETS_MM_IMG_DIR_.Configuration::get($key);
                                             if(file_exists($oldImage))
-                                                @unlink($oldImage);
+                                                Ets_megamenu_defines::unlink($oldImage);
                                         }
                                         Configuration::updateValue($key,$imageName);
                                     }
                                 }
                             }
                         }
-                        //End upload file
                     }
                     elseif($config['type']=='categories' && Ets_megamenu::validateArray($value_key) && isset($config['tree']['use_checkbox']) && $config['tree']['use_checkbox'] || $config['type']=='checkbox')
                         Configuration::updateValue($key,$value_key ? implode(',',$value_key):'');
@@ -454,7 +441,7 @@ class Ets_megamenu extends Module
         if(!$errors)
         {
             $success[] = $this->l('Saved');
-            if(Configuration::get('ETS_MM_CACHE_ENABLED')) Ets_megamenu::clearAllCache();
+            Ets_megamenu::clearAllCache();
         }
         return array('errors' => $errors, 'success' => $success);
     }
@@ -498,6 +485,18 @@ class Ets_megamenu extends Module
                                 $errors[] = sprintf($this->l('%s upload file cannot be larger than %sMB'), $config['label'],Configuration::get('PS_ATTACHMENT_MAXIMUM_SIZE'));
                         }
                     }
+                    elseif(isset($config['required']) && $config['required'] && isset($config['type']) && $config['type']=='file_lang')
+                    {
+                        $key_lang_default = $key.'_'.$id_lang_default;
+                        if($obj->$key=='' && !isset($_FILES[$key_lang_default]['size']))
+                            $errors[] = sprintf($this->l('%s is required'),$config['label']);
+                        elseif(isset($_FILES[$key_lang_default]['size']))
+                        {
+                            $fileSize = round((int)$_FILES[$key_lang_default]['size'] / (1024 * 1024));
+                            if($fileSize > 100)
+                                $errors[] = sprintf($this->l('%s upload file cannot be larger than %sMB'), $config['label'],Configuration::get('PS_ATTACHMENT_MAXIMUM_SIZE'));
+                        }
+                    }
                     else
                     {
                         if(isset($config['required']) && $config['required'] && $config['type']!='switch' && !is_array($value_key) && trim($value_key) == '')
@@ -520,7 +519,6 @@ class Ets_megamenu extends Module
             }
         }
 
-        //Custom validation
         if($formFields['form']['name']=='menu')
         {
             $link_type = Tools::getValue('link_type');
@@ -528,9 +526,9 @@ class Ets_megamenu extends Module
             {
                 case 'CUSTOM':
                     $link = trim(Tools::getValue('link_'.$id_lang_default));
-                    if($link=='' || !Validate::isCleanHtml($link))
+                    if($link=='')
                         $errors[] = $this->l('Custom link is required');
-                    elseif($link && $link!='#' && !Ets_megamenu::isUrl($link))
+                    elseif($link && $link!='#' && !Validate::isCleanHtml($link))
                         $errors[] = $this->l('Custom link is not valid');
                     break;
                 case 'CMS':
@@ -576,7 +574,7 @@ class Ets_megamenu extends Module
                 }
 
             }
-            if(isset($bubble_text_entered) && $bubble_text_entered)
+            if(!empty($bubble_text_entered))
             {
                 $bubble_background_color = Tools::getValue('bubble_background_color');
                 $bubble_text_color = Tools::getValue('bubble_text_color');
@@ -598,9 +596,9 @@ class Ets_megamenu extends Module
             {
                 case 'CUSTOM':
                     $url = trim(Tools::getValue('url_'.$id_lang_default));
-                    if($url=='' || !Validate::isUrl($url))
+                    if($url=='')
                         $errors[] = $this->l('Custom link is required');
-                    elseif($url && $url!='#' && !Ets_megamenu::isUrl($url))
+                    elseif($url && $url!='#' && !Validate::isCleanHtml($url))
                         $errors[] = $this->l('Custom link is not valid');
                     break;
                 case 'CMS':
@@ -680,14 +678,18 @@ class Ets_megamenu extends Module
                     }
                     break;
                 case 'IMAGE':
-                    if($obj->image=='' && (!isset($_FILES['image']['size']) || isset($_FILES['image']['size']) && !$_FILES['image']['size']))
+                    if((!$obj->image || !(isset($obj->image[$id_lang_default]) && $obj->image[$id_lang_default])) && (!isset($_FILES['image_'.$id_lang_default]['size']) || isset($_FILES['image_'.$id_lang_default]['size']) && !$_FILES['image_'.$id_lang_default]['size']))
+                    {
                         $errors[] = $this->l('Image is required');
+                    }
                     break;
                 default:
                     $errors[] = $this->l('Block type is not valid');
                     break;
             }
         }
+        $new_files = array();
+        $old_files = array();
         if(!$errors)
         {
             if($configs)
@@ -708,7 +710,7 @@ class Ets_megamenu extends Module
                             }
                         }
                     }
-                    elseif(isset($config['lang']) && $config['lang'])
+                    elseif(isset($config['lang']) && $config['lang'] && $config['type']!='file_lang')
                     {
                         $valules = array();
                         $key_value_lang_default = trim(Tools::getValue($key.'_'.$id_lang_default));
@@ -728,10 +730,9 @@ class Ets_megamenu extends Module
                     }
                     elseif($config['type']=='file')
                     {
-                        //Upload file
                         if(isset($_FILES[$key]['tmp_name']) && isset($_FILES[$key]['name']) && $_FILES[$key]['name'])
                         {
-                            $_FILES[$key]['name'] = str_replace(' ','_',$_FILES[$key]['name']);
+                            $_FILES[$key]['name'] = str_replace(array(' ','(',')','!','@','#','+'),'_',$_FILES[$key]['name']);
                             $salt = Tools::substr(sha1(microtime()),0,10);
                             $type = Tools::strtolower(Tools::substr(strrchr($_FILES[$key]['name'], '.'), 1));
                             $imageName = @file_exists(_PS_ETS_MM_IMG_DIR_.Tools::strtolower($_FILES[$key]['name']))|| Tools::strtolower($_FILES[$key]['name'])== $obj->$key ? $salt.'-'.Tools::strtolower($_FILES[$key]['name']) : Tools::strtolower($_FILES[$key]['name']);
@@ -761,15 +762,15 @@ class Ets_megamenu extends Module
                                         $errors[] = $this->l('Cannot upload file');
                                     elseif (!ImageManager::resize($temp_name, $fileName, null, null, $type))
                                         $errors[] = $this->l('An error occurred during the image upload process.');
-                                    if (isset($temp_name) && file_exists($temp_name))
-                                        @unlink($temp_name);
+                                    if (file_exists($temp_name))
+                                        Ets_megamenu_defines::unlink($temp_name);
                                     if(!$errors)
                                     {
                                         if($obj->$key!='')
                                         {
                                             $oldImage = _PS_ETS_MM_IMG_DIR_.$obj->$key;
-                                            if(file_exists($oldImage) && !MM_Obj::imageExits($obj->$key,$obj->id))
-                                                @unlink($oldImage);
+                                            if(file_exists($oldImage) && !MM_Obj::imageExists($obj->$key,$obj->id))
+                                                Ets_megamenu_defines::unlink($oldImage);
                                         }
                                         $obj->$key = $imageName;
                                     }
@@ -778,45 +779,121 @@ class Ets_megamenu extends Module
                                     $errors[] = sprintf($this->l('%s file is not in the correct format, accepted formats: jpg, gif, jpeg, png.'),$config['label']);
                             }
                         }
-                        //End upload file
+                    }
+                    elseif($config['type']=='file_lang')
+                    {
+                        foreach($languages as $l)
+                        {
+                            $key_lang = $key.'_'.$l['id_lang'];
+                            if(isset($_FILES[$key_lang]['tmp_name']) && isset($_FILES[$key_lang]['name']) && $_FILES[$key_lang]['name'])
+                            {
+                                $_FILES[$key_lang]['name'] = str_replace(array(' ','(',')','!','@','#','+'),'_',$_FILES[$key_lang]['name']);
+                                $file_name = $_FILES[$key_lang]['name'];
+                                $salt = Tools::substr(sha1(microtime()),0,10);
+                                $type = Tools::strtolower(Tools::substr(strrchr($file_name, '.'), 1));
+                                $imageName = @file_exists(_PS_ETS_MM_IMG_DIR_.Tools::strtolower($file_name)) || ($obj->$key && in_array($file_name,$obj->$key)) ? $salt.'-'.Tools::strtolower($file_name) : Tools::strtolower($file_name);
+                                $fileDir = _PS_ETS_MM_IMG_DIR_.'/'.$imageName;
+                                $max_file_size = Configuration::get('PS_ATTACHMENT_MAXIMUM_SIZE')*1024*1024;
+                                if(!Validate::isFileName($file_name))
+                                    $errors[] =sprintf($this->l('%s is not valid'),$config['label']);
+                                elseif($_FILES[$key_lang]['size'] > $max_file_size)
+                                    $errors[] = sprintf($this->l('%s file is too large'),$config['label']);
+                                elseif(file_exists($fileDir))
+                                {
+                                    $errors[] = sprintf($this->l('%s file existed'),$config['label']);
+                                }
+                                else
+                                {
+                                    $imagesize = @getimagesize($_FILES[$key_lang]['tmp_name']);
+                                    if (!$errors && isset($_FILES[$key_lang]) &&
+                                        !empty($_FILES[$key_lang]['tmp_name']) &&
+                                        !empty($imagesize) &&
+                                        in_array($type, array('jpg', 'gif', 'jpeg', 'png'))
+                                    )
+                                    {
+                                        $temp_name = tempnam(_PS_TMP_IMG_DIR_, 'PS');
+                                        if ($error = ImageManager::validateUpload($_FILES[$key_lang]))
+                                            $errors[] = $error;
+                                        elseif (!$temp_name || !move_uploaded_file($_FILES[$key_lang]['tmp_name'], $temp_name))
+                                            $errors[] = sprintf($this->l('%s cannot upload file','Ets_blog_obj'),$config['label']);
+                                        elseif (!ImageManager::resize($temp_name, $fileDir, null, null, $type))
+                                            $errors[] = sprintf($this->l('%s an error occurred during the image upload process'),$config['label']);
+                                        else
+                                        {
+                                            if(isset($obj->{$key}[$l['id_lang']]) && $obj->{$key}[$l['id_lang']]!='')
+                                            {
+                                                $old_file = $obj->{$key}[$l['id_lang']];
+                                            }
+                                            else
+                                                $old_file = '';
+                                            $obj->{$key}[$l['id_lang']] = $imageName;
+                                            $new_files[] = $imageName;
+                                            if($old_file && !in_array($old_file,$obj->{$key}))
+                                                $old_files[] = $old_file;
+                                        }
+                                        if (file_exists($temp_name))
+                                            Ets_megamenu_defines::unlink($temp_name);
+
+                                    }
+                                    else
+                                        $errors[] = sprintf($this->l('%s file is not in the correct format, accepted formats: jpg, gif, jpeg, png','Ets_blog_obj'),$config['label']);
+                                }
+                            }
+                        }
+                        foreach($languages as $l)
+                        {
+                            if(!isset($obj->{$key}[$l['id_lang']]) || !$obj->{$key}[$l['id_lang']])
+                                $obj->{$key}[$l['id_lang']] = isset($obj->{$key}[$id_lang_default]) ? $obj->{$key}[$id_lang_default]:'';
+                        }
                     }
                     elseif($config['type']=='categories' && Ets_megamenu::validateArray($value_key) && isset($config['tree']['use_checkbox']) && $config['tree']['use_checkbox'] || $config['type']=='checkbox')
-                        $obj->$key = $value_key ? implode(',',$value_key):'';
+                        $obj->{$key} = $value_key ? implode(',',$value_key):'';
                     elseif(Validate::isCleanHtml($value_key))
-                        $obj->$key = trim($value_key);
+                        $obj->{$key} = trim($value_key);
                 }
             }
         }
         if (!count($errors))
         {
 
-            if($obj->id && $obj->update() || !$obj->id && $obj->add())
+            if($obj->id && $obj->update() || !$obj->id && $obj->add(true, false, $this->context->shop->id))
             {
-                if(Configuration::get('ETS_MM_CACHE_ENABLED'))
-                    Ets_megamenu::clearAllCache();
+                Ets_megamenu::clearAllCache();
+                if($old_files)
+                {
+                    foreach($old_files as $old_file)
+                        Ets_megamenu_defines::unlink(_PS_ETS_MM_IMG_DIR_.$old_file);
+                }
                 $success[] = $this->l('Saved');
             }
             else
+            {
+                if($new_files)
+                {
+                    foreach($new_files as $new_file)
+                    {
+                        Ets_megamenu_defines::unlink(_PS_ETS_MM_IMG_DIR_.$new_file);
+                    }
+                }
                 $errors[] = $this->l('Unknown error happened');
+            }
         }
         return array('errors' => $errors, 'success' => $success);
     }
     public function proccessPost()
     {
         $this->alerts = array();
-        // search product.
         if (($query = Tools::getValue('q', false)) && Validate::isCleanHtml($query)) {
             $imageType = $this->getMmType('cart');
             $excludeIds = Tools::getValue('excludeIds', false);
             $excludedProductIds = array();
             if ($excludeIds && $excludeIds != 'NaN' && Validate::isCleanHtml($excludeIds)) {
                 $excludeIds = implode(',', array_map(array($this, 'isValidIds'), explode(',', $excludeIds)));
-                if ($excludeIds && ($ids = explode(',', $excludeIds))) {
-                    foreach ($ids as $id) {
-                        $id = explode('-', $id);
-                        if (isset($id[0]) && isset($id[1]) && !$id[1]) {
-                            $excludedProductIds[] = (int)$id[0];
-                        }
+                $ids = explode(',', $excludeIds);
+                foreach ($ids as $id) {
+                    $id = explode('-', $id);
+                    if (isset($id[0]) && isset($id[1]) && !$id[1]) {
+                        $excludedProductIds[] = (int)$id[0];
                     }
                 }
             } else {
@@ -824,7 +901,7 @@ class Ets_megamenu extends Module
             }
             $excludeVirtuals = (bool)Tools::getValue('excludeVirtuals', false);
             $exclude_packs = (bool)Tools::getValue('exclude_packs', false);
-            Ets_megamenu_defines::searchProduct($query,$excludedProductIds,$excludeVirtuals,$exclude_packs,$excludeIds,$imageType);
+            Ets_megamenu_defines::searchProduct($this->context, $query,$excludedProductIds,$excludeVirtuals,$exclude_packs,$excludeIds,$imageType);
         }
         $product_type = Tools::getValue('product_type', false);
         if ($product_type && Validate::isCleanHtml($product_type) && ($IDs = Tools::getValue('ids', false)) && Ets_megamenu::validateArray($IDs)) {
@@ -839,38 +916,37 @@ class Ets_megamenu extends Module
             $obj = ($itemId = (int)Tools::getValue('itemId')) && $itemId > 0 ? new $mmObj($itemId) : new $mmObj();
 
             $this->alerts = $this->saveDataObj($obj);
-            $vals = $obj->getFieldVals();
+            $vals = $obj->getFieldVals($this->context);
 
-            //'MM_Menu','MM_Column','MM_Block','MM_Tab'
             $params = array();
             switch ($mmObj) {
                 case 'MM_Menu':
-                    $params['menu'] = MM_Menu::getMenus(false, false, $obj->id);
+                    $params['menu'] = MM_Menu::getMenus($this->context, false, false, $obj->id);
                     $vals['html_content'] = $this->hookDisplayMMItemMenu($params);
                     break;
                 case 'MM_Tab':
-                    $params['tab'] = MM_Tab::getTabs(false, $obj->id);
+                    $params['tab'] = MM_Tab::getTabs($this->context, false, $obj->id);
                     $vals['html_content'] = $this->hookDisplayMMItemTab($params);
                     break;
                 case 'MM_Column':
-                    $params['column'] = MM_Column::getColumns(false, $obj->id);
+                    $params['column'] = MM_Column::getColumns(false, $obj->id, $this->context->language->id);
                     $vals['html_content'] = $this->hookDisplayMMItemColumn($params);
                     break;
                 case 'MM_Block':
-                    $params['block'] = MM_Block::getBlocks(false, $obj->id);
+                    $params['block'] = MM_Block::getBlocks($this->context->language->id, false, $obj->id);
                     $vals['html_content'] = $this->hookDisplayMMItemColumn($params);
                     break;
             }
             if ($obj->id && $mmObj == 'MM_Block')
-                $vals['blockHtml'] = $this->hookDisplayBlock(array('block' => MM_Block::getBlockById($obj->id)));
+                $vals['blockHtml'] = $this->hookDisplayBlock(array('block' => MM_Block::getBlockById($obj->id, $this->context->language->id)));
             $formField = $obj->getFormField();
             die(json_encode(array(
                 'alert' => $this->displayAlerts($time),
                 'itemId' => (int)$obj->id,
                 'title' => property_exists($obj, 'title') && isset($obj->title[(int)$this->context->language->id]) ? $obj->title[(int)$this->context->language->id] : false,
-                'images' => $obj->id && property_exists($obj, 'image') && $obj->image ? array(array(
+                'images' =>  property_exists($obj, 'image') && $obj->image && isset($obj->image[$this->context->language->id]) ? array(array(
                     'name' => 'image',
-                    'url' => _PS_ETS_MM_IMG_ . $obj->image,
+                    'url' => _PS_ETS_MM_IMG_ . $obj->image[$this->context->language->id],
                 )) : false,
                 'img_dir' => _PS_ETS_MM_IMG_,
                 'menu_icon' => $obj->id && property_exists($obj, 'menu_icon') && $obj->menu_icon ? $obj->menu_icon : '',
@@ -903,9 +979,9 @@ class Ets_megamenu extends Module
                     'time' => true,
                     'success' => true,
                 )));
-        } elseif (($image = Tools::getValue('deleteimage')) && Validate::isCleanHtml($image) && $mmObj == 'MM_Config') {
+        } elseif (($image = Tools::getValue('deleteimage')) && Validate::isCleanHtml($image) && isset($mmObj) && $mmObj == 'MM_Config') {
             if (file_exists(_PS_ETS_MM_IMG_DIR_ . Configuration::get($image)))
-                @unlink(_PS_ETS_MM_IMG_DIR_ . Configuration::get($image));
+                Ets_megamenu_defines::unlink(_PS_ETS_MM_IMG_DIR_ . Configuration::get($image));
             Configuration::updateValue($image, '');
             $this->alerts = array(
                 'errors' => false,
@@ -919,7 +995,7 @@ class Ets_megamenu extends Module
                 'itemId' => 1,
                 'itemKey' => 'image',
                 'time' => $time,
-                'success' => isset($this->alerts['success']) && $this->alerts['success'],
+                'success' =>$this->alerts['success'],
             )));
         }
         if ((Tools::isSubmit('deleteobject')) && ($mmObj = $mm_object) && in_array($mmObj, array('MM_Menu', 'MM_Column', 'MM_Block', 'MM_Tab')) && ($itemId = (int)Tools::getValue('itemId')) && $itemId > 0) {
@@ -934,26 +1010,26 @@ class Ets_megamenu extends Module
                 'successMsg' => isset($this->alerts['success']) && $this->alerts['success'] ? $this->l('Item deleted') : false,
             )));
         }
-
-        if ((Tools::isSubmit('duplicateItem')) && ($mmObj = 'MM_' . Tools::ucfirst(Tools::strtolower($mm_object))) && in_array($mmObj, array('MM_Menu', 'MM_Column', 'MM_Block', 'MM_Tab')) && ($itemId = (int)Tools::getValue('itemId')) && $itemId > 0) {
+        $mmObj = 'MM_' . Tools::ucfirst(Tools::strtolower($mm_object));
+        if ((Tools::isSubmit('duplicateItem')) && in_array($mmObj, array('MM_Menu', 'MM_Column', 'MM_Block', 'MM_Tab')) && ($itemId = (int)Tools::getValue('itemId')) && $itemId > 0) {
             /** @var MM_Menu $obj */
             $obj = new $mmObj($itemId);
-            if ($newObj = $obj->duplicateItem()) {
+            if ($newObj = $obj->duplicateItem(false, false, $this->context->shop->id)) {
                 switch ($mmObj) {
                     case 'MM_Menu':
-                        $menu = MM_Menu::getMenus(false, false, $newObj->id);
+                        $menu = MM_Menu::getMenus($this->context, false, false, $newObj->id);
                         $html = $this->hookDisplayMMItemMenu(array('menu' => $menu, 'have_li' => true));
                         break;
                     case 'MM_Tab':
-                        $tab = MM_Tab::getTabs(false, $newObj->id);
+                        $tab = MM_Tab::getTabs($this->context, false, $newObj->id);
                         $html = $this->hookDisplayMMItemTab(array('tab' => $tab, 'have_li' => true));
                         break;
                     case 'MM_Column':
-                        $column = MM_Column::getColumns(false, $newObj->id);
+                        $column = MM_Column::getColumns(false, $newObj->id, $this->context->language->id);
                         $html = $this->hookDisplayMMItemColumn(array('column' => $column, 'have_li' => true));
                         break;
                     case 'MM_Block':
-                        $block = MM_Block::getBlocks(false, false, $newObj->id);
+                        $block = MM_Block::getBlocks($this->context->language->id, false, false, $newObj->id);
                         $html = $this->hookDisplayMMItemBlock(array('block' => $block, 'have_li' => true));
                         break;
                     default:
@@ -989,7 +1065,7 @@ class Ets_megamenu extends Module
             )));
         }
         if (Tools::isSubmit('clearMenuCache')) {
-            $this->clearAllCache();
+            $this->clearAllCache(true);
             die(json_encode(array(
                 'success' => $this->l('Cache cleared'),
             )));
@@ -1027,7 +1103,7 @@ class Ets_megamenu extends Module
         $ETS_MM_DISPLAY_CUSTOMER_INFO = Configuration::get('ETS_MM_DISPLAY_CUSTOMER_INFO');
         $ETS_MM_DISPLAY_SEARCH = Configuration::get('ETS_MM_DISPLAY_SEARCH');
         $ETS_MM_DISPLAY_SHOPPING_CART = Configuration::get('ETS_MM_DISPLAY_SHOPPING_CART');
-        if (!$reConfig && isset($config)) {
+        if (!$reConfig) {
             $this->alerts = $this->saveDataConfig($config);
         }
         if ($this->is17) {
@@ -1071,7 +1147,7 @@ class Ets_megamenu extends Module
                     $ps_shoppingcart->registerHook('displayNav2');
                     $id_hook = Hook::getIdByName('displayNav2');
                     if ($position = Configuration::get('ETS_MM_POSITION_BLOCKCART'))
-                        $ps_shoppingcart->updatePosition($id_hook, false, $position);
+                        $ps_shoppingcart->updatePosition($id_hook, false, (int)$position);
                     $ps_shoppingcart->unregisterHook('displayCartTop');
                 }
             }
@@ -1175,7 +1251,7 @@ class Ets_megamenu extends Module
         if (Tools::isSubmit('request_form') && ($mmObj = Tools::getValue('mm_object')) && in_array($mmObj, array('MM_Menu', 'MM_Column', 'MM_Block', 'MM_Tab'))) {
             $obj = ($itemId = (int)Tools::getValue('itemId')) && $itemId > 0 ? new $mmObj($itemId) : new $mmObj();
             die(json_encode(array(
-                'form' => $obj->renderForm(),
+                'form' => $obj->renderForm($this->context),
                 'itemId' => $itemId,
             )));
         }
@@ -1200,21 +1276,51 @@ class Ets_megamenu extends Module
 
     public function hookDisplayBlock($params)
     {
-        if (isset($params['block']) && $params['block']) {
-            $this->smarty->assign(array(
-                'block' => $this->convertBlockProperties($params['block']),
-            ));
-            return $this->display(__FILE__, 'block.tpl');
+        $isBackOffice = false;
+        if (isset($this->context->controller)){
+            $controller = $this->context->controller;
+            $isBackOffice = ($controller instanceof AdminController) ||
+                (property_exists($controller, 'controller_type') &&
+                    $controller->controller_type == 'admin');
         }
+        if (isset($params['block']) && $params['block']) {
+            if (isset($this->context->customer) && $this->context->customer->id) {
+                $customer_groups = $this->context->customer->getGroups();
+            } else {
+                $customer_groups = array((int)Configuration::get('PS_UNIDENTIFIED_GROUP'));
+            }
+            $blockGroups = $params['block']['customer_groups'];
+            $hasAccess = true;
+            if (!empty($blockGroups) && $blockGroups != '0') {
+                $blockGroupsArray = explode(',', $blockGroups);
+                $hasAccess = count(array_intersect($customer_groups, $blockGroupsArray)) > 0;
+            }
+            $cacheID = $this->_getCacheId(array_merge(
+                array('block'),
+                str_split($params['block']['id_block']),
+                $customer_groups,
+                array((int)$hasAccess)
+            ));
+            if(!$cacheID || !$this->isCached('block.tpl', $cacheID)) {
+                $this->smarty->assign(array(
+                    'block' => $this->convertBlockProperties($params['block']),
+                    'customer_groups' => $customer_groups,
+                    'is_logged' => isset($this->context->customer->id) ? true : false,
+                    'has_access' => $hasAccess,
+                    'is_backoffice' => $isBackOffice ? : false
+                ));
+            }
+            return $this->display(__FILE__, 'block.tpl', $cacheID);
+        }
+        return '';
     }
-
     public function convertBlockProperties($block)
     {
         if (isset($block['id_manufacturers']) && $block['id_manufacturers'] && ($ids = $this->strToIds($block['id_manufacturers']))) {
-            if ($manufacturers = MM_Obj::getManufacturers($block['order_by_manufacturers'], ' AND m.id_manufacturer IN(' . implode(',', $ids) . ')')) {
+            if ($manufacturers = $this->getManufacturers($block['order_by_manufacturers'], ' AND m.id_manufacturer IN(' . implode(',', $ids) . ')')) {
                 foreach ($manufacturers as &$manufacturer) {
                     if ((int)Configuration::get('PS_REWRITING_SETTINGS'))
-                        $link_rewrite = Tools::link_rewrite($manufacturer['label']);
+                        $link_rewrite = Tools::str2url($manufacturer['label']);
                     else
                         $link_rewrite = 0;
                     $manufacturer['link'] = $this->context->link->getManufacturerLink((int)$manufacturer['value'], $link_rewrite);
@@ -1228,7 +1334,7 @@ class Ets_megamenu extends Module
             }
         }
         if (isset($block['id_suppliers']) && $block['id_suppliers'] && ($ids = $this->strToIds($block['id_suppliers']))) {
-            if ($suppliers = MM_Obj::getSuppliers($block['order_by_suppliers'], ' AND s.id_supplier IN(' . implode(',', $ids) . ')')) {
+            if ($suppliers = $this->getSuppliers($block['order_by_suppliers'], ' AND s.id_supplier IN(' . implode(',', $ids) . ')')) {
                 foreach ($suppliers as &$supplier) {
                     $supplier['link'] = $this->context->link->getSupplierLink((int)$supplier['value']);
                     if (file_exists(_PS_SUPP_IMG_DIR_ . $supplier['value'] . '.jpg'))
@@ -1240,7 +1346,7 @@ class Ets_megamenu extends Module
             }
         }
         if (isset($block['id_cmss']) && $block['id_cmss'] && ($ids = $this->strToIds($block['id_cmss']))) {
-            if ($cmss = MM_Obj::getCMSs(false, ' AND c.id_cms IN(' . implode(',', $ids) . ')')) {
+            if ($cmss = $this->getCMSs(false, ' AND c.id_cms IN(' . implode(',', $ids) . ')')) {
                 foreach ($cmss as &$c) {
                     $c['link'] = $this->context->link->getCMSLink((int)$c['value']);
                 }
@@ -1248,10 +1354,10 @@ class Ets_megamenu extends Module
             }
         }
         if (isset($block['id_categories']) && $block['id_categories'] && ($ids = $this->strToIds($block['id_categories']))) {
-            $block['categoriesHtml'] = $this->displayCategories(Ets_megamenu_defines::getCategoryById($ids, $block['order_by_category']), $block['order_by_category']);
+            $block['categoriesHtml'] = $this->displayCategories(Ets_megamenu_defines::getCategoryById($this->context, $ids, $block['order_by_category']), $block['order_by_category']);
         }
         if (isset($block['image']) && $block['image']) {
-            $block['image'] = _PS_ETS_MM_IMG_ . $block['image'];
+            $block['image'] = $this->context->link->getMediaLink(_PS_ETS_MM_IMG_ . $block['image']);
         }
         if (isset($block['product_type']) && $block['product_type']) {
             if ($block['product_type'] != 'specific') {
@@ -1264,18 +1370,14 @@ class Ets_megamenu extends Module
     }
     public function displayProducts($ids, $block)
     {
-        $compared_products = array();
-        if (Configuration::get('PS_COMPARATOR_MAX_ITEM') && isset($this->context->cookie->id_compare)) {
-            $compared_products = CompareProduct::getCompareProducts($this->context->cookie->id_compare);
-        }
         $products = $ids ? $this->getBlockProducts($ids) : $this->getProductFeatured($block);
         $this->smarty->assign(array(
             'products' => $products,
             'PS_CATALOG_MODE' => (bool)Configuration::get('PS_CATALOG_MODE') || (Group::isFeatureActive() && !(bool)Group::getCurrent()->show_prices),
             'comparator_max_item' => (int)Configuration::get('PS_COMPARATOR_MAX_ITEM'),
-            'compared_products' => is_array($compared_products) ? $compared_products : array(),
+            'compared_products' => array(),
             'protocol_link' => (Configuration::get('PS_SSL_ENABLED')) ? 'https://' : 'http://',
-            'link' => new Link(),
+            'link' => $this->context->link,
             'block' => $block,
             'imageType' => $this->getMmType('home'),
         ));
@@ -1287,8 +1389,13 @@ class Ets_megamenu extends Module
     {
         if (!(isset($block['product_type'])))
             return false;
-        $mmProduct = new MM_Products($this->context);
+        $mmProduct = new MM_Products();
         $perPage = isset($block['product_count']) && ($nb = $block['product_count']) ? $nb : 2;
+        if ( isset($block['product_with_category']) && $block['product_with_category'] == 1 ){
+            $listIdCategory = $block['id_categories'];
+        }else{
+            $listIdCategory = null;
+        }
         $mmProduct->setPage(1)
             ->setPerPage($perPage)
             ->setOrderBy(null)
@@ -1296,17 +1403,17 @@ class Ets_megamenu extends Module
         $products = array();
         switch ($block['product_type']) {
             case 'new':
-                $products = $mmProduct->getNewProducts();
+                $products = $mmProduct->getNewProducts($this->context, $listIdCategory);
                 break;
             case 'popular':
                 $id_category = ($catID = Configuration::get('HOME_FEATURED_CAT')) ? $catID : (int)Category::getRootCategory()->id;
-                $products = $mmProduct->setIdCategory($id_category)->getHomeFeatured();
+                $products = $mmProduct->setIdCategory($id_category)->getHomeFeatured($this->context, $listIdCategory);
                 break;
             case 'special':
-                $products = $mmProduct->getSpecialProducts();
+                $products = $mmProduct->getSpecialProducts($this->context, $listIdCategory);
                 break;
             case 'best':
-                $products = $mmProduct->getBestSellers();
+                $products = $mmProduct->getBestSellers($this->context, $listIdCategory);
                 break;
         }
         if ($this->is17 && $this->context->controller->controller_type != 'admin') {
@@ -1324,6 +1431,11 @@ class Ets_megamenu extends Module
             }
         return $products;
     }
+
+    /**
+     * @throws PrestaShopDatabaseException
+     * @throws ReflectionException
+     */
     public function productsForTemplate($products)
     {
         if (!$products || !is_array($products))
@@ -1331,7 +1443,7 @@ class Ets_megamenu extends Module
         $assembler = new ProductAssembler($this->context);
         $presenterFactory = new ProductPresenterFactory($this->context);
         $presentationSettings = $presenterFactory->getPresentationSettings();
-        $presenter = new PrestaShop\PrestaShop\Core\Product\ProductListingPresenter(
+        $presenter = new PrestaShop\PrestaShop\Adapter\Presenter\Product\ProductListingPresenter(
             new PrestaShop\PrestaShop\Adapter\Image\ImageRetriever(
                 $this->context->link
             ),
@@ -1356,6 +1468,11 @@ class Ets_megamenu extends Module
         $configure = trim(Tools::strtolower(Tools::getValue('configure')));
         if ($configure == 'ets_megamenu') {
             $this->context->controller->addCSS($this->_path . 'views/css/font-awesome.css');
+            if ($this->is8) {
+                if (Module::isEnabled('ps_edition_basic')) {
+                    $this->context->controller->addCSS($this->_path . 'views/css/megamenu-admin8e.css');
+                }
+            }
             $this->context->controller->addCSS($this->_path . 'views/css/megamenu-admin.css');
         }
     }
@@ -1371,21 +1488,55 @@ class Ets_megamenu extends Module
             $this->context->controller->addCSS($this->_path . 'views/css/megamenu.css');
             $this->context->controller->addCSS($this->_path . 'views/css/fix16.css');
         }
-        $this->context->controller->addCSS($this->_path . 'views/css/animate.css');
         $this->context->controller->addJS($this->_path . 'views/js/megamenu.js');
-        $this->context->controller->addJS($this->_path . 'views/js/jquery.countdown.min.js');
-        $this->context->controller->addJS($this->_path . 'views/js/clock.js');
+        if(MM_Block::checkBlockClockCountDown())
+        {
+            $this->context->controller->addJS($this->_path . 'views/js/jquery.countdown.min.js');
+            $this->context->controller->addJS($this->_path . 'views/js/clock.js');
+        }
+
         $config = new MM_Config();
         $this->context->smarty->assign(array(
-            'mm_config' => $config->getConfig(),
+            'mm_config' => $config->getConfig($this->context->language->id),
             'ETS_MM_ACTIVE_BG_GRAY' => Configuration::get('ETS_MM_ACTIVE_BG_GRAY')
         ));
+        if( Configuration::get('ETS_MM_DIR') == 'rtl'){
+            $this->context->controller->addCSS($this->_path . 'views/css/rtl.css');
+        }
+        if( Configuration::get('ETS_MM_LAYOUT') == 'layout1'){
+            $this->context->controller->addCSS($this->_path . 'views/css/layout1.css');
+        }
+        if( Configuration::get('ETS_MM_LAYOUT') == 'layout2'){
+            $this->context->controller->addCSS($this->_path . 'views/css/layout2.css');
+            if( Configuration::get('ETS_MM_DIR') == 'rtl'){
+                $this->context->controller->addCSS($this->_path . 'views/css/layout2_rtl.css');
+            }
+        }
+        if( Configuration::get('ETS_MM_LAYOUT') == 'layout3'){
+            $this->context->controller->addCSS($this->_path . 'views/css/layout3.css');
+            if( Configuration::get('ETS_MM_DIR') == 'rtl'){
+                $this->context->controller->addCSS($this->_path . 'views/css/layout3_rtl.css');
+            }
+        }
+        if( Configuration::get('ETS_MM_LAYOUT') == 'layout4'){
+            $this->context->controller->addCSS($this->_path . 'views/css/layout4.css');
+        }
+        if( Configuration::get('ETS_MM_LAYOUT') == 'layout5'){
+            $this->context->controller->addCSS($this->_path . 'views/css/layout5.css');
+        }
+        if( Configuration::get('ETS_MOBILE_MM_TYPE') == 'floating'){
+            $this->context->controller->addCSS($this->_path . 'views/css/mobile_floating.css');
+        }
+        if( Configuration::get('ETS_MOBILE_MM_TYPE') == 'full'){
+            $this->context->controller->addCSS($this->_path . 'views/css/mobile_full.css');
+        }
         if (Configuration::get('ETS_MM_CACHE_ENABLED')) {
             if (@file_exists(dirname(__FILE__) . '/views/css/cache.css') || !@file_exists(dirname(__FILE__) . '/views/css/cache.css') && @file_put_contents(dirname(__FILE__) . '/views/css/cache.css', $this->getCSS())) {
                 if ($this->is17)
                     $this->addCss17('cache', 'cache');
                 else
                     $this->context->controller->addCSS($this->_path . 'views/css/cache.css');
+                return $this->displayDynamicCss(true);
             } else
                 return $this->displayDynamicCss();
         } else
@@ -1415,12 +1566,15 @@ class Ets_megamenu extends Module
     {
         $this->context->controller->registerStylesheet('modules-ets_megamenu' . ($id ? '_' . $id : ''), $server == 'remote' ? $cssFile : 'modules/' . $this->name . '/views/css/' . $cssFile . '.css', array('media' => 'all', 'priority' => 150, 'server' => $server));
     }
-
-    public function displayDynamicCss()
+    public function displayDynamicCss($cache_css = false)
     {
-        $this->smarty->assign(array(
-            'mm_css' => $this->getCss(),
-        ));
+        if(!$cache_css)
+        {
+            $mm_css = $this->getCss();
+            $this->smarty->assign(array(
+                'mm_css' => $mm_css !== null ? $mm_css : '',
+            ));
+        }
         return $this->display(__FILE__, 'header.tpl');
     }
 
@@ -1435,6 +1589,8 @@ class Ets_megamenu extends Module
             Configuration::get('ETS_MM_COLOR5'),
             Configuration::get('ETS_MM_COLOR6'),
             Configuration::get('ETS_MM_COLOR7'),
+            Configuration::get('ETS_MM_COLOR_BACKDROP_1'),
+            Configuration::get('ETS_MM_OPACITY_BACKDROP_1'),
             Configuration::get('ETS_MM_COLOR8'),
             Configuration::get('ETS_MM_COLOR9'),
             Configuration::get('ETS_MM_COLOR_10'),
@@ -1442,6 +1598,8 @@ class Ets_megamenu extends Module
             Configuration::get('ETS_MM_COLOR_12'),
             Configuration::get('ETS_MM_COLOR_13'),
             Configuration::get('ETS_MM_COLOR_14'),
+            Configuration::get('ETS_MM_COLOR_BACKDROP_2'),
+            Configuration::get('ETS_MM_OPACITY_BACKDROP_2'),
             Configuration::get('ETS_MM_COLOR_15'),
             Configuration::get('ETS_MM_COLOR_16'),
             Configuration::get('ETS_MM_COLOR_17'),
@@ -1449,6 +1607,8 @@ class Ets_megamenu extends Module
             Configuration::get('ETS_MM_COLOR_19'),
             Configuration::get('ETS_MM_COLOR_20'),
             Configuration::get('ETS_MM_COLOR_21'),
+            Configuration::get('ETS_MM_COLOR_BACKDROP_3'),
+            Configuration::get('ETS_MM_OPACITY_BACKDROP_3'),
             Configuration::get('ETS_MM_COLOR_22'),
             Configuration::get('ETS_MM_COLOR_23'),
             Configuration::get('ETS_MM_COLOR_24'),
@@ -1456,6 +1616,8 @@ class Ets_megamenu extends Module
             Configuration::get('ETS_MM_COLOR_26'),
             Configuration::get('ETS_MM_COLOR_27'),
             Configuration::get('ETS_MM_COLOR_28'),
+            Configuration::get('ETS_MM_COLOR_BACKDROP_4'),
+            Configuration::get('ETS_MM_OPACITY_BACKDROP_4'),
             Configuration::get('ETS_MM_COLOR_29'),
             Configuration::get('ETS_MM_COLOR_30'),
             Configuration::get('ETS_MM_COLOR_31'),
@@ -1463,6 +1625,8 @@ class Ets_megamenu extends Module
             Configuration::get('ETS_MM_COLOR_33'),
             Configuration::get('ETS_MM_COLOR_34'),
             Configuration::get('ETS_MM_COLOR_35'),
+            Configuration::get('ETS_MM_COLOR_BACKDROP_5'),
+            Configuration::get('ETS_MM_OPACITY_BACKDROP_5'),
             Configuration::get('ETS_MM_COLOR_36'),
             Configuration::get('ETS_MM_COLOR_37'),
             Configuration::get('ETS_MM_COLOR_38'),
@@ -1474,31 +1638,47 @@ class Ets_megamenu extends Module
         $colors[] = Configuration::get('ETS_MM_HEADING_FONT') != 'inherit' ? "'" . Configuration::get('ETS_MM_HEADING_FONT') . "'" : 'inherit';
         $colors[] = Configuration::get('ETS_MM_TEXT_FONT') != 'inherit' ? "'" . Configuration::get('ETS_MM_TEXT_FONT') . "'" : 'inherit';
         $dynamicCSS = @file_exists(dirname(__FILE__) . '/views/css/dynamic.css') && @is_readable(dirname(__FILE__) . '/views/css/dynamic.css') ? Tools::file_get_contents(dirname(__FILE__) . '/views/css/dynamic.css') : '';
-        $css = ($dynamicCSS) ? str_replace(array('text_fontsize', 'l1_color1', 'l1_color2', 'l1_color3', 'l1_color4', 'l1_color5', 'l1_color6', 'l1_color7', 'l2_color1', 'l2_color2', 'l2_color3', 'l2_color4', 'l2_color5', 'l2_color6', 'l2_color7', 'l3_color1', 'l3_color2', 'l3_color3', 'l3_color4', 'l3_color5', 'l3_color6', 'l3_color7', 'l4_color1', 'l4_color2', 'l4_color3', 'l4_color4', 'l4_color5', 'l4_color6', 'l4_color7', 'l5_color1', 'l5_color2', 'l5_color3', 'l5_color4', 'l5_color5', 'l5_color6', 'l5_color7', 'l1_color8', 'l2_color8', 'l3_color8', 'l4_color8', 'l5_color8', 'm_bar_bg', 'm_bar_color', 'font1', 'font2'), $colors, $dynamicCSS . "\n") : '';
+        $css = ($dynamicCSS)
+            ? str_replace(
+                [
+                    'text_fontsize',
+                    'l1_color1', 'l1_color2', 'l1_color3', 'l1_color4', 'l1_color5', 'l1_color6', 'l1_color7', 'l1_color_backdrop', 'l1_opacity_backdrop',
+                    'l2_color1', 'l2_color2', 'l2_color3', 'l2_color4', 'l2_color5', 'l2_color6', 'l2_color7', 'l2_color_backdrop', 'l2_opacity_backdrop',
+                    'l3_color1', 'l3_color2', 'l3_color3', 'l3_color4', 'l3_color5', 'l3_color6', 'l3_color7', 'l3_color_backdrop', 'l3_opacity_backdrop',
+                    'l4_color1', 'l4_color2', 'l4_color3', 'l4_color4', 'l4_color5', 'l4_color6', 'l4_color7', 'l4_color_backdrop', 'l4_opacity_backdrop',
+                    'l5_color1', 'l5_color2', 'l5_color3', 'l5_color4', 'l5_color5', 'l5_color6', 'l5_color7', 'l5_color_backdrop', 'l5_opacity_backdrop',
+                    'l1_color8', 'l2_color8', 'l3_color8', 'l4_color8', 'l5_color8',
+                    'm_bar_bg', 'm_bar_color',
+                    'font1', 'font2'
+                ],
+                $colors,
+                $dynamicCSS . "\n"
+            )
+            : '';
         return $css;
     }
 
     public function strToIds($str)
     {
         $ids = array();
-        if ($str && ($arg = explode(',', $str))) {
+        if ($str) {
+            $arg = explode(',', $str);
             foreach ($arg as $id)
                 if (!in_array((int)$id, $ids))
                     $ids[] = (int)$id;
         }
         return $ids;
     }
-
     public function displayCategories($categories, $order_by = 'c.nleft ASC')
     {
         if ($categories) {
             if (Configuration::get('ETS_MM_INCLUDE_SUB_CATEGORIES')) {
                 foreach ($categories as &$category) {
-                    $category['sub'] = ($subcategories = Ets_megamenu_defines::getChildCategories((int)$category['id_category'], $order_by)) ? $this->displayCategories($subcategories, $order_by) : false;
+                    $category['sub'] = ($subcategories = Ets_megamenu_defines::getChildCategories($this->context, (int)$category['id_category'], $order_by)) ? $this->displayCategories($subcategories, $order_by) : false;
                 }
             }
             foreach ($categories as &$category) {
-                $category['url_image'] = $this->context->link->getCatImageLink($category['link_rewrite'], (int)$category['id_category'], $this->is17 ? ImageType::getFormattedName('category') : ImageType::getFormatedName('category'));
+                $category['url_image'] = $this->context->link->getCatImageLink($category['link_rewrite'], (int)$category['id_category'], $this->getFormattedName('category'));
             }
             $this->smarty->assign(array(
                 'categories' => $categories,
@@ -1508,17 +1688,44 @@ class Ets_megamenu extends Module
         }
         return '';
     }
-    public static function clearAllCache()
+    public function displayCategoriesOfProduct($categories, $order_by = 'c.nleft ASC')
+    {
+        if ($categories) {
+            foreach ($categories as &$category) {
+                $category['url_image'] = $this->context->link->getCatImageLink($category['link_rewrite'], (int)$category['id_category'], $this->getFormattedName('category'));
+            }
+            $this->smarty->assign(array(
+                'categories' => $categories,
+                'link' => $this->context->link,
+            ));
+            return $this->display(__FILE__, 'categories-tree.tpl');
+        }
+        return '';
+    }
+    public static function clearAllCache($clear_smarty = false)
     {
         if (@file_exists(dirname(__FILE__) . '/views/css/cache.css'))
-            @unlink(dirname(__FILE__) . '/views/css/cache.css');
-        if ($files = glob(_ETS_MEGAMENU_CACHE_DIR_ . '*')) {
-            foreach ($files as $file)
+            Ets_megamenu_defines::unlink(dirname(__FILE__) . '/views/css/cache.css');
+        /** @var Ets_megamenu $megamenu */
+        $megamenu = Module::getInstanceByName('ets_megamenu');
+        if($clear_smarty)
+            $megamenu->_clearCache('*');
+        else
+        {
+            $megamenu->_clearCache('*');
+        }
+        if(Configuration::get('ETS_MM_CLEAR_CACHE_SPEED'))
+        {
+            if (Configuration::get('ETS_MM_HOOK_TO') == 'customhook')
             {
-                if (is_file($file) && @file_exists($file) && strpos($file, 'index.php') === false)
-                {
-                    @unlink($file);
-                }
+                Hook::exec('actionDeleteAllCache',array('hook_name' => 'customhook','module_name' => 'ets_megamenu', 'id_module' => $megamenu->id,'all'=>true));
+            }
+            else
+            {
+                if($megamenu->is17)
+                    Hook::exec('actionDeleteAllCache',array('hook_name' => 'displayNavFullWidth','module_name' => 'ets_megamenu','id_module' => $megamenu->id,'all'=>true));
+                else
+                    Hook::exec('actionDeleteAllCache',array('hook_name' => 'displayTop','module_name' => 'ets_megamenu','id_module' => $megamenu->id,'all'=>true));
             }
         }
     }
@@ -1534,22 +1741,43 @@ class Ets_megamenu extends Module
         else
             return 'ets-dir-' . (Configuration::get('ETS_MM_DIR') == 'rtl' ? 'rtl' : 'ltr');
     }
-
+    public function _getCacheId($params = null,$parentID = true)
+    {
+        if(Configuration::get('ETS_MM_CACHE_ENABLED'))
+        {
+            $cacheId = $this->getCacheId($this->name);
+            $cacheId = str_replace($this->name, '', $cacheId);
+            $suffix ='';
+            if($params)
+            {
+                if(is_array($params))
+                    $suffix .= '|'.implode('|',$params);
+                else
+                    $suffix .= '|'.$params;
+            }
+            return $this->name . $suffix .($parentID ? $cacheId:'');
+        }
+        return null;
+    }
+    public function _clearCache($template, $cache_id = null, $compile_id = null)
+    {
+        if($cache_id===null)
+            $cache_id = $this->name;
+        if($template=='*')
+        {
+            return Tools::clearCache($this->context->smarty, false, null, $compile_id);
+        }
+        else
+        {
+            return Tools::clearCache($this->context->smarty, $this->getTemplatePath($template), $cache_id, $compile_id);
+        }
+    }
     public function displayMenuFrontend()
     {
-        $menuHtml = false;
-        if (Configuration::get('ETS_MM_CACHE_ENABLED')) {
-            $cache = new MM_Cache();
-            if (!($menuHtml = $cache->get('menu_' . $this->context->language->iso_code . '_' . $this->context->shop->id))) {
-                $menuHtml = $this->displayMegaMenu();
-                $cache->set('menu_' . $this->context->language->iso_code . '_' . $this->context->shop->id, $menuHtml);
-            }
-        } else
-            $menuHtml = $this->displayMegaMenu();
         $this->smarty->assign(array(
-            'menusHTML' => $menuHtml,
+            'menusHTML' => $this->displayMegaMenu().$this->hookDisplayCustomMenu(),
             'mm_layout_direction' => $this->layoutDirection(),
-            'mm_multiLayout' => $this->multiLayout,
+            'mm_multiLayout' => MM_Obj::multiLayoutExist(),
         ));
         return $this->display(__FILE__, 'megamenu.tpl');
     }
@@ -1571,17 +1799,22 @@ class Ets_megamenu extends Module
         if (Configuration::get('ETS_MM_HOOK_TO') == 'customhook')
             return $this->displayMenuFrontend();
     }
-
     public function displayMegaMenu($id_lang = false)
     {
-        $menus = $id_lang ? MM_Menu::getMenus(true, $id_lang) : MM_Menu::getMenus(true);
-        $this->smarty->assign(array(
-            'menus' => $menus,
-            'mm_img_dir' => $this->_path . 'views/img/',
-        ));
-        if ($menus)
-            return $this->display(__FILE__, 'menu-html.tpl');
-        return '';
+        $cacheId = $this->_getCacheId('megamenu');
+        if($cacheId && ($clearTime = Configuration::get('ETS_MM_CACHE_TIME_CLEAR')) && strtotime($clearTime) < time())
+            $this->_clearCache('*');
+        if(!$cacheId || !$this->isCached('menu-html.tpl',$cacheId))
+        {
+            $cacheLifeTime = (int)Configuration::get('ETS_MM_CACHE_LIFE_TIME') ? :24;
+            Configuration::updateValue('ETS_MM_CACHE_TIME_CLEAR',date('Y-m-d H:i:s',strtotime('+'.(int)$cacheLifeTime.' hour')));
+            $menus = $id_lang ? MM_Menu::getMenus($this->context, true, $id_lang) : MM_Menu::getMenus($this->context, true);
+            $this->smarty->assign(array(
+                'menus' => $menus,
+                'mm_img_dir' => $this->_path . 'views/img/',
+            ));
+        }
+        return $this->display(__FILE__, 'menu-html.tpl',$cacheId);
     }
 
     public function hookDisplayMMItemMenu($params)
@@ -1595,11 +1828,15 @@ class Ets_megamenu extends Module
 
     public function hookDisplayMMItemColumn($params)
     {
-        $this->smarty->assign(array(
-            'column' => isset($params['column']) ? $params['column'] : false,
-            'have_li' => isset($params['have_li']) ? $params['have_li'] : false,
-        ));
-        return $this->display(__FILE__, 'item-column.tpl');
+        if(isset($params['column']) && $params['column'])
+        {
+            $this->smarty->assign(array(
+                'column' => $params['column'],
+                'have_li' => isset($params['have_li']) ? $params['have_li'] : false,
+            ));
+            return $this->display(__FILE__, 'item-column.tpl');
+        }
+        return '';
     }
 
     public function hookDisplayMMItemTab($params)
@@ -1620,7 +1857,6 @@ class Ets_megamenu extends Module
         return $this->display(__FILE__, 'item-block.tpl');
     }
 
-    //Database
     public function installDb()
     {
         if (!is_dir(_PS_ETS_MM_IMG_DIR_)) {
@@ -1629,7 +1865,6 @@ class Ets_megamenu extends Module
         }
         return Ets_megamenu_defines::createDb();
     }
-    //Import/Export functions
     private function processImport($zipfile = false)
     {
         $errors = array();
@@ -1640,16 +1875,16 @@ class Ets_megamenu extends Module
                 @mkdir(_ETS_MEGAMENU_CACHE_DIR_.'views/', 0777, true);
             $savePath = _ETS_MEGAMENU_CACHE_DIR_;
             if (@file_exists($savePath . 'megamenu.data.zip'))
-                @unlink($savePath . 'megamenu.data.zip');
+                Ets_megamenu_defines::unlink($savePath . 'megamenu.data.zip');
             $uploader = new Uploader('sliderdata');
             $uploader->setCheckFileSize(false);
             $uploader->setAcceptTypes(array('zip'));
             $uploader->setSavePath($savePath);
-            $file = $uploader->process('megamenu.data.zip');
+            $file = $uploader->process();
             if ($file[0]['error'] === 0) {
                 if (!Tools::ZipTest($savePath . 'megamenu.data.zip'))
                     $errors[] = $this->l('Zip file seems to be broken');
-            } else {
+            } elseif($file[0]['error']) {
                 $errors[] = $file[0]['error'];
             }
             $extractUrl = $savePath . 'megamenu.data.zip';
@@ -1662,14 +1897,14 @@ class Ets_megamenu extends Module
             if ($zip->open($extractUrl) === true) {
                 if ($zip->locateName('Menu-Info.xml') === false) {
                     $errors[] = $this->l('Menu-Info.xml doesn\'t exist');
-                    if ($extractUrl && file_exists($extractUrl) && !$zipfile && $zip->close())
-                        @unlink($extractUrl);
+                    if ( file_exists($extractUrl) && !$zipfile && $zip->close())
+                        Ets_megamenu_defines::unlink($extractUrl);
                 }
             } else
                 $errors[] = $this->l('Cannot open zip file. It might be broken or damaged');
         }
         if (!$errors && Tools::isSubmit('importoverride') && isset($zip) && $zip->locateName('Data.xml') !== false) {
-            MM_Menu::deleteAllMenu();
+            MM_Menu::deleteAllMenu($this->context->shop->id);
         }
         if (!$errors) {
             if (!is_dir(_ETS_MEGAMENU_CACHE_DIR_)){
@@ -1686,20 +1921,21 @@ class Ets_megamenu extends Module
                 $errors[] = $this->l('Neither Data.xml nor Config.xml exists');
         }
         if (!$errors) {
+            self::clearAllCache(true);
             $this->copy_directory(_ETS_MEGAMENU_CACHE_DIR_ . 'views/img/upload', _PS_ETS_MM_IMG_DIR_);
             if (@file_exists(_ETS_MEGAMENU_CACHE_DIR_. 'views/Data.xml')) {
-                MM_ImportExport::importXmlTbl(@simplexml_load_file(_ETS_MEGAMENU_CACHE_DIR_ . 'views/Data.xml'));
-                @unlink(_ETS_MEGAMENU_CACHE_DIR_ . 'views/Data.xml');
+                MM_ImportExport::importXmlTbl($this->context, @simplexml_load_file(_ETS_MEGAMENU_CACHE_DIR_ . 'views/Data.xml'));
+                Ets_megamenu_defines::unlink(_ETS_MEGAMENU_CACHE_DIR_ . 'views/Data.xml');
             }
             if (@file_exists(_ETS_MEGAMENU_CACHE_DIR_ . 'views/Config.xml')) {
                 MM_ImportExport::importXmlConfig(@simplexml_load_file(_ETS_MEGAMENU_CACHE_DIR_ . 'views/Config.xml'));
-                @unlink(_ETS_MEGAMENU_CACHE_DIR_. 'views/Config.xml');
+                Ets_megamenu_defines::unlink(_ETS_MEGAMENU_CACHE_DIR_. 'views/Config.xml');
             }
             if (@file_exists(_ETS_MEGAMENU_CACHE_DIR_ . 'views/Menu-Info.xml')) {
-                @unlink(_ETS_MEGAMENU_CACHE_DIR_ .'views/Menu-Info.xml');
+                Ets_megamenu_defines::unlink(_ETS_MEGAMENU_CACHE_DIR_ .'views/Menu-Info.xml');
             }
-            if ($extractUrl && file_exists($extractUrl) && !$zipfile && isset($zip) && $zip->close())
-                @unlink($extractUrl);
+            if ( file_exists($extractUrl) && !$zipfile && isset($zip) && $zip->close())
+                Ets_megamenu_defines::unlink($extractUrl);
             if (is_dir(_ETS_MEGAMENU_CACHE_DIR_.'views/')) {
                 $this->rrmdir(_ETS_MEGAMENU_CACHE_DIR_.'views/');
             }
@@ -1749,7 +1985,7 @@ class Ets_megamenu extends Module
             if (!$zip->addFromString('Config.xml', $this->renderConfigXml())) {
                 $this->errors[] = $this->l('Cannot create config.xml file.');
             }
-            if (!$zip->addFromString('Data.xml', MM_ImportExport::renderMenuDataXml())) {
+            if (!$zip->addFromString('Data.xml', MM_ImportExport::renderMenuDataXml($this->context->shop->id))) {
                 $this->errors[] = $this->l('Cannot create data.xml file.');
             }
             if (!$zip->addFromString('Menu-Info.xml', $this->renderInfoXml())) {
@@ -1779,8 +2015,8 @@ class Ets_megamenu extends Module
                 ob_end_flush();
                 if(file_exists($cacheDir . $zip_file_name))
                 {
-                    readfile($cacheDir . $zip_file_name);
-                    @unlink($cacheDir . $zip_file_name);
+                    Ets_megamenu_defines::getInstance()->readFile($cacheDir . $zip_file_name);
+                    Ets_megamenu_defines::unlink($cacheDir . $zip_file_name);
                 }
 
                 exit;
@@ -1821,9 +2057,9 @@ class Ets_megamenu extends Module
         if ($this->is17)
             return '';
         $blocksearch = Module::getInstanceByName('blocksearch');
-        if ($blocksearch && Module::isEnabled('blocksearch')) {
+        if ($blocksearch->id) {
             $blocksearch->unregisterHook('displaySearch');
-            return $blocksearch->hookTop(array());
+            return Hook::exec('top', [], $blocksearch->id);
         }
         return '';
     }
@@ -1833,11 +2069,11 @@ class Ets_megamenu extends Module
         if ($this->is17)
             return '';
         $blockcart = Module::getInstanceByName('blockcart');
-        if ($blockcart && Module::isEnabled('blockcart')) {
+        if ($blockcart->id) {
             $params = array(
                 'cart' => $this->context->cart,
             );
-            return $blockcart->hookTop($params);
+            return Hook::exec('Top',$params, $blockcart->id);
         }
         return '';
     }
@@ -1847,8 +2083,8 @@ class Ets_megamenu extends Module
         if ($this->is17)
             return '';
         $blockuserinfo = Module::getInstanceByName('blockuserinfo');
-        if ($blockuserinfo && Module::isEnabled('blockuserinfo')) {
-            return $blockuserinfo->hookDisplayNav(array());
+        if ($blockuserinfo->id) {
+            return Hook::exec('DisplayNav',[], $blockuserinfo->id);
         }
         return '';
     }
@@ -1857,7 +2093,6 @@ class Ets_megamenu extends Module
         return (Configuration::get('PS_SSL_ENABLED_EVERYWHERE') ? 'https://' : 'http://') . $this->context->shop->domain . $this->context->shop->getBaseURI();
     }
 
-    //module other active when config.
     public function activeModuleExtra()
     {
         if ($this->is17) {
@@ -1866,7 +2101,7 @@ class Ets_megamenu extends Module
                 $ps_customersignin->registerHook('displayNav2');
                 $id_hook = Hook::getIdByName('displayNav2');
                 if ($position = (int)Configuration::get('ETS_MM_POSITION_USERINFOR'))
-                    $ps_customersignin->updatePosition($id_hook, false, $position);
+                    $ps_customersignin->updatePosition($id_hook, false, (int)$position);
                 $ps_customersignin->unregisterHook('displayCustomerInforTop');
             }
             $ps_searchbar = Module::getInstanceByName('ps_searchbar');
@@ -1874,14 +2109,14 @@ class Ets_megamenu extends Module
                 $ps_searchbar->registerHook('top');
                 $id_hook = Hook::getIdByName('top');
                 if ($position = (int)Configuration::get('ETS_MM_POSITION_BLOCK_SEARCH'))
-                    $ps_searchbar->updatePosition($id_hook, false, $position);
+                    $ps_searchbar->updatePosition($id_hook, false, (int)$position);
             }
+            /** @var Ps_Shoppingcart $ps_shoppingcart */
             $ps_shoppingcart = Module::getInstanceByName('ps_shoppingcart');
-            if ($ps_shoppingcart && !$ps_shoppingcart->isRegisteredInHook('displayNav2') && Configuration::get('ETS_MM_POSITION_BLOCKCART')) {
+            if ($ps_shoppingcart->id && !$ps_shoppingcart->isRegisteredInHook('displayNav2') && ($position = Configuration::get('ETS_MM_POSITION_BLOCKCART'))) {
                 $ps_shoppingcart->registerHook('displayNav2');
                 $id_hook = Hook::getIdByName('displayNav2');
-                if ($position = Configuration::get('ETS_MM_POSITION_BLOCKCART'))
-                    $ps_shoppingcart->updatePosition($id_hook, false, $position);
+                $ps_shoppingcart->updatePosition($id_hook, false, (int)$position);
                 $ps_shoppingcart->unregisterHook('displayCartTop');
             }
         } else {
@@ -1891,7 +2126,7 @@ class Ets_megamenu extends Module
                 $blockcart->registerHook($hook);
                 $id_hook = Hook::getIdByName($hook);
                 if ($position = (int)Configuration::get('ETS_MM_POSITION_BLOCKCART'))
-                    $blockcart->updatePosition($id_hook, false, $position);
+                    $blockcart->updatePosition($id_hook, false, (int)$position);
             }
             $blocksearch = Module::getInstanceByName('blocksearch');
             $hook = Configuration::get('ETS_MM_HOOK_BLOCK_SEARCH');
@@ -1899,7 +2134,7 @@ class Ets_megamenu extends Module
                 $id_hook = Hook::getIdByName($hook);
                 $blocksearch->registerHook($hook);
                 if ($position = (int)Configuration::get('ETS_MM_POSITION_BLOCK_SEARCH'))
-                    $blocksearch->updatePosition($id_hook, false, $position);
+                    $blocksearch->updatePosition($id_hook, false, (int)$position);
             }
             $blockuserinfo = Module::getInstanceByName('blockuserinfo');
             $hook = Configuration::get('ETS_MM_HOOK_USERINFOR');
@@ -1907,7 +2142,7 @@ class Ets_megamenu extends Module
                 $id_hook = Hook::getIdByName($hook);
                 $blockuserinfo->registerHook($hook);
                 if ($position = (int)Configuration::get('ETS_MM_POSITION_USERINFOR'))
-                    $blockuserinfo->updatePosition($id_hook, false, $position);
+                    $blockuserinfo->updatePosition($id_hook, false, (int)$position);
             }
         }
         return true;
@@ -1919,7 +2154,8 @@ class Ets_megamenu extends Module
             $IDs = explode(',', $productIds);
             $products = array();
             foreach ($IDs as $ID) {
-                if ($ID && ($tmpIDs = explode('-', $ID))) {
+                if ($ID) {
+                    $tmpIDs = explode('-', $ID);
                     $products[] = array(
                         'id_product' => $tmpIDs[0],
                         'id_product_attribute' => !empty($tmpIDs[1]) ? $tmpIDs[1] : 0,
@@ -1955,24 +2191,34 @@ class Ets_megamenu extends Module
             $IDs = explode(',', $products);
             $products = array();
             foreach ($IDs as $ID) {
-                if ($ID && ($tmpIDs = explode('-', $ID))) {
+                if ($ID) {
+                    $tmpIDs = explode('-', $ID );
+                    if(!empty($tmpIDs[1]))
+                        $combination = new Combination((int)$tmpIDs[1]);
+                    else
+                        $combination = false;
                     $products[] = array(
                         'id_product' => $tmpIDs[0],
-                        'id_product_attribute' => !empty($tmpIDs[1]) && ($combination = new Combination($tmpIDs[1])) && Validate::isLoadedObject($combination) && $combination->id_product==$tmpIDs[0] ? $tmpIDs[1] : 0,
+                        'id_product_attribute' => $combination && Validate::isLoadedObject($combination) && $combination->id_product==$tmpIDs[0] ? $tmpIDs[1] : 0,
                     );
                 }
             }
         }
         if ($products) {
-            $context = Context::getContext();
+            $context = $this->context;
             $id_group = isset($context->customer->id) && $context->customer->id ? Customer::getDefaultGroupId((int)$context->customer->id) : (int)Group::getCurrent()->id;
             $group = new Group($id_group);
             $useTax = $group->price_display_method ? false : true;
-            foreach ($products as &$product) {
+            foreach ($products as $key=> &$product) {
                 $p = new Product($product['id_product'], true, $this->context->language->id, $this->context->shop->id);
+                if(!Validate::isLoadedObject($p) || !$p->active)
+                {
+                    unset($products[$key]);
+                    continue;
+                }
                 $product['link_rewrite'] = $p->link_rewrite;
-                $product['price'] = Tools::displayPrice($p->getPrice($useTax, $product['id_product_attribute'] ? $product['id_product_attribute'] : null));
-                if (($oldPrice = $p->getPriceWithoutReduct(!$useTax, $product['id_product_attribute'] ? $product['id_product_attribute'] : null)) && $oldPrice != $product['price']) {
+                $product['price'] = Tools::displayPriceSmarty(['price'=> $p->getPrice($useTax, $product['id_product_attribute'] ? : null), 'currency'=> $this->context->currency], $this->context->smarty);
+                if (($oldPrice = $p->getPriceWithoutReduct(!$useTax, $product['id_product_attribute'] ? : null)) && $oldPrice != $product['price']) {
                     $product['price_without_reduction'] = Tools::convertPrice($oldPrice);
                 }
                 if (isset($product['price_without_reduction']) && $product['price_without_reduction'] != $product['price']) {
@@ -1984,7 +2230,7 @@ class Ets_megamenu extends Module
                 $product['name'] = $p->name;
                 $product['description_short'] = $p->description_short;
                 $image = ($product['id_product_attribute'] && ($image = Ets_megamenu_defines::getCombinationImageById($product['id_product_attribute'], $context->language->id))) ? $image : Product::getCover($product['id_product']);
-                $product['link'] = $context->link->getProductLink($product, null, null, null, null, null, $product['id_product_attribute'] ? $product['id_product_attribute'] : 0);
+                $product['link'] = $context->link->getProductLink($product, null, null, null, null, null, $product['id_product_attribute'] ? : 0);
                 if (!$this->is17 || $this->context->controller->controller_type == 'admin') {
                     $product['add_to_cart_url'] = isset($context->customer) && $this->is17 ? $context->link->getAddToCartURL((int)$product['id_product'], (int)$product['id_product_attribute']) : '';
                     $imageType = $this->getMmType();
@@ -1992,7 +2238,6 @@ class Ets_megamenu extends Module
                     $product['price_tax_exc'] = Product::getPriceStatic((int)$product['id_product'], false, (int)$product['id_product_attribute'], (!$useTax ? 2 : 6), null, false, true, $p->minimal_quantity);
                     $product['available_for_order'] = $p->available_for_order;
                     if ($product['id_product_attribute']) {
-                        $p->id_product_attribute = $product['id_product_attribute'];
                         $product['attributes'] = $p->getAttributeCombinationsById((int)$product['id_product_attribute'], $context->language->id);
                     }
                 }
@@ -2012,29 +2257,9 @@ class Ets_megamenu extends Module
             unset($context);
         }
         if ($products && $this->context->controller->controller_type != 'admin') {
-            return $this->is17 ? $this->productsForTemplate($products, $this->context) : Product::getProductsProperties($this->context->language->id, $products);
+            return $this->is17 ? $this->productsForTemplate($products) : Product::getProductsProperties($this->context->language->id, $products);
         }
         return $products;
-    }
-
-    public function alterSQL($table, $column, $tableDef)
-    {
-        return '
-            SET @preparedStatement = (SELECT IF((SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE (table_name = "' . _DB_PREFIX_ . pSQL($table) . '") AND (table_schema = DATABASE()) AND (column_name = "' . pSQL($column) . '")) > 0,"SELECT 1", CONCAT("ALTER TABLE ", "' . _DB_PREFIX_ . pSQL($table) . '", " ADD ", "' . pSQL($column) . '"," ", "' . pSQL($tableDef) . ';")));
-            PREPARE alterIfNotExists FROM @preparedStatement;
-            EXECUTE alterIfNotExists;
-            DEALLOCATE PREPARE alterIfNotExists;
-        ';
-    }
-
-    public function dropTable($table, $column)
-    {
-        return '
-            SET @preparedStatement = (SELECT IF((SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE (table_name = "' . _DB_PREFIX_ . pSQL($table) . '") AND (table_schema = DATABASE()) AND (column_name = "' . pSQL($column) . '")) > 0,"SELECT 1", CONCAT("ALTER TABLE ", "' . _DB_PREFIX_ . pSQL($table) . '", " DROP COLUMN ", "' . pSQL($column) . '",";")));
-            PREPARE alterIfNotExists FROM @preparedStatement;
-            EXECUTE alterIfNotExists;
-            DEALLOCATE PREPARE alterIfNotExists;
-        ';
     }
     public static function validateArray($array, $validate = 'isCleanHtml')
     {
@@ -2084,7 +2309,10 @@ class Ets_megamenu extends Module
             closedir($dir);
         }
     }
-
+    public function upgrade_2_1_9(){
+        $config = new MM_Config();
+        return $config->installConfigs(true);
+    }
     public function rrmdir($dir)
     {
         $dir = rtrim($dir, '/');
@@ -2095,7 +2323,7 @@ class Ets_megamenu extends Module
                         if (is_dir($dir . "/" . $object) && !is_link($dir . "/" . $object))
                             $this->rrmdir($dir . "/" . $object);
                         elseif(file_exists($dir . "/" . $object))
-                            @unlink($dir . "/" . $object);
+                            Ets_megamenu_defines::unlink($dir . "/" . $object);
                     }
                 }
             }
@@ -2108,5 +2336,62 @@ class Ets_megamenu extends Module
             return  true;
         }
         return false;
+    }
+    public function hookActionObjectLanguageAddAfter()
+    {
+        Ets_megamenu_defines::duplicateRowsFromDefaultShopLang('ets_mm_block_lang',$this->context->shop->id,'id_block');
+        Ets_megamenu_defines::duplicateRowsFromDefaultShopLang('ets_mm_menu_lang',$this->context->shop->id,'id_menu');
+        Ets_megamenu_defines::duplicateRowsFromDefaultShopLang('ets_mm_tab_lang',$this->context->shop->id,'id_tab');
+    }
+    public function display($file, $template, $cache_id = null, $compile_id = null)
+    {
+        if (($overloaded = Module::_isTemplateOverloadedStatic(basename($file, '.php'), $template)) === null) {
+            return $this->l('No template was found for the module').' '.basename($file, '.php').(_PS_MODE_DEV_ ? ' (' . $template . ')' : '');
+        } else {
+            $this->smarty->assign([
+                'module_dir' => __PS_BASE_URI__ . 'modules/' . basename($file, '.php') . '/',
+                'module_template_dir' => ($overloaded ? _THEME_DIR_ : __PS_BASE_URI__) . 'modules/' . basename($file, '.php') . '/',
+                'allow_push' => isset($this->allow_push) ? $this->allow_push : false,
+            ]);
+            if ($cache_id !== null) {
+                Tools::enableCache();
+            }
+            if ($compile_id === null && method_exists($this,'getDefaultCompileId')) {
+                $compile_id = $this->getDefaultCompileId();
+            }
+            $result = $this->getCurrentSubTemplate($template, $cache_id, $compile_id);
+            if ($cache_id !== null) {
+                Tools::restoreCacheSettings();
+            }
+            $result = $result->fetch();
+            $this->resetCurrentSubTemplate($template, $cache_id, $compile_id);
+            return $result;
+        }
+    }
+    public function registerPlugins(){
+        if(version_compare(_PS_VERSION_, '8.0.4', '>='))
+        {
+            $smarty = $this->context->smarty->_getSmartyObj();
+            if(!isset($smarty->registered_plugins[ 'modifier' ][ 'implode' ]))
+                $this->context->smarty->registerPlugin('modifier', 'implode', 'implode');
+            if(!isset($smarty->registered_plugins[ 'modifier' ][ 'strpos' ]))
+                $this->context->smarty->registerPlugin('modifier', 'strpos', 'strpos');
+        }
+    }
+    public function getManufacturers($orderBy = 'name asc', $addWhere = false)
+    {
+        return MM_Obj::getManufacturers($this->context->shop->id, $orderBy, $addWhere);
+    }
+    public function getSuppliers($orderBy = 'name asc', $addWhere = false)
+    {
+        return MM_Obj::getSuppliers($this->context->shop->id, $orderBy, $addWhere);
+    }
+    public function getCustomerGroups($orderBy = 'name asc', $addWhere = false)
+    {
+        return MM_Obj::getCustomerGroups($this->context->language->id, $orderBy, $addWhere);
+    }
+    public function getCMSs($orderBy = 'cl.meta_title asc', $addWhere = false)
+    {
+        return MM_Obj::getCMSs($this->context,$orderBy, $addWhere);
     }
 }

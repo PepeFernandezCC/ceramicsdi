@@ -18,18 +18,16 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 
-if (!defined('_PS_VERSION_'))
-	exit;
+if (!defined('_PS_VERSION_')) { exit; }
 require_once(dirname(__FILE__).'/../classes/MM_Obj.php');
 require_once(dirname(__FILE__).'/../classes/MM_Menu.php');
 require_once(dirname(__FILE__).'/../classes/MM_Column.php');
 require_once(dirname(__FILE__).'/../classes/MM_Block.php');
 require_once(dirname(__FILE__).'/../classes/MM_Config.php');
-require_once(dirname(__FILE__).'/../classes/MM_Cache.php');
 require_once(dirname(__FILE__).'/../classes/MM_Tab.php');
 function upgrade_module_2_0_2($object)
 {
     return (bool)Db::getInstance()->execute(
-        $object->alterSQL('ets_mm_tab','url', 'text NOT NULL')
+        Ets_megamenu_defines::alterSQL('ets_mm_tab','url', 'text NOT NULL')
     );
 }

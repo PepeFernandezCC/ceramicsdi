@@ -18,18 +18,12 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 
-if (!defined('_PS_VERSION_'))
-    exit;
-require_once(dirname(__FILE__).'/../classes/MM_Config.php');
+if (!defined('_PS_VERSION_')) { exit; }
+/**]
+ * @param Ets_megamenu $object
+ * @return mixed
+ */
 function upgrade_module_2_1_9($object)
 {
-    $res = ets_menu_update_configuration_haimotchin($object);
-    return $res;
-}
-
-if ( ! function_exists('ets_menu_update_configuration_haimotchin') ){
-    function ets_menu_update_configuration_haimotchin($object){
-        $config = new MM_Config();
-        return is_object($object) && $config->installConfigs(true);
-    }
+    return $object->upgrade_2_1_9();
 }

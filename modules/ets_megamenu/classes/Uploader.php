@@ -18,6 +18,8 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 
+if (!defined('_PS_VERSION_')) { exit; }
+
 class Uploader
 {
     const DEFAULT_MAX_SIZE = 10485760;
@@ -27,6 +29,7 @@ class Uploader
     private $_max_size;
     private $_name;
     private $_save_path;
+    public $files;
     public function __construct($name = null)
     {
         $this->setName($name);
@@ -110,7 +113,7 @@ class Uploader
         if (!isset($this->_save_path)) {
             $this->setSavePath(_PS_UPLOAD_DIR_);
         }
-        return $this->_normalizeDirectory($this->_save_path);
+        return $this->normalizeDirectory($this->_save_path);
     }
     public function getUniqueFileName($prefix = 'PS')
     {
@@ -122,6 +125,7 @@ class Uploader
     }
     public function process($dest = null)
     {
+
         $upload = isset($_FILES[$this->getName()]) ? $_FILES[$this->getName()] : null;
         if ($upload && is_array($upload['tmp_name'])) {
             $tmp = array();
@@ -152,16 +156,15 @@ class Uploader
             if ($file['tmp_name'] && is_uploaded_file($file['tmp_name'])) {
                 move_uploaded_file($file['tmp_name'], $file_path);
             } else {
-                // Non-multipart uploads (PUT method support)
-                file_put_contents($file_path, fopen('php://input', 'r'));
+                Ets_megamenu_defines::getInstance()->filePutContents($file_path, fopen('php://input', 'r'));
             }
-            $file_size = $this->_getFileSize($file_path, true);
+            $file_size = $this->getFileSize($file_path, true);
             if ($file_size === $file['size']) {
                 $file['save_path'] = $file_path;
             } else {
                 $file['size'] = $file_size;
                 if(file_exists($file_path))
-                    unlink($file_path);
+                   Ets_megamenu_defines::unlink($file_path);
                 $file['error'] = Tools::displayError('Server file size is different from local file size');
             }
         }
@@ -204,7 +207,7 @@ class Uploader
             return false;
         }
         $post_max_size = $this->getPostMaxSizeBytes();
-        if ($post_max_size && ($this->_getServerVars('CONTENT_LENGTH') > $post_max_size)) {
+        if ($post_max_size && ($this->getServerVars('CONTENT_LENGTH') > $post_max_size)) {
             $file['error'] = Tools::displayError('The uploaded file exceeds the post_max_size directive in php.ini');
             return false;
         }
@@ -213,29 +216,29 @@ class Uploader
             return false;
         }
         $types = $this->getAcceptTypes();
-        //TODO check mime type.
         if (isset($types) && !in_array(Tools::strtolower(pathinfo($file['name'], PATHINFO_EXTENSION)), $types)) {
-            $file['error'] = Tools::displayError('Filetype not allowed');
+            $file['error'] = Tools::displayError('File type not allowed');
             return false;
         }
         if ($this->checkFileSize() && $file['size'] > $this->getMaxSize()) {
             $file['error'] = sprintf(Tools::displayError('File (size : %1s) is too big (max : %2s)'), $file['size'], $this->getMaxSize());
             return false;
         }
+
         return true;
     }
-    protected function _getFileSize($file_path, $clear_stat_cache = false)
+    public function getFileSize($file_path, $clear_stat_cache = false)
     {
         if ($clear_stat_cache) {
             clearstatcache(true, $file_path);
         }
         return filesize($file_path);
     }
-    protected function _getServerVars($var)
+    public function getServerVars($var)
     {
         return (isset($_SERVER[$var]) ? $_SERVER[$var] : '');
     }
-    protected function _normalizeDirectory($directory)
+    public function normalizeDirectory($directory)
     {
         $last = $directory[Tools::strlen($directory) - 1];
         if (in_array($last, array('/', '\\'))) {

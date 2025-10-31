@@ -18,8 +18,7 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 
-if (!defined('_PS_VERSION_'))
-    exit;
+if (!defined('_PS_VERSION_')) { exit; }
 
 function upgrade_module_2_2_3()
 {
@@ -56,6 +55,6 @@ if ( ! function_exists('mmg_check_colum')){
 
 if (!function_exists('mmg_check_update')){
     function mmg_check_update(){
-        DB::getInstance()->execute('UPDATE `'._DB_PREFIX_.'ets_mm_menu` SET `menu_ver_alway_open_first`=1');
+        Db::getInstance()->execute('UPDATE `'._DB_PREFIX_.'ets_mm_menu` SET `menu_ver_alway_open_first`=1');
     }
 }

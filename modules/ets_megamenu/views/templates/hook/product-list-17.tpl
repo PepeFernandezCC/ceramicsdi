@@ -25,8 +25,7 @@
             {block name='product_thumbnail'}
               <a href="{$product.url|escape:'html':'UTF-8'}" class="thumbnail product-thumbnail">
                   {if isset($product.image_id)}{assign var='imageLink' value=$link->getImageLink($product.link_rewrite, $product.image_id, $imageType)}{else}{assign var='imageLink' value=$link->getImageLink($product.link_rewrite, $product.id_image, $imageType)}{/if}
-                  <img
-                       src="{if (strpos($imageLink,'http://')===false || strpos($imageLink,'https://'))}{$protocol_link nofilter}{/if}{$imageLink|escape:'html':'UTF-8'}"
+                  <img src="{if (strpos($imageLink,'http://')===false || strpos($imageLink,'https://'))}{$protocol_link nofilter}{/if}{$imageLink|escape:'html':'UTF-8'}"
                        alt="{if !empty($product.legend)}{$product.legend|escape:'html':'UTF-8'}{else}{$product.name|escape:'html':'UTF-8'}{/if}"
                        data-full-size-image-url = "{if (strpos($imageLink,'http://')===false || strpos($imageLink,'https://'))}{$protocol_link nofilter}{/if}{$imageLink|escape:'html':'UTF-8'}"
                   />
@@ -72,31 +71,24 @@
               {if $block.show_clock && isset($product.specific_prices_to)}
                 <div class="panel-discount-countdown" data-countdown="{$product.specific_prices_to|escape:'html':'UTF-8'}"></div>
               {/if}
+                {block name='product_flags'}
+                    <ul class="product-flags">
+                        {foreach from=$product.flags item=flag}
+                            <li class="{$flag.type|escape:'html':'UTF-8'}">{$flag.label|escape:'html':'UTF-8'}</li>
+                        {/foreach}
+                    </ul>
+                {/block}
+                <div class="highlighted-informations{if !$product.main_variants} no-variants{/if} hidden-sm-down">
+                    <a href="#" class="quick-view" data-link-action="quickview">
+                        <i class="material-icons search">&#xE8B6;</i> {l s='Quick view' mod='ets_megamenu'}
+                    </a>
+                    {block name='product_variants'}
+                        {if $product.main_variants}
+                            {include file='catalog/_partials/variant-links.tpl' variants=$product.main_variants}
+                        {/if}
+                    {/block}
+                </div>
             </div>
-            {block name='product_flags'}
-              <ul class="product-flags">
-                {foreach from=$product.flags item=flag}
-                  <li class="{$flag.type|escape:'html':'UTF-8'}">{$flag.label|escape:'html':'UTF-8'}</li>
-                {/foreach}
-              </ul>
-            {/block}
-            <div class="highlighted-informations{if !$product.main_variants} no-variants{/if} hidden-sm-down">
-              <a
-                href="#"
-                class="quick-view"
-                data-link-action="quickview"
-              >
-                <i class="material-icons search">&#xE8B6;</i> {l s='Quick view' mod='ets_megamenu'}
-              </a>
-
-              {block name='product_variants'}
-                {if $product.main_variants}
-                  {include file='catalog/_partials/variant-links.tpl' variants=$product.main_variants}
-                {/if}
-              {/block}
-            </div>
-            
-        
           </div>
         </article>
     {/foreach}

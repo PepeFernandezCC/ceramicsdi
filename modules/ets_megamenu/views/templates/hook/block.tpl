@@ -18,10 +18,17 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 *}
-{if isset($block) && $block && $block.enabled}    
-    <div class="ets_mm_block mm_block_type_{strtolower($block.block_type)|escape:'html':'UTF-8'} {if !$block.display_title}mm_hide_title{/if}">
-        <span class="h4" {if Configuration::get('ETS_MM_TEXTTITLE_FONT_SIZE')} style="font-size:{Configuration::get('ETS_MM_TEXTTITLE_FONT_SIZE')|intval}px"{/if}>{if $block.title_link}<a href="{$block.title_link|escape:'html':'UTF-8'}" {if Configuration::get('ETS_MM_TEXTTITLE_FONT_SIZE')} style="font-size:{Configuration::get('ETS_MM_TEXTTITLE_FONT_SIZE')|intval}px"{/if}>{/if}{$block.title|escape:'html':'UTF-8'}{if $block.title_link}</a>{/if}</span>
-        <div class="ets_mm_block_content">        
+{if isset($block) && $block && $block.enabled}
+    <div class="{if isset($has_access) && $has_access}{else}hidden-block-by-permission {/if}ets_mm_block mm_block_type_{strtolower($block.block_type)|escape:'html':'UTF-8'}{if isset($block.hidden_mobile) && $block.hidden_mobile == true} hidden-block-in-mobile{/if}">
+        {if $block.display_title && $block.display_title == true}
+            <span class="h4" {if Configuration::get('ETS_MM_TEXTTITLE_FONT_SIZE')} style="font-size:{Configuration::get('ETS_MM_TEXTTITLE_FONT_SIZE')|intval}px"{/if}>
+                {if $block.title_link}<a href="{$block.title_link|escape:'html':'UTF-8'}" {if Configuration::get('ETS_MM_TEXTTITLE_FONT_SIZE')} style="font-size:{Configuration::get('ETS_MM_TEXTTITLE_FONT_SIZE')|intval}px"{/if}>{/if}
+                    {$block.title|escape:'html':'UTF-8'}
+                    {if $block.title_link}</a>{/if}
+            </span>
+        {/if}
+
+        <div class="ets_mm_block_content{* if $block.display_content_mobile && $block.display_content_mobile == true}{else} hide-mobile{/if *}">
             {if $block.block_type=='CATEGORY'}
                 {if isset($block.categoriesHtml)}{$block.categoriesHtml nofilter}{/if}
             {elseif $block.block_type=='MNFT'}

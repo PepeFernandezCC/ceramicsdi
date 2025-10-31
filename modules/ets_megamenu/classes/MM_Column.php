@@ -18,8 +18,7 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 
-if (!defined('_PS_VERSION_'))
-	exit;
+if (!defined('_PS_VERSION_')) { exit; }
 class MM_Column extends MM_Obj
 {
     public $id_column;
@@ -27,7 +26,11 @@ class MM_Column extends MM_Obj
     public $id_tab;
     public $column_size;    
     public $sort_order;
-    public $is_breaker;    
+    public $is_breaker;
+    /**
+     * @var array
+     */
+    public $fields_form = [];
     public static $definition = array(
 		'table' => 'ets_mm_column',
 		'primary' => 'id_column',
@@ -40,9 +43,9 @@ class MM_Column extends MM_Obj
             'is_breaker' => array('type' => self::TYPE_INT),             
         )
 	);
-    public function l($string)
+    public function l($string, $fileName="")
     {
-        return Translate::getModuleTranslation('ets_megamenu', $string, pathinfo(__FILE__, PATHINFO_FILENAME));
+        return Translate::getModuleTranslation('ets_megamenu', $string, $fileName ?: pathinfo(__FILE__, PATHINFO_FILENAME));
     }
     protected static $formFields;
     public function getFormField()
@@ -128,7 +131,7 @@ class MM_Column extends MM_Obj
         ");
         if ($columns)
             foreach ($columns as &$column)
-                $column['blocks'] = MM_Block::getBlocks($column['id_column'], false, $id_lang);
+                $column['blocks'] = MM_Block::getBlocks($id_lang,$column['id_column'], false );
         return $id_column && $columns ? $columns[0] : $columns;
     }
     public static function getColumnsByTab($id_tab = false, $id_column = false, $id_lang = false)
@@ -141,7 +144,7 @@ class MM_Column extends MM_Obj
         ");
         if ($columns)
             foreach ($columns as &$column)
-                $column['blocks'] = MM_Block::getBlocks($column['id_column'], false, $id_lang);
+                $column['blocks'] = MM_Block::getBlocks($id_lang,$column['id_column'], false);
         return $id_column && $columns ? $columns[0] : $columns;
     }
 }

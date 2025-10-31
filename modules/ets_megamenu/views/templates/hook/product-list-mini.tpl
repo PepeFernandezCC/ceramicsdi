@@ -26,7 +26,7 @@
 			<div class="product-container">
 				<div class="left-block">
 					<div class="product-image-container">
-						<a class="product_img_link" href="{$product.link|escape:'html':'UTF-8'}" title="{$product.name|escape:'html':'UTF-8'}" itemprop="url">
+						<a class="product_img_link" href="{$link->getProductLink($product.id_product)|escape:'html':'UTF-8'}" title="{$product.name|escape:'html':'UTF-8'}" itemprop="url">
 							{if isset($product.image_id)}{assign var='imageLink' value=$link->getImageLink($product.link_rewrite, $product.image_id, $imageType)}{else}{assign var='imageLink' value=$link->getImageLink($product.link_rewrite, $product.id_image, $imageType)}{/if}
                             <img class="replace-2x img-responsive" src="{if (strpos($imageLink,'http://')===false || strpos($imageLink,'https://'))}{$protocol_link|escape:'html':'UTF-8'}{/if}{$imageLink|escape:'html':'UTF-8'}" alt="{if !empty($product.legend)}{$product.legend|escape:'html':'UTF-8'}{else}{$product.name|escape:'html':'UTF-8'}{/if}" title="{if !empty($product.legend)}{$product.legend|escape:'html':'UTF-8'}{else}{$product.name|escape:'html':'UTF-8'}{/if}" {if isset($homeSize)} width="{$homeSize.width|floatval}" height="{$homeSize.height|floatval}"{/if} itemprop="image" />
 						</a>
@@ -35,14 +35,14 @@
 				<div class="right-block">
 					<span itemprop="name" class="h5">
 						{if isset($product.pack_quantity) && $product.pack_quantity}{$product.pack_quantity|intval|cat:' x '}{/if}
-						<a class="product-name" href="{$product.link|escape:'html':'UTF-8'}" title="{$product.name|escape:'html':'UTF-8'}" itemprop="url" >
+						<a class="product-name" href="{$link->getProductLink($product.id_product)|escape:'html':'UTF-8'}" title="{$product.name|escape:'html':'UTF-8'}" itemprop="url" >
 							<span class="product_name">{$product.name|truncate:45:'...'|escape:'html':'UTF-8'}</span>
 						</a>
                         {if isset($product.attributes) && $product.attributes}
 							{assign var='ik2' value=0}
 							<span class="product_combination"> {foreach from=$product.attributes item='attribute'}{assign var='ik2' value=$ik2+1}{if isset($attribute.group_name)}{$attribute.group_name|truncate:80:'...':true|escape:'html':'UTF-8'}{else}{$attribute.group|truncate:80:'...':true|escape:'html':'UTF-8'}{/if}-{if isset($attribute.attribute_name)}{$attribute.attribute_name|truncate:80:'...':true|escape:'html':'UTF-8'}{else}{$attribute.name|truncate:80:'...':true|escape:'html':'UTF-8'}{/if}{if $ik2 < count($product.attributes)}, {/if}{/foreach}</span>
 						{/if}
-					</span>   
+					</span>
                     {if $block.show_description}
                         <p class="product-desc" itemprop="description">
     						{if isset($product.description_short) && $product.description_short}{$product.description_short|strip_tags|escape:'html':'UTF-8'|truncate:60:'...'}{/if}
@@ -53,7 +53,11 @@
 							{if isset($product.show_price) && $product.show_price && !isset($restricted_country_mode)}
 								<span itemprop="price" class="price product-price">
 									{hook h="displayProductPriceBlock" product=$product type="before_price"}
-									{if isset($priceDisplay) && !$priceDisplay}{convertPrice price=$product.price}{else}{convertPrice price=$product.price_tax_exc}{/if}
+									{if isset($priceDisplay) && !$priceDisplay}
+										{convertPrice price=$product.price}
+									{elseif isset($product.price_tax_exc)}
+										{convertPrice price=$product.price_tax_exc}
+									{/if}
 								</span>									
 								{if isset($product.price_without_reduction) && $product.price_without_reduction > 0 && isset($product.specific_prices) && $product.specific_prices && isset($product.specific_prices.reduction) && $product.specific_prices.reduction > 0}
 									{hook h="displayProductPriceBlock" product=$product type="old_price"}

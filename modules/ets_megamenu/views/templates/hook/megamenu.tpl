@@ -33,6 +33,7 @@
         {if isset($mm_multiLayout)&&$mm_multiLayout}multi_layout{else}single_layout{/if}
         {if isset($mm_config.ETS_MM_STICKY_DISMOBILE) && $mm_config.ETS_MM_STICKY_DISMOBILE } disable_sticky_mobile {/if}
         {if isset($mm_config.ETS_MM_DISPLAY_SUBMENU_BY_CLICK) && $mm_config.ETS_MM_DISPLAY_SUBMENU_BY_CLICK } click_open_submenu{else} hover {/if}
+        {if isset($mm_config.ETS_MM_MENU_ALIGNMENT) && $mm_config.ETS_MM_MENU_ALIGNMENT } mm_menu_{$mm_config.ETS_MM_MENU_ALIGNMENT|escape:'html':'UTF-8'} {/if}
         "
         data-bggray="{if isset($mm_config.ETS_MM_ACTIVE_BG_GRAY)&&$mm_config.ETS_MM_ACTIVE_BG_GRAY}bg_gray{/if}"
         >

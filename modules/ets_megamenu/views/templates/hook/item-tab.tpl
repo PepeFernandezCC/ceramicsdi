@@ -51,7 +51,7 @@
         {if $tab.columns}                            
             {foreach from=$tab.columns item='column'}
                 <li data-id-column="{$column.id_column|intval}" class="mm_columns_li item{$column.id_column|intval} column_size_{$column.column_size|intval} {if $column.is_breaker}mm_breaker{/if}" data-obj="column">
-                    {hook h='displayMMItemColumn' column=$column}
+                    {Module::getInstanceByName('ets_megamenu')->hookDisplayMMItemColumn(['column' => $column]) nofilter}
                 </li>
             {/foreach}                            
         {/if}  

@@ -18,15 +18,23 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 
-if (!defined('_PS_VERSION_'))
-	exit;
+if (!defined('_PS_VERSION_')) { exit; }
 class MM_Obj extends ObjectModel 
 {
-    public function renderForm()
+    public $tab_img_link;
+    public $background_image;
+    public $menu_img_link;
+    public $image;
+    public $id_tab;
+    public $id_menu;
+    public $sort_order;
+    public function renderForm($context)
     {
         $formFields = $this->getFormField();
         $helper = new HelperForm();
-        $helper->module = Module::getInstanceByName('ets_megamenu');
+        /** @var Ets_megamenu $megamenu */
+        $megamenu = Module::getInstanceByName('ets_megamenu');
+        $helper->module = $megamenu;
         $configs = isset($formFields['configs']) ? $formFields['configs'] : array();
         $fields_form = array();
         $fields_form['form'] = isset($formFields['form']) ? $formFields['form']:array();
@@ -58,7 +66,7 @@ class MM_Obj extends ObjectModel
                 {
                     $confFields['tree'] = $config['tree'];
                     if(isset($config['tree']['use_checkbox']) && $config['tree']['use_checkbox'])
-                        $confFields['tree']['selected_categories'] = explode(',',$this->$key);
+                        $confFields['tree']['selected_categories'] = $this->$key ?  explode(',',$this->$key):array();
                     else
                         $confFields['tree']['selected_categories'] = array($this->$key);
                 }                    
@@ -73,7 +81,6 @@ class MM_Obj extends ObjectModel
 		$lang = new Language((int)Configuration::get('PS_LANG_DEFAULT'));
 		$helper->default_form_language = $lang->id;
 		$helper->allow_employee_form_lang = Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG') ? Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG') : 0;
-		$this->fields_form = array();		
 		$helper->identifier = $this->identifier;
 		$helper->submit_action = 'save_'.$formFields['form']['name'];
         $link = new Link();
@@ -103,23 +110,24 @@ class MM_Obj extends ObjectModel
         }
            
         $helper->tpl_vars = array(
-			'base_url' => Context::getContext()->shop->getBaseURL(),
+			'base_url' => $context->shop->getBaseURL(),
 			'language' => array(
 				'id_lang' => $language->id,
 				'iso_code' => $language->iso_code
 			),
 			'fields_value' => $fields,
-			'languages' => Context::getContext()->controller->getLanguages(),
-			'id_language' => Context::getContext()->language->id, 
+			'languages' => $context->controller->getLanguages(),
+			'id_language' => $context->language->id,
             'key_name' => 'id_'.$fields_form['form']['name'],
             'item_id' => $this->id,  
             'mm_object' => 'MM_'.Tools::ucfirst($fields_form['form']['name']),
             'list_item' => true,
-            'image_baseurl' => $helper->module->modulePath().'views/img/',                 
+            'image_baseurl' => _PS_ETS_MM_IMG_,
+            'image_module_baseurl' => $helper->module->modulePath().'views/img/',
         );        
         return str_replace(array('id="ets_mm_menu_form"','id="fieldset_0"'),'',$helper->generateForm(array($fields_form)));	
     }
-    public function getFieldVals()
+    public function getFieldVals($context)
     {
         if(!$this->id)
             return array();
@@ -132,7 +140,7 @@ class MM_Obj extends ObjectModel
                 if(isset($config['lang'])&&$config['lang'])
                 {
                     $val_lang= $this->$key;
-                    $vals[$key]=$val_lang[Context::getContext()->language->id];
+                    $vals[$key]=$val_lang[$context->language->id];
 
                 }
                 else
@@ -162,14 +170,13 @@ class MM_Obj extends ObjectModel
             $this->$image = '';
             if($this->update())
             {
-                if($imageName && file_exists($imagePath) && !self::imageExits($imageName,$this->id))
+                if($imageName && file_exists($imagePath) && !self::imageExists($imageName,$this->id))
                 {
-                    @unlink($imagePath);
+                    Ets_megamenu_defines::unlink($imagePath);
 
                 }
                 $success[] = $this->l('Image deleted','MM_Obj');
-                if(Configuration::get('ETS_MM_CACHE_ENABLED'))
-                    Ets_megamenu::clearAllCache();
+                Ets_megamenu::clearAllCache();
             }
             else
                 $errors[] = $this->l('Unknown error happened','MM_Obj');
@@ -180,71 +187,93 @@ class MM_Obj extends ObjectModel
         return array('errors' => $errors,'success' => $success);
     }
     public function deleteObj()
-    {        
+    {
         $errors = array();
         $success = array();
         $fields = $this->getFormField();
         $configs = $fields['configs'];
-        $parent=isset($fields['form']['parent'])?$fields['form']['parent']:'1';
+        $parent = isset($fields['form']['parent']) ? $fields['form']['parent'] : '1';
         $images = array();
-        foreach($configs as $key => $config)
-        {
-            if($config['type']=='file' && $this->$key && @file_exists(_PS_ETS_MM_IMG_DIR_.$this->$key) && !self::imageExits($this->$key,$this->id))
-                $images[] = _PS_ETS_MM_IMG_DIR_.$this->$key;
-        }        
-        if(!$this->delete())
-            $errors[] = $this->l('Cannot delete the item due to an unknown technical problem','MM_Obj');
-        else
-        {
-            foreach($images as $image){
-                if(file_exists($image))
-                @unlink($image);
+
+        foreach ($configs as $key => $config) {
+            if ($config['type'] == 'file' && $this->$key && @file_exists(_PS_ETS_MM_IMG_DIR_ . $this->$key) && !self::imageExists($this->$key, $this->id)) {
+                $images[] = _PS_ETS_MM_IMG_DIR_ . $this->$key;
             }
-            $success[] = $this->l('Item deleted','MM_Obj');
-            if(Configuration::get('ETS_MM_CACHE_ENABLED'))
-                Ets_megamenu::clearAllCache();
-            if(isset($configs['sort_order']) && $configs['sort_order'])
-            {
-                Db::getInstance()->execute("
-                    UPDATE "._DB_PREFIX_."ets_mm_".pSQL($fields['form']['name'])."
-                    SET sort_order=sort_order-1 
-                    WHERE sort_order>".(int)$this->sort_order." ".(isset($configs['sort_order']['order_group'][$parent]) && ($orderGroup = $configs['sort_order']['order_group'][$parent]) ? " AND ".pSQL($orderGroup)."=".(int)$this->$orderGroup : "")."
-                ");
-            }
-            if($this->id && isset($fields['form']['connect_to2']) && $fields['form']['connect_to2']
-                && ($subs = Db::getInstance()->executeS("SELECT id_".pSQL($fields['form']['connect_to2'])." FROM "._DB_PREFIX_."ets_mm_".pSQL($fields['form']['connect_to2']). " WHERE id_".pSQL($fields['form']['name'])."=".(int)$this->id)))
-            {
-                foreach($subs as $sub)
-                {
-                    $className = 'MM_'.Tools::ucfirst(Tools::strtolower($fields['form']['connect_to2']));
-                    if(class_exists($className))
-                    {
-                        $obj = new $className((int)$sub['id_'.$fields['form']['connect_to2']]);
-                        $obj->deleteObj();
-                    }                    
+            if ($config['type'] == 'file_lang' && $this->$key) {
+                foreach ($this->$key as $image) {
+                    if (@file_exists(_PS_ETS_MM_IMG_DIR_ . $image) && !self::imageExists($image, $this->id)) {
+                        $images[] = _PS_ETS_MM_IMG_DIR_ . $image;
+                    }
                 }
             }
-            if($this->id && isset($fields['form']['connect_to']) && $fields['form']['connect_to']
-                && ($subs = Db::getInstance()->executeS("SELECT id_".pSQL($fields['form']['connect_to'])." FROM "._DB_PREFIX_."ets_mm_".pSQL($fields['form']['connect_to']). " WHERE id_".pSQL($fields['form']['name'])."=".(int)$this->id)))
-            {
-                foreach($subs as $sub)
-                {
-                    $className = 'MM_'.Tools::ucfirst(Tools::strtolower($fields['form']['connect_to']));
-                    if(class_exists($className))
-                    {
-                        $obj = new $className((int)$sub['id_'.$fields['form']['connect_to']]);
-                        $obj->deleteObj();
-                    }                    
+        }
+
+        if (!$this->delete()) {
+            $errors[] = $this->l('Cannot delete the item due to an unknown technical problem', 'MM_Obj');
+        } else {
+            if ($images) {
+                foreach ($images as $image) {
+                    if (file_exists($image)) {
+                        Ets_megamenu_defines::unlink($image);
+                    }
                 }
+            }
+            $success[] = $this->l('Item deleted', 'MM_Obj');
+            Ets_megamenu::clearAllCache();
+
+            if (isset($configs['sort_order']) && $configs['sort_order']) {
+                $table = 'ets_mm_' . pSQL($fields['form']['name']);
+                $condition = 'sort_order > ' . (int)$this->sort_order;
+
+                if (isset($configs['sort_order']['order_group'][$parent]) && ($orderGroup = $configs['sort_order']['order_group'][$parent])) {
+                    $condition .= ' AND ' . pSQL($orderGroup) . ' = ' . (int)$this->$orderGroup;
+                }
+                Db::getInstance()->update($table, array(
+                    'sort_order' => array('type' => 'sql', 'value' => 'sort_order - 1')
+                ), $condition);
             }
 
-        }            
-        return array('errors' => $errors,'success' => $success);
+            if ($this->id) {
+                if(isset($fields['form']['connect_to2']) && $fields['form']['connect_to2'])
+                    $this->deleteConnectedItems($fields['form']['connect_to2'], $fields['form']['name']);
+                if(isset($fields['form']['connect_to']) && $fields['form']['connect_to'])
+                    $this->deleteConnectedItems($fields['form']['connect_to'], $fields['form']['name']);
+            }
+        }
+
+        return array('errors' => $errors, 'success' => $success);
+    }
+
+    private function deleteConnectedItems($connectionField, $formName)
+    {
+        if (isset($connectionField) && $connectionField) {
+            $query = new DbQuery();
+            $query->select('id_' . pSQL($connectionField))
+                ->from( 'ets_mm_' . pSQL($connectionField))
+                ->where('id_' . pSQL($formName) . ' = ' . (int)$this->id);
+            $subs = Db::getInstance()->executeS($query);
+
+            foreach ($subs as $sub) {
+                $className = 'MM_' . Tools::ucfirst(Tools::strtolower($connectionField));
+                if (class_exists($className)) {
+                    $obj = new $className((int)$sub['id_' . $connectionField]);
+                    $obj->deleteObj();
+                }
+            }
+        }
     }
     public function maxVal($key,$group = false, $groupval=0)
     {
         $fields = $this->getFormField();
-       return ($max = Db::getInstance()->getValue("SELECT max(".pSQL($key).") FROM "._DB_PREFIX_."ets_mm_".pSQL($fields['form']['name']).($group && ($groupval > 0) ? " WHERE ".pSQL($group)."=".(int)$groupval : ''))) ? (int)$max : 0;
+        $key = bqSQL($key);
+        $tableName = 'ets_mm_' . bqSQL($fields['form']['name']);
+        $query = new DbQuery();
+        $query->select('MAX(' . $key . ')');
+        $query->from($tableName);
+        if ($group && $groupval > 0) {
+            $query->where(bqSQL($group) . ' = ' . (int)$groupval);
+        }
+        return ($max = Db::getInstance()->getValue($query)) ? (int)$max : 0;
     }   
     public function updateOrder($previousId = 0, $groupdId = 0,$parentObj='')
     {
@@ -256,10 +285,9 @@ class MM_Obj extends ObjectModel
         if($group && $groupdId && property_exists($this,$group) && $this->$group != $groupdId)
         {            
             Db::getInstance()->execute("
-                    UPDATE "._DB_PREFIX_."ets_mm_".pSQL($fields['form']['name'])."
+                    UPDATE "._DB_PREFIX_."ets_mm_".bqSQL($fields['form']['name'])."
                     SET sort_order=sort_order-1 
-                    WHERE sort_order>".(int)$this->sort_order." AND id_".pSQL($fields['form']['name'])."!=".(int)$this->id."
-                          ".($group && $groupdId ? " AND ".pSQL($group)."=".(int)$this->$group : ""));
+                    WHERE sort_order>".(int)$this->sort_order." AND id_".bqSQL($fields['form']['name'])."!=".(int)$this->id." AND ".bqSQL($group)."=".(int)$this->$group);
             $this->$group = $groupdId;
             if($parentObj=='tab')
             {
@@ -282,9 +310,10 @@ class MM_Obj extends ObjectModel
                 $this->sort_order = $obj->sort_order+1;
             else
                 $this->sort_order = 1;
+        } else {
+            $this->sort_order = 0;
         }
-        else
-            $this->sort_order = 1;
+
         if($this->update())
         {    
             
@@ -301,33 +330,42 @@ class MM_Obj extends ObjectModel
                         UPDATE "._DB_PREFIX_."ets_mm_".pSQL($fields['form']['name'])."
                         SET sort_order=sort_order-1
                         WHERE sort_order>".($this->sort_order > $oldOrder ? (int)($oldOrder) : (int)($oldOrder+1)).($group && $groupdId ? " AND ".pSQL($group)."=".(int)$this->$group : ""));
-                if(Configuration::get('ETS_MM_CACHE_ENABLED'))
-                    Ets_megamenu::clearAllCache(); 
+                Ets_megamenu::clearAllCache();
                 return $rs;
             }
-            if(Configuration::get('ETS_MM_CACHE_ENABLED'))
-                Ets_megamenu::clearAllCache();  
+            Ets_megamenu::clearAllCache();
             return true;
         }               
         return false;       
     }
-    public static function imageExits($image, $id)
+    public static function imageExists($image, $id)
     {
         if (Configuration::get('PS_MULTISHOP_FEATURE_ACTIVE')) {
-            $res = Db::getInstance()->getRow('SELECT * FROM `' . _DB_PREFIX_ . 'ets_mm_tab` WHERE (tab_img_link="' . pSQL($image) . '" OR background_image="' . pSQL($image) . '") AND id_tab!="' . (int)$id . '"') || Db::getInstance()->getRow('SELECT * FROM `' . _DB_PREFIX_ . 'ets_mm_block` WHERE image ="' . pSQL($image) . '" AND id_block!="' . (int)$id . '"') || Db::getInstance()->getRow('SELECT * FROM `' . _DB_PREFIX_ . 'ets_mm_menu` WHERE (background_image="' . pSQL($image) . '" OR menu_img_link="' . pSQL($image) . '") AND id_menu!="' . (int)$id . '"');
+            $res = Db::getInstance()->getRow('SELECT * FROM `' . _DB_PREFIX_ . 'ets_mm_tab` WHERE (tab_img_link="' . pSQL($image) . '" OR background_image="' . pSQL($image) . '") AND id_tab!="' . (int)$id . '"') || Db::getInstance()->getRow('SELECT * FROM `' . _DB_PREFIX_ . 'ets_mm_block_lang` WHERE image ="' . pSQL($image) . '" AND id_block!="' . (int)$id . '"') || Db::getInstance()->getRow('SELECT * FROM `' . _DB_PREFIX_ . 'ets_mm_menu` WHERE (background_image="' . pSQL($image) . '" OR menu_img_link="' . pSQL($image) . '") AND id_menu!="' . (int)$id . '"');
             return $res;
         }
         return false;
     }
-    public function duplicateItem($id_parent = false,$id_parent2=false)
+    public function duplicateItem($id_parent = false,$id_parent2=false, $id_shop= 0)
     {
         $oldId = $this->id;
         $this->id = null;
         $formFields = $this->getFormField();
-        if($id_parent && isset($formFields['form']['parent']) && ($parent = 'id_'.$formFields['form']['parent']) && property_exists($this,$parent))
-            $this->$parent = $id_parent;
-        if($id_parent2 && isset($formFields['form']['parent2']) && ($parent2 = 'id_'.$formFields['form']['parent2']) && property_exists($this,$parent2))
-            $this->$parent2 = $id_parent2;
+        if($id_parent && isset($formFields['form']['parent']))
+        {
+            $parent = 'id_'.$formFields['form']['parent'];
+            if(property_exists($this,$parent))
+            {
+                $this->$parent = $id_parent;
+            }
+        }
+        if($id_parent2 && isset($formFields['form']['parent2']))
+        {
+            $parent2 = 'id_'.$formFields['form']['parent2'];
+            if(property_exists($this,$parent2))
+                $this->$parent2 = $id_parent2;
+        }
+
         if(property_exists($this,'sort_order'))
         {
             if(!isset($formFields['form']['parent'])|| !isset($formFields['configs']['sort_order']['order_group'][$formFields['form']['parent']]) || isset($formFields['configs']['sort_order']['order_group'][$formFields['form']['parent']]) && !$formFields['configs']['sort_order']['order_group'][$formFields['form']['parent']])
@@ -340,11 +378,30 @@ class MM_Obj extends ObjectModel
             }  
             $oldOrder = $this->sort_order;              
         }
-        if(property_exists($this,'image') && $this->image && file_exists(_PS_ETS_MM_IMG_DIR_.$this->image))
+        if(property_exists($this,'image') && $this->image)
         {
-            $salt = $this->maxVal('id_'.$formFields['form']['name'])+1;
-            $oldImage = _PS_ETS_MM_IMG_DIR_.$this->image;
-            $this->image = $salt.'_'.$this->image;            
+            $oldImages = array();
+            if(is_array($this->image))
+            {
+                foreach($this->image as $id_lang => $image)
+                {
+                    if(file_exists(_PS_ETS_MM_IMG_DIR_.$image))
+                    {
+                        $salt = $this->maxVal('id_'.$formFields['form']['name'])+1;
+                        $oldImages[$id_lang] = _PS_ETS_MM_IMG_DIR_.$image;
+                        $this->image[$id_lang] = $salt.'_'.$image;
+                    }
+                }
+            }
+            else
+            {
+                if(file_exists(_PS_ETS_MM_IMG_DIR_.$this->image))
+                {
+                    $salt = $this->maxVal('id_'.$formFields['form']['name'])+1;
+                    $oldImage = _PS_ETS_MM_IMG_DIR_.$this->image;
+                    $this->image = $salt.'_'.$this->image;
+                }
+            }
         }
         if(property_exists($this,'menu_img_link') && $this->menu_img_link && file_exists(_PS_ETS_MM_IMG_DIR_.$this->menu_img_link))
         {
@@ -364,65 +421,76 @@ class MM_Obj extends ObjectModel
             $oldtab_img_link = _PS_ETS_MM_IMG_DIR_.$this->tab_img_link;
             $this->image = $salt.'_'.$this->tab_img_link;            
         }
-        if($this->add())
+        if($this->add(true, false, $id_shop))
         {
-            if(isset($oldImage) && $oldImage)
+            if(isset($oldImage))
             {
                 @copy($oldImage,_PS_ETS_MM_IMG_DIR_.$this->image);
             }
-            if(isset($oldmenu_img_link) && $oldmenu_img_link)
+            if(isset($oldImages) && $oldImages)
+            {
+                foreach($oldImages as $id_lang=> $image)
+                {
+                    @copy($image,_PS_ETS_MM_IMG_DIR_.$this->image[$id_lang]);
+                }
+            }
+            if(isset($oldmenu_img_link) )
             {
                 @copy($oldmenu_img_link,_PS_ETS_MM_IMG_DIR_.$this->menu_img_link);
             }
-            if(isset($oldbackground_image) && $oldbackground_image)
+            if(isset($oldbackground_image))
             {
                 @copy($oldbackground_image,_PS_ETS_MM_IMG_DIR_.$this->background_image);
             }
-            if(isset($oldtab_img_link) && $oldtab_img_link)
+            if(isset($oldtab_img_link))
             {
                 @copy($oldtab_img_link,_PS_ETS_MM_IMG_DIR_.$this->tab_img_link);
             }
             if(isset($oldOrder) && $oldOrder)
-                $this->updateOrder($oldId,isset($groupId) ? (int)$groupId : 0); 
-            if(get_class($this)=='MM_Menu' && $this->enabled_vertical)
-            {
-                if(isset($formFields['form']['connect_to2']) && $formFields['form']['connect_to2']
-                    && ($subs = Db::getInstance()->executeS("SELECT id_".pSQL($formFields['form']['connect_to2'])." FROM "._DB_PREFIX_."ets_mm_".pSQL($formFields['form']['connect_to2']). " WHERE id_".pSQL($formFields['form']['name'])."=".(int)$oldId)))
-                {
-                    foreach($subs as $sub)
-                    {
-                        $className = 'MM_'.Tools::ucfirst(Tools::strtolower($formFields['form']['connect_to2']));
-                        if(class_exists($className))
-                        {
-                            $obj = new $className((int)$sub['id_'.$formFields['form']['connect_to2']]);
-                            if(get_class($this)=='MM_Tab')
-                                $obj->duplicateItem($id_parent, $this->id);
-                            else
-                                $obj->duplicateItem($this->id);
-                        }                    
+                $this->updateOrder($oldId,isset($groupId) ? (int)$groupId : 0);
+            if (get_class($this) == 'MM_Menu' && $this->enabled_vertical) {
+                if (isset($formFields['form']['connect_to2']) && $formFields['form']['connect_to2']) {
+                    $connectTo2 = bqSQL($formFields['form']['connect_to2']);
+                    $formName = bqSQL($formFields['form']['name']);
+                    $query = new DbQuery();
+                    $query->select('id_' . $connectTo2);
+                    $query->from( 'ets_mm_' . $connectTo2);
+                    $query->where('id_' . $formName . ' = ' . (int)$oldId);
+                    $subs = Db::getInstance()->executeS($query);
+                    if ($subs) {
+                        foreach ($subs as $sub) {
+                            $className = 'MM_' . Tools::ucfirst(Tools::strtolower($connectTo2));
+                            if (class_exists($className)) {
+                                $obj = new $className((int)$sub['id_' . $connectTo2]);
+                                $obj->duplicateItem($this->id, false, $id_shop);
+                            }
+                        }
+                    }
+                }
+            } else {
+                if (isset($formFields['form']['connect_to']) && $formFields['form']['connect_to']) {
+                    $connectTo = bqSQL($formFields['form']['connect_to']);
+                    $formName = bqSQL($formFields['form']['name']);
+                    $query = new DbQuery();
+                    $query->select('id_' . $connectTo);
+                    $query->from( 'ets_mm_' . $connectTo);
+                    $query->where('id_' . $formName . ' = ' . (int)$oldId);
+                    $subs = Db::getInstance()->executeS($query);
+                    if ($subs) {
+                        foreach ($subs as $sub) {
+                            $className = 'MM_' . Tools::ucfirst(Tools::strtolower($connectTo));
+                            if (class_exists($className)) {
+                                $obj = new $className((int)$sub['id_' . $connectTo]);
+                                if (get_class($this) == 'MM_Tab') {
+                                    $obj->duplicateItem($id_parent, $this->id, $id_shop);
+                                } else {
+                                    $obj->duplicateItem($this->id, false, $id_shop);
+                                }
+                            }
+                        }
                     }
                 }
             }
-            else
-            {
-                if(isset($formFields['form']['connect_to']) && $formFields['form']['connect_to']
-                    && ($subs = Db::getInstance()->executeS("SELECT id_".pSQL($formFields['form']['connect_to'])." FROM "._DB_PREFIX_."ets_mm_".pSQL($formFields['form']['connect_to']). " WHERE id_".pSQL($formFields['form']['name'])."=".(int)$oldId)))
-                {
-                    foreach($subs as $sub)
-                    {
-                        $className = 'MM_'.Tools::ucfirst(Tools::strtolower($formFields['form']['connect_to']));
-                        if(class_exists($className))
-                        {
-                            $obj = new $className((int)$sub['id_'.$formFields['form']['connect_to']]);
-                            if(get_class($this)=='MM_Tab')
-                                $obj->duplicateItem($id_parent, $this->id);
-                            else
-                                $obj->duplicateItem($this->id);
-                        }                    
-                    }
-                }
-            }     
-            
             return $this;
         }
         return false;
@@ -461,37 +529,50 @@ class MM_Obj extends ObjectModel
     {
         return Db::getInstance()->getRow("SELECT id_lang FROM `" . _DB_PREFIX_ . "lang` WHERE is_rtl=0 AND active=1") && Db::getInstance()->getRow("SELECT id_lang FROM `" . _DB_PREFIX_ . "lang` WHERE is_rtl=1 AND active=1");
     }
-    public static function getManufacturers($orderBy = 'name asc', $addWhere = false)
+    public static function getManufacturers($id_shop, $orderBy = 'name asc', $addWhere = false)
     {
         return Db::getInstance()->executeS("
             SELECT m.id_manufacturer as value,CONCAT('mm_manufacturer_',m.id_manufacturer) as id, name as label
             FROM `" . _DB_PREFIX_ . "manufacturer` m
-            INNER JOIN `" . _DB_PREFIX_ . "manufacturer_shop` ms ON (m.id_manufacturer=ms.id_manufacturer AND ms.id_shop=" . (int)Context::getContext()->shop->id . ")            
+            INNER JOIN `" . _DB_PREFIX_ . "manufacturer_shop` ms ON (m.id_manufacturer=ms.id_manufacturer AND ms.id_shop=" . (int)$id_shop . ")            
             WHERE active=1 " . ($addWhere ? pSQL($addWhere) : "") . "
             ORDER BY " . ($orderBy ? $orderBy : 'name asc') . "
         ");
     }
 
-    public static function getSuppliers($orderBy = 'name asc', $addWhere = false)
+    public static function getSuppliers($id_shop, $orderBy = 'name asc', $addWhere = false)
     {
         return Db::getInstance()->executeS("
             SELECT s.id_supplier as value,CONCAT('mm_supplier_',s.id_supplier) as id, name as label
             FROM `" . _DB_PREFIX_ . "supplier` s
-            INNER JOIN `" . _DB_PREFIX_ . "supplier_shop` ss ON (s.id_supplier=ss.id_supplier AND ss.id_shop=" . (int)Context::getContext()->shop->id . ")            
+            INNER JOIN `" . _DB_PREFIX_ . "supplier_shop` ss ON (s.id_supplier=ss.id_supplier AND ss.id_shop=" . (int)$id_shop . ")            
             WHERE active=1 " . ($addWhere ? pSQL($addWhere) : "") . "
             ORDER BY " . ($orderBy ? $orderBy : 'name asc') . "
         ");
     }
 
-    public static function getCMSs($orderBy = 'cl.meta_title asc', $addWhere = false)
+    public static function getCustomerGroups($id_lang, $orderBy = 'name asc', $addWhere = false)
+    {
+        return Db::getInstance()->executeS("
+            SELECT g.id_group as value, CONCAT('mm_group_', g.id_group) as id, gl.name as label
+            FROM `" . _DB_PREFIX_ . "group` g
+            LEFT JOIN `" . _DB_PREFIX_ . "group_lang` gl ON (
+                g.id_group = gl.id_group 
+                AND gl.id_lang = " . (int)$id_lang . "
+            )
+            WHERE 1 " . ($addWhere ? " AND " . pSQL($addWhere) : "") . "
+            ORDER BY " . ($orderBy ? pSQL($orderBy) : 'name asc') . "
+        ");
+    }
+    public static function getCMSs($context, $orderBy = 'cl.meta_title asc', $addWhere = false)
     {
         return Db::getInstance()->executeS("
             SELECT c.id_cms as value,CONCAT('mm_cms_',c.id_cms) as id, cl.meta_title as label            
             FROM `" . _DB_PREFIX_ . "cms` c
-            INNER JOIN `" . _DB_PREFIX_ . "cms_shop` cs ON (c.id_cms= cs.id_cms AND cs.id_shop=" . (int)Context::getContext()->shop->id . ")
-            LEFT JOIN `" . _DB_PREFIX_ . "cms_lang` cl ON c.id_cms=cl.id_cms AND cl.id_lang=" . (int)Context::getContext()->language->id . "
+            INNER JOIN `" . _DB_PREFIX_ . "cms_shop` cs ON (c.id_cms= cs.id_cms AND cs.id_shop=" . (int)$context->shop->id . ")
+            LEFT JOIN `" . _DB_PREFIX_ . "cms_lang` cl ON c.id_cms=cl.id_cms AND cl.id_lang=" . (int)$context->language->id .((version_compare(_PS_VERSION_,'1.6.0.12','>=')) ? " AND cl.id_shop=".(int)$context->shop->id:""). "
             WHERE c.active=1 " . ($addWhere ? pSQL($addWhere) : "") . "
-            GROUP BY c.id_cms ORDER BY " . ($orderBy ? $orderBy : 'cl.meta_title asc') . "
+            ORDER BY " . ($orderBy ? : 'cl.meta_title asc') . "
         ");
     }
     public function getColumnSizes()
@@ -504,5 +585,17 @@ class MM_Obj extends ObjectModel
             );
         }
         return $sizes;
+    }
+    public function getFormField(){
+        return array();
+    }
+    public function l($string, $fileName="")
+    {
+        return Translate::getModuleTranslation('ets_megamenu', $string, $fileName ?: pathinfo(__FILE__, PATHINFO_FILENAME));
+    }
+    public function add($autodate = true, $null_values = false, $id_shop = null)
+    {
+        unset($id_shop);
+        return parent::add($autodate, $null_values);
     }
 }

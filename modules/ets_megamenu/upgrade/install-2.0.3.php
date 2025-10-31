@@ -18,13 +18,12 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 
-if (!defined('_PS_VERSION_'))
-    exit;
+if (!defined('_PS_VERSION_')) { exit; }
 require_once(dirname(__FILE__) . '/../classes/MM_Products.php');
 function upgrade_module_2_0_3($object)
 {
     return (bool)Db::getInstance()->execute(
-        $object->alterSQL('ets_mm_block', 'product_count', 'int(11) NOT NULL AFTER id_products').
-        $object->alterSQL('ets_mm_menu', 'menu_ver_alway_show', 'tinyint(1) NULL DEFAULT NULL AFTER position_background')
+        Ets_megamenu_defines::alterSQL('ets_mm_block', 'product_count', 'int(11) NOT NULL AFTER id_products').
+        Ets_megamenu_defines::alterSQL('ets_mm_menu', 'menu_ver_alway_show', 'tinyint(1) NULL DEFAULT NULL AFTER position_background')
     );
 }

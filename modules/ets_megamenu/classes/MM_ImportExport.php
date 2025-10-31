@@ -18,36 +18,38 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 
+if (!defined('_PS_VERSION_')) { exit; }
+
 class MM_ImportExport
 {
-    public static function importXmlTbl($xml)
+    public static function importXmlTbl($context, $xml)
     {
         if (!$xml)
             return false;
         if (isset($xml->ets_mm_menu) && $xml->ets_mm_menu) {
             foreach ($xml->ets_mm_menu as $menu_data) {
 
-                $id_menu = self::addObj('menu', $menu_data);
+                $id_menu = self::addObj($context,'menu', $menu_data);
                 if ((int)$menu_data['enabled_vertical']) {
                     if ($id_menu && isset($menu_data->ets_mm_tab) && $menu_data->ets_mm_tab) {
                         foreach ($menu_data->ets_mm_tab as $tab_data) {
                             $foreign_key_tab = array(
                                 'id_menu' => $id_menu
                             );
-                            $id_tab = self::addObj('tab', $tab_data, $foreign_key_tab);
+                            $id_tab = self::addObj($context,'tab', $tab_data, $foreign_key_tab);
                             if ($id_tab && isset($tab_data->ets_mm_column) && $tab_data->ets_mm_column) {
                                 foreach ($tab_data->ets_mm_column as $column_data) {
                                     $foreign_key_column = array(
                                         'id_menu' => $id_menu,
                                         'id_tab' => $id_tab,
                                     );
-                                    $id_column = self::addObj('column', $column_data, $foreign_key_column);
+                                    $id_column = self::addObj($context, 'column', $column_data, $foreign_key_column);
                                     if ($id_column && isset($column_data->ets_mm_block) && $column_data->ets_mm_block) {
                                         foreach ($column_data->ets_mm_block as $block_data) {
                                             $foreign_key_block = array(
                                                 'id_column' => $id_column,
                                             );
-                                            self::addObj('block', $block_data, $foreign_key_block);
+                                            self::addObj($context,'block', $block_data, $foreign_key_block);
                                         }
                                     }
                                 }
@@ -60,13 +62,13 @@ class MM_ImportExport
                             $foreign_key_column = array(
                                 'id_menu' => $id_menu
                             );
-                            $id_column = self::addObj('column', $column_data, $foreign_key_column);
+                            $id_column = self::addObj($context, 'column', $column_data, $foreign_key_column);
                             if ($id_column && isset($column_data->ets_mm_block) && $column_data->ets_mm_block) {
                                 foreach ($column_data->ets_mm_block as $block_data) {
                                     $foreign_key_block = array(
                                         'id_column' => $id_column,
                                     );
-                                    self::addObj('block', $block_data, $foreign_key_block);
+                                    self::addObj($context, 'block', $block_data, $foreign_key_block);
                                 }
                             }
                         }
@@ -77,7 +79,7 @@ class MM_ImportExport
         }
         return true;
     }
-    protected static function addObj($obj, $data, $foreign_key = array())
+    protected static function addObj($context, $obj, $data, $foreign_key = array())
     {
         $realOjbect = ($obj == 'menu' ? new MM_Menu() : ($obj == 'column' ? new MM_Column() : ($obj == 'tab' ? new MM_Tab : new MM_Block())));
         $languages = Language::getLanguages(false);
@@ -86,7 +88,7 @@ class MM_ImportExport
         foreach ($attrs['configs'] as $key => $val) {
             if (!isset($val['lang']) || !$val['lang']) {
                 if (isset($data[$key]) && $data[$key]) {
-                    $realOjbect->$key =self::setVal($key, (string)$data[$key]);
+                    $realOjbect->$key =self::setVal($context, $key, (string)$data[$key]);
                 } elseif (isset($val['default'])) {
                     $realOjbect->$key = $val['default'];
                 } else
@@ -144,11 +146,11 @@ class MM_ImportExport
                 $realOjbect->$key = $val;
             }
         }
-        if ($realOjbect->add())
+        if ($realOjbect->add(true, false, $context->shop->id))
             return $realOjbect->id;
         return false;
     }
-    protected static function setVal($key, $val)
+    protected static function setVal($context, $key, $val)
     {
         if ($key != 'id_products') {
             return $val;
@@ -158,10 +160,11 @@ class MM_ImportExport
             $ids = explode(',', $val);
             $retVal = array();
             foreach ($ids as $id) {
-                if ($id && ($tmpIDs = explode('-', $id)) && isset($tmpIDs[0]) && $tmpIDs[0]) {
-                    $product = new Product($tmpIDs[0]);
+                if ($id) {
+                    $tmpIDs = explode('-', $id);
+                    $product = new Product((int)$tmpIDs[0]);
                     $id_combination = isset($tmpIDs[1]) && $tmpIDs[1] ? $tmpIDs[1] : 0;
-                    if ($product->id && ($id_combination == 0 || (!Combination::isFeatureActive() || (($attribute = $product->getAttributeCombinationsById($id_combination, Context::getContext()->language->id)) && !empty($attribute))))) {
+                    if ($product->id && ($id_combination == 0 || (!Combination::isFeatureActive() || (($product->getAttributeCombinationsById((int)$id_combination, $context->language->id)))))) {
                         $retVal[] = $id;
                     }
                 }
@@ -190,15 +193,17 @@ class MM_ImportExport
                 }
             }
         }
-        Module::getInstanceByName('ets_megamenu')->configExtra(true);
+        /** @var Ets_megamenu $megamenu */
+        $megamenu = Module::getInstanceByName('ets_megamenu');
+        $megamenu->configExtra(true);
         return true;
     }
-    public static function renderMenuDataXml()
+    public static function renderMenuDataXml($id_shop)
     {
         $xml_output = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
         $xml_output .= '<entity_profile>' . "\n";
         $sql = "SELECT m.*,ms.id_shop FROM `" . _DB_PREFIX_ . 'ets_mm_menu` m
-        INNER JOIN `' . _DB_PREFIX_ . 'ets_mm_menu_shop` ms ON (m.id_menu= ms.id_menu AND ms.id_shop="' . (int)Context::getContext()->shop->id . '")';
+        INNER JOIN `' . _DB_PREFIX_ . 'ets_mm_menu_shop` ms ON (m.id_menu= ms.id_menu AND ms.id_shop="' . (int)$id_shop . '")';
         $menus = Db::getInstance()->executeS($sql);
         if ($menus) {
             $id_lang_default = (int)Configuration::get('PS_LANG_DEFAULT');

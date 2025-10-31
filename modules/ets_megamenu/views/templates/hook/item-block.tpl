@@ -27,7 +27,7 @@
     <span class="mm_block_edit" title="{l s='Edit block' mod='ets_megamenu'}">{l s='Edit' mod='ets_megamenu'}</span>
 </div>
 <div class="mm_block_wrapper">
-    {hook h='displayBlock' block=$block}
+    {Module::getInstanceByName('ets_megamenu')->hookDisplayBlock(['block' => $block]) nofilter}
 </div>
 {if $have_li}
     </li>

@@ -2,7 +2,7 @@
 <module>
     <name>ets_megamenu</name>
     <displayName><![CDATA[Mega Menu PRO]]></displayName>
-    <version><![CDATA[2.4.4]]></version>
+    <version><![CDATA[2.6.5]]></version>
     <description><![CDATA[Visual arrastrar y soltar mega men&uacute; constructor]]></description>
     <author><![CDATA[PrestaHero]]></author>
     <tab><![CDATA[front_office_features]]></tab>

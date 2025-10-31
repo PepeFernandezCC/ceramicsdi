@@ -18,14 +18,12 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 
-if (!defined('_PS_VERSION_'))
-	exit;
+if (!defined('_PS_VERSION_')) { exit; }
 require_once(dirname(__FILE__).'/../classes/MM_Obj.php');
 require_once(dirname(__FILE__).'/../classes/MM_Menu.php');
 require_once(dirname(__FILE__).'/../classes/MM_Column.php');
 require_once(dirname(__FILE__).'/../classes/MM_Block.php');
 require_once(dirname(__FILE__).'/../classes/MM_Config.php');
-require_once(dirname(__FILE__).'/../classes/MM_Cache.php');
 require_once(dirname(__FILE__).'/../classes/MM_Tab.php');
 function upgrade_module_2_0_1($object)
 {
@@ -86,60 +84,34 @@ function upgrade_module_2_0_1($object)
     ");
     Db::getInstance()->execute('ALTER TABLE `'._DB_PREFIX_.'ets_mm_menu` CHANGE `sub_menu_max_width` `sub_menu_max_width` VARCHAR(500) NOT NULL');
     Db::getInstance()->execute(
-        $object->alterSQL('ets_mm_menu','menu_open_new_tab', 'text NOT NULL  AFTER `custom_class`').
-        $object->alterSQL('ets_mm_menu','id_supplier', 'text NOT NULL  AFTER `custom_class`').
-        $object->alterSQL('ets_mm_menu','menu_img_link', 'text NOT NULL  AFTER `custom_class`').
-        $object->alterSQL('ets_mm_menu','menu_icon', 'varchar(222) NOT NULL  AFTER `custom_class`').
-        $object->alterSQL('ets_mm_block','id_suppliers', 'varchar(222) NOT NULL  AFTER `id_categories`').
-        $object->alterSQL('ets_mm_block','order_by_category', 'varchar(222) NOT NULL  AFTER `id_categories`').
-        $object->alterSQL('ets_mm_block','order_by_manufacturers', 'varchar(222) NOT NULL  AFTER `id_manufacturers`').
-        $object->alterSQL('ets_mm_block','order_by_suppliers', 'varchar(222) NOT NULL  AFTER `id_categories`').
-        $object->alterSQL('ets_mm_menu','display_tabs_in_full_width', 'varchar(50) NOT NULL').
-        $object->alterSQL('ets_mm_block','show_description', 'INT(1) NOT NULL').
-        $object->alterSQL('ets_mm_block','show_clock', 'INT(1) NOT NULL ').
-        $object->alterSQL('ets_mm_block','display_mnu_img', 'INT(1) NOT NULL ').
-        $object->alterSQL('ets_mm_block','display_mnu_name', 'INT(1) NOT NULL ').
-        $object->alterSQL('ets_mm_block','display_mnu_inline', 'INT(1) NOT NULL ').
-        $object->alterSQL('ets_mm_block','display_suppliers_img', 'INT(1) NOT NULL ').
-        $object->alterSQL('ets_mm_block','display_suppliers_name', 'INT(1) NOT NULL ').
-        $object->alterSQL('ets_mm_block','display_suppliers_inline', 'INT(1) NOT NULL ').
-        $object->alterSQL('ets_mm_menu','enabled_vertical', 'INT(1) NOT NULL ').
-        $object->alterSQL('ets_mm_menu','tab_item_width', 'varchar(50) NOT NULL ').
-        $object->alterSQL('ets_mm_menu','menu_item_width', 'varchar(50) NOT NULL ').
-        $object->alterSQL('ets_mm_menu','background_image', 'varchar(50) NOT NULL ').
-        $object->alterSQL('ets_mm_menu','position_background', 'varchar(50) NOT NULL ').
-        $object->alterSQL('ets_mm_menu','menu_ver_text_color', 'varchar(50) NOT NULL ').
-        $object->alterSQL('ets_mm_menu','menu_ver_background_color', 'varchar(50) NOT NULL ').
-        $object->alterSQL('ets_mm_menu','menu_ver_hidden_border', 'varchar(50) NOT NULL ').
-        $object->alterSQL('ets_mm_column','id_tab', 'INT(11) NOT NULL')
+        Ets_megamenu_defines::alterSQL('ets_mm_menu','menu_open_new_tab', 'text NOT NULL  AFTER `custom_class`').
+        Ets_megamenu_defines::alterSQL('ets_mm_menu','id_supplier', 'text NOT NULL  AFTER `custom_class`').
+        Ets_megamenu_defines::alterSQL('ets_mm_menu','menu_img_link', 'text NOT NULL  AFTER `custom_class`').
+        Ets_megamenu_defines::alterSQL('ets_mm_menu','menu_icon', 'varchar(222) NOT NULL  AFTER `custom_class`').
+        Ets_megamenu_defines::alterSQL('ets_mm_block','id_suppliers', 'varchar(222) NOT NULL  AFTER `id_categories`').
+        Ets_megamenu_defines::alterSQL('ets_mm_block','order_by_category', 'varchar(222) NOT NULL  AFTER `id_categories`').
+        Ets_megamenu_defines::alterSQL('ets_mm_block','order_by_manufacturers', 'varchar(222) NOT NULL  AFTER `id_manufacturers`').
+        Ets_megamenu_defines::alterSQL('ets_mm_block','order_by_suppliers', 'varchar(222) NOT NULL  AFTER `id_categories`').
+        Ets_megamenu_defines::alterSQL('ets_mm_menu','display_tabs_in_full_width', 'varchar(50) NOT NULL').
+        Ets_megamenu_defines::alterSQL('ets_mm_block','show_description', 'INT(1) NOT NULL').
+        Ets_megamenu_defines::alterSQL('ets_mm_block','show_clock', 'INT(1) NOT NULL ').
+        Ets_megamenu_defines::alterSQL('ets_mm_block','hidden_mobile', 'INT(1) NOT NULL ').
+        Ets_megamenu_defines::alterSQL('ets_mm_block','display_mnu_img', 'INT(1) NOT NULL ').
+        Ets_megamenu_defines::alterSQL('ets_mm_block','display_mnu_name', 'INT(1) NOT NULL ').
+        Ets_megamenu_defines::alterSQL('ets_mm_block','display_mnu_inline', 'INT(1) NOT NULL ').
+        Ets_megamenu_defines::alterSQL('ets_mm_block','display_suppliers_img', 'INT(1) NOT NULL ').
+        Ets_megamenu_defines::alterSQL('ets_mm_block','display_suppliers_name', 'INT(1) NOT NULL ').
+        Ets_megamenu_defines::alterSQL('ets_mm_block','display_suppliers_inline', 'INT(1) NOT NULL ').
+        Ets_megamenu_defines::alterSQL('ets_mm_menu','enabled_vertical', 'INT(1) NOT NULL ').
+        Ets_megamenu_defines::alterSQL('ets_mm_menu','tab_item_width', 'varchar(50) NOT NULL ').
+        Ets_megamenu_defines::alterSQL('ets_mm_menu','menu_item_width', 'varchar(50) NOT NULL ').
+        Ets_megamenu_defines::alterSQL('ets_mm_menu','background_image', 'varchar(50) NOT NULL ').
+        Ets_megamenu_defines::alterSQL('ets_mm_menu','position_background', 'varchar(50) NOT NULL ').
+        Ets_megamenu_defines::alterSQL('ets_mm_menu','menu_ver_text_color', 'varchar(50) NOT NULL ').
+        Ets_megamenu_defines::alterSQL('ets_mm_menu','menu_ver_background_color', 'varchar(50) NOT NULL ').
+        Ets_megamenu_defines::alterSQL('ets_mm_menu','menu_ver_hidden_border', 'varchar(50) NOT NULL ').
+        Ets_megamenu_defines::alterSQL('ets_mm_column','id_tab', 'INT(11) NOT NULL')
     );
-
-    $menus=Db::getInstance()->executeS('SELECT * FROM `'._DB_PREFIX_.'ets_mm_menu` WHERE id_menu NOT IN (SELECT id_menu FROM '._DB_PREFIX_.'ets_mm_menu_shop)');
-    if($menus)
-    {
-        foreach($menus as $menu)
-        {
-            $shops = Db::getInstance()->executeS('SELECT id_shop FROM `'._DB_PREFIX_.'shop`');
-            foreach($shops as $shop)
-            {
-                $id_shop=$shop['id_shop'];
-                if($id_shop==Context::getContext()->shop->id)
-                {
-                    Db::getInstance()->execute('
-            			INSERT INTO `'._DB_PREFIX_.'ets_mm_menu_shop` (`id_shop`, `id_menu`)
-            			VALUES('.(int)$id_shop.', '.(int)$menu['id_menu'].')'
-            		);
-                }
-                else
-                {
-                    $menuObj = new MM_Menu($menu['id_menu']);
-                    if($newObj=$menuObj->duplicateItem())
-                        Db::getInstance()->execute('UPDATE `'._DB_PREFIX_.'ets_mm_menu_shop` SET id_shop="'.(int)$id_shop.'" where id_menu='.(int)$newObj->id);
-                }
-                
-            }
-        }
-    }
     $object->registerHook('displayCustomMenu');
     $object->registerHook('displayCustomerInforTop');
     $object->registerHook('displaySearch');

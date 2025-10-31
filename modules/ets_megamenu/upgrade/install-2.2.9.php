@@ -18,8 +18,11 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 
-if (!defined('_PS_VERSION_'))
-    exit;
+if (!defined('_PS_VERSION_')) { exit; }
+/**
+ * @param Ets_megamenu $module
+ * @return bool
+ */
 function upgrade_module_2_2_9($module)
 {
     if(!is_dir(_PS_ETS_MM_IMG_DIR_))

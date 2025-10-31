@@ -18,8 +18,7 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 
-if (!defined('_PS_VERSION_'))
-	exit;
+if (!defined('_PS_VERSION_')) { exit; }
 class MM_Menu extends MM_Obj
 {
     public $id_menu;
@@ -52,6 +51,10 @@ class MM_Menu extends MM_Obj
     public $background_image;
     public $position_background;
     public $display_tabs_in_full_width;
+    /**
+     * @var array
+     */
+    public $fields_form = [];
     public static $definition = array(
 		'table' => 'ets_mm_menu',
 		'primary' => 'id_menu',
@@ -82,32 +85,41 @@ class MM_Menu extends MM_Obj
             'enabled_vertical' => array('type'=>self::TYPE_INT),
             'background_image' => array('type' => self::TYPE_STRING),
             'position_background' => array('type' => self::TYPE_STRING),
-            'display_tabs_in_full_width'=>   array('type' => self::TYPE_INT), 
-            // Lang fields
+            'display_tabs_in_full_width'=>   array('type' => self::TYPE_INT),
             'title' => array('type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isCleanHtml', 'required' => true),			
             'link' => array('type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isCleanHtml'),            
             'bubble_text' => array('type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isCleanHtml'),           
         )
 	);
-    public function l($string)
+    /**
+     * @var array
+     */
+    public $image = [];
+
+    public function l($string, $fileName="")
     {
-        return Translate::getModuleTranslation('ets_megamenu', $string, pathinfo(__FILE__, PATHINFO_FILENAME));
+        return Translate::getModuleTranslation('ets_megamenu', $string, $fileName ?: pathinfo(__FILE__, PATHINFO_FILENAME));
     }
     public function add($autodate = true, $null_values = false, $id_shop = null)
 	{
-		$context = Context::getContext();
-		if (!$id_shop)
-		    $id_shop = $context->shop->id;
-		$res = parent::add($autodate, $null_values);
-		$res &= Db::getInstance()->execute('
-			INSERT INTO `'._DB_PREFIX_.'ets_mm_menu_shop` (`id_shop`, `id_menu`)
-			VALUES('.(int)$id_shop.', '.(int)$this->id.')'
-		);
-		return $res;
+		if(parent::add($autodate, $null_values))
+        {
+            if($id_shop)
+            {
+                 Db::getInstance()->execute('
+                    INSERT INTO `'._DB_PREFIX_.'ets_mm_menu_shop` (`id_shop`, `id_menu`)
+                    VALUES('.(int)$id_shop.', '.(int)$this->id.')'
+                );
+            }
+            return true;
+        }
+		return false;
 	}
     protected static $formFields;
 	public function getFormField()
     {
+        /** @var Ets_megamenu $megamenu */
+        $megamenu = Module::getInstanceByName('ets_megamenu');
         if(!self::$formFields)
             self::$formFields =  array(
             'form' => array(
@@ -272,18 +284,18 @@ class MM_Menu extends MM_Obj
                     'type' => 'text',
                     'lang' => true,
                     'showRequired' => true,
-                    'validate'=> 'isUrl'
+                    'validate'=> 'isCleanHtml',
                 ),
                 'id_manufacturer' => array(
                     'label' => $this->l('Manufacturer'),
                     'type' => 'radio',
-                    'values' => self::getManufacturers(),
+                    'values' => $megamenu->getManufacturers(),
                     'showRequired' => true,
                 ),
                 'id_supplier' => array(
                     'label' => $this->l('Supplier'),
                     'type' => 'radio',
-                    'values' => self::getSuppliers(),
+                    'values' => $megamenu->getSuppliers(),
                     'showRequired' => true,
                 ),
                 'id_category' => array(
@@ -302,7 +314,7 @@ class MM_Menu extends MM_Obj
                 'id_cms' => array(
                     'label' => $this->l('CMS page'),
                     'type' => 'radio',
-                    'values' => self::getCMSs(),
+                    'values' => $megamenu->getCMSs(),
                     'showRequired' => true,
                 ),
                 'menu_icon' => array(
@@ -486,26 +498,28 @@ class MM_Menu extends MM_Obj
         );
         return self::$formFields;
     }
-    public static function getMenus($activeOnly = true, $id_lang = false, $id_menu = false)
+    public static function getMenus($context, $activeOnly = true, $id_lang = false, $id_menu = false)
     {
-        $context = Context::getContext();
         $menus = Db::getInstance()->executeS("
             SELECT m.*,ml.title,ml.link,ml.bubble_text
             FROM `" . _DB_PREFIX_ . "ets_mm_menu` m
             INNER JOIN `" . _DB_PREFIX_ . "ets_mm_menu_shop` ms ON (m.id_menu =ms.id_menu AND ms.id_shop='" . (int)$context->shop->id . "')            
             LEFT JOIN `" . _DB_PREFIX_ . "ets_mm_menu_lang` ml
-            ON m.id_menu=ml.id_menu AND ml.id_lang=" . ((int)$id_lang ? (int)$id_lang : (int)$context->language->id) . "
+            ON m.id_menu=ml.id_menu AND ml.id_lang=" . ((int)$id_lang ? : (int)$context->language->id) . "
             WHERE 1 " . ($activeOnly ? " AND m.enabled=1" : "") . ($id_menu ? " AND m.id_menu=" . (int)$id_menu : "") . " 
-            GROUP BY m.id_menu
-            ORDER BY m.sort_order asc,ml.title asc
+            ORDER BY m.sort_order asc
         ");
         if ($menus)
             foreach ($menus as &$menu) {
-                $menu['columns'] = MM_Column::getColumns($menu['id_menu']);
                 if ($menu['enabled_vertical']) {
-                    $menu['tabs'] = MM_Tab::getTabs($menu['id_menu']);
+                    $menu['tabs'] = MM_Tab::getTabs($context, $menu['id_menu']);
+                    $menu['columns'] = array();
                 }
-                $menu['menu_link'] = self::getMenuLink($menu);
+                else
+                {
+                    $menu['columns'] = MM_Column::getColumns($menu['id_menu'], false, $context->language->id);
+                }
+                $menu['menu_link'] = self::getMenuLink($context, $menu);
                 if ($menu['menu_img_link'])
                     $menu['menu_img_link'] = $context->link->getMediaLink(_PS_ETS_MM_IMG_ . $menu['menu_img_link']);
                 if ($menu['background_image'])
@@ -520,9 +534,8 @@ class MM_Menu extends MM_Obj
             }
         return $id_menu && $menus ? $menus[0] : $menus;
     }
-    public static function getMenuLink($menu)
+    public static function getMenuLink($context, $menu)
     {
-        $context = Context::getContext();
         if (isset($menu['link_type'])) {
             switch ($menu['link_type']) {
                 case 'CUSTOM':
@@ -536,11 +549,7 @@ class MM_Menu extends MM_Obj
                 case 'MNFT':
                     $manufacturer = new Manufacturer((int)$menu['id_manufacturer'], (int)$context->language->id);
                     if (Validate::isLoadedObject($manufacturer)) {
-                        if ((int)Configuration::get('PS_REWRITING_SETTINGS'))
-                            $manufacturer->link_rewrite = Tools::link_rewrite($manufacturer->name);
-                        else
-                            $manufacturer->link_rewrite = 0;
-                        return $context->link->getManufacturerLink((int)$menu['id_manufacturer'], $manufacturer->link_rewrite);
+                        return $context->link->getManufacturerLink((int)$menu['id_manufacturer']);
                     }
                     return '#';
                 case 'MNSP':
@@ -557,9 +566,9 @@ class MM_Menu extends MM_Obj
         }
         return '#';
     }
-    public static function deleteAllMenu()
+    public static function deleteAllMenu($id_shop)
     {
-        Db::getInstance()->execute("DELETE FROM `" . _DB_PREFIX_ . "ets_mm_menu` WHERE id_menu IN (SELECT id_menu FROM `" . _DB_PREFIX_ . "ets_mm_menu_shop` WHERE id_shop=" . (int)Context::getContext()->shop->id . ")");
+        Db::getInstance()->execute("DELETE FROM `" . _DB_PREFIX_ . "ets_mm_menu` WHERE id_menu IN (SELECT id_menu FROM `" . _DB_PREFIX_ . "ets_mm_menu_shop` WHERE id_shop=" . (int)$id_shop . ")");
         Db::getInstance()->execute("DELETE FROM `" . _DB_PREFIX_ . "ets_mm_column` WHERE id_menu NOT IN (SELECT id_menu FROM `" . _DB_PREFIX_ . "ets_mm_menu` )");
         Db::getInstance()->execute("DELETE FROM `" . _DB_PREFIX_ . "ets_mm_menu_lang` WHERE id_menu NOT IN (SELECT id_menu FROM `" . _DB_PREFIX_ . "ets_mm_menu` )");
         Db::getInstance()->execute("DELETE FROM `" . _DB_PREFIX_ . "ets_mm_block` WHERE id_column NOT IN (SELECT id_column FROM `" . _DB_PREFIX_ . "ets_mm_column` )");
@@ -572,7 +581,7 @@ class MM_Menu extends MM_Obj
         if (@file_exists(_PS_ETS_MM_IMG_DIR_) && ($files = glob(_PS_ETS_MM_IMG_DIR_ . '*'))) {
             foreach ($files as $file)
                 if (@file_exists($file) && strpos($file, 'index.php') === false)
-                    @unlink($file);
+                  Ets_megamenu_defines::unlink($file);
         }
     }
 }

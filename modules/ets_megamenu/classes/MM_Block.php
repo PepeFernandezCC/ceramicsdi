@@ -18,10 +18,10 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 
-if (!defined('_PS_VERSION_'))
-	exit;
+if (!defined('_PS_VERSION_')) { exit; }
 class MM_Block extends MM_Obj
 {
+    public $context;
     public $id_block;
     public $title;    
     public $title_link;
@@ -45,14 +45,22 @@ class MM_Block extends MM_Obj
     public $image;
     public $custom_class;
     public $display_title;
+    public $customer_groups;
+    public $display_content_mobile;
     public $id_column;
     public $image_link;
 	public $product_type;
+	public $product_with_category;
     public $id_products;
     public $product_count;
     public $combination_enabled;
     public $show_description;
     public $show_clock;
+    public $hidden_mobile;
+    /**
+     * @var array
+     */
+    public $fields_form = [];
     public static $definition = array(
 		'table' => 'ets_mm_block',
 		'primary' => 'id_block',
@@ -77,25 +85,30 @@ class MM_Block extends MM_Obj
             'id_products' => array('type' => self::TYPE_STRING),
 			'product_count' => array('type' => self::TYPE_INT),
             'enabled' => array('type' => self::TYPE_INT),
-            'image' => array('type' => self::TYPE_STRING,'lang' => false),
             'block_type' => array('type' => self::TYPE_STRING),
+            'product_with_category' => array('type' => self::TYPE_INT),
             'display_title' => array('type' => self::TYPE_INT),
+            'customer_groups' => array('type' => self::TYPE_STRING),
+            'display_content_mobile' => array('type' => self::TYPE_INT),
             'show_description' => array('type' => self::TYPE_INT),
             'show_clock' => array('type' => self::TYPE_INT),
-            // Lang fields
+            'hidden_mobile' => array('type' => self::TYPE_INT),
+            'image' => array('type' => self::TYPE_STRING,'lang' => true),
             'title' => array('type' => self::TYPE_STRING, 'lang' => true),			
             'title_link' => array('type' => self::TYPE_STRING, 'lang' => true), 
             'image_link' => array('type' => self::TYPE_STRING, 'lang' => true),   
             'content' => array('type' => self::TYPE_HTML, 'lang' => true),                
         )
 	);
-    public function l($string)
+    public function l($string, $fileName="")
     {
-        return Translate::getModuleTranslation('ets_megamenu', $string, pathinfo(__FILE__, PATHINFO_FILENAME));
+        return Translate::getModuleTranslation('ets_megamenu', $string, $fileName ?: pathinfo(__FILE__, PATHINFO_FILENAME));
     }
     protected static $formFields;
     public function getFormField()
     {
+        /** @var Ets_megamenu $megamenu */
+        $megamenu = Module::getInstanceByName('ets_megamenu');
         if(!self::$formFields)
             self::$formFields =  array(
             'form' => array(
@@ -171,7 +184,7 @@ class MM_Block extends MM_Obj
                     'label' => $this->l('Manufacturers'),
                     'type' => 'checkbox',
                     'values' => array(
-                        'query' => self::getManufacturers(),
+                        'query' => $megamenu->getManufacturers(),
                         'id' => 'id',
                         'name' => 'label'
                     ),
@@ -295,7 +308,7 @@ class MM_Block extends MM_Obj
                     'label' => $this->l('Suppliers'),
                     'type' => 'checkbox',
                     'values' => array(
-                        'query' => self::getSuppliers(),
+                        'query' => $megamenu->getSuppliers(),
                         'id' => 'id',
                         'name' => 'label'
                     ),
@@ -415,6 +428,50 @@ class MM_Block extends MM_Obj
                         'name' => 'name'
                     ),
                 ),
+                'product_type' => array(
+                    'label' => $this->l('Product type'),
+                    'type' => 'radios',
+                    'default' => 'specific',
+                    'values' => array(
+                        array(
+                            'label' => $this->l('New products'),
+                            'value' => 'new',
+                        ),
+                        array(
+                            'label' => $this->l('Popular products'),
+                            'value' => 'popular',
+                        ),
+                        array(
+                            'label' => $this->l('Special products'),
+                            'value' => 'special',
+                        ),
+                        array(
+                            'label' => $this->l('Best sellers'),
+                            'value' => 'best',
+                        ),
+                        array(
+                            'label' => $this->l('Specific products '),
+                            'value' => 'specific',
+                        ),
+                    ),
+                ),
+                'product_with_category' => array(
+                    'label' => $this->l('Choose products from category'),
+                    'type' => 'switch',
+                    'default' => 0,
+                    'values' => array(
+                        array(
+                            'label' => $this->l('Yes'),
+                            'id' => 'product_with_category_1',
+                            'value' => 1,
+                        ),
+                        array(
+                            'label' => $this->l('No'),
+                            'id' => 'product_with_category_0',
+                            'value' => 0,
+                        )
+                    ),
+                ),
                 'id_categories' => array(
                     'type' => 'categories',
                     'label' => $this->l('Categories'),
@@ -428,6 +485,7 @@ class MM_Block extends MM_Obj
                     ),
                     'showRequired' => true,
                 ),
+
                 'order_by_category' => array(
                     'type' => 'select',
                     'label' => $this->l('Order by'),
@@ -459,7 +517,7 @@ class MM_Block extends MM_Obj
                     'label' => $this->l('CMS pages'),
                     'type' => 'checkbox',
                     'values' => array(
-                        'query' => self::getCMSs(),
+                        'query' => $megamenu->getCMSs(),
                         'id' => 'id',
                         'name' => 'label'
                     ),
@@ -473,9 +531,10 @@ class MM_Block extends MM_Obj
                 ),
                 'image' => array(
                     'label' => $this->l('Image'),
-                    'type' => 'file',
+                    'type' => 'file_lang',
                     'hide_delete' => true,
                     'showRequired' => true,
+                    'lang' => true,
                     'desc' => sprintf($this->l('Accepted formats: jpg, jpeg, png, gif. Limit: %sMb.'), Configuration::get('PS_ATTACHMENT_MAXIMUM_SIZE'))
                 ),
                 'image_link' => array(
@@ -483,33 +542,6 @@ class MM_Block extends MM_Obj
                     'type' => 'text',
                     'lang' => true,
                     'desc' => $this->l('Leave blank if you do not want to add a link to image'),
-                ),
-                'product_type' => array(
-                    'label' => $this->l('Product type'),
-                    'type' => 'radios',
-                    'default' => 'specific',
-                    'values' => array(
-                        array(
-                            'label' => $this->l('New products'),
-                            'value' => 'new',
-                        ),
-                        array(
-                            'label' => $this->l('Popular products'),
-                            'value' => 'popular',
-                        ),
-                        array(
-                            'label' => $this->l('Special products'),
-                            'value' => 'special',
-                        ),
-                        array(
-                            'label' => $this->l('Best sellers'),
-                            'value' => 'best',
-                        ),
-                        array(
-                            'label' => $this->l('Specific products '),
-                            'value' => 'specific',
-                        ),
-                    ),
                 ),
                 'id_products' => array(
                     'label' => $this->l('Search products'),
@@ -584,6 +616,35 @@ class MM_Block extends MM_Obj
                         )
                     ),
                 ),
+                'hidden_mobile' => array(
+                    'label' => $this->l('Hide block when display on mobile devices'),
+                    'type' => 'switch',
+                    'default' => 0,
+                    'values' => array(
+                        array(
+                            'label' => $this->l('Yes'),
+                            'id' => 'hidden_mobile_1',
+                            'value' => 1,
+                        ),
+                        array(
+                            'label' => $this->l('No'),
+                            'id' => 'hidden_mobile_0',
+                            'value' => 0,
+                        )
+                    ),
+                ),
+                'customer_groups' => array(
+                    'label' => $this->l('Apply for customer groups'),
+                    'type' => 'checkbox',
+                    'values' => array(
+                        'query' => $megamenu->getCustomerGroups(),
+                        'id' => 'id',
+                        'name' => 'label'
+                    ),
+                    'showRequired' => false,
+                    'desc' => $this->l('Leave empty to display this block for all customer groups'),
+                    'form_group_class' => 'customer_groups',
+                ),
                 'enabled' => array(
                     'label' => $this->l('Enabled'),
                     'type' => 'switch',
@@ -605,26 +666,56 @@ class MM_Block extends MM_Obj
         );
         return self::$formFields;
     }
-    public static function getBlocks($id_column = false, $activeOnly = true, $id_block = false, $id_lang = false)
+    public static function getBlocks($id_lang, $id_column = false, $activeOnly = true, $id_block = false)
     {
         $blocks = Db::getInstance()->executeS("
-            SELECT b.*,bl.title,bl.title_link,bl.content,bl.image_link
+            SELECT b.*,bl.title,bl.title_link,bl.content,bl.image_link,bl.image
             FROM `" . _DB_PREFIX_ . "ets_mm_block` b
             LEFT JOIN `" . _DB_PREFIX_ . "ets_mm_block_lang` bl
-            ON b.id_block=bl.id_block AND bl.id_lang=" . ($id_lang ? (int)$id_lang : (int)Context::getContext()->language->id) . "
+            ON b.id_block=bl.id_block AND bl.id_lang=" . (int)$id_lang . "
             WHERE 1 " . ($activeOnly ? "AND b.enabled=1 " : "") . ($id_column ? " AND b.id_column=" . (int)$id_column . " " : "") . ($id_block ? " AND b.id_block=" . (int)$id_block : "") . "
-            ORDER BY b.sort_order asc,bl.title asc
+            ORDER BY b.sort_order asc
         ");
         return $id_block && $blocks ? $blocks[0] : $blocks;
     }
-    public static function getBlockById($id_block)
+    public static function getBlockById($id_block, $id_lang)
     {
         return Db::getInstance()->getRow("
-            SELECT b.*,bl.title,bl.title_link,bl.content,bl.image_link
+            SELECT b.*,bl.title,bl.title_link,bl.content,bl.image_link,bl.image
             FROM `" . _DB_PREFIX_ . "ets_mm_block` b
             LEFT JOIN `" . _DB_PREFIX_ . "ets_mm_block_lang` bl
-            ON b.id_block=bl.id_block AND bl.id_lang=" . (int)Context::getContext()->language->id . "
+            ON b.id_block=bl.id_block AND bl.id_lang=" . (int)$id_lang . "
             WHERE b.id_block=" . (int)$id_block . "
         ");
+    }
+    public function _clearCache()
+    {
+        /** @var Ets_megamenu $megamenu */
+        $megamenu = Module::getInstanceByName('ets_megamenu');
+        $cacheID = $megamenu->_getCacheId(array_merge(array('block'),str_split((string)$this->id)),false);
+        if($cacheID)
+            $megamenu->_clearCache('*',$cacheID);
+    }
+    public function update($null_value = false)
+    {
+        if(parent::update($null_value))
+        {
+            $this->_clearCache();
+            return true;
+        }
+        return false;
+    }
+    public function delete()
+    {
+        if(parent::delete())
+        {
+            $this->_clearCache();
+            return true;
+        }
+        return false;
+    }
+    public static function checkBlockClockCountDown()
+    {
+        return Db::getInstance()->getValue('SELECT id_block FROM `'._DB_PREFIX_.'ets_mm_block` WHERE enabled=1 AND show_clock=1 AND block_type="PRODUCT"');
     }
 }

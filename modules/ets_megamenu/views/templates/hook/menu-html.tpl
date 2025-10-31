@@ -21,9 +21,7 @@
 
 {if isset($menus) && $menus}
     <ul class="mm_menus_ul {if isset($mm_config.ETS_MM_CLICK_TEXT_SHOW_SUB) && $mm_config.ETS_MM_CLICK_TEXT_SHOW_SUB} clicktext_show_submenu{/if} {if isset($mm_config.ETS_MM_SHOW_ICON_VERTICAL)&& !$mm_config.ETS_MM_SHOW_ICON_VERTICAL} hide_icon_vertical{/if}">
-
-        {foreach from=$menus item='menu'}
-                <li class="close_menu">
+        <li class="close_menu">
             <div class="pull-left">
                 <span class="mm_menus_back">
                     <i class="icon-bar"></i>
@@ -37,7 +35,14 @@
                 {l s='Back' mod='ets_megamenu'}
             </div>
         </li>
-            <li class="mm_menus_li{if $menu.enabled_vertical} mm_menus_li_tab{if $menu.menu_ver_hidden_border} mm_no_border{/if}{if $menu.menu_ver_alway_show} menu_ver_alway_show_sub{/if}{/if}{if $menu.custom_class} {$menu.custom_class|escape:'html':'UTF-8'}{/if}{if $menu.sub_menu_type} mm_sub_align_{strtolower($menu.sub_menu_type)|escape:'html':'UTF-8'}{/if}{if $menu.columns} mm_has_sub{/if}{if $menu.display_tabs_in_full_width && $menu.enabled_vertical} display_tabs_in_full_width{/if}{if isset($mm_config.ETS_MM_DISPLAY_SUBMENU_BY_CLICK) && $mm_config.ETS_MM_DISPLAY_SUBMENU_BY_CLICK } click_open_submenu{else} hover {/if}"
+        {foreach from=$menus item='menu'}
+            <li class="mm_menus_li{if $menu.enabled_vertical} mm_menus_li_tab{if $menu.menu_ver_hidden_border} mm_no_border{/if}
+{if $menu.menu_ver_alway_show} menu_ver_alway_show_sub{/if}{/if}{if $menu.custom_class} {$menu.custom_class|escape:'html':'UTF-8'}{/if}
+{if $menu.sub_menu_type} mm_sub_align_{strtolower($menu.sub_menu_type)|escape:'html':'UTF-8'}{/if}
+{if isset($menu.enabled_vertical) && $menu.enabled_vertical && isset($menu.tabs) && $menu.tabs || $menu.columns} mm_has_sub{/if}
+{if isset($menu.display_tabs_in_full_width) && $menu.display_tabs_in_full_width && isset($menu.enabled_vertical) && $menu.enabled_vertical} display_tabs_in_full_width{/if}
+{if $menu.display_tabs_in_full_width && $menu.enabled_vertical} display_tabs_in_full_width{/if}
+{if isset($mm_config.ETS_MM_DISPLAY_SUBMENU_BY_CLICK) && $mm_config.ETS_MM_DISPLAY_SUBMENU_BY_CLICK } click_open_submenu{else} hover {/if}"
                 {if $menu.enabled_vertical}style="width: {if $menu.menu_item_width}{$menu.menu_item_width|escape:'html':'UTF-8'}{else}{*230px*}auto;{/if}"{/if}>
                 <a class="ets_mm_url" {if isset($menu.menu_open_new_tab) && $menu.menu_open_new_tab == 1} target="_blank"{/if}
                         href="{$menu.menu_link|escape:'html':'UTF-8'}"
@@ -50,7 +55,7 @@
                         {/if}
                         {$menu.title|escape:'html':'UTF-8'}
                         {if $menu.columns}<span class="mm_arrow"></span>{/if}
-                        {if $menu.bubble_text}<span class="mm_bubble_text"style="background: {if $menu.bubble_background_color}{$menu.bubble_background_color|escape:'html':'UTF-8'}{else}#FC4444{/if}; color: {if $menu.bubble_text_color|escape:'html':'UTF-8'}{$menu.bubble_text_color|escape:'html':'UTF-8'}{else}#ffffff{/if};">{$menu.bubble_text|escape:'html':'UTF-8'}</span>{/if}
+                        {if $menu.bubble_text}<span class="mm_bubble_text" style="background: {if $menu.bubble_background_color}{$menu.bubble_background_color|escape:'html':'UTF-8'}{else}#FC4444{/if}; color: {if $menu.bubble_text_color|escape:'html':'UTF-8'}{$menu.bubble_text_color|escape:'html':'UTF-8'}{else}#ffffff{/if};">{$menu.bubble_text|escape:'html':'UTF-8'}</span>{/if}
                     </span>
                 </a>
                 {if $menu.enabled_vertical}
@@ -94,7 +99,7 @@
                                                             {foreach from=$column.blocks item='block'}
                                                                 <li data-id-block="{$block.id_block|intval}"
                                                                     class="mm_blocks_li">
-                                                                    {hook h='displayBlock' block=$block}
+                                                                    {Module::getInstanceByName('ets_megamenu')->hookDisplayBlock(['block' => $block]) nofilter}
                                                                 </li>
                                                             {/foreach}
                                                         </ul>
@@ -118,7 +123,7 @@
                                         <ul class="mm_blocks_ul">
                                             {foreach from=$column.blocks item='block'}
                                                 <li data-id-block="{$block.id_block|intval}" class="mm_blocks_li">
-                                                    {hook h='displayBlock' block=$block}
+                                                    {Module::getInstanceByName('ets_megamenu')->hookDisplayBlock(['block' => $block]) nofilter}
                                                 </li>
                                             {/foreach}
                                         </ul>
@@ -131,7 +136,6 @@
             </li>
         {/foreach}
     </ul>
-    {hook h='displayCustomMenu'}
 {/if}
 <script type="text/javascript">
     var Days_text = '{l s='Day(s)' mod='ets_megamenu' js=1}';

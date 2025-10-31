@@ -18,12 +18,11 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 
-if (!defined('_PS_VERSION_'))
-    exit;
+if (!defined('_PS_VERSION_')) { exit; }
     
 function upgrade_module_2_0_7($object)
 {
     return (bool)Db::getInstance()->execute(
-        $object->alterSQL('ets_mm_block', 'display_image_cat', 'int(1) tinyint(1) NOT NULL DEFAULT "1"')
+        Ets_megamenu_defines::alterSQL('ets_mm_block', 'display_image_cat', 'int(1) tinyint(1) NOT NULL DEFAULT "1"')
     );
 }

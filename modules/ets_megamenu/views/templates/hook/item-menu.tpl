@@ -48,7 +48,7 @@
                 {if $menu.tabs}                            
                     {foreach from=$menu.tabs item='tab'}
                         <li data-id-tab="{$tab.id_tab|intval}" class="mm_tabs_li item{$tab.id_tab|intval} {if !$tab.enabled}mm_disabled{/if}" data-obj="tab">
-                            {hook h='displayMMItemTab' tab=$tab}
+                            {Module::getInstanceByName('ets_megamenu')->hookDisplayMMItemTab(['tab' => $tab]) nofilter}
                         </li>
                     {/foreach}                            
                 {/if}
@@ -79,7 +79,7 @@
             {if $menu.columns}                            
                 {foreach from=$menu.columns item='column'}
                     <li data-id-column="{$column.id_column|intval}" class="mm_columns_li item{$column.id_column|intval} column_size_{$column.column_size|intval} {if $column.is_breaker}mm_breaker{/if}" data-obj="column">
-                        {hook h='displayMMItemColumn' column=$column}
+                        {Module::getInstanceByName('ets_megamenu')->hookDisplayMMItemColumn(['column'=>$column]) nofilter}
                     </li>
                 {/foreach}                            
             {/if}  
