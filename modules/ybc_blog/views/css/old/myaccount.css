@@ -1,0 +1,103 @@
+a#author-blog-comment-link,
+a#author-blog-info-link,
+a#author-blog-link{
+    width: 100%;
+}
+li > a#author-blog-comment-link,
+li > a#author-blog-info-link,
+li > a#author-blog-link{
+    padding: 0!important;
+}
+.ss_icon_group {
+    position: relative;
+    display: flex;
+    display: -webkit-flex;
+    justify-content: center;
+    margin-bottom: 0;
+}
+.link-item i {
+    height: 51px;
+    min-height: 51px;
+    font-style: normal!important;
+}
+.ss_icon_group .fa.fa-pencil {
+    display: block;
+    left: 0;
+    padding-left: 7px;
+    padding-top: 27px;
+    position: absolute;
+    top: 0;
+    margin-left: 13px!important;
+    transform-origin: top;
+    -webkit-transform-origin: top;
+    transform: scale(0.6);
+    -webkit-transform: scale(0.6);
+}
+.ss_icon_group .fa.fa-pencil {
+    color: #fff !important;
+    font-size: 3.6rem !important;
+    padding-left: 10px;
+    padding-top: 16px;
+}
+.ss_icon_group i {
+    padding: 0!important;
+    display: inline-flex!important;
+    width: auto!important;
+    position: relative;
+}
+i.blog_icon-pencil svg {
+    width: 34px;
+    height: 35px;
+    margin-top: 8px;
+}
+.ss_icon_group i.blog_icon-pencil {
+    margin-left: -24px;
+    z-index: 1;
+    color: #fff!important;
+    position: relative;
+}
+.ss_icon_group .blog_icon-pencil {
+    margin-left: 0;
+    margin-top: 0;
+    position: absolute;
+    top: 7px;
+}
+span.blog_icon-user {
+    display: inline-block;
+    position: relative;
+}
+
+.blog_icon-pencil svg.i_second {
+    position: absolute;
+    top: 7px;
+    left: 3px;
+}
+
+.page-my-account #content .blog_icon-pencil svg.i_first,.blog_icon-pencil svg.i_first {
+    width: 34px;
+    height: 34px;
+    fill: #fff!important;
+}
+.page-my-account #content .links a:hover .blog_icon-pencil svg.i_first{
+    fill: #fff!important;
+}
+.ss_icon_group .blog_icon-pencil svg {
+    width: 24px;
+    height: 24px;
+    fill: currentColor!important;
+}
+li{
+    list-style: none;
+}
+.ss_icon_group i.blog_icon-pencil svg.i_first {
+    fill: #fff!important;
+}
+
+.ss_icon_group i.blog_icon-pencil svg.i_second {
+    position: absolute;
+    top: 10px;
+    fill: #333!important;
+    width: 22px;
+    height: 22px;
+    left: 3px;
+}

@@ -1,0 +1,8 @@
+{% use '@PrestaShop/Admin/TwigTemplateForm/prestashop_ui_kit_base.html.twig' %}
+
+{% block form_rows %}
+    {{- parent() -}}
+    {% if name=='description' %}
+        {{ renderhook('displayAdminProductsSeller', { 'id_product': id_product }) }}
+    {% endif %}
+{% endblock %}

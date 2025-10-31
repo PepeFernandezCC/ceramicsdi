@@ -18,15 +18,13 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 
-if (!defined('_PS_VERSION_'))
-	exit;
+if (!defined('_PS_VERSION_')) { exit; }
 class Ybc_browser
 {
     private $_agent = '';
     private $_browser_name = '';
     private $_version = '';
     private $_platform = '';
-    private $_os = '';
     private $_is_aol = false;
     private $_is_mobile = false;
     private $_is_tablet = false;
@@ -149,7 +147,6 @@ class Ybc_browser
         $this->_browser_name = self::BROWSER_UNKNOWN;
         $this->_version = self::VERSION_UNKNOWN;
         $this->_platform = self::PLATFORM_UNKNOWN;
-        $this->_os = self::OPERATING_SYSTEM_UNKNOWN;
         $this->_is_aol = false;
         $this->_is_mobile = false;
         $this->_is_tablet = false;
@@ -348,28 +345,6 @@ class Ybc_browser
         $this->reset();
         $this->_agent = $agent_string;
         $this->determine();
-    }
-
-    /**
-     * Used to determine if the browser is actually "chromeframe"
-     * @since 1.7
-     * @return boolean True if the browser is using chromeframe
-     */
-    public function isChromeFrame()
-    {
-        return (strpos($this->_agent, "chromeframe") !== false);
-    }
-
-    /**
-     * Returns a formatted string with a summary of the details of the browser.
-     * @return string formatted string with a summary of the browser
-     */
-    public function __toString()
-    {
-        return "<strong>Browser Name:</strong> {$this->getBrowser()}<br/>\n" .
-            "<strong>Browser Version:</strong> {$this->getVersion()}<br/>\n" .
-            "<strong>Browser User Agent String:</strong> {$this->getUserAgent()}<br/>\n" .
-            "<strong>Platform:</strong> {$this->getPlatform()}<br/>";
     }
 
     /**
@@ -1293,7 +1268,7 @@ class Ybc_browser
             $this->setBrowser(self::BROWSER_MOZILLA);
             return true;
         } else if (stripos($this->_agent, 'mozilla') !== false && preg_match('/rv:[0-9]\.[0-9]/i', $this->_agent) && stripos($this->_agent, 'netscape') === false) {
-            $aversion = explode('', stristr($this->_agent, 'rv:'));
+            $aversion = explode(' ', stristr($this->_agent, 'rv:'));
             $this->setVersion(str_replace('rv:', '', $aversion[0]));
             $this->setBrowser(self::BROWSER_MOZILLA);
             return true;

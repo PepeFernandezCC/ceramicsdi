@@ -18,8 +18,7 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 
-if (!defined('_PS_VERSION_'))
-	exit;
+if (!defined('_PS_VERSION_')) { exit; }
 class Ybc_blog_category_class extends ObjectModel
 {
     public $id_category;
@@ -66,18 +65,30 @@ class Ybc_blog_category_class extends ObjectModel
 	{
 		parent::__construct($id_item, $id_lang, $id_shop);
         if($this->id)
-            $this->id_shop = Db::getInstance()->getValue('SELECT id_shop FROM `'._DB_PREFIX_.'ybc_blog_category_shop` where id_category= '.(int)$this->id);
+        {
+            $cache_key = 'YbcBlogCategory:getShopID_'.$this->id;
+            if(!Cache::isStored($cache_key))
+            {
+                $this->id_shop = (int)Db::getInstance()->getValue('SELECT id_shop FROM `'._DB_PREFIX_.'ybc_blog_category_shop` where id_category= '.(int)$this->id);
+                Cache::store($cache_key,$this->id_shop);
+            }
+            else
+                $this->id_shop = Cache::retrieve($cache_key);
+
+        }
+        else
+            $this->id_shop = $id_shop;
 	}
     public function add($autodate = true, $null_values = false)
 	{
-		$context = Context::getContext();
-		$id_shop = $context->shop->id;
-		$res = parent::add($autodate, $null_values);
-		$res &= Db::getInstance()->execute('
+		if(parent::add($autodate, $null_values))
+        {
+            return Db::getInstance()->execute('
 			INSERT INTO `'._DB_PREFIX_.'ybc_blog_category_shop` (`id_shop`, `id_category`)
-			VALUES('.(int)$id_shop.', '.(int)$this->id.')'
-		);
-		return $res;
+			VALUES('.(int)$this->id_shop.', '.(int)$this->id.')'
+            );
+        }
+		return false;
 	}
     public function delete()
     {
@@ -96,13 +107,13 @@ class Ybc_blog_category_class extends ObjectModel
                        @unlink(_PS_YBC_BLOG_IMG_DIR_.'category/thumb/'.$thumb);
            }
            Db::getInstance()->execute('UPDATE `'._DB_PREFIX_.'ybc_blog_category` SET id_parent="'.(int)$this->id_parent.'" WHERE id_parent="'.(int)$this->id.'"');
-           $posts = Ybc_blog_post_class::getPostsByIdCategory($this->id);
+           $posts = Db::getInstance()->executeS('SELECT id_post FROM `'._DB_PREFIX_.'ybc_blog_post_category` WHERE id_category='.(int)$this->id);
            if($posts)
            {
                foreach($posts as $post)
                {
-                   $categories = self::getCategoriesByIdPost($post['id_post']);
-                   if(count($categories) <= 1)
+                   $countCategory = Db::getInstance()->getValue("SELECT COUNT(id_category) FROM `"._DB_PREFIX_."ybc_blog_post_category` WHERE id_post = ".(int)$post['id_post']);
+                   if($countCategory <= 1)
                    {
                        Ybc_blog_post_class::_deletePost($post['id_post']);
                    }
@@ -112,7 +123,7 @@ class Ybc_blog_category_class extends ObjectModel
            Db::getInstance()->execute($req);
            $categories = Db::getInstance()->executeS('SELECT c.id_category FROM `'._DB_PREFIX_.'ybc_blog_category` c
                 INNER JOIN `'._DB_PREFIX_.'ybc_blog_category_shop` cs ON (c.id_category=cs.id_category)
-                WHERE cs.id_shop= "'.(int)Context::getContext()->shop->id.'" AND c.id_parent='.(int)$this->id_parent.' ORDER BY c.sort_order ASC');
+                WHERE cs.id_shop= "'.(int)$this->id_shop.'" AND c.id_parent='.(int)$this->id_parent.' ORDER BY c.sort_order ASC');
            if($categories)
            {
                foreach($categories as $key=> $category)
@@ -125,23 +136,29 @@ class Ybc_blog_category_class extends ObjectModel
        }
        return false;
     }
-    public static function getCategoriesByIdPost($id_post, $id_lang = false, $enabled = false)
+    protected static $categories = array();
+    public static function getCategoriesByIdPost($context, $id_post, $enabled = false)
     {
-        if(!$id_lang)
-            $id_lang = Context::getContext()->language->id;
-        $req = "SELECT c.*, cl.* 
+        $id_lang = $context->language->id;
+        if(!isset(self::$categories[$id_post][$id_lang][$enabled]))
+        {
+            $req = "SELECT c.*, cl.* 
             FROM `"._DB_PREFIX_."ybc_blog_category` c
-            INNER JOIN `"._DB_PREFIX_."ybc_blog_category_shop` cs ON (c.id_category=cs.id_category AND cs.id_shop ='".(int)Context::getContext()->shop->id."')
+            INNER JOIN `"._DB_PREFIX_."ybc_blog_category_shop` cs ON (c.id_category=cs.id_category AND cs.id_shop ='".(int)$context->shop->id."')
             LEFT JOIN `"._DB_PREFIX_."ybc_blog_category_lang` cl ON c.id_category = cl.id_category AND cl.id_lang=".(int)$id_lang."
             WHERE c.id_category IN (SELECT id_category FROM `"._DB_PREFIX_."ybc_blog_post_category` WHERE id_post = ".(int)$id_post.")
             ".($enabled ? " AND c.enabled = 1" : '');
-        $categories = Db::getInstance()->executeS($req);
-        if($categories)
-        {
-            foreach($categories as &$cat)
-                $cat['link'] = Module::getInstanceByName('ybc_blog')->getLink('blog',array('id_category' => $cat['id_category']));
+            $categories = Db::getInstance()->executeS($req);
+            if($categories)
+            {
+                /** @var Ybc_blog $module */
+                $module = Module::getInstanceByName('ybc_blog');
+                foreach($categories as &$cat)
+                    $cat['link'] = $module->getLink('blog',array('id_category' => $cat['id_category']));
+            }
+            self::$categories[$id_post][$id_lang][$enabled] = $categories;
         }
-        return $categories;
+        return self::$categories[$id_post][$id_lang][$enabled];
     }
     public function duplicate()
     {
@@ -186,83 +203,94 @@ class Ybc_blog_category_class extends ObjectModel
         }
         return false;        
     }
-    public static function getCategories($id_category=0)
+    public static function getCategories($context, $id_category=0)
     {
         $req = "SELECT c.*, cl.*
             FROM `"._DB_PREFIX_."ybc_blog_category` c
-            INNER JOIN `"._DB_PREFIX_."ybc_blog_category_shop` cs ON (c.id_category=cs.id_category AND cs.id_shop='".(int)Context::getContext()->shop->id."')
+            INNER JOIN `"._DB_PREFIX_."ybc_blog_category_shop` cs ON (c.id_category=cs.id_category AND cs.id_shop='".(int)$context->shop->id."')
             LEFT JOIN `"._DB_PREFIX_."ybc_blog_category_lang` cl ON c.id_category = cl.id_category
-            WHERE cl.id_lang = ".(int)Context::getContext()->language->id.($id_category ? ' AND c.id_category<"'.(int)$id_category.'"':'');
+            WHERE cl.id_lang = ".(int)$context->language->id.($id_category ? ' AND c.id_category<"'.(int)$id_category.'"':'');
         return Db::getInstance()->executeS($req);
     }
-    public static function getCategoriesWithFilter($filter = false, $sort = false, $start = false, $limit = false,$id_parent=0)
+    public static function getCategoriesWithFilter($context, $filter = false, $sort = false, $start = false, $limit = false,$id_parent=false)
     {
         $req = "SELECT c.*, cl.*
             FROM `"._DB_PREFIX_."ybc_blog_category` c
-            INNER JOIN `"._DB_PREFIX_."ybc_blog_category_shop` cs ON (c.id_category=cs.id_category AND cs.id_shop='".(int)Context::getContext()->shop->id."')
-            LEFT JOIN `"._DB_PREFIX_."ybc_blog_category_lang` cl ON c.id_category = cl.id_category AND cl.id_lang = ".(int)Context::getContext()->language->id."
-            WHERE ".($id_parent ? 'c.id_parent = '.(int)$id_parent:'1').($filter ? $filter : '')." 
-            ORDER BY ".($sort ? $sort : '')." c.id_category desc " . ($start !== false && $limit ? " LIMIT ".(int)$start.", ".(int)$limit : "");
+            INNER JOIN `"._DB_PREFIX_."ybc_blog_category_shop` cs ON (c.id_category=cs.id_category AND cs.id_shop='".(int)$context->shop->id."')
+            LEFT JOIN `"._DB_PREFIX_."ybc_blog_category_lang` cl ON c.id_category = cl.id_category AND cl.id_lang = ".(int)$context->language->id."
+            WHERE ".($id_parent!==false ? 'c.id_parent = '.(int)$id_parent:'1').((string)$filter ? : '')." 
+            ORDER BY ".((string)$sort ? : '')." c.id_category desc " . ($start !== false && $limit ? " LIMIT ".(int)$start.", ".(int)$limit : "");
         return Db::getInstance()->executeS($req);
     }
-    public static function countCategoriesWithFilter($filter,$id_parent=0)
+    public static function countCategoriesWithFilter($context, $filter,$id_parent=0)
     {
         $req = "SELECT count(c.id_category)
             FROM `"._DB_PREFIX_."ybc_blog_category` c
-            INNER JOIN `"._DB_PREFIX_."ybc_blog_category_shop` cs ON (c.id_category=cs.id_category AND cs.id_shop='".(int)Context::getContext()->shop->id."')
+            INNER JOIN `"._DB_PREFIX_."ybc_blog_category_shop` cs ON (c.id_category=cs.id_category AND cs.id_shop='".(int)$context->shop->id."')
             LEFT JOIN `"._DB_PREFIX_."ybc_blog_category_lang` cl ON c.id_category = cl.id_category
-            WHERE c.id_parent='".(int)$id_parent."' AND  cl.id_lang = ".(int)Context::getContext()->language->id.($filter ? $filter : '');
+            WHERE c.id_parent='".(int)$id_parent."' AND  cl.id_lang = ".(int)$context->language->id.((string)$filter ? : '');
         return  Db::getInstance()->getValue($req);
     }
-    public static function getCategoryById($id_category, $id_lang = false)
+    public static function getCategoryById($context,$id_category)
     {
-        if(!$id_lang)
-            $id_lang = (int)Context::getContext()->language->id;
         $req = "SELECT c.*, cl.*
             FROM `"._DB_PREFIX_."ybc_blog_category` c
-            INNER JOIN `"._DB_PREFIX_."ybc_blog_category_shop` cs ON (c.id_category =cs.id_category AND cs.id_shop='".(int)Context::getContext()->shop->id."')
+            INNER JOIN `"._DB_PREFIX_."ybc_blog_category_shop` cs ON (c.id_category =cs.id_category AND cs.id_shop='".(int)$context->shop->id."')
             LEFT JOIN `"._DB_PREFIX_."ybc_blog_category_lang` cl ON c.id_category = cl.id_category
-            WHERE cl.id_lang = ".(int)$id_lang." AND c.id_category=".(int)$id_category;
+            WHERE cl.id_lang = ".(int)$context->language->id." AND c.id_category=".(int)$id_category;
         return Db::getInstance()->getRow($req);
     }
-    public static function getCategoryAlias($id_category,$id_lang=0)
+    public static function getCategoryAlias($id_category,$id_lang)
     {
-        if(!$id_lang)
-            $id_lang = Context::getContext()->language->id;
-        $req = "SELECT cl.url_alias
+        $cache_key = 'YbcBlogCategory::getCategoryAlias-'.$id_category.'-'.$id_lang;
+        if(!Cache::isStored($cache_key))
+        {
+            $req = "SELECT cl.url_alias
             FROM `"._DB_PREFIX_."ybc_blog_category_lang` cl
             WHERE cl.id_category = ".(int)$id_category.' AND cl.id_lang='.(int)$id_lang;
-        $row = Db::getInstance()->getRow($req);
-        if(isset($row['url_alias']))
-            return $row['url_alias'];
-        return false;
+            $result = Db::getInstance()->getValue($req);
+            Cache::store($cache_key,$result);
+        }
+        else
+            $result = Cache::retrieve($cache_key);
+        return $result;
     }
-    public static function getIDCategoryByUrlAlias($url_alias,$id_lang=0)
+    public static function getIDCategoryByUrlAlias($url_alias, $id_shop, $id_lang=0)
     {
-        $sql = 'SELECT cs.id_category FROM `'._DB_PREFIX_.'ybc_blog_category` c
-        INNER JOIN `'._DB_PREFIX_.'ybc_blog_category_lang` cl ON (c.id_category = cl.id_category'.($id_lang ? ' AND cl.id_lang="'.(int)$id_lang.'"':'').')
-        INNER JOIN `'._DB_PREFIX_.'ybc_blog_category_shop` cs ON (cs.id_category = c.id_category AND cs.id_shop="'.(int)Context::getContext()->shop->id.'")
-        WHERE  cl.url_alias ="'.pSQL($url_alias).'"';
-        return (int)Db::getInstance()->getValue($sql);
+        $cache_key = 'YbcBlogCategory::getIDCategoryByUrlAlias-'.$url_alias.'-'.$id_lang;
+        if(!Cache::isStored($cache_key))
+        {
+            $sql = 'SELECT cs.id_category FROM `'._DB_PREFIX_.'ybc_blog_category` c
+            INNER JOIN `'._DB_PREFIX_.'ybc_blog_category_lang` cl ON (c.id_category = cl.id_category'.($id_lang ? ' AND cl.id_lang="'.(int)$id_lang.'"':'').')
+            INNER JOIN `'._DB_PREFIX_.'ybc_blog_category_shop` cs ON (cs.id_category = c.id_category AND cs.id_shop="'.(int)$id_shop.'")
+            WHERE  cl.url_alias ="'.pSQL($url_alias).'"';
+            $result = (int)Db::getInstance()->getValue($sql);
+            Cache::store($cache_key,$result);
+        }
+        else
+            $result = Cache::retrieve($cache_key);
+        return $result;
+
     }
-    public static function getChildrenBlogCategories($id_parent, $active=true, $id_lang=null,$id_category=0)
+    public static function getChildrenBlogCategories($context, $id_parent, $active=true, $id_lang=null,$id_category=0)
     {
         if(!$id_lang)
-            $id_lang = (int)Context::getContext()->language->id;
+            $id_lang = (int)$context->language->id;
         $sql = "SELECT c.id_category, cl.title,cl.image,cl.thumb
                 FROM `"._DB_PREFIX_."ybc_blog_category` c
-                LEFT JOIN `"._DB_PREFIX_."ybc_blog_category_shop` cs ON (c.id_category=cs.id_category)
+                INNER JOIN `"._DB_PREFIX_."ybc_blog_category_shop` cs ON (c.id_category=cs.id_category AND cs.id_shop='".(int)$context->shop->id."')
                 LEFT JOIN `"._DB_PREFIX_."ybc_blog_category_lang` cl ON c.id_category = cl.id_category AND cl.id_lang = ".(int)$id_lang."
-                WHERE c.id_parent = ".(int)$id_parent." ".($active ? " AND  c.enabled = 1" : "").($id_category?' AND c.id_category <'.(int)$id_category :'')." AND cs.id_shop='".(int)Context::getContext()->shop->id."' GROUP BY c.id_category ORDER BY c.sort_order";
+                WHERE c.id_parent = ".(int)$id_parent." ".($active ? " AND  c.enabled = 1" : "").($id_category? ' AND c.id_category <'.(int)$id_category :'')." ORDER BY c.sort_order";
         return Db::getInstance()->executeS($sql);
     }
     public static function getCategoriesDisabled()
     {
-        if($categories = explode(',',Configuration::get('YBC_BLOG_CATEGOGY_CUSTOMER')))
+        if(Configuration::get('YBC_BLOG_CATEGOGY_CUSTOMER'))
         {
+            $categories = explode(',',Configuration::get('YBC_BLOG_CATEGOGY_CUSTOMER'));
             $in = implode(',',array_map('intval',$categories));
         }
-        $slq="SELECT id_category FROM `"._DB_PREFIX_."ybc_blog_category` WHERE 1".(isset($in) && $in? ' AND id_category NOT IN ('.$in.')':'') ;
+        $slq="SELECT id_category FROM `"._DB_PREFIX_."ybc_blog_category` WHERE 1".(!empty($in) ? ' AND id_category NOT IN ('.$in.')':'') ;
         $categories = Db::getInstance()->executeS($slq);
         if($categories)
         {
@@ -273,10 +301,10 @@ class Ybc_blog_category_class extends ObjectModel
         }
         return array();
     }
-    public static function getBlogCategoriesTree($id_root,$active=true,$id_lang=null,$id_category=0,$link=true)
+    public static function getBlogCategoriesTree($context, $id_root,$active=true,$id_lang=null,$id_category=0,$link=true)
     {
         if(is_null($id_lang))
-            $id_lang = (int)Context::getContext()->language->id;
+            $id_lang = (int)$context->language->id;
         $tree=array();
         if($id_root==0)
         {
@@ -284,19 +312,21 @@ class Ybc_blog_category_class extends ObjectModel
                 'id_category' => 0,
                 'title' => 'Root',
             );
-            $children = self::getChildrenBlogCategories($id_root, $active, $id_lang,$id_category);
+            $children = self::getChildrenBlogCategories($context, $id_root, $active, $id_lang,$id_category);
             $temp = array();
             if($children)
             {
+                /** @var Ybc_blog $module */
+                $module = Module::getInstanceByName('ybc_blog');
                 foreach($children as &$child)
                 {
-                    $arg = self::getBlogCategoriesTree($child['id_category'], $active, $id_lang,$id_category,$link);
+                    $arg = self::getBlogCategoriesTree($context, $child['id_category'], $active, $id_lang,$id_category,$link);
                     if($arg && isset($arg[0]))
                     {
                         if($link)
                         {
-                            $arg[0]['link'] = Module::getInstanceByName('ybc_blog')->getLink('blog',array('id_category'=>$child['id_category']));
-                            $arg[0]['link_rss'] = Context::getContext()->link->getModuleLink('ybc_blog','rss',array('id_category'=>$child['id_category']));
+                            $arg[0]['link'] = $module->getLink('blog',array('id_category'=>$child['id_category']));
+                            $arg[0]['link_rss'] = $context->link->getModuleLink('ybc_blog','rss',array('id_category'=>$child['id_category']));
                         }
                         else
                         {
@@ -304,9 +334,9 @@ class Ybc_blog_category_class extends ObjectModel
                             $arg[0]['link_rss']='#';
                         }
                         if($child['thumb'] && file_exists(_PS_YBC_BLOG_IMG_DIR_.'category/thumb/'.$child['thumb']))
-                            $arg[0]['thumb_link'] = '<img src="'._PS_YBC_BLOG_IMG_.'category/thumb/'.$child['thumb'].'" style="width:10px;"/>';
+                            $arg[0]['thumb_link'] = '<'.'img src="'._PS_YBC_BLOG_IMG_.'category/thumb/'.$child['thumb'].'" style="width:20px;"/'.'>';
                         elseif($child['image'] && file_exists(_PS_YBC_BLOG_IMG_DIR_.'category/'.$child['image']))
-                            $arg[0]['thumb_link'] = '<img src="'._PS_YBC_BLOG_IMG_.'category/'.$child['image'].'" style="width:10px;"/>';
+                            $arg[0]['thumb_link'] = '<'.'img src="'._PS_YBC_BLOG_IMG_.'category/'.$child['image'].'" style="width:20px;"/'.'>';
                         $temp[] = $arg[0];
                     }
 
@@ -317,26 +347,29 @@ class Ybc_blog_category_class extends ObjectModel
         }
         else
         {
-            if(($category  = new Ybc_blog_category_class($id_root,Context::getContext()->language->id)) && Validate::isLoadedObject($category) && (!$active || $category->enabled))
+            $category  = new Ybc_blog_category_class($id_root,$context->language->id);
+            if(Validate::isLoadedObject($category) && (!$active || $category->enabled))
             {
                 $cat = array(
                     'id_category' => $id_root,
                     'title' =>$category->title,
-                    'count_posts' => Ybc_blog_post_class::countPostsWithFilter(' AND pc.id_category="'.(int)$id_root.'" AND p.enabled=1'),
+                    'count_posts' => Ybc_blog_post_class::countPostsWithFilter($context, ' AND pc.id_category="'.(int)$id_root.'" AND p.enabled=1'),
                 );
-                $children = self::getChildrenBlogCategories($id_root, $active, $id_lang,$id_category);
+                $children = self::getChildrenBlogCategories($context, $id_root, $active, $id_lang,$id_category);
                 $temp = array();
                 if($children)
                 {
+                    /** @var Ybc_blog $module */
+                    $module = Module::getInstanceByName('ybc_blog');
                     foreach($children as &$child)
                     {
-                        $arg = self::getBlogCategoriesTree($child['id_category'], $active, $id_lang,$id_category,$link);
+                        $arg = self::getBlogCategoriesTree($context, $child['id_category'], $active, $id_lang,$id_category,$link);
                         if($arg && isset($arg[0]))
                         {
                             if($link)
                             {
-                                $arg[0]['link'] = Module::getInstanceByName('ybc_blog')->getLink('blog',array('id_category'=>$child['id_category']));
-                                $arg[0]['link_rss'] = Context::getContext()->link->getModuleLink('ybc_blog','rss',array('id_category'=>$child['id_category']));
+                                $arg[0]['link'] = $module->getLink('blog',array('id_category'=>$child['id_category']));
+                                $arg[0]['link_rss'] = $context->link->getModuleLink('ybc_blog','rss',array('id_category'=>$child['id_category']));
                             }
                             else
                             {
@@ -344,9 +377,9 @@ class Ybc_blog_category_class extends ObjectModel
                                 $arg[0]['link_rss']='#';
                             }
                             if($child['thumb'] && file_exists(_PS_YBC_BLOG_IMG_DIR_.'category/thumb/'.$child['thumb']))
-                                $arg[0]['thumb_link'] = '<img src="'._PS_YBC_BLOG_IMG_.'category/thumb/'.$child['thumb'].'" style="width:10px;"/>';
+                                $arg[0]['thumb_link'] = '<'.'img src="'._PS_YBC_BLOG_IMG_.'category/thumb/'.$child['thumb'].'" style="width:20px;"/'.'>';
                             elseif($child['image'] && file_exists(_PS_YBC_BLOG_IMG_DIR_.'category/'.$child['image']))
-                                $arg[0]['thumb_link'] = '<img src="'._PS_YBC_BLOG_IMG_.'category/'.$child['image'].'" style="width:10px;"/>';
+                                $arg[0]['thumb_link'] = '<'.'img src="'._PS_YBC_BLOG_IMG_.'category/'.$child['image'].'" style="width:20px;"/'.'>';
                             $temp[] = $arg[0];
                         }
 
@@ -358,33 +391,35 @@ class Ybc_blog_category_class extends ObjectModel
         }
         return $tree;
     }
-    public static function getBlogCategoriesTreeFontEnd($id_root,$active=true,$id_lang=null,$id_category=0)
+        public static function getBlogCategoriesTreeFontEnd($context, $id_root,$active=true,$id_lang=null,$id_category=0)
     {
         $tree = array();
         if(is_null($id_lang))
-            $id_lang = (int)Context::getContext()->language->id;
+            $id_lang = (int)$context->language->id;
         if($id_root==0)
         {
             $cat = array(
                 'id_category' => 0,
                 'title' => 'Root',
             );
-            $children = self::getChildrenBlogCategories($id_root, $active, $id_lang,$id_category);
+            $children = self::getChildrenBlogCategories($context, $id_root, $active, $id_lang,$id_category);
             $temp = array();
             if($children)
             {
+                /** @var Ybc_blog $module */
+                $module = Module::getInstanceByName('ybc_blog');
                 foreach($children as &$child)
                 {
-                    $arg = self::getBlogCategoriesTreeFontEnd($child['id_category'], $active, $id_lang,$id_category);
+                    $arg = self::getBlogCategoriesTreeFontEnd($context, $child['id_category'], $active, $id_lang,$id_category);
                     if($arg && isset($arg[0]))
                     {
-                        $arg[0]['link'] = Module::getInstanceByName('ybc_blog')->getLink('blog',array('id_category'=>$child['id_category']));
-                        $arg[0]['link_rss'] = Context::getContext()->link->getModuleLink('ybc_blog','rss',array('id_category'=>$child['id_category']));
+                        $arg[0]['link'] = $module->getLink('blog',array('id_category'=>$child['id_category']));
+                        $arg[0]['link_rss'] = $context->link->getModuleLink('ybc_blog','rss',array('id_category'=>$child['id_category']));
                         if($child['thumb'] && file_exists(_PS_YBC_BLOG_IMG_DIR_.'category/thumb/'.$child['thumb']))
-                            $arg[0]['thumb_link'] = '<img src="'.Context::getContext()->link->getMediaLink(_PS_YBC_BLOG_IMG_.'category/thumb/'.$child['thumb']).'" style="width:10px;"/>';
+                            $arg[0]['thumb_link'] = '<'.'img src="'.$context->link->getMediaLink(_PS_YBC_BLOG_IMG_.'category/thumb/'.$child['thumb']).'" style="width:20px;"/'.'>';
                         elseif($child['image'] && file_exists(_PS_YBC_BLOG_IMG_DIR_.'category/'.$child['image']))
-                            $arg[0]['thumb_link'] = '<img src="'.Context::getContext()->link->getMediaLink(_PS_YBC_BLOG_IMG_.'category/'.$child['image']).'" style="width:10px;"/>';
-                        if(self::checkCategoryEnabled($child['id_category']))
+                            $arg[0]['thumb_link'] = '<'.'img src="'.$context->link->getMediaLink(_PS_YBC_BLOG_IMG_.'category/'.$child['image']).'" style="width:20px;"/'.'>';
+                        if(self::checkCategoryEnabled($context, $child['id_category']))
                             $temp[] = $arg[0];
                     }
 
@@ -395,29 +430,32 @@ class Ybc_blog_category_class extends ObjectModel
         }
         else
         {
-            if(($category = new Ybc_blog_category_class($id_root,Context::getContext()->language->id)) && Validate::isLoadedObject($category) && (!$active || $category->enabled))
+            $category = new Ybc_blog_category_class($id_root,$context->language->id);
+            if(Validate::isLoadedObject($category) && (!$active || $category->enabled))
             {
                 $cat = array(
                     'id_category' => $id_root,
                     'title' => $category->title,
-                    'count_posts' => Ybc_blog_post_class::countPostsWithFilter(' AND pc.id_category="'.(int)$id_root.'" AND p.enabled=1'),
+                    'count_posts' => Ybc_blog_post_class::countPostsWithFilter($context, ' AND pc.id_category="'.(int)$id_root.'" AND p.enabled=1'),
                 );
-                $children = self::getChildrenBlogCategories($id_root, $active, $id_lang,$id_category);
+                $children = self::getChildrenBlogCategories($context, $id_root, $active, $id_lang,$id_category);
                 $temp = array();
                 if($children)
                 {
+                    /** @var Ybc_blog $module */
+                    $module = Module::getInstanceByName('ybc_blog');
                     foreach($children as &$child)
                     {
-                        $arg = self::getBlogCategoriesTreeFontEnd($child['id_category'], $active, $id_lang,$id_category);
+                        $arg = self::getBlogCategoriesTreeFontEnd($context, $child['id_category'], $active, $id_lang,$id_category);
                         if($arg && isset($arg[0]))
                         {
-                            $arg[0]['link'] = Module::getInstanceByName('ybc_blog')->getLink('blog',array('id_category'=>$child['id_category']));
-                            $arg[0]['link_rss'] = Context::getContext()->link->getModuleLink('ybc_blog','rss',array('id_category'=>$child['id_category']));
+                            $arg[0]['link'] = $module->getLink('blog',array('id_category'=>$child['id_category']));
+                            $arg[0]['link_rss'] = $context->link->getModuleLink('ybc_blog','rss',array('id_category'=>$child['id_category']));
                             if($child['thumb'] && file_exists(_PS_YBC_BLOG_IMG_DIR_.'category/thumb/'.$child['thumb']))
-                                $arg[0]['thumb_link'] = '<img src="'.Context::getContext()->link->getMediaLink(_PS_YBC_BLOG_IMG_.'category/thumb/'.$child['thumb']).'" style="width:10px;"/>';
+                                $arg[0]['thumb_link'] = '<'.'img src="'.$context->link->getMediaLink(_PS_YBC_BLOG_IMG_.'category/thumb/'.$child['thumb']).'" style="width:20px;"/'.'>';
                             elseif($child['image'] && file_exists(_PS_YBC_BLOG_IMG_DIR_.'category/'.$child['image']))
-                                $arg[0]['thumb_link'] = '<img src="'.Context::getContext()->link->getMediaLink(_PS_YBC_BLOG_IMG_.'category/'.$child['image']).'" style="width:10px;"/>';
-                            if(self::checkCategoryEnabled($child['id_category']))
+                                $arg[0]['thumb_link'] = '<'.'img src="'.$context->link->getMediaLink(_PS_YBC_BLOG_IMG_.'category/'.$child['image']).'" style="width:20px;"/'.'>';
+                            if(self::checkCategoryEnabled($context, $child['id_category']))
                                 $temp[] = $arg[0];
                         }
 
@@ -429,14 +467,14 @@ class Ybc_blog_category_class extends ObjectModel
         }
         return $tree;
     }
-    public static function checkCategoryEnabled($id_category){
+    public static function checkCategoryEnabled($context,$id_category){
         $categories_enabled= explode(',',Configuration::get('YBC_BLOG_CATEGOGY_CUSTOMER'));
         if(in_array($id_category,$categories_enabled))
             return true;
-        elseif($childs = Ybc_blog_category_class::getChildrenBlogCategories($id_category))
+        elseif(($childs = Ybc_blog_category_class::getChildrenBlogCategories($context,$id_category)))
         {
             foreach($childs as $child)
-                if(self::checkCategoryEnabled($child['id_category']))
+                if(self::checkCategoryEnabled($context,$child['id_category']))
                     return true;
         }
         return false;
@@ -482,16 +520,16 @@ class Ybc_blog_category_class extends ObjectModel
 
         return true;
     }
-    public static function getMaxSortOrder($id_parent)
+    public static function getMaxSortOrder($id_shop, $id_parent)
     {
        return Db::getInstance()->getValue('SELECT MAX(c.sort_order) FROM `'._DB_PREFIX_.'ybc_blog_category` c
-       INNER JOIN `'._DB_PREFIX_.'ybc_blog_category_shop` cs ON c.id_category =cs.id_category AND cs.id_shop='.(int)Context::getContext()->shop->id.'
+       INNER JOIN `'._DB_PREFIX_.'ybc_blog_category_shop` cs ON c.id_category =cs.id_category AND cs.id_shop='.(int)$id_shop.'
        WHERE 1 AND c.id_parent='.(int)$id_parent );
     }
-    public static function checkUrlAliasExists($url_alias,$id_category)
+    public static function checkUrlAliasExists($id_shop, $url_alias,$id_category)
     {
         return Db::getInstance()->getValue('SELECT cs.id_category FROM `'._DB_PREFIX_.'ybc_blog_category_lang` cl
-        INNER JOIN `'._DB_PREFIX_.'ybc_blog_category_shop` cs ON cs.id_category= cl.id_category AND cs.id_shop="'.(int)Context::getContext()->shop->id.'"
+        INNER JOIN `'._DB_PREFIX_.'ybc_blog_category_shop` cs ON cs.id_category= cl.id_category AND cs.id_shop="'.(int)$id_shop.'"
         WHERE cl.url_alias ="'.pSQL($url_alias).'" AND cs.id_category!="'.(int)$id_category.'"');
     }
 }

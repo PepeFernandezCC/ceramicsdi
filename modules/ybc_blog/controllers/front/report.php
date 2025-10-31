@@ -18,12 +18,17 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 
-if (!defined('_PS_VERSION_'))
-	exit;
+if (!defined('_PS_VERSION_')) { exit; }
+
+/**
+ * Class Ybc_blogReportModuleFrontController
+ * @property Ybc_blog $module
+ */
 class Ybc_blogReportModuleFrontController extends ModuleFrontController
 {
     public function init()
-	{ 	  
+	{
+        parent::init();
 	     $json = array();
 	     $id_comment = (int)Tools::getValue('id_comment');
          $module = new Ybc_blog();
@@ -33,13 +38,12 @@ class Ybc_blogReportModuleFrontController extends ModuleFrontController
             $json['error'] = $this->module->l('This comment does not exist');
             die(json_encode($json));
          }
-         if(!isset($this->context->cookie->id_customer) || isset($this->context->cookie->id_customer) && !$this->context->cookie->id_customer)
+         if(!$this->context->cookie->__get('id_customer'))
          {
             $json['error'] = $this->module->l('Please log in to report this comment');
             die(json_encode($json));
          }
-         $context = Context::getContext();
-         if($context->customer->logged)
+         if($this->context->customer->logged)
          {
             $allow_report_comment = (int)Configuration::get('YBC_BLOG_ALLOW_REPORT') ? true : false;
          }
@@ -52,18 +56,16 @@ class Ybc_blogReportModuleFrontController extends ModuleFrontController
             $json['error'] = $this->module->l('You are not allowed to report this comment');
             die(json_encode($json));
          }
-         if(!$context->cookie->reported_comments)
+         if(!$this->context->cookie->__get('reported_comments') || !Validate::isJson($this->context->cookie->__get('reported_comments')))
             $reportedComments = array();
          else
-            $reportedComments = @unserialize($context->cookie->reported_comments); 
+            $reportedComments = json_decode($this->context->cookie->__get('reported_comments'),true);
          
          if(is_array($reportedComments) && !in_array($id_comment, $reportedComments))
          {
              $reportedComments[] = $id_comment;
-             $context->cookie->reported_comments = @serialize($reportedComments);
-             $context->cookie->write();	
-             $customer = new Customer((int)$this->context->cookie->id_customer);             
-
+             $this->context->cookie->__set('reported_comments', json_encode($reportedComments));
+             $customer = new Customer((int)$this->context->cookie->__get('id_customer'));
              $comment->reported = 0;
              $comment->update();             
              $json['success'] = $this->module->l('Successfully reported');
@@ -78,7 +80,7 @@ class Ybc_blogReportModuleFrontController extends ModuleFrontController
                 $comment->id_post,
                 $comment->name
              );
-             if(($subject = Ybc_blog_email_template_class::getSubjectByTemplate('reported_comment_customer')))
+             if(($subject = Ybc_blog_email_template_class::getSubjectByTemplate('reported_comment_customer', $this->context->language->id)))
              {
                 $post = new Ybc_blog_post_class($comment->id_post,$this->context->language->id);
                 $template_mail=array(
@@ -157,32 +159,30 @@ class Ybc_blogReportModuleFrontController extends ModuleFrontController
         if(Configuration::get('YBC_BLOG_ALERT_EMAILS'))
         {
             $emails = explode(',',Configuration::get('YBC_BLOG_ALERT_EMAILS'));
-            if($emails)
+            $link_view_comment= $this->module->getBaseLink().Configuration::get('YBC_BLOG_ADMIN_FORDER');
+            foreach($emails as $email)
             {
-                $link_view_comment= $this->module->getBaseLink().Configuration::get('YBC_BLOG_ADMIN_FORDER');
-                foreach($emails as $email)
-                {
-                    if(Validate::isEmail($email))
+                if(Validate::isEmail($email))
+                {   $mail_lang_id = $this->context->language->id;
+                    if(($employee = Ybc_blog_defines::getEmployeeByEmail($email)))
                     {
-                        $employeeObj = new Employee();
-                        if(($employee = $employeeObj->getByEmail($email)) && ($lang = new Language($employee->id_lang)) && $lang->active)
+                        $lang = new Language($employee->id_lang);
+                        if($lang->active)
                             $mail_lang_id = $lang->id;
-                        else
-                            $mail_lang_id = Context::getContext()->language->id;
-                        if($subject = Ybc_blog_email_template_class::getSubjectByTemplate('report_comment',$mail_lang_id))
-                        {
-                            $template_mail['{author_name}'] = Configuration::get('PS_SHOP_NAME');
-                            $template_mail['{link_view_comment}'] = $link_view_comment;
-                            Mail::Send(
-                                $mail_lang_id, 
-                                'report_comment', 
-                                $subject, 
-                                $template_mail,  
-                                trim($email), null, null, null, null, null, 
-                                $mailDir, 
-                                false, $this->context->shop->id
-                            );
-                        }
+                    }
+                    if($subject = Ybc_blog_email_template_class::getSubjectByTemplate('report_comment',$mail_lang_id))
+                    {
+                        $template_mail['{author_name}'] = Configuration::get('PS_SHOP_NAME');
+                        $template_mail['{link_view_comment}'] = $link_view_comment;
+                        Mail::Send(
+                            $mail_lang_id,
+                            'report_comment',
+                            $subject,
+                            $template_mail,
+                            trim($email), null, null, null, null, null,
+                            $mailDir,
+                            false, $this->context->shop->id
+                        );
                     }
                 }
             }

@@ -18,8 +18,7 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 
-if (!defined('_PS_VERSION_'))
-	exit;
+if (!defined('_PS_VERSION_')) { exit; }
 function upgrade_module_3_2_9($object)
 {
     $sqls = array();
@@ -32,11 +31,8 @@ function upgrade_module_3_2_9($object)
      `id_ybc_blog_email_template` INT(11) NOT NULL ,`id_lang` INT(11) NOT NULL , 
      `subject` VARCHAR(1000) NOT NULL ,
      PRIMARY KEY (`id_ybc_blog_email_template`, `id_lang`)) ENGINE= '._MYSQL_ENGINE_.' DEFAULT CHARSET=UTF8';
-     if($sqls)
-     {
-        foreach($sqls as $sql)
-            Db::getInstance()->execute($sql);
-     }
+    foreach($sqls as $sql)
+        Db::getInstance()->execute($sql);
      $object->initEmailTemplate(false);
      return true;
 }

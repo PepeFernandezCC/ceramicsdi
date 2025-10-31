@@ -18,12 +18,17 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 
-if (!defined('_PS_VERSION_'))
-	exit;
+if (!defined('_PS_VERSION_')) { exit; }
+
+/**
+ * Class Ybc_blogGalleryModuleFrontController
+ * @property Ybc_blog $module;
+ */
 class Ybc_blogGalleryModuleFrontController extends ModuleFrontController
 {
     public $display_column_left = false;
     public $display_column_right = false;
+    protected $redirectionExtraExcludedKeys = ['module'];
     public function __construct()
 	{
 		parent::__construct();
@@ -31,9 +36,6 @@ class Ybc_blogGalleryModuleFrontController extends ModuleFrontController
             $this->display_column_right=true;
         if(Configuration::get('YBC_BLOG_SIDEBAR_POSITION')=='left')
             $this->display_column_left =true;
-		$this->context = Context::getContext();
-        $this->module= new Ybc_blog();
-        
 	}
 	public function init()
 	{
@@ -42,13 +44,14 @@ class Ybc_blogGalleryModuleFrontController extends ModuleFrontController
         {
             Tools::redirect($this->module->getLink('gallery'));
         }
+        parent::canonicalRedirection($this->module->getLink('gallery'));
 	}
     public function getAlternativeLangsUrl()
     {
         $alternativeLangs = array();
         $languages = Language::getLanguages(true, $this->context->shop->id);
 
-        if ($languages < 2) {
+        if (count($languages) < 2) {
             // No need to display alternative lang if there is only one enabled
             return $alternativeLangs;
         }
@@ -58,31 +61,68 @@ class Ybc_blogGalleryModuleFrontController extends ModuleFrontController
         }
         return $alternativeLangs;
     }
-	public function initContent()
-	{
-        parent::initContent();
-        $this->module->setMetas();
-	    $module = new Ybc_blog();
+    public function _initContent()
+    {
         $galleryData = $this->getGalleries();
         $prettySkin = Configuration::get('YBC_BLOG_GALLERY_SKIN');
         $this->context->smarty->assign(
             array(
                 'blog_galleries' => $galleryData['galleries'],
                 'blog_paggination' => $galleryData['paggination'],
-                'prettySkin' => in_array($prettySkin, array('dark_square','dark_rounded','default','facebook','light_rounded','light_square')) ? $prettySkin : 'dark_square', 
+                'prettySkin' => in_array($prettySkin, array('dark_square','dark_rounded','default','facebook','light_rounded','light_square')) ? $prettySkin : 'dark_square',
                 'prettyAutoPlay' => (int)Configuration::get('YBC_BLOG_GALLERY_AUTO_PLAY') ? 1 : 0,
                 'per_row'=> Configuration::get('YBC_BLOG_GALLERY_PER_ROW') ? Configuration::get('YBC_BLOG_GALLERY_PER_ROW'):12,
-                'path' => $module->getBreadCrumb(),
-                'blog_layout' => Tools::strtolower(Configuration::get('YBC_BLOG_LAYOUT')),                 
-                'breadcrumb' => $module->is17 ? $module->getBreadCrumb() : false,
+                'blog_layout' => Tools::strtolower(Configuration::get('YBC_BLOG_LAYOUT')),
                 'image_folder' => _PS_YBC_BLOG_IMG_,
-                
+                'is17' => $this->module->is17,
             )
         );
-        if($module->is17)
-            $this->setTemplate('module:ybc_blog/views/templates/front/gallery.tpl');      
+        if(Tools::isSubmit('loadajax'))
+        {
+            $list_galleries = $this->module->display($this->module->getLocalPath(),'more_gallery_list.tpl');
+            die(
+                json_encode(
+                    array(
+                        'list_galleries'=> $list_galleries,
+                        'blog_paggination'=>$galleryData['paggination'],
+                    )
+                )
+            );
+        }
+
+    }
+	public function initContent()
+	{
+        parent::initContent();
+        $this->module->setMetas();
+        $this->context->smarty->assign(
+            array(
+                'prettyAutoPlay' => (int)Configuration::get('YBC_BLOG_GALLERY_AUTO_PLAY') ? 1 : 0,
+            )
+        );
+        if(Tools::isSubmit('loadajax'))
+        {
+            $this->_initContent();
+        }
+        else
+        {
+            $page = (int)Tools::getValue('page');
+            if(!$this->module->isCached('gallery_list.tpl',$this->module->_getCacheId($page)))
+            {
+                $this->_initContent();
+            }
+            $this->context->smarty->assign(
+                array(
+                    'gallery_list_content' => $this->module->display($this->module->getLocalPath(),'gallery_list.tpl',$this->module->_getCacheId($page)),
+                    'path' => $this->module->getBreadCrumb(),
+                    'breadcrumb' => $this->module->is17 ? $this->module->getBreadCrumb() : false,
+                )
+            );
+        }
+        if($this->module->is17)
+            $this->setTemplate('module:ybc_blog/views/templates/front/gallery_list.tpl');
         else  
-            $this->setTemplate('gallery_16.tpl');                
+            $this->setTemplate('gallery_list_16.tpl');
 	}    
     public function getGalleries()
     {
@@ -91,9 +131,9 @@ class Ybc_blogGalleryModuleFrontController extends ModuleFrontController
         $module = new Ybc_blog();
         //Paggination
         $page = (int)Tools::getValue('page');
-        if($page<1)
+        if($page < 1)
             $page =1;
-        $totalRecords = (int)Ybc_blog_gallery_class::countGalleriesWithFilter($filter);
+        $totalRecords = (int)Ybc_blog_gallery_class::countGalleriesWithFilter($this->context, $filter);
         $paggination = new Ybc_blog_paggination_class();            
         $paggination->total = $totalRecords;
         $paggination->url = $module->getLink('gallery', array('page'=>"_page_"));
@@ -105,7 +145,7 @@ class Ybc_blogGalleryModuleFrontController extends ModuleFrontController
         $start = $paggination->limit * ($page - 1);
         if($start < 0)
             $start = 0;
-        $galleries = Ybc_blog_gallery_class::getGalleriesWithFilter($filter, $sort, $start, $paggination->limit);
+        $galleries = Ybc_blog_gallery_class::getGalleriesWithFilter($this->context, $filter, $sort, $start, $paggination->limit);
         if($galleries)
         {
             foreach($galleries as &$gallery)

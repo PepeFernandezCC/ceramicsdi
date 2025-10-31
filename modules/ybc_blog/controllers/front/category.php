@@ -18,12 +18,17 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 
-if (!defined('_PS_VERSION_'))
-	exit;
+if (!defined('_PS_VERSION_')) { exit; }
+
+/**
+ * Class Ybc_blogCategoryModuleFrontController
+ * @property Ybc_blog $module
+ */
 class Ybc_blogCategoryModuleFrontController extends ModuleFrontController
 {
     public $display_column_left = false;
     public $display_column_right = false;
+    protected $redirectionExtraExcludedKeys = ['module'];
     public function __construct()
 	{
 		parent::__construct();
@@ -31,19 +36,22 @@ class Ybc_blogCategoryModuleFrontController extends ModuleFrontController
             $this->display_column_right=true;
         if(Configuration::get('YBC_BLOG_SIDEBAR_POSITION')=='left')
             $this->display_column_left =true;
-		$this->context = Context::getContext();
-        $this->module= new Ybc_blog();
 	}
 	public function init()
 	{
 		parent::init();
+        if($this->module->friendly && Tools::strpos($_SERVER['REQUEST_URI'],'/module/ybc_blog') !==false)
+        {
+            $this->module->redirect($this->module->getLink('category'));
+        }
+        parent::canonicalRedirection($this->module->getLink('category'));
 	}
     public function getAlternativeLangsUrl()
     {
         $alternativeLangs = array();
         $languages = Language::getLanguages(true, $this->context->shop->id);
 
-        if ($languages < 2) {
+        if (count($languages) < 2) {
             // No need to display alternative lang if there is only one enabled
             return $alternativeLangs;
         }
@@ -53,10 +61,8 @@ class Ybc_blogCategoryModuleFrontController extends ModuleFrontController
         }
         return $alternativeLangs;
     }
-	public function initContent()
-	{
-		parent::initContent();
-        $this->module->setMetas();
+    private function _initContent()
+    {
         $categoryData = $this->getCategories();
         if(isset($categoryData['categories']) && $categoryData['categories'])
         {
@@ -64,41 +70,70 @@ class Ybc_blogCategoryModuleFrontController extends ModuleFrontController
             {
                 $category['link'] = $this->module->getLink('blog',array('id_category'=>$category['id_category']));
                 if($category['image'])
-                     $category['image'] = $this->context->link->getMediaLink(_PS_YBC_BLOG_IMG_.'category/'.$category['image']);  
+                    $category['image'] = $this->context->link->getMediaLink(_PS_YBC_BLOG_IMG_.'category/'.$category['image']);
                 if($category['thumb'])
                     $category['thumb'] = $this->context->link->getMediaLink(_PS_YBC_BLOG_IMG_.'category/thumb/'.$category['thumb']);
                 $category['count_posts'] = (int)Ybc_blog_post_class::getCountPostByIDCategory($category['id_category']);
-                $category['sub_categogires'] = Ybc_blog_category_class::getCategoriesWithFilter(' AND c.enabled=1',false,false,false,$category['id_category']);
+                $category['sub_categogires'] = Ybc_blog_category_class::getCategoriesWithFilter($this->context, ' AND c.enabled=1',false,false,false,$category['id_category']);
                 if($category['sub_categogires'])
                 {
                     foreach($category['sub_categogires'] as &$sub)
                     {
                         $sub['link'] = $this->module->getLink('blog',array('id_category'=>$sub['id_category']));
                     }
-                }    
+                }
             }
         }
         $this->context->smarty->assign(
             array(
                 'blog_categories' => $categoryData['categories'],
                 'blog_paggination' => $categoryData['paggination'],
-                'path' => $this->module->getBreadCrumb(),
-                'blog_layout' => Tools::strtolower(Configuration::get('YBC_BLOG_LAYOUT')),                 
-                'breadcrumb' => $this->module->is17 ? $this->module->getBreadCrumb() : false,
+                'blog_layout' => Tools::strtolower(Configuration::get('YBC_BLOG_LAYOUT')),
                 'show_date' => (int)Configuration::get('YBC_BLOG_SHOW_POST_DATE') ? true : false,
-                'date_format' => trim((string)Configuration::get('YBC_BLOG_DATE_FORMAT')),
                 'image_folder' => _PS_YBC_BLOG_IMG_.'category/',
+                'is17' => $this->module->is17,
             )
         );
         if(Tools::isSubmit('loadajax'))
         {
-            $this->module->loadMoreCategories($categoryData);
+            die(
+                json_encode(
+                    array(
+                        'list_blog'=> $this->module->display($this->module->getLocalPath(),'more_categories_list.tpl'),
+                        'blog_paggination'=>$categoryData['paggination'],
+                    )
+                )
+            );
+        }
+    }
+	public function initContent()
+	{
+		parent::initContent();
+        $this->module->setMetas();
+        if(Tools::isSubmit('loadajax'))
+        {
+            $this->_initContent();
+        }
+        else
+        {
+            $page = (int)Tools::getValue('page');
+            if(!$this->module->isCached('categories_list.tpl',$this->module->_getCacheId($page)))
+            {
+                $this->_initContent();
+            }
+            $this->context->smarty->assign(
+                array(
+                    'path' => $this->module->getBreadCrumb(),
+                    'breadcrumb' => $this->module->is17 ? $this->module->getBreadCrumb() : false,
+                    'categories_list_content' => $this->module->display($this->module->getLocalPath(),'categories_list.tpl',$this->module->_getCacheId($page)),
+                )
+            );
         }
         if($this->module->is17)
-            $this->setTemplate('module:ybc_blog/views/templates/front/list-category.tpl');      
+            $this->setTemplate('module:ybc_blog/views/templates/front/category.tpl');
         else  
-            $this->setTemplate('list-category-16.tpl');                
-	}    
+            $this->setTemplate('category-16.tpl');
+	}
     public function getCategories()
     {
         $filter = ' AND c.enabled = 1 AND id_parent=0';            
@@ -108,7 +143,7 @@ class Ybc_blogCategoryModuleFrontController extends ModuleFrontController
         $page = (int)Tools::getValue('page');
         if($page < 1)
             $page = 1;
-        $totalRecords = (int)Ybc_blog_category_class::countCategoriesWithFilter($filter);
+        $totalRecords = (int)Ybc_blog_category_class::countCategoriesWithFilter($this->context, $filter);
         $paggination = new Ybc_blog_paggination_class();            
         $paggination->total = $totalRecords;
         $paggination->url = $module->getLink('category', array('page'=>"_page_"));
@@ -120,7 +155,7 @@ class Ybc_blogCategoryModuleFrontController extends ModuleFrontController
         $start = $paggination->limit * ($page - 1);
         if($start < 0)
             $start = 0;
-        $categories = Ybc_blog_category_class::getCategoriesWithFilter($filter, $sort, $start, $paggination->limit);
+        $categories = Ybc_blog_category_class::getCategoriesWithFilter($this->context, $filter, $sort, $start, $paggination->limit);
         return array(
             'categories' => $categories , 
             'paggination' => $paggination->render()

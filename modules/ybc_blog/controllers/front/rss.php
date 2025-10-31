@@ -18,31 +18,36 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 
-if (!defined('_PS_VERSION_'))
-	exit;
+if (!defined('_PS_VERSION_')) { exit; }
+/**
+ * Class Ybc_blogRssModuleFrontController
+ * @property Ybc_blog $module
+ */
 class Ybc_blogRssModuleFrontController extends ModuleFrontController
 {
     public $display_column_left = false;
     public $display_column_right = false;
+    protected $redirectionExtraExcludedKeys = ['module'];
     public function __construct()
 	{
 		parent::__construct();
         $this->display_column_right=false;
         $this->display_column_left =false;
-		$this->context = Context::getContext();
-        $this->module= new Ybc_blog();
-        
 	}
     public function init()
 	{
 		parent::init();
+        if($this->module->friendly && Tools::strpos($_SERVER['REQUEST_URI'],'/module/ybc_blog') !==false)
+        {
+            $this->module->redirect($this->module->getLink('rss'));
+        }
 	}
     public function getAlternativeLangsUrl()
     {
         $alternativeLangs = array();
         $languages = Language::getLanguages(true, $this->context->shop->id);
 
-        if ($languages < 2) {
+        if (count($languages) < 2) {
             // No need to display alternative lang if there is only one enabled
             return $alternativeLangs;
         }
@@ -61,7 +66,7 @@ class Ybc_blogRssModuleFrontController extends ModuleFrontController
                 if($id_category =(int)Tools::getValue('id_category') )
                 {
                     $ybc_category= new Ybc_blog_category_class($id_category,$this->context->language->id);
-                    $posts = Ybc_blog_post_class::getPostsByIdCategory($id_category);
+                    $posts = Ybc_blog_post_class::getPostsByIdCategory($this->context, $id_category);
                     if($posts)
                     {
                         foreach($posts as &$post)
@@ -73,38 +78,38 @@ class Ybc_blogRssModuleFrontController extends ModuleFrontController
                             $post['link'] = $this->module->getLink('blog',array('id_post'=>$post['id_post']));
                         }
                     }
-                    $xml ='<?xml version="1.0" encoding="UTF-8"?>';
-                    $xml .='<rss xmlns:slash="http://purl.org/rss/1.0/modules/slash/" version="2.0">'."\n";
-                    $xml .='<channel>'."\n";
-                        $xml .='<title>'.$this->cleanUTF8($ybc_category->title).'</title>'."\n";
-                        $xml .='<description>'.($ybc_category->description ? strip_tags($this->cleanUTF8($ybc_category->description)):'').'</description>'."\n";
+                    $xml ='<'.'?xml version="1.0" encoding="UTF-8"?'.'>';
+                    $xml .='<'.'rss xmlns:slash="http://purl.org/rss/1.0/modules/slash/" version="2.0"'.'>'."\n";
+                    $xml .='<'.'channel'.'>'."\n";
+                        $xml .='<'.'title'.'>'.$this->cleanUTF8($ybc_category->title).'<'.'/title'.'>'."\n";
+                        $xml .='<'.'description'.'>'.($ybc_category->description ? strip_tags($this->cleanUTF8($ybc_category->description)):'').'<'.'/description'.'>'."\n";
                         if($ybc_category->image)
                         {
-                            $xml .='<image>'."\n";
-                            $xml .='<url>'.$this->context->link->getMediaLink(_PS_YBC_BLOG_IMG_.'category/'.$ybc_category->image).'</url>'."\n";
-                            $xml .='<title>'.$this->cleanUTF8($ybc_category->title).'</title>'."\n";
-                            $xml .='<link>'.$this->module->getLink().'</link>'."\n";
-                            $xml .='</image>'."\n";
+                            $xml .='<'.'image'.'>'."\n";
+                            $xml .='<'.'url'.'>'.$this->context->link->getMediaLink(_PS_YBC_BLOG_IMG_.'category/'.$ybc_category->image).'<'.'/url'.'>'."\n";
+                            $xml .='<'.'title'.'>'.$this->cleanUTF8($ybc_category->title).'<'.'/title'.'>'."\n";
+                            $xml .='<'.'link'.'>'.$this->module->getLink().'<'.'/link'.'>'."\n";
+                            $xml .='<'.'/image'.'>'."\n";
                         }  
-                        $xml .='<pubDate>'.date('r',strtotime($ybc_category->datetime_added)).'</pubDate>'."\n";
-                        $xml .='<generator>'.$this->context->shop->domain.'</generator>'."\n";
-                        $xml .='<link>'.$this->module->getLink('blog',array('id_category'=>$ybc_category->id)).'</link>'."\n";
+                        $xml .='<'.'pubDate'.'>'.date('r',strtotime($ybc_category->datetime_added)).'<'.'/pubDate'.'>'."\n";
+                        $xml .='<'.'generator'.'>'.$this->context->shop->domain.'<'.'/generator'.'>'."\n";
+                        $xml .='<'.'link'.'>'.$this->module->getLink('blog',array('id_category'=>$ybc_category->id)).'<'.'/link'.'>'."\n";
                         if($posts)
                         {
                             $xml .= $this->getXml($posts);
                         }
-                    $xml .= '</channel>';
-                    $xml .='</rss>';
+                    $xml .= '<'.'/channel'.'>';
+                    $xml .='<'.'/rss'.'>';
                     if (ob_get_length() > 0) {
                         ob_end_clean();
                     }
-                    header("Content-Type: application/rss+xml; charset=UTF-8");
+                    header("Content-Type: application/xml; charset=UTF-8");
                     mb_internal_encoding('UTF-8');
                     die($xml);
                }
                if(Tools::isSubmit('latest'))
                {
-                    $posts = Ybc_blog_post_class::getPostsWithFilter(' AND p.enabled=1','p.id_post DESC, ');
+                    $posts = Ybc_blog_post_class::getPostsWithFilter($this->context, ' AND p.enabled=1','p.id_post DESC, ');
                     if($posts)
                     {
                         foreach($posts as &$post)
@@ -116,30 +121,30 @@ class Ybc_blogRssModuleFrontController extends ModuleFrontController
                             $post['link'] = $this->module->getLink('blog',array('id_post'=>$post['id_post']));
                         }
                     }
-                    $xml ='<?xml version="1.0" encoding="UTF-8"?>';
-                    $xml .='<rss xmlns:slash="http://purl.org/rss/1.0/modules/slash/" version="2.0">'."\n";
-                    $xml .='<channel>'."\n";
-                        $xml .='<title>'.$this->module->l('Latest posts','rss').'</title>'."\n";
-                        $xml .='<description></description>'."\n";
-                        $xml .='<generator>'.$this->context->shop->domain.'</generator>'."\n";
-                        $xml .='<link>'.$this->module->getLink('blog',array('latest'=>1)).'</link>'."\n";
+                    $xml ='<'.'?xml version="1.0" encoding="UTF-8"?'.'>';
+                    $xml .='<'.'rss xmlns:slash="http://purl.org/rss/1.0/modules/slash/" version="2.0"'.'>'."\n";
+                    $xml .='<'.'channel'.'>'."\n";
+                        $xml .='<'.'title'.'>'.$this->module->l('Latest posts','rss').'<'.'/title'.'>'."\n";
+                        $xml .='<'.'description'.'>'.'<'.'/description'.'>'."\n";
+                        $xml .='<'.'generator'.'>'.$this->context->shop->domain.'<'.'/generator'.'>'."\n";
+                        $xml .='<'.'link'.'>'.$this->module->getLink('blog',array('latest'=>1)).'<'.'/link'.'>'."\n";
                         if($posts)
                         {
                             $xml .= $this->getXml($posts);
                         }
-                    $xml .= '</channel>';
-                    $xml .='</rss>';
+                    $xml .= '<'.'/channel'.'>';
+                    $xml .='<'.'/rss'.'>';
                     if (ob_get_length() > 0) {
                         ob_end_clean();
                     }
-                    header("Content-Type: application/rss+xml; charset=UTF-8");
+                    header("Content-Type: application/xml; charset=UTF-8");
                     mb_internal_encoding('UTF-8');
                     die($xml);
                     
                }     
                if(Tools::isSubmit('popular'))
                {
-                    $posts = Ybc_blog_post_class::getPostsWithFilter(' AND p.enabled=1','p.click_number desc,');
+                    $posts = Ybc_blog_post_class::getPostsWithFilter($this->context, ' AND p.enabled=1','p.click_number desc,');
                     if($posts)
                     {
                         foreach($posts as &$post)
@@ -151,29 +156,29 @@ class Ybc_blogRssModuleFrontController extends ModuleFrontController
                             $post['link'] = $this->module->getLink('blog',array('id_post'=>$post['id_post']));
                         }
                     }
-                    $xml ='<?xml version="1.0" encoding="UTF-8"?>';
-                    $xml .='<rss xmlns:slash="http://purl.org/rss/1.0/modules/slash/" version="2.0">'."\n";
-                    $xml .='<channel>'."\n";
-                    $xml .='<title>'.$this->module->l('Featured posts','rss').'</title>'."\n";
-                    $xml .='<description></description>'."\n";
-                    $xml .='<generator>'.$this->context->shop->domain.'</generator>'."\n";
-                    $xml .='<link>'.$this->module->getBaseLink().'</link>'."\n";
+                    $xml ='<'.'?xml version="1.0" encoding="UTF-8"?'.'>';
+                    $xml .='<'.'rss xmlns:slash="http://purl.org/rss/1.0/modules/slash/" version="2.0"'.'>'."\n";
+                    $xml .='<'.'channel>'."\n";
+                    $xml .='<'.'title>'.$this->module->l('Featured posts','rss').'<'.'/title'.'>'."\n";
+                    $xml .='<'.'description'.'>'.'<'.'/description'.'>'."\n";
+                    $xml .='<'.'generator'.'>'.$this->context->shop->domain.'<'.'/generator'.'>'."\n";
+                    $xml .='<'.'link'.'>'.$this->module->getBaseLink().'<'.'/link'.'>'."\n";
                     if($posts)
                     {
                         $xml .= $this->getXml($posts);
                     }
-                    $xml .= '</channel>';
-                    $xml .='</rss>';
+                    $xml .= '<'.'/channel'.'>';
+                    $xml .='<'.'/rss'.'>';
                     if (ob_get_length() > 0) {
                         ob_end_clean();
                     }
-                    header("Content-Type: application/rss+xml; charset=UTF-8");
+                    header("Content-Type: application/xml; charset=UTF-8");
                     mb_internal_encoding('UTF-8');
                     die($xml); 
                }
                if(Tools::isSubmit('featured'))
                {
-                    $posts = Ybc_blog_post_class::getPostsWithFilter(' AND p.enabled=1 AND p.is_featured=1',$this->module->sort);
+                    $posts = Ybc_blog_post_class::getPostsWithFilter($this->context, ' AND p.enabled=1 AND p.is_featured=1',$this->module->sort);
                     if($posts)
                     {
                         foreach($posts as &$post)
@@ -185,30 +190,30 @@ class Ybc_blogRssModuleFrontController extends ModuleFrontController
                             $post['link'] = $this->module->getLink('blog',array('id_post'=>$post['id_post']));
                         }
                     }
-                    $xml ='<?xml version="1.0" encoding="UTF-8"?>';
-                    $xml .='<rss xmlns:slash="http://purl.org/rss/1.0/modules/slash/" version="2.0">'."\n";
-                    $xml .='<channel>'."\n";
-                    $xml .='<title>'.$this->module->l('Featured posts','rss').'</title>'."\n";
-                    $xml .='<description></description>'."\n";
-                    $xml .='<generator>'.$this->context->shop->domain.'</generator>'."\n";
-                    $xml .='<link>'.$this->module->getBaseLink().'</link>'."\n";
+                    $xml ='<'.'?xml version="1.0" encoding="UTF-8"?'.'>';
+                    $xml .='<'.'rss xmlns:slash="http://purl.org/rss/1.0/modules/slash/" version="2.0"'.'>'."\n";
+                    $xml .='<'.'channel>'."\n";
+                    $xml .='<'.'title>'.$this->module->l('Featured posts','rss').'<'.'/title'.'>'."\n";
+                    $xml .='<'.'description'.'>'.'<'.'/description'.'>'."\n";
+                    $xml .='<'.'generator'.'>'.$this->context->shop->domain.'<'.'/generator'.'>'."\n";
+                    $xml .='<'.'link'.'>'.$this->module->getBaseLink().'<'.'/link'.'>'."\n";
                     if($posts)
                     {
                         $xml .= $this->getXml($posts);
                     }
-                    $xml .= '</channel>';
-                    $xml .='</rss>';
+                    $xml .= '<'.'/channel'.'>';
+                    $xml .='<'.'/rss'.'>';
                     if (ob_get_length() > 0) {
                         ob_end_clean();
                     }
-                    header("Content-Type: application/rss+xml; charset=UTF-8");
+                    header("Content-Type: application/xml; charset=UTF-8");
                     mb_internal_encoding('UTF-8');
                     die($xml);   
                 }
                 if($id_author= (int)Tools::getValue('id_author'))
                 {
                     $is_customer = (int)Tools::getValue('is_customer') ? 1 :0;
-                    $posts = Ybc_blog_post_class::getPostsWithFilter(' AND p.added_by="'.(int)$id_author.'" AND p.is_customer="'.(int)$is_customer.'"',$this->module->sort);
+                    $posts = Ybc_blog_post_class::getPostsWithFilter($this->context, ' AND p.added_by="'.(int)$id_author.'" AND p.is_customer="'.(int)$is_customer.'"',$this->module->sort);
                     if($posts)
                     {
                         foreach($posts as &$post)
@@ -220,67 +225,36 @@ class Ybc_blogRssModuleFrontController extends ModuleFrontController
                             $post['link'] = $this->module->getLink('blog',array('id_post'=>$post['id_post']));
                         }
                     }
-                    $xml ='<?xml version="1.0" encoding="UTF-8"?>';
-                    $xml .='<rss xmlns:slash="http://purl.org/rss/1.0/modules/slash/" version="2.0">'."\n";
-                    $xml .='<channel>'."\n";
-                    $xml .='<title>'.$this->module->l('Featured posts','rss').'</title>'."\n";
-                    $xml .='<description></description>'."\n";
-                    $xml .='<generator>'.$this->context->shop->domain.'</generator>'."\n";
-                    $xml .='<link>'.$this->module->getBaseLink().'</link>'."\n";
+                    $xml ='<'.'?xml version="1.0" encoding="UTF-8"?'.'>';
+                    $xml .='<'.'rss xmlns:slash="http://purl.org/rss/1.0/modules/slash/" version="2.0"'.'>'."\n";
+                    $xml .='<'.'channel'.'>'."\n";
+                    $xml .='<'.'title'.'>'.$this->module->l('Featured posts','rss').'<'.'/title'.'>'."\n";
+                    $xml .='<'.'description'.'>'.'<'.'/description'.'>'."\n";
+                    $xml .='<'.'generator'.'>'.$this->context->shop->domain.'<'.'/generator'.'>'."\n";
+                    $xml .='<'.'link'.'>'.$this->module->getBaseLink().'<'.'/link'.'>'."\n";
                     if($posts)
                     {
                         $xml .= $this->getXml($posts);
                     }
-                    $xml .= '</channel>';
-                    $xml .='</rss>';
+                    $xml .= '<'.'/channel'.'>';
+                    $xml .='<'.'/rss'.'>';
                     if (ob_get_length() > 0) {
                         ob_end_clean();
                     }
-                    header("Content-Type: application/rss+xml; charset=UTF-8");
+                    header("Content-Type: application/xml; charset=UTF-8");
                     mb_internal_encoding('UTF-8');
                     die($xml);   
-                }         
-                $prettySkin = Configuration::get('YBC_BLOG_GALLERY_SKIN');
-                $randomcode = time();
-                $rating = (int)Tools::getValue('rating');
-                $id_post = (int)Tools::getValue('id_post');
+                }
+                $rss_type = Configuration::get('YBC_BLOC_RSS_TYPE')? explode(',',Configuration::get('YBC_BLOC_RSS_TYPE')):array();
                 $this->context->smarty->assign(
                     array(
-                        'allowComments' => (int)Configuration::get('YBC_BLOG_ALLOW_COMMENT'),
-                        'allowGuestsComments' => (int)Configuration::get('YBC_BLOG_ALLOW_GUEST_COMMENT') ? true : false,
-                        'blogCommentAction' => $this->module->getLink('blog',array('id_post'=>(int)$id_post)),
-                        'hasLoggedIn' => $this->context->customer->isLogged(true), 
-                        'YBC_BLOC_RSS_TYPE' => Configuration::get('YBC_BLOC_RSS_TYPE')? explode(',',Configuration::get('YBC_BLOC_RSS_TYPE')):array(),
+                        'YBC_BLOC_RSS_TYPE' => $rss_type,
                         'link_latest_posts' => $this->module->getLink('rss',array('latest_posts'=>1)),
+                        'breadcrumb' => $this->module->is17 ? $this->module->getBreadCrumb() : false,
                         'link_popular_posts' => $this->module->getLink('rss',array('popular_posts'=>1)),
                         'link_featured_posts' => $this->module->getLink('rss',array('featured_posts'=>1)),
-                        'allow_report_comment' =>(int)Configuration::get('YBC_BLOG_ALLOW_REPORT') ? true : false,
-                        'display_related_products' =>(int)Configuration::get('YBC_BLOG_SHOW_RELATED_PRODUCTS') ? true : false,
-                        'allow_rating' => (int)Configuration::get('YBC_BLOG_ALLOW_RATING') ? true : false,
-                        'default_rating' => (int)$rating > 0 && (int)$rating <=5 ? (int)$rating  :(int)Configuration::get('YBC_BLOG_DEFAULT_RATING'),
-                        'use_capcha' => (int)Configuration::get('YBC_BLOG_USE_CAPCHA') ? true : false,
-                        'use_facebook_share' => (int)Configuration::get('YBC_BLOG_ENABLE_FACEBOOK_SHARE') ? true : false,
-                        'use_google_share' => (int)Configuration::get('YBC_BLOG_ENABLE_GOOGLE_SHARE') ? true : false,
-                        'use_twitter_share' => (int)Configuration::get('YBC_BLOG_ENABLE_TWITTER_SHARE') ? true : false,                      
-                        'allow_like' => (int)Configuration::get('YBC_BLOG_ALLOW_LIKE') ? true : false,
-                        'show_date' => (int)Configuration::get('YBC_BLOG_SHOW_POST_DATE') ? true : false,
-                        'show_tags' => (int)Configuration::get('YBC_BLOG_SHOW_POST_TAGS') ? true : false,
-                        'show_categories' => (int)Configuration::get('YBC_BLOG_SHOW_POST_CATEGORIES') ? true : false,
-                        'show_views' => (int)Configuration::get('YBC_BLOG_SHOW_POST_VIEWS') ? true : false,
-                        'enable_slideshow' => (int)Configuration::get('YBC_BLOG_ENABLE_POST_SLIDESHOW') ? true : false,
-                        'prettySkin' => in_array($prettySkin, array('dark_square','dark_rounded','default','facebook','light_rounded','light_square')) ? $prettySkin : 'dark_square', 
-                        'prettyAutoPlay' => (int)Configuration::get('YBC_BLOG_GALLERY_AUTO_PLAY') ? 1 : 0,
-                        'path' => $this->module->getBreadCrumb(),
-                        'show_author' => (int)Configuration::get('YBC_BLOG_SHOW_POST_AUTHOR') ? 1 : 0,
-                        'blog_random_code' => $randomcode,
-                        'date_format' => trim((string)Configuration::get('YBC_BLOG_DATE_FORMAT')),
-                        'blog_layout' => Tools::strtolower(Configuration::get('YBC_BLOG_LAYOUT')), 
-                        'blog_related_product_type' => Tools::strtolower(Configuration::get('YBC_RELATED_PRODUCTS_TYPE')),
-                        'blog_related_posts_type' => Tools::strtolower(Configuration::get('YBC_RELATED_POSTS_TYPE')),
-                        'blog_template_dir' => dirname(__FILE__).'/../../views/templates/front',
-                        'breadcrumb' => $this->module->is17 ? $this->module->getBreadCrumb() : false,
-                        'blog_dir' => $this->module->blogDir,
-                        'image_folder' => _PS_YBC_BLOG_IMG_,
+                        'blogRssCategory' => in_array('category',$rss_type) ? $this->displayBlogRssCategory():'',
+                        'blogRssAuthor' => in_array('authors',$rss_type) ? $this->displayBlogRssAuthor():'',
                     )
                 );
                if($this->module->is17)
@@ -290,6 +264,29 @@ class Ybc_blogRssModuleFrontController extends ModuleFrontController
            }
            else
                Tools::redirect($this->context->link->getPageLink('index'));
+
+    }
+    private function displayBlogRssCategory()
+    {
+        if(!$this->module->isCached('rss_categories_block.tpl',$this->module->_getCacheId()))
+        {
+            $blockCategTree = Ybc_blog_category_class::getBlogCategoriesTree($this->context, 0);
+            $this->context->smarty->assign(array(
+                'blockCategTree'=> $blockCategTree,
+                'branche_tpl_path' => _PS_MODULE_DIR_.'ybc_blog/views/templates/hook/rss-category-tree-branch.tpl'
+            ));
+        }
+        return $this->module->display($this->module->getLocalPath(), 'rss_categories_block.tpl',$this->module->_getCacheId());
+    }
+    private function displayBlogRssAuthor()
+    {
+        if(!$this->module->isCached('rss_author_block.tpl',$this->module->_getCacheId()))
+        {
+            $this->context->smarty->assign(
+                Ybc_blog_post_class::getBlogRssAuthor($this->context->language->id)
+            );
+        }
+        return $this->module->display($this->module->getLocalPath(),'rss_author_block.tpl',$this->module->_getCacheId());
 
     }
     public function cleanUTF8($some_string)
@@ -303,17 +300,17 @@ class Ybc_blogRssModuleFrontController extends ModuleFrontController
         $xml ='';
         foreach($posts as $post)
         {
-            $xml .='<item>'."\n";
-                $xml .='<title>'.$post['title'].'</title>'."\n";
-                $xml .='<description><![CDATA[';
-                $xml.='<a href="'.($post['thumb'] ? $post['thumb'] : ($post['image']?$post['image']:'')).'"><img width=130 height=100 src="'.($post['thumb'] ? $post['thumb'] : ($post['image']?$post['image']:'')).'" ></a>';
-                $xml .='</br>'.strip_tags($this->cleanUTF8($post['short_description'])); 
-                $xml.=']]></description>'."\n";
-                $xml .='<pubDate>'.date('r',strtotime($post['datetime_added'])).'</pubDate>'."\n";
-                $xml .='<link>'.$post['link'].'</link>'."\n";;
-                $xml .='<guid>'.$post['link'].'</guid>'."\n";;
-                $xml .='<slash:comments>0</slash:comments>'."\n";;
-            $xml .='</item>'."\n";;
+            $xml .='<'.'item'.'>'."\n";
+                $xml .='<'.'title'.'>'.$post['title'].'<'.'/title'.'>'."\n";
+                $xml .='<'.'description'.'>'.'<'.'![CDATA[';
+                $xml.='<'.'a href="'.($post['thumb'] ? $post['thumb'] : ($post['image']?$post['image']:'')).'"'.'>'.'<'.'img width=130 height=100 src="'.($post['thumb'] ? $post['thumb'] : ($post['image']?$post['image']:'')).'" '.'>'.'<'.'/a'.'>';
+                $xml .='<'.'/br'.'>'.strip_tags($this->cleanUTF8($post['short_description']));
+                $xml.=']]'.'>'.'<'.'/description>'."\n";
+                $xml .='<'.'pubDate'.'>'.date('r',strtotime($post['datetime_added'])).'<'.'/pubDate'.'>'."\n";
+                $xml .='<'.'link'.'>'.$post['link'].'<'.'/link'.'>'."\n";;
+                $xml .='<'.'guid'.'>'.$post['link'].'<'.'/guid'.'>'."\n";;
+                $xml .='<'.'slash:comments'.'>'.'0'.'<'.'/slash:comments'.'>'."\n";;
+            $xml .='<'.'/item>'."\n";;
         }
         return $xml;
     }

@@ -18,70 +18,73 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 
-if (!defined('_PS_VERSION_'))
-	exit;
+if (!defined('_PS_VERSION_')) { exit; }
+
+/**
+ * Class Ybc_blogLikeModuleFrontController
+ * @property Ybc_blog $module;
+ */
 class Ybc_blogLikeModuleFrontController extends ModuleFrontController
 {
     public function init()
 	{
-            $json = array();
-            $id_post = (int)Tools::getValue('id_post');
-            if(!(($post = new Ybc_blog_post_class($id_post)) && Validate::isLoadedObject($post)))
+	    parent::init();
+        $json = array();
+        $id_post = (int)Tools::getValue('id_post');
+        $post = new Ybc_blog_post_class($id_post);
+        if(!(Validate::isLoadedObject($post)))
+        {
+            $json['error'] = $this->module->l('This post does not exist','like');
+            die(json_encode($json));
+        }
+        if(!(int)Configuration::get('YBC_BLOG_ALLOW_LIKE'))
+        {
+            $json['error'] = $this->module->l('You are not allowed to like the post','like');
+            die(json_encode($json));
+        }
+        if(!(int)Configuration::get('YBC_BLOG_GUEST_LIKE') && !$this->context->customer->id)
+        {
+            $json['error'] = $this->module->l('You need to log in to like the post','like');
+            die(json_encode($json));
+        }
+        $browser= $this->module->getDevice();
+        $likeds = $this->context->cookie->__get('liked_posts');
+        if(!$this->module->isLikedPost($id_post))
+        {
+            if($likeds && Validate::isJson($likeds))
             {
-                $json['error'] = $this->module->l('This post does not exist','like');
-                die(json_encode($json));
-            }
-            if(!(int)Configuration::get('YBC_BLOG_ALLOW_LIKE'))
-            {
-                $json['error'] = $this->module->l('You are not allowed to like the post','like');
-                die(json_encode($json));
-            }
-            if(!(int)Configuration::get('YBC_BLOG_GUEST_LIKE') && !$this->context->customer->id)
-            {
-                $json['error'] = $this->module->l('You need to log in to like the post','like');
-                die(json_encode($json));
-            }
-            $browser= $this->module->getDevice();
-            if(!$this->module->isLikedPost($id_post))
-            {
-                if($this->context->cookie->liked_posts)
-                {
-                    $likedPosts = @unserialize($this->context->cookie->liked_posts);
-                    $likedPosts[]=$id_post;
-                    $this->context->cookie->liked_posts = @serialize($likedPosts);
-                    $this->context->cookie->write();
-                }
-                else
-                {
-                    $likedPosts=array();
-                    $likedPosts[]=$id_post;
-                    $this->context->cookie->liked_posts = @serialize($likedPosts);
-                    $this->context->cookie->write();
-                }
-                $likes =  $post->addLike($browser);
-                $json['likes'] = $likes;
-                $json['success'] = $this->module->l('Successfully liked the post','like');
-                $json['liked']=true;
-                die(json_encode($json));
+                $likedPosts = json_decode($likeds,true);
+                $likedPosts[]=$id_post;
+                $this->context->cookie->__set('liked_posts', json_encode($likedPosts));
             }
             else
             {
-                if($this->context->cookie->liked_posts)
-                {
-                    $likedPosts = @unserialize($this->context->cookie->liked_posts);
-                    foreach($likedPosts as $key=>$val)
-                    {
-                        if($val==$id_post)
-                            unset($likedPosts[$key]);
-                    }
-                    $this->context->cookie->liked_posts = @serialize($likedPosts);
-                    $this->context->cookie->write();
-                }
-
-                $json['likes'] = $post->unLike();
-                $json['success'] = $this->module->l('Successfully unliked the post','like');
-                $json['liked']=false;
+                $likedPosts=array();
+                $likedPosts[]=$id_post;
+                $this->context->cookie->__set('liked_posts', json_encode($likedPosts));
             }
+            $likes = $post->addLike($browser, $this->context->customer->id);
+            $json['likes'] = $likes;
+            $json['success'] = $this->module->l('Successfully liked the post','like');
+            $json['liked']=true;
             die(json_encode($json));
+        }
+        else
+        {
+            if($likeds && Validate::isJson($likeds))
+            {
+                $likedPosts = json_decode($likeds,true);
+                foreach($likedPosts as $key=>$val)
+                {
+                    if($val==$id_post)
+                        unset($likedPosts[$key]);
+                }
+                $this->context->cookie->__set('liked_posts', json_encode($likedPosts));
+            }
+            $json['likes'] = $post->unLike( $this->context->customer->id);
+            $json['success'] = $this->module->l('Successfully unliked the post','like');
+            $json['liked']=false;
+        }
+        die(json_encode($json));
 	}
 }

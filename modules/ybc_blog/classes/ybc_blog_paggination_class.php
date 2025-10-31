@@ -18,8 +18,7 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 
-if (!defined('_PS_VERSION_'))
-	exit;
+if (!defined('_PS_VERSION_')) { exit; }
 class Ybc_blog_paggination_class {
 	public $total = 0;
 	public $page = 1;
@@ -27,10 +26,10 @@ class Ybc_blog_paggination_class {
 	public $num_links = 10;
 	public $url = '';
 	public $text = 'Showing {start} to {end} of {total} ({pages} Pages)';
-	public $text_first = '<span>|&lt;</span>';
-	public $text_last = '<span>&gt;|</span>';
-	public $text_next = '<span>&gt;</span>';
-	public $text_prev = '<span>&lt;</span>';
+	public $text_first;
+	public $text_last;
+	public $text_next;
+	public $text_prev;
 	public $style_links = 'links';
 	public $style_results = 'results';
     public $alias;
@@ -39,12 +38,20 @@ class Ybc_blog_paggination_class {
     public function __construct()
     {
         $this->alias = Configuration::get('YBC_BLOG_ALIAS');
-        $this->friendly = (int)Configuration::get('YBC_BLOG_FRIENDLY_URL') && (int)Configuration::get('PS_REWRITING_SETTINGS') ? true : false;        
+        $this->friendly = (int)Configuration::get('YBC_BLOG_FRIENDLY_URL') && (int)Configuration::get('PS_REWRITING_SETTINGS') ? true : false;
+        /** @var Ybc_blog $module */
+        $module = Module::getInstanceByName('ybc_blog');
+        $this->text_first = $module->displayText('|&lt;','span');
+        $this->text_last = $module->displayText('&gt;|','span');
+        $this->text_next = $module->displayText('&gt;','span');
+        $this->text_prev = $module->displayText('&lt;','span');
     }
 	public function render() {
         if($this->limit!=20 && Tools::isSubmit('paginator_'.$this->name.'_select_limit'))
             $this->url .= '&paginator_'.$this->name.'_select_limit='.$this->limit;
 		$total = $this->total;
+		/** @var Ybc_blog $module */
+		$module = Module::getInstanceByName('ybc_blog');
 		if($total<=1)
             return false;
 		if ($this->page < 1) {
@@ -65,7 +72,7 @@ class Ybc_blog_paggination_class {
 		$output = '';
 		
 		if ($page > 1) {
-			$output .= ' <a class = "frist" href="' . $this->replacePage(1) . '">' . $this->text_first . '</a> <a class = "prev" href="' . $this->replacePage($page-1) . '">' . $this->text_prev . '</a> ';
+			$output .= $module->displayText($this->text_first,'a','frist',null,$this->replacePage(1)).$module->displayText($this->text_prev,'a','prev',null,$this->replacePage($page-1));
     	}
 
 		if ($num_pages > 1) {
@@ -93,9 +100,9 @@ class Ybc_blog_paggination_class {
 
 			for ($i = $start; $i <= $end; $i++) {
 				if ($page == $i) {
-					$output .= ' <b>' . $i . '</b> ';
+					$output .= $module->displayText($i,'b');
 				} else {
-					$output .= ' <a href="' . $this->replacePage($i) . '">' . $i . '</a> ';
+					$output .= $module->displayText($i,'a',null,null,$this->replacePage($i));
 				}	
 			}
 							
@@ -105,7 +112,7 @@ class Ybc_blog_paggination_class {
 		}
 		
    		if ($page < $num_pages) {
-			$output .= ' <a class = "next" href="' . $this->replacePage($page+1) . '">' . $this->text_next . '</a> <a class = "last" href="' . $this->replacePage($num_pages) . '">' . $this->text_last . '</a> ';
+			$output .= $module->displayText($this->text_next,'a','next',null,$this->replacePage($page+1)). $module->displayText($this->text_last,'a','last',null,$this->replacePage($num_pages));
 		}
 		
 		$find = array(
@@ -123,7 +130,7 @@ class Ybc_blog_paggination_class {
 		);
 		if($num_pages==1)
             $this->text = $this->l('Showing {start} to {end} of {total} ({pages} Page)');
-		return ($output ? '<div class="links">' . $output . '</div>' : '') . '<div class="' . $this->style_results . '">' . str_replace($find, $replace, $this->text) . '</div>'.Module::getInstanceByName('ybc_blog')->displayPaggination($limit,$this->name);
+		return ($output ? $module->displayText($output,'dev','links') : '') . $module->displayText(str_replace($find, $replace, $this->text),'div',$this->style_results).$module->displayPaggination($limit,$this->name);
 	}
     public function replacePage($page)
     {

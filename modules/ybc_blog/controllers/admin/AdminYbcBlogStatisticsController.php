@@ -17,10 +17,14 @@
  * @copyright  ETS Software Technology Co., Ltd
  * @license    Valid for 1 website (or project) for each purchase of license
  */
- 
+
+if (!defined('_PS_VERSION_')) { exit; }
 require_once(_PS_MODULE_DIR_.'ybc_blog/classes/ybc_blog_paggination_class.php'); 
-if (!defined('_PS_VERSION_'))
-    	exit;
+
+/**
+ * Class AdminYbcBlogStatisticsController
+ * @property Ybc_blog $module;
+ */
 class AdminYbcBlogStatisticsController extends ModuleAdminController
 {
     public function __construct()
@@ -28,19 +32,26 @@ class AdminYbcBlogStatisticsController extends ModuleAdminController
        parent::__construct();
        $this->bootstrap = true;
     }
+    public function init()
+    {
+        parent::init();
+        if (Tools::isSubmit('ajaxpostsearch'))
+        {
+            return $this->ajaxpostsearch();
+        }
+    }
     public function initContent()
     {
         parent::initContent();
-        if(Tools::isSubmit('clearviewLogSubmit'))
-        {
-            Ybc_blog_post_class::clearAllViewLog();
-            Tools::redirectAdmin($this->context->link->getAdminLink('AdminYbcBlogStatistics').'&tab_ets=view-log&conf=1');
+        if (Tools::isSubmit('clearviewLogSubmit')) {
+            Ybc_blog_post_class::clearAllViewLog($this->context->shop->id);
+            Tools::redirectAdmin($this->context->link->getAdminLink('AdminYbcBlogStatistics') . '&tab_ets=view-log&conf=1');
         }
-        if(Tools::isSubmit('clearlikeLogSubmit'))
-        {
-            Ybc_blog_post_class::clearAllLikeLog();
-            Tools::redirectAdmin($this->context->link->getAdminLink('AdminYbcBlogStatistics').'&tab_ets=like-log&conf=1');
+        if (Tools::isSubmit('clearlikeLogSubmit')) {
+            Ybc_blog_post_class::clearAllLikeLog($this->context->shop->id);
+            Tools::redirectAdmin($this->context->link->getAdminLink('AdminYbcBlogStatistics') . '&tab_ets=like-log&conf=1');
         }
+
     }
     public function renderList()
     {
@@ -71,15 +82,15 @@ class AdminYbcBlogStatisticsController extends ModuleAdminController
                 {
                     $likes[] =array(
                         0 => $year,
-                        1 => Ybc_blog_post_class::getCountLike($year,'','',$id_post),
+                        1 => Ybc_blog_post_class::getCountLike($this->context->shop->id, $year,'','',$id_post),
                     );
                     $views[] =array(
                         0 => $year,
-                        1 => Ybc_blog_post_class::getCountView($year,'','',$id_post),
+                        1 => Ybc_blog_post_class::getCountView($this->context->shop->id, $year,'','',$id_post),
                     );
                     $comments[] =array(
                         0 => $year,
-                        1 => Ybc_blog_post_class::getCountComment($year,'','',$id_post),
+                        1 => Ybc_blog_post_class::getCountComment($this->context->shop->id, $year,'','',$id_post),
                     );
                 }
             }
@@ -93,45 +104,42 @@ class AdminYbcBlogStatisticsController extends ModuleAdminController
                     {
                         $likes[] =array(
                             0 => $key,
-                            1 => Ybc_blog_post_class::getCountLike($year,$key,'',$id_post),
+                            1 => Ybc_blog_post_class::getCountLike($this->context->shop->id,$year,$key,'',$id_post),
                         );
                         $views[] =array(
                             0 => $key,
-                            1 => Ybc_blog_post_class::getCountView($year,$key,'',$id_post),
+                            1 => Ybc_blog_post_class::getCountView($this->context->shop->id, $year,$key,'',$id_post),
                         );
                         $comments[] =array(
                             0 => $key,
-                            1 => Ybc_blog_post_class::getCountComment($year,$key,'',$id_post),
+                            1 => Ybc_blog_post_class::getCountComment($this->context->shop->id, $year,$key,'',$id_post),
                         );
                     }
                 }
             }
             elseif($month)
             {
-                $days = function_exists('cal_days_in_month') ? cal_days_in_month(CAL_GREGORIAN, (int)$month, (int)$year) : (int)date('t', mktime(0, 0, 0, (int)$month, 1, (int)$year));
-                if($days)
+                $days = (int)date('t', mktime(0, 0, 0, (int)$month, 1, (int)$year));
+                for($day=1; $day<=$days;$day++)
                 {
-                    for($day=1; $day<=$days;$day++)
-                    {
-                        $likes[] =array(
-                            0 => $day,
-                            1 => Ybc_blog_post_class::getCountLike($year,$month,$day,$id_post),
-                        );
-                        $views[] =array(
-                            0 => $day,
-                            1 => Ybc_blog_post_class::getCountView($year,$month,$day,$id_post),
-                        );
-                        $comments[] =array(
-                            0 => $day,
-                            1 => Ybc_blog_post_class::getCountComment($year,$month,$day,$id_post),
-                        );
-                    }
+                    $likes[] =array(
+                        0 => $day,
+                        1 => Ybc_blog_post_class::getCountLike($this->context->shop->id, $year,$month,$day,$id_post),
+                    );
+                    $views[] =array(
+                        0 => $day,
+                        1 => Ybc_blog_post_class::getCountView($this->context->shop->id, $year,$month,$day,$id_post),
+                    );
+                    $comments[] =array(
+                        0 => $day,
+                        1 => Ybc_blog_post_class::getCountComment($this->context->shop->id, $year,$month,$day,$id_post),
+                    );
                 }
             }
         }
         $lineChart =array( 
             array(
-                'key'=> $this->module->l('Views'),
+                'key'=>$this->module->l('Views', 'AdminYbcBlogStatisticsController'),
                 'values'=>$views,
                 'disables'=>1,
             ) 
@@ -139,7 +147,7 @@ class AdminYbcBlogStatisticsController extends ModuleAdminController
         if(Configuration::get('YBC_BLOG_ALLOW_LIKE'))
         {
            $lineChart[]= array(
-                'key'=> $this->module->l('Likes'),
+                'key'=>$this->module->l('Likes', 'AdminYbcBlogStatisticsController'),
                 'values'=>$likes,
                 'disables'=>1,
             );
@@ -147,13 +155,13 @@ class AdminYbcBlogStatisticsController extends ModuleAdminController
         if(Configuration::get('YBC_BLOG_ALLOW_COMMENT'))
         {
             $lineChart[]=array(
-                'key'=> $this->module->l('Comments'),
+                'key'=>$this->module->l('Comments', 'AdminYbcBlogStatisticsController'),
                 'values'=>$comments,
                 'disables'=>1,
             );
         }
-        $posts= Ybc_blog_post_class::getPostsWithFilter(' AND p.enabled=1');
-        $total= Ybc_blog_post_class::getCountLogViews();
+        $posts= Ybc_blog_post_class::getPostsWithFilter($this->context, ' AND p.enabled=1');
+        $total= Ybc_blog_post_class::getCountLogViews($this->context->shop->id);
         $limit=20;
         $page = (int)Tools::getValue('page',1);
         if($page<=0)
@@ -164,7 +172,7 @@ class AdminYbcBlogStatisticsController extends ModuleAdminController
         $pagination_view->limit=$limit;
         $pagination_view->page= $page;
         $pagination_view->total=$total;
-        $viewlogs = Ybc_blog_post_class::getLogViews($start,$limit);
+        $viewlogs = Ybc_blog_post_class::getLogViews($this->context, $start,$limit);
         if($viewlogs)
         {
             foreach($viewlogs as &$log)
@@ -174,10 +182,10 @@ class AdminYbcBlogStatisticsController extends ModuleAdminController
                     $log['class'] = Tools::strtolower($browser[0]);
                 else
                     $log['class']='default';
-                $log['title'] = '<a title="'.$log['title'].'" target="_blank" href="'.$this->module->getLink('blog',array('id_post'=>$log['id_post'])).'">'.$log['title'].'</a>';
+                $log['title'] = $this->module->displayText($log['title'],'a',null,null,$this->module->getLink('blog',array('id_post'=>$log['id_post'])),true);
             }   
         }
-        $total = Ybc_blog_post_class::getCountLogLikes();
+        $total = Ybc_blog_post_class::getCountLogLikes($this->context->shop->id);
         $limit=20;
         $page = (int)Tools::getValue('page',1);
         if($page<=0)
@@ -188,7 +196,7 @@ class AdminYbcBlogStatisticsController extends ModuleAdminController
         $pagination_like->limit=$limit;
         $pagination_like->page= $page;
         $pagination_like->total=$total;
-        $likelogs = Ybc_blog_post_class::getLogLikes($start,$limit);
+        $likelogs = Ybc_blog_post_class::getLogLikes($this->context, $start,$limit);
         if($likelogs)
         {
             foreach($likelogs as &$log)
@@ -198,7 +206,7 @@ class AdminYbcBlogStatisticsController extends ModuleAdminController
                     $log['class'] = Tools::strtolower($browser[0]);
                 else
                     $log['class']='default';
-                $log['title'] = '<a title="'.$log['title'].'" target="_blank" href="'.$this->module->getLink('blog',array('id_post'=>$log['id_post'])).'">'.$log['title'].'</a>';
+                $log['title'] = $this->module->displayText($log['title'],'a',null,null,$this->module->getLink('blog',array('id_post'=>$log['id_post'])),true);;
             }   
         }
         if(($id_post = (int)Tools::getValue('id_post')))
@@ -224,7 +232,7 @@ class AdminYbcBlogStatisticsController extends ModuleAdminController
                 'posts' => $posts,
                 'tab_ets' => $tab_ets,
                 'control'=> 'statistics',
-                'ybc_blog_ajax_post_url' => $this->context->link->getAdminLink('AdminModules', true).'&configure='.$this->module->name.'&tab_module='.$this->module->tab.'&module_name='.$this->module->name.'&ajaxpostsearch=true',
+                'ybc_blog_ajax_post_url' => $this->context->link->getAdminLink('AdminYbcBlogStatistics', true).'&ajaxpostsearch=true',
                 'YBC_BLOG_ALLOW_LIKE' => Configuration::get('YBC_BLOG_ALLOW_LIKE'),
                 'pagination_text_view' => $pagination_view->render(),
                 'pagination_text_like' => $pagination_like->render(),
@@ -234,5 +242,19 @@ class AdminYbcBlogStatisticsController extends ModuleAdminController
         );
         return  $this->module->display(_PS_MODULE_DIR_.$this->module->name.DIRECTORY_SEPARATOR.$this->module->name.'.php', 'statistics.tpl');
     }
-    
+    public function ajaxPostSearch()
+    {
+        $query = Tools::getValue('q', false);
+        if (!$query OR $query == '' OR (Tools::strlen($query) < 3 AND !Validate::isUnsignedId($query)) OR !Validate::isCleanHtml($query) )
+            die();
+        $posts= Ybc_blog_post_class::getPostsWithFilter($this->context, ' AND ( p.id_post="'.(int)$query.'" OR pl.title like "%'.pSQL($query).'%")');
+        if($posts)
+        {
+            foreach ($posts as $post)
+            {
+                echo $post['title'].'|'.$post['id_post'].'|'.($post['thumb'] ?  $this->context->link->getMediaLink(_PS_YBC_BLOG_IMG_.'post/thumb/'.$post['thumb']) :  $this->context->link->getMediaLink(_PS_YBC_BLOG_IMG_.'post/'.$post['image']) )."\n";
+            }
+        }
+        die();
+    }
 }

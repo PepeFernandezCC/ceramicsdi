@@ -18,33 +18,9 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 
-if (!defined('_PS_VERSION_'))
-	exit;
+if (!defined('_PS_VERSION_')) { exit; }
 function upgrade_module_3_3_2()
 {
     Configuration::deleteByName('YBC_BLOG_LABEL_TABLE_OF_CONTENT');
-    $ybc_defines = new Ybc_blog_defines();   
-    $languages = Language::getLanguages(false);     
-    if($ybc_defines->configs)
-    {
-        foreach($ybc_defines->configs as $key => $config)
-        {
-            if(Configuration::hasKey($key)===false)
-            {
-                if(isset($config['lang']) && $config['lang'])
-                {
-                    $values = array();
-                    foreach($languages as $lang)
-                    {
-                        $values[$lang['id_lang']] = isset($config['default']) ? $config['default'] : '';
-                    }
-                    Configuration::updateValue($key, $values);
-                }
-                else
-                    Configuration::updateValue($key, isset($config['default']) ? $config['default'] : '');
-            }
-            
-        }
-    }
     return true;
 }

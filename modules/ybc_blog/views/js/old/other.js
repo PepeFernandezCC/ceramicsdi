@@ -102,8 +102,8 @@ function stickytableft(){
             $('.ets-mod-left').removeClass('scroll_heading');
         }
     };
-    sticky_navigation();
+    //sticky_navigation();
     $('.ets-mod').scroll(function() {
-        sticky_navigation();
+        //sticky_navigation();
     });
 }

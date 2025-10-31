@@ -18,9 +18,14 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 
-if (!defined('_PS_VERSION_'))
-	exit;
-class Ybc_blogManagementMyinfoModuleFrontController extends ModuleFrontController
+if (!defined('_PS_VERSION_')) { exit; }
+
+/**
+ * Class class Ybc_blogManagementMyInfoModuleFrontController extends ModuleFrontController
+
+ * @property Ybc_blog $module
+ */
+class Ybc_blogManagementMyInfoModuleFrontController extends ModuleFrontController
 {
     public $display_column_left = false;
     public $display_column_right = false;
@@ -31,9 +36,6 @@ class Ybc_blogManagementMyinfoModuleFrontController extends ModuleFrontControlle
 		parent::__construct();
         $this->display_column_right=false;
         $this->display_column_left =false;
-		$this->context = Context::getContext();
-        $this->module= new Ybc_blog();
-        
 	}
 	public function init()
 	{
@@ -48,7 +50,7 @@ class Ybc_blogManagementMyinfoModuleFrontController extends ModuleFrontControlle
         $alternativeLangs = array();
         $languages = Language::getLanguages(true, $this->context->shop->id);
 
-        if ($languages < 2) {
+        if (count($languages) < 2) {
             // No need to display alternative lang if there is only one enabled
             return $alternativeLangs;
         }
@@ -77,7 +79,7 @@ class Ybc_blogManagementMyinfoModuleFrontController extends ModuleFrontControlle
         $this->context->smarty->assign(
             array(
                 'errors_html'=>$this->_errros ? $this->module->displayError($this->_errros) : false,
-                'form_html_post'=>$this->module->renderFormAuthorInformation(),
+                'form_html_post'=>$this->renderFormAuthorInformation(),
                 'sucsecfull_html' => $this->sussecfull ? $this->module->displaySuccessMessage($this->sussecfull):'',
                 'breadcrumb' => $this->module->is17 ? $this->getBreadCrumb() : false, 
                 'path' => $this->getBreadCrumb(),
@@ -87,6 +89,23 @@ class Ybc_blogManagementMyinfoModuleFrontController extends ModuleFrontControlle
             $this->setTemplate('module:ybc_blog/views/templates/front/my_blog_info.tpl');      
         else         
             $this->setTemplate('my_blog_info16.tpl');  
+    }
+    private function renderFormAuthorInformation(){
+        $id_employee_post = (int)Ybc_blog_post_employee_class::getIdEmployeePostById($this->context->customer->id);
+        if($id_employee_post)
+            $imployeePost = new Ybc_blog_post_employee_class($id_employee_post,$this->context->language->id);
+        $this->context->smarty->assign(
+            array(
+                'name_author'=> isset($imployeePost) && $imployeePost->name ? $imployeePost->name : $this->context->customer->firstname.' '.$this->context->customer->lastname,
+                'author_description' => isset($imployeePost) && $imployeePost->description ? $imployeePost->description :'',
+                'author_avata' => isset($imployeePost->avata) && $imployeePost->avata ? $this->context->link->getMediaLink(_PS_YBC_BLOG_IMG_.'avata/'.$imployeePost->avata) :'',
+                'avata_default' => $this->context->link->getMediaLink(_PS_YBC_BLOG_IMG_.'avata/'.(Configuration::get('YBC_BLOG_IMAGE_AVATA_DEFAULT')? Configuration::get('YBC_BLOG_IMAGE_AVATA_DEFAULT') : 'default_customer.png')),
+                'link_delete_image' => $this->context->link->getModuleLink('ybc_blog','managementmyinfo',array('delemployeeimage'=>1)),
+                'action_link' => $this->context->link->getModuleLink($this->module->name,'managementmyinfo'),
+                'allow_update_avata' => (int)Configuration::get('YBC_BLOG_ENABLE_CUSTOMER_UPLOAD_AVATA'),
+            )
+        );
+        return $this->module->display($this->module->getLocalPath(),'form_author.tpl');
     }
     public function _postAuthor()
     {
@@ -99,7 +118,7 @@ class Ybc_blogManagementMyinfoModuleFrontController extends ModuleFrontControlle
             {
                 if(file_exists(_PS_YBC_BLOG_IMG_DIR_.'avata/'.$employeePost->avata))
                     @unlink(_PS_YBC_BLOG_IMG_DIR_.'avata/'.$employeePost->avata);
-                Tools::redirectLink($this->context->link->getModuleLink($this->module->name,'managementmyinfo',array('deletedimage'=>1)));
+                Tools::redirect($this->context->link->getModuleLink($this->module->name,'managementmyinfo',array('deletedimage'=>1)));
             }
         }
         if(Tools::isSubmit('submitAuthorManagement'))
@@ -131,47 +150,50 @@ class Ybc_blogManagementMyinfoModuleFrontController extends ModuleFrontControlle
                     $employeePost->description[$language['id_lang']] = $author_description;
                 } 
             }
-            $oldImage = false;
-            $newImage = false;
-            if(isset($_FILES['author_avata']['tmp_name']) && isset($_FILES['author_avata']['name']) && $_FILES['author_avata']['name'])
+            if((int)Configuration::get('YBC_BLOG_ENABLE_CUSTOMER_UPLOAD_AVATA'))
             {
-                $_FILES['author_avata']['name'] = str_replace(array(' ','(',')','!','@','#','+'),'-',$_FILES['author_avata']['name']);
-                if(!Validate::isFileName($_FILES['author_avata']['name']))
-                    $this->_errros[] =$this->module->l('Avatar file name is invalid','managementmyinfo');
-                else
+                $oldImage = false;
+                $newImage = false;
+                if(isset($_FILES['author_avata']['tmp_name']) && isset($_FILES['author_avata']['name']) && $_FILES['author_avata']['name'])
                 {
+                    $_FILES['author_avata']['name'] = str_replace(array(' ','(',')','!','@','#','+'),'-',$_FILES['author_avata']['name']);
+                    if(!Validate::isFileName($_FILES['author_avata']['name']))
+                        $this->_errros[] =$this->module->l('Avatar file name is invalid','managementmyinfo');
+                    else
+                    {
 
-                    if(file_exists(_PS_YBC_BLOG_IMG_DIR_.'avata/'.$_FILES['author_avata']['name']))
-                    {
-                        $file_name = $this->module->createNewFileName(_PS_YBC_BLOG_IMG_DIR_.'avata/',$_FILES['author_avata']['name']);
+                        if(file_exists(_PS_YBC_BLOG_IMG_DIR_.'avata/'.$_FILES['author_avata']['name']))
+                        {
+                            $file_name = $this->module->createNewFileName(_PS_YBC_BLOG_IMG_DIR_.'avata/',$_FILES['author_avata']['name']);
+                        }
+                        else
+                            $file_name = $_FILES['author_avata']['name'];
+                        $type = Tools::strtolower(Tools::substr(strrchr($_FILES['author_avata']['name'], '.'), 1));
+                        $imagesize = @getimagesize($_FILES['author_avata']['tmp_name']);
+                        if (isset($_FILES['author_avata']) &&
+                            !empty($_FILES['author_avata']['tmp_name']) &&
+                            !empty($imagesize) &&
+                            in_array($type, array('jpg', 'gif', 'jpeg', 'png'))
+                        )
+                        {
+                            $max_file_size = Configuration::get('PS_ATTACHMENT_MAXIMUM_SIZE');
+                            $temp_name = tempnam(_PS_TMP_IMG_DIR_, 'PS');
+                            if($_FILES['author_avata']['size'] > $max_file_size*1024*1024)
+                                $this->_errros[] = sprintf($this->module->l('Avatar image file is too large. Limit: %sMb','managementmyinfo'),$max_file_size);
+                            elseif (!$temp_name || !move_uploaded_file($_FILES['author_avata']['tmp_name'], $temp_name))
+                                $this->_errros[] = $this->module->l('Cannot upload the file','managementmyinfo');
+                            elseif (!ImageManager::resize($temp_name, _PS_YBC_BLOG_IMG_DIR_.'avata/'.$file_name, (int)Configuration::get('YBC_BLOG_IMAGE_AVATA_WIDTH'), (int)Configuration::get('YBC_BLOG_IMAGE_AVATA_HEIGHT'), $type))
+                                $this->_errros[] = $this->module->l('An error occurred during the image upload process.','managementmyinfo');
+                            if (file_exists($temp_name))
+                                @unlink($temp_name);
+                            if($employeePost->avata)
+                                $oldImage = _PS_YBC_BLOG_IMG_DIR_.'avata/'.$employeePost->avata;
+                            $employeePost->avata = $file_name;
+                            $newImage = _PS_YBC_BLOG_IMG_DIR_.'avata/'.$employeePost->avata;
+                        }
+                        else
+                            $this->_errros[] = $this->module->l('Avatar type is invalid','managementmyinfo');
                     }
-                    else
-                        $file_name = $_FILES['author_avata']['name'];
-                    $type = Tools::strtolower(Tools::substr(strrchr($_FILES['author_avata']['name'], '.'), 1));
-                    $imagesize = @getimagesize($_FILES['author_avata']['tmp_name']);
-                    if (isset($_FILES['author_avata']) &&
-                        !empty($_FILES['author_avata']['tmp_name']) &&
-                        !empty($imagesize) &&
-                        in_array($type, array('jpg', 'gif', 'jpeg', 'png'))
-                    )
-                    {
-                        $max_file_size = Configuration::get('PS_ATTACHMENT_MAXIMUM_SIZE');
-                        $temp_name = tempnam(_PS_TMP_IMG_DIR_, 'PS');
-                        if($_FILES['author_avata']['size'] > $max_file_size*1024*1024)
-                            $this->_errros[] = sprintf($this->module->l('Avatar image file is too large. Limit: %sMb','managementmyinfo'),$max_file_size);
-                        elseif (!$temp_name || !move_uploaded_file($_FILES['author_avata']['tmp_name'], $temp_name))
-                            $this->_errros[] = $this->module->l('Cannot upload the file','managementmyinfo');
-                        elseif (!ImageManager::resize($temp_name, _PS_YBC_BLOG_IMG_DIR_.'avata/'.$file_name, Configuration::get('YBC_BLOG_IMAGE_AVATA_WIDTH'), Configuration::get('YBC_BLOG_IMAGE_AVATA_HEIGHT'), $type))
-                            $this->_errros[] = $this->module->l('An error occurred during the image upload process.','managementmyinfo');
-                        if (isset($temp_name) && file_exists($temp_name))
-                            @unlink($temp_name);
-                        if($employeePost->avata)
-                            $oldImage = _PS_YBC_BLOG_IMG_DIR_.'avata/'.$employeePost->avata;
-                        $employeePost->avata = $file_name;
-                        $newImage = _PS_YBC_BLOG_IMG_DIR_.'avata/'.$employeePost->avata;
-                    }
-                    else
-                        $this->_errros[] = $this->module->l('Avatar type is invalid','managementmyinfo');
                 }
             }
             if(!$this->_errros)
@@ -180,32 +202,32 @@ class Ybc_blogManagementMyinfoModuleFrontController extends ModuleFrontControlle
                 {
                     if(!$employeePost->update())
                     {
-                        if ($newImage && file_exists($newImage))
+                        if (isset($newImage) && $newImage && file_exists($newImage))
                             @unlink($newImage);
                         $this->_errros[] = $this->module->displayError($this->module->l('The author info could not be updated.','managementmyinfo'));
                     }
                     else
                     {
-                        if (!count($this->_errros) && $oldImage && file_exists($oldImage))
+                        if (!count($this->_errros) && !empty($oldImage) && file_exists($oldImage))
                             @unlink($oldImage);
-                        Tools::redirectLink($this->context->link->getModuleLink($this->module->name,'managementmyinfo',array('updated'=>1)));
+                        Tools::redirect($this->context->link->getModuleLink($this->module->name,'managementmyinfo',array('updated'=>1)));
                     }
                 }
                 else
                     if(!$employeePost->add())
                     {
-                        if ($newImage && file_exists($newImage))
+                        if (isset($newImage) && $newImage && file_exists($newImage))
                             @unlink($newImage);
                         $this->_errros[] = $this->module->displayError($this->module->l('The author info could not be updated.','managementmyinfo'));
                     } 
                     else
                     {
-                        if (!count($this->_errros) && $oldImage && file_exists($oldImage))
+                        if (!count($this->_errros) && isset($oldImage) && $oldImage && file_exists($oldImage))
                             @unlink($oldImage);
-                        Tools::redirectLink($this->context->link->getModuleLink($this->module->name,'managementmyinfo',array('updated'=>1)));
+                        Tools::redirect($this->context->link->getModuleLink($this->module->name,'managementmyinfo',array('updated'=>1)));
                     }  
             }
-            elseif($newImage && file_exists($newImage))
+            elseif(isset($newImage) && $newImage && file_exists($newImage))
                 @unlink($newImage);
             
         }

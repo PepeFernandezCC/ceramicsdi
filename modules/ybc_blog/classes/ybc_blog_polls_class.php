@@ -18,8 +18,7 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 
-if (!defined('_PS_VERSION_'))
-	exit;
+if (!defined('_PS_VERSION_')) { exit; }
 class Ybc_blog_polls_class extends ObjectModel
 {
     public $id_user;
@@ -56,31 +55,31 @@ class Ybc_blog_polls_class extends ObjectModel
         }
         return false;        
     }
-    public static function getPollsWithFilter($filter = false, $sort = false, $start = false, $limit = false,$fontend=true)
+    public static function getPollsWithFilter($context, $filter = false, $sort = false, $start = false, $limit = false,$fontend=true)
     {
         $req = "SELECT po.*,pl.description,pl.short_description,pl.thumb,pl.title
             FROM `"._DB_PREFIX_."ybc_blog_polls` po
             INNER JOIN `"._DB_PREFIX_."ybc_blog_post_shop` ps on (po.id_post=ps.id_post)
             INNER JOIN `"._DB_PREFIX_."ybc_blog_post` p ON (p.id_post=ps.id_post)
-            LEFT JOIN `"._DB_PREFIX_."ybc_blog_post_lang` pl ON (p.id_post=pl.id_post AND pl.id_lang='".(int)Context::getContext()->language->id."')
+            LEFT JOIN `"._DB_PREFIX_."ybc_blog_post_lang` pl ON (p.id_post=pl.id_post AND pl.id_lang='".(int)$context->language->id."')
             LEFT JOIN `"._DB_PREFIX_."customer` c ON (c.id_customer=p.added_by AND p.is_customer=1)
             LEFT JOIN `"._DB_PREFIX_."employee` e ON (e.id_employee=p.added_by AND p.is_customer=0)
             LEFT JOIN `"._DB_PREFIX_."ybc_blog_employee` ybe ON ((ybe.id_employee=c.id_customer AND ybe.is_customer=1) OR (ybe.id_employee=e.id_employee AND ybe.is_customer=0))
-            WHERE ".($fontend ? "(ybe.status>=0 OR ybe.status is NULL OR e.id_profile=1) AND p.enabled=1 AND ":"")." ps.id_shop=".(int)Context::getContext()->shop->id." ".($filter ? $filter : '')."
+            WHERE ".($fontend ? "(ybe.status>=0 OR ybe.status is NULL OR e.id_profile=1) AND p.enabled=1 AND ":"")." ps.id_shop=".(int)$context->shop->id." ".((string)$filter ? : '')."
             ORDER BY ".($sort ? $sort : '')." po.id_polls desc " . ($start !== false && $limit ? " LIMIT ".(int)$start.", ".(int)$limit : "");
         return  Db::getInstance()->executeS($req);
     }
-    public static function countPollsWithFilter($filter,$fontend=true)
+    public static function countPollsWithFilter($context, $filter,$fontend=true)
     {
         $req = "SELECT count(*)
             FROM `"._DB_PREFIX_."ybc_blog_polls` po
             INNER JOIN `"._DB_PREFIX_."ybc_blog_post_shop` ps on (po.id_post=ps.id_post)
             INNER JOIN `"._DB_PREFIX_."ybc_blog_post` p ON (p.id_post=ps.id_post)
-            LEFT JOIN `"._DB_PREFIX_."ybc_blog_post_lang` pl ON (p.id_post=pl.id_post AND pl.id_lang='".(int)Context::getContext()->language->id."')
+            LEFT JOIN `"._DB_PREFIX_."ybc_blog_post_lang` pl ON (p.id_post=pl.id_post AND pl.id_lang='".(int)$context->language->id."')
             LEFT JOIN `"._DB_PREFIX_."customer` c ON (c.id_customer=p.added_by AND p.is_customer=1)
             LEFT JOIN `"._DB_PREFIX_."employee` e ON (e.id_employee=p.added_by AND p.is_customer=0)
             LEFT JOIN `"._DB_PREFIX_."ybc_blog_employee` ybe ON ((ybe.id_employee=c.id_customer AND ybe.is_customer=1) OR (ybe.id_employee=e.id_employee AND ybe.is_customer=0))
-            WHERE ".($fontend ? "(ybe.status>=0 OR ybe.status is NULL OR e.id_profile=1) AND p.enabled=1 AND ":"")." ps.id_shop=".(int)Context::getContext()->shop->id." ".($filter ? $filter : '');
+            WHERE ".($fontend ? "(ybe.status>=0 OR ybe.status is NULL OR e.id_profile=1) AND p.enabled=1 AND ":"")." ps.id_shop=".(int)$context->shop->id." ".((string)$filter ? : '');
         return  Db::getInstance()->getValue($req);
     }
     public static function getIDPolls($id_post,$id_customer)

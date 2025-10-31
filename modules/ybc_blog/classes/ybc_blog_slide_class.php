@@ -18,8 +18,7 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 
-if (!defined('_PS_VERSION_'))
-	exit;
+if (!defined('_PS_VERSION_')) { exit; }
 class Ybc_blog_slide_class extends ObjectModel
 {
     public $id_slide;
@@ -38,8 +37,7 @@ class Ybc_blog_slide_class extends ObjectModel
             'sort_order' => array('type' => self::TYPE_INT, 'validate' => 'isunsignedInt'),
                      
             // Lang fields
-            'image' =>	array('type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'size' => 1000,'lang'=>true),   
-            'url' =>	array('type' => self::TYPE_STRING,'lang' => true, 'validate' => 'isCleanHtml', 'size' => 1000),
+            'image' =>	array('type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'size' => 1000,'lang'=>true),
             'url' =>	array('type' => self::TYPE_STRING, 'validate' => 'isCleanHtml','lang'=>true, 'size' => 1000),
             'caption' =>	array('type' => self::TYPE_HTML, 'lang' => true, 'validate' => 'isCleanHtml', 'size' => 900000),            
         )
@@ -48,18 +46,20 @@ class Ybc_blog_slide_class extends ObjectModel
 	{
 		parent::__construct($id_item, $id_lang, $id_shop);
         if($this->id)
-            $this->id_shop = Db::getInstance()->getValue('SELECT id_shop FROM `'._DB_PREFIX_.'ybc_blog_slide_shop` where id_slide= '.(int)$this->id);
+            $this->id_shop = (int)Db::getInstance()->getValue('SELECT id_shop FROM `'._DB_PREFIX_.'ybc_blog_slide_shop` where id_slide= '.(int)$this->id);
+        else
+            $this->id_shop = $id_shop;
 	}
     public function add($autodate = true, $null_values = false)
 	{
-		$context = Context::getContext();
-		$id_shop = $context->shop->id;
-		$res = parent::add($autodate, $null_values);
-		$res &= Db::getInstance()->execute('
+		if(parent::add($autodate, $null_values))
+        {
+            return Db::getInstance()->execute('
 			INSERT INTO `'._DB_PREFIX_.'ybc_blog_slide_shop` (`id_shop`, `id_slide`)
-			VALUES('.(int)$id_shop.', '.(int)$this->id.')'
-		);
-		return $res;
+			VALUES('.(int)$this->id_shop.', '.(int)$this->id.')'
+            );
+        }
+		return false;
 	}
 	public function delete()
     {
@@ -73,7 +73,7 @@ class Ybc_blog_slide_class extends ObjectModel
             }
             Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'ybc_blog_slide_shop` WHERE id_slide='.(int)$this->id);
             $slides = Db::getInstance()->executeS('SELECT * FROM `'._DB_PREFIX_.'ybc_blog_slide` s
-                INNER JOIN `'._DB_PREFIX_.'ybc_blog_slide_shop` ss ON (s.id_slide =ss.id_slide AND ss.id_shop="'.(int)Context::getContext()->shop->id.'")
+                INNER JOIN `'._DB_PREFIX_.'ybc_blog_slide_shop` ss ON (s.id_slide =ss.id_slide AND ss.id_shop="'.(int)$this->id_shop.'")
                 ORDER BY sort_order asc');
             if($slides)
             {
@@ -113,32 +113,32 @@ class Ybc_blog_slide_class extends ObjectModel
         }
         return false;        
     }
-    public static function getSlidesWithFilter($filter = false, $sort = false, $start = false, $limit = false)
+    public static function getSlidesWithFilter($context, $filter = false, $sort = false, $start = false, $limit = false)
     {
         $req = "SELECT s.*, sl.caption, sl.url,sl.image
             FROM `"._DB_PREFIX_."ybc_blog_slide` s
-            INNER JOIN `"._DB_PREFIX_."ybc_blog_slide_shop` ss ON (s.id_slide=ss.id_slide AND ss.id_shop='".(int)Context::getContext()->shop->id."')
+            INNER JOIN `"._DB_PREFIX_."ybc_blog_slide_shop` ss ON (s.id_slide=ss.id_slide AND ss.id_shop='".(int)$context->shop->id."')
             LEFT JOIN `"._DB_PREFIX_."ybc_blog_slide_lang` sl ON s.id_slide = sl.id_slide
-            WHERE sl.id_lang = ".(int)Context::getContext()->language->id.($filter ? $filter : '')." 
-            ORDER BY ".($sort ? $sort : '')." s.id_slide ASC " . ($start !== false && $limit ? " LIMIT ".(int)$start.", ".(int)$limit : "");
+            WHERE sl.id_lang = ".(int)$context->language->id.((string)$filter ? : '')." 
+            ORDER BY ".((string)$sort ? : '')." s.id_slide ASC " . ($start !== false && $limit ? " LIMIT ".(int)$start.", ".(int)$limit : "");
         return Db::getInstance()->executeS($req);
     }
-    public static function countSlidesWithFilter($filter = false)
+    public static function countSlidesWithFilter($context, $filter = false)
     {
         $req = "SELECT COUNT(s.id_slide)
             FROM `"._DB_PREFIX_."ybc_blog_slide` s
-            INNER JOIN `"._DB_PREFIX_."ybc_blog_slide_shop` ss ON (s.id_slide=ss.id_slide AND ss.id_shop='".(int)Context::getContext()->shop->id."')
+            INNER JOIN `"._DB_PREFIX_."ybc_blog_slide_shop` ss ON (s.id_slide=ss.id_slide AND ss.id_shop='".(int)$context->shop->id."')
             LEFT JOIN `"._DB_PREFIX_."ybc_blog_slide_lang` sl ON s.id_slide = sl.id_slide
-            WHERE sl.id_lang = ".(int)Context::getContext()->language->id.($filter ? $filter : '');
+            WHERE sl.id_lang = ".(int)$context->language->id.((string)$filter ? : '');
         return Db::getInstance()->getValue($req);
     }
     public static function updateSliderOrdering($slides,$page=1)
     {
         if($slides)
         {
-            if($page<1)
+            if($page < 1)
                 $page=1;
-            foreach($slides as $key=> $slide)
+            foreach($slides as $key => $slide)
             {
                 $position=  1+ $key + ($page-1)*20;
                 if($key==0)
@@ -153,10 +153,10 @@ class Ybc_blog_slide_class extends ObjectModel
 
         return true;
     }
-    public static function getMaxSortOrder()
+    public static function getMaxSortOrder($id_shop)
     {
         return (int)Db::getInstance()->getValue('
             SELECT MAX(s.sort_order) FROM `'._DB_PREFIX_.'ybc_blog_slide` s
-            INNER JOIN `'._DB_PREFIX_.'ybc_blog_slide_shop` ss ON (s.id_slide =ss.id_slide AND ss.id_shop="'.(int)Context::getContext()->shop->id.'")');
+            INNER JOIN `'._DB_PREFIX_.'ybc_blog_slide_shop` ss ON (s.id_slide =ss.id_slide AND ss.id_shop="'.(int)$id_shop.'")');
     }
 }

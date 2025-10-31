@@ -18,14 +18,13 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 
+if (!defined('_PS_VERSION_')) { exit; }
 class Ybc_Blog_ImportExport extends Module
 {
 	public	function __construct()
 	{
 		$this->name = 'ybc_blog';
 		parent::__construct();
-        $this->module= new Ybc_blog();
-        $this->defines = new Ybc_blog_defines();
 	}
     public function getPostAllLanguage($id_post)
     {
@@ -36,33 +35,33 @@ class Ybc_Blog_ImportExport extends Module
         ';
         return Db::getInstance()->executeS($sql);
     }
-    public function getPosts()
+    public function getPosts($context)
     {
         $sql ='SELECT * FROM `'._DB_PREFIX_.'ybc_blog_post` p,`'._DB_PREFIX_.'ybc_blog_post_shop` ps 
-        WHERE p.id_post=ps.id_post AND ps.id_shop='.(int)Context::getContext()->shop->id;
+        WHERE p.id_post=ps.id_post AND ps.id_shop='.(int)$context->shop->id;
         return Db::getInstance()->executeS($sql);
     }
-    public function getCategories($id_root,&$categories)
+    public function getCategories($id_shop, $id_root,&$categories)
     {
         $sql ='SELECT * FROM `'._DB_PREFIX_.'ybc_blog_category` c,`'._DB_PREFIX_.'ybc_blog_category_shop` cs 
-        WHERE c.id_category ="'.(int)$id_root.'" AND c.id_category=cs.id_category '.($id_root ? ' AND cs.id_shop="'.(int)Context::getContext()->shop->id.'"':'');
+        WHERE c.id_category ="'.(int)$id_root.'" AND c.id_category=cs.id_category '.($id_root ? ' AND cs.id_shop="'.(int)$id_shop.'"':'');
         $category= Db::getInstance()->getRow($sql);
         if($category)
             $categories[]=$category;
-        $childs= $this->getChildCategory($id_root);
+        $childs= $this->getChildCategory($id_shop, $id_root);
         if($childs)
         {
             foreach($childs as $child)
             {
-                $this->getCategories($child['id_category'],$categories);
+                $this->getCategories($id_shop, $child['id_category'],$categories);
             }
         }
         return $categories;
     }
-    public function getChildCategory($id_parent)
+    public function getChildCategory($id_shop, $id_parent)
     {
         $sql ='SELECT * FROM `'._DB_PREFIX_.'ybc_blog_category` c,`'._DB_PREFIX_.'ybc_blog_category_shop` cs
-        WHERE c.id_parent ="'.(int)$id_parent.'" AND  c.id_category=cs.id_category AND cs.id_shop="'.(int)Context::getContext()->shop->id.'"';
+        WHERE c.id_parent ="'.(int)$id_parent.'" AND  c.id_category=cs.id_category AND cs.id_shop="'.(int)$id_shop.'"';
         return  Db::getInstance()->executeS($sql);
     }
     public function getCategoryByIDPost($id_post)
@@ -87,9 +86,9 @@ class Ybc_Blog_ImportExport extends Module
         '; 
         return Db::getInstance()->executeS($sql);
     }
-    public function getSlides()
+    public function getSlides($id_shop)
     {
-        $sql ='SELECT * FROM `'._DB_PREFIX_.'ybc_blog_slide` s,`'._DB_PREFIX_.'ybc_blog_slide_shop` ss WHERE s.id_slide=ss.id_slide AND ss.id_shop='.(int)Context::getContext()->shop->id;
+        $sql ='SELECT * FROM `'._DB_PREFIX_.'ybc_blog_slide` s,`'._DB_PREFIX_.'ybc_blog_slide_shop` ss WHERE s.id_slide=ss.id_slide AND ss.id_shop='.(int)$id_shop;
         return Db::getInstance()->executeS($sql);
     }
     public function getSlideAllLanguage($id_slide)
@@ -97,9 +96,9 @@ class Ybc_Blog_ImportExport extends Module
         $sql='SELECT sl.*,l.iso_code FROM `'._DB_PREFIX_.'ybc_blog_slide_lang` sl,`'._DB_PREFIX_.'lang` l WHERE sl.id_lang= l.id_lang AND sl.id_slide='.(int)$id_slide;
         return Db::getInstance()->executeS($sql);
     }
-    public function getGalleries()
+    public function getGalleries($id_shop)
     {
-        $sql= 'SELECT * FROM `'._DB_PREFIX_.'ybc_blog_gallery` g,`'._DB_PREFIX_.'ybc_blog_gallery_shop` gs WHERE g.id_gallery=gs.id_gallery AND gs.id_shop='.(int)Context::getContext()->shop->id;
+        $sql= 'SELECT * FROM `'._DB_PREFIX_.'ybc_blog_gallery` g,`'._DB_PREFIX_.'ybc_blog_gallery_shop` gs WHERE g.id_gallery=gs.id_gallery AND gs.id_shop='.(int)$id_shop;
         return Db::getInstance()->executeS($sql);
     }
     public function getGalleryAllLanguage($id_gallery)
@@ -118,7 +117,7 @@ class Ybc_Blog_ImportExport extends Module
             }
         } else $obj->addFile($server_path.$file, $archive_path.$file);
     }
-    public function generateArchive()
+    public function generateArchive($context)
     {
         $errors = array();
         $zip = new ZipArchive();
@@ -132,14 +131,14 @@ class Ybc_Blog_ImportExport extends Module
             }
         }
         if ($zip->open($cacheDir.$zip_file_name, ZipArchive::OVERWRITE | ZipArchive::CREATE) === true) {
-            if (!$zip->addFromString('blog-data.xml', $this->exportBlog())) {
+            if (!$zip->addFromString('blog-data.xml', $this->exportBlog($context))) {
                $errors[] = $this->l('Cannot create blog-data.xml');
             }
             $this->archiveThisFile($zip,'category', _PS_YBC_BLOG_IMG_DIR_, 'img/');
             $this->archiveThisFile($zip,'gallery', _PS_YBC_BLOG_IMG_DIR_, 'img/');
             $this->archiveThisFile($zip,'post', _PS_YBC_BLOG_IMG_DIR_, 'img/');
             $this->archiveThisFile($zip,'slide', _PS_YBC_BLOG_IMG_DIR_, 'img/');
-            $this->archiveThisFile($zip,'temp', _PS_YBC_BLOG_IMG_DIR_, 'img/');
+
             $zip->close();
             if (!is_file($cacheDir.$zip_file_name)) {
                 $errors[] = $this->l(sprintf('Could not create %1s', _PS_CACHE_DIR_.$zip_file_name));
@@ -180,155 +179,155 @@ class Ybc_Blog_ImportExport extends Module
         $sql= 'SELECT * FROM `'._DB_PREFIX_.'ybc_blog_polls` WHERE id_post='.(int)$id_post;
         return Db::getInstance()->executeS($sql);
     }
-	public function exportBlog() 
+	public function exportBlog($context)
 	{		
-		$xml_output = '<?xml version="1.0" encoding="UTF-8"?>'."\n";
-		$xml_output .= '<entity_profile>'."\n";	
+		$xml_output = '<'.'?xml version="1.0" encoding="UTF-8"?'.'>'."\n";
+		$xml_output .= '<'.'entity_profile'.'>'."\n";
         $categories=array();
-        $categories =$this->getCategories(0,$categories);
+        $categories =$this->getCategories($context->shop->id, 0,$categories);
         if($categories)
         {
             foreach($categories as $category)
             {
-                $xml_output .='<category id_parent="'.$category['id_parent'].'" id_category="'.$category['id_category'].'" added_by="'.$category['added_by'].'" modified_by="'.$category['modified_by'].'" enabled="'.$category['enabled'].'" datetime_added="'.$category['datetime_added'].'" datetime_modified="'.$category['datetime_modified'].'" sort_order="'.$category['sort_order'].'">'."\n";
+                $xml_output .='<'.'category id_parent="'.$category['id_parent'].'" id_category="'.$category['id_category'].'" added_by="'.$category['added_by'].'" modified_by="'.$category['modified_by'].'" enabled="'.$category['enabled'].'" datetime_added="'.$category['datetime_added'].'" datetime_modified="'.$category['datetime_modified'].'" sort_order="'.$category['sort_order'].'"'.'>'."\n";
                 $categoryLanguages = $this->getCategoryAllLanguage($category['id_category']);
                     if($categoryLanguages)
                     {
                        foreach($categoryLanguages as $categoryLanguage)
                        {
-                            $xml_output .='<categorylanguage iso_code="'.$categoryLanguage['iso_code'].'" default="'.($categoryLanguage['id_lang']==Configuration::get('PS_LANG_DEFAULT') ? 1 :0).'">'."\n";
-                                $xml_output .='<title><![CDATA['.$categoryLanguage['title'].']]></title>'."\n";
-                                $xml_output .='<meta_title><![CDATA['.$categoryLanguage['meta_title'].']]></meta_title>'."\n";
-                                $xml_output .='<url_alias><![CDATA['.$categoryLanguage['url_alias'].']]></url_alias>'."\n";
-                                $xml_output .='<description><![CDATA['.$categoryLanguage['description'].']]></description>'."\n";
-                                $xml_output .='<meta_keywords><![CDATA['.$categoryLanguage['meta_keywords'].']]></meta_keywords>'."\n";
-                                $xml_output .='<meta_description><![CDATA['.$categoryLanguage['meta_description'].']]></meta_description>'."\n";
-                                $xml_output .='<image><![CDATA['.$categoryLanguage['image'].']]></image>'."\n";
-                                $xml_output .='<thumb><![CDATA['.$categoryLanguage['thumb'].']]></thumb>'."\n";
-                            $xml_output .='</categorylanguage>'."\n";
+                            $xml_output .='<'.'categorylanguage iso_code="'.$categoryLanguage['iso_code'].'" default="'.($categoryLanguage['id_lang']==Configuration::get('PS_LANG_DEFAULT') ? 1 :0).'"'.'>'."\n";
+                                $xml_output .='<'.'title'.'>'.'<'.'![CDATA['.$categoryLanguage['title'].']]'.'>'.'<'.'/title'.'>'."\n";
+                                $xml_output .='<'.'meta_title'.'>'.'<'.'![CDATA['.$categoryLanguage['meta_title'].']]'.'>'.'<'.'/meta_title'.'>'."\n";
+                                $xml_output .='<'.'url_alias'.'>'.'<'.'![CDATA['.$categoryLanguage['url_alias'].']]'.'>'.'<'.'/url_alias'.'>'."\n";
+                                $xml_output .='<'.'description'.'>'.'<'.'![CDATA['.$categoryLanguage['description'].']]'.'>'.'<'.'/description'.'>'."\n";
+                                $xml_output .='<'.'meta_keywords'.'>'.'<'.'![CDATA['.$categoryLanguage['meta_keywords'].']]'.'>'.'<'.'/meta_keywords'.'>'."\n";
+                                $xml_output .='<'.'meta_description'.'>'.'<'.'![CDATA['.$categoryLanguage['meta_description'].']]'.'>'.'<'.'/meta_description'.'>'."\n";
+                                $xml_output .='<'.'image'.'>'.'<'.'![CDATA['.$categoryLanguage['image'].']]'.'>'.'<'.'/image'.'>'."\n";
+                                $xml_output .='<'.'thumb'.'>'.'<'.'![CDATA['.$categoryLanguage['thumb'].']]'.'>'.'<'.'/thumb'.'>'."\n";
+                            $xml_output .='<'.'/categorylanguage'.'>'."\n";
                        } 
                     }
                 $xml_output .='</category>'."\n";
             }
         }  
-        $posts = $this->getPosts();
+        $posts = $this->getPosts($context);
         if($posts)
             foreach($posts as $post)
             {
                 $id_post= $post['id_post'];
-                $xml_output .= '<post id_category_default="'.(int)$post['id_category_default'].'" id_post="'.$post['id_post'].'" is_featured="'.$post['is_featured'].'" products="'.$post['products'].'" added_by ="'.(int)$post['added_by'].'" modified_by="'.(int)$post['modified_by'].'" enabled="'.$post['enabled'].'" datetime_added ="'.$post['datetime_added'].'" datetime_modified="'.$post['datetime_modified'].'" datetime_active="'.$post['datetime_active'].'" sort_order="'.$post['sort_order'].'" click_number="'.(int)$post['click_number'].'" likes ="'.$post['likes'].'" is_customer="'.(int)$post['is_customer'].'" >'."\n";					
+                $xml_output .= '<'.'post id_category_default="'.(int)$post['id_category_default'].'" id_post="'.$post['id_post'].'" is_featured="'.$post['is_featured'].'" added_by ="'.(int)$post['added_by'].'" modified_by="'.(int)$post['modified_by'].'" enabled="'.$post['enabled'].'" datetime_added ="'.$post['datetime_added'].'" datetime_modified="'.$post['datetime_modified'].'" datetime_active="'.$post['datetime_active'].'" sort_order="'.$post['sort_order'].'" click_number="'.(int)$post['click_number'].'" likes ="'.$post['likes'].'" is_customer="'.(int)$post['is_customer'].'" '.'>'."\n";
                 $postAllLanguage = $this->getPostAllLanguage($id_post);
                 if($postAllLanguage)
                 {
                     foreach($postAllLanguage as $language)
                     {
-                        $xml_output .='<language iso_code ="'.$language['iso_code'].'" default="'.($language['id_lang']==Configuration::get('PS_LANG_DEFAULT')?1 :0 ).'">'."\n";
-                            $xml_output .='<title><![CDATA['.$language['title'].']]></title>'."\n";
-                            $xml_output .='<meta_title><![CDATA['.$language['meta_title'].']]></meta_title>'."\n";
-                            $xml_output .='<url_alias><![CDATA['.$language['url_alias'].']]></url_alias>'."\n";
-                            $xml_output .='<description><![CDATA['.$language['description'].']]></description>'."\n";
-                            $xml_output .='<short_description><![CDATA['.$language['short_description'].']]></short_description>'."\n";
-                            $xml_output .='<meta_keywords><![CDATA['.$language['meta_keywords'].']]></meta_keywords>'."\n";
-                            $xml_output .='<meta_description><![CDATA['.$language['meta_description'].']]></meta_description>'."\n";
-                            $xml_output .='<image><![CDATA['.$language['image'].']]></image>'."\n";
-                            $xml_output .='<thumb><![CDATA['.$language['thumb'].']]></thumb>'."\n";
-                        $xml_output .='</language>'."\n";
+                        $xml_output .='<'.'language iso_code ="'.$language['iso_code'].'" default="'.($language['id_lang']==Configuration::get('PS_LANG_DEFAULT')?1 :0 ).'">'."\n";
+                            $xml_output .='<'.'title'.'>'.'<'.'![CDATA['.$language['title'].']]'.'>'.'<'.'/title'.'>'."\n";
+                            $xml_output .='<'.'meta_title'.'>'.'<'.'![CDATA['.$language['meta_title'].']]'.'>'.'<'.'/meta_title'.'>'."\n";
+                            $xml_output .='<'.'url_alias'.'>'.'<'.'![CDATA['.$language['url_alias'].']]'.'>'.'<'.'/url_alias'.'>'."\n";
+                            $xml_output .='<'.'description'.'>'.'<'.'![CDATA['.$language['description'].']]'.'>'.'<'.'/description'.'>'."\n";
+                            $xml_output .='<'.'short_description'.'>'.'<'.'![CDATA['.$language['short_description'].']]'.'>'.'<'.'/short_description'.'>'."\n";
+                            $xml_output .='<'.'meta_keywords'.'>'.'<'.'![CDATA['.$language['meta_keywords'].']]'.'>'.'<'.'/meta_keywords'.'>'."\n";
+                            $xml_output .='<'.'meta_description'.'>'.'<'.'![CDATA['.$language['meta_description'].']]'.'>'.'<'.'/meta_description'.'>'."\n";
+                            $xml_output .='<'.'image'.'>'.'<'.'![CDATA['.$language['image'].']]'.'>'.'<'.'/image'.'>'."\n";
+                            $xml_output .='<'.'thumb'.'>'.'<'.'![CDATA['.$language['thumb'].']]'.'>'.'<'.'/thumb'.'>'."\n";
+                        $xml_output .='<'.'/language'.'>'."\n";
                     }
                 }
                 $categories = $this->getCategoryByIDPost($id_post);
                 if($categories)
                     foreach($categories as $category)
                     {
-                       $xml_output .='<category id_category="'.$category['id_category'].'">'."\n";
-                       $xml_output .='</category>'."\n"; 
+                       $xml_output .='<'.'category id_category="'.$category['id_category'].'"'.'>'."\n";
+                       $xml_output .='<'.'/category'.'>'."\n";
                     }
                 $tags =$this->getTags($id_post);
                 if($tags)
                     foreach($tags as $tag)
                     {
-                        $xml_output .='<tags iso_code="'.$tag['iso_code'].'" tag="'.$tag['tag'].'" click_number="'.$tag['click_number'].'"></tags>'."\n";
+                        $xml_output .='<'.'tags iso_code="'.$tag['iso_code'].'" tag="'.$tag['tag'].'" click_number="'.$tag['click_number'].'"'.'>'.'<'.'/tags'.'>'."\n";
                     }
                 $comments = $this->getComments($id_post);
                 if($comments)
                     foreach($comments as $comment)
                     {
-                        $xml_output .='<comment id_user="'.$comment['id_user'].'" name="'.$comment['name'].'" email="'.$comment['email'].'" subject="'.$comment['subject'].'" replied_by="'.$comment['replied_by'].'" rating="'.$comment['rating'].'" approved="'.$comment['approved'].'" datetime_added="'.$comment['datetime_added'].'" reported="'.$comment['reported'].'">'."\n";
-                            $xml_output .='<comment_text><![CDATA['.$comment['comment'].']]></comment_text>'."\n";
+                        $xml_output .='<'.'comment id_user="'.$comment['id_user'].'" name="'.$comment['name'].'" email="'.$comment['email'].'" subject="'.$comment['subject'].'" replied_by="'.$comment['replied_by'].'" rating="'.$comment['rating'].'" approved="'.$comment['approved'].'" datetime_added="'.$comment['datetime_added'].'" reported="'.$comment['reported'].'">'."\n";
+                            $xml_output .='<'.'comment_text'.'>'.'<'.'![CDATA['.$comment['comment'].']]'.'>'.'<'.'/comment_text'.'>'."\n";
                             $replies= Db::getInstance()->executeS('SELECT * FROM `'._DB_PREFIX_.'ybc_blog_reply` WHERE id_comment='.(int)$comment['id_comment']);
                             if($replies)
                             {
                                 foreach($replies as $reply)
                                 {
-                                    $xml_output .='<reply id_comment="'.$reply['id_comment'].'" id_user="'.$comment['id_user'].'" name="'.$reply['name'].'" email="'.$reply['email'].'" id_employee="'.$reply['id_employee'].'" approved="'.$reply['approved'].'" datetime_added="'.$reply['datetime_added'].'" datetime_updated="'.$reply['datetime_updated'].'">'."\n";
-                                        $xml_output .='<reply_text><![CDATA['.$reply['reply'].']]></reply_text>';
-                                    $xml_output .='</reply>'."\n";
+                                    $xml_output .='<'.'reply id_comment="'.$reply['id_comment'].'" id_user="'.$comment['id_user'].'" name="'.$reply['name'].'" email="'.$reply['email'].'" id_employee="'.$reply['id_employee'].'" approved="'.$reply['approved'].'" datetime_added="'.$reply['datetime_added'].'" datetime_updated="'.$reply['datetime_updated'].'"'.'>'."\n";
+                                        $xml_output .='<'.'reply_text><![CDATA['.$reply['reply'].']]'.'>'.'<'.'/reply_text'.'>';
+                                    $xml_output .='<'.'/reply'.'>'."\n";
                                 }
                             }
                             
-                        $xml_output .='</comment>'."\n";
+                        $xml_output .='<'.'/comment'.'>'."\n";
                     }
                 $polls = $this->getPolls($id_post);
                 if($polls)
                 {
                     foreach($polls as $poll)
                     {
-                        $xml_output .='<post_polls id_user="'.(int)$poll['id_user'].'" name="'.$poll['name'].'" email ="'.$poll['email'].'" id_post="'.(int)$poll['id_post'].'" polls="'.$poll['polls'].'" dateadd="'.(int)$poll['dateadd'].'" >'."\n";
-                        $xml_output .='<post_polls_text><![CDATA['.$poll['feedback'].']]></post_polls_text>'."\n";
+                        $xml_output .='<'.'post_polls id_user="'.(int)$poll['id_user'].'" name="'.$poll['name'].'" email ="'.$poll['email'].'" id_post="'.(int)$poll['id_post'].'" polls="'.$poll['polls'].'" dateadd="'.(int)$poll['dateadd'].'" '.'>'."\n";
+                        $xml_output .='<'.'post_polls_text'.'>'.'<'.'![CDATA['.$poll['feedback'].']]'.'>'.'<'.'/post_polls_text'.'>'."\n";
                         $xml_output .="</post_polls>". "\n";
                     }
                 }
-                $xml_output .= '</post>'."\n"; 
+                $xml_output .= '<'.'/post'.'>'."\n";
             }
-        $slides = $this->getSlides();
+        $slides = $this->getSlides($context->shop->id);
         if($slides)
             foreach($slides as $slide)
             {
-                $xml_output .='<slide id_slide="'.(int)$slide['id_slide'].'" enabled="'.$slide['enabled'].'" sort_order="'.$slide['sort_order'].'">'."\n";
+                $xml_output .='<'.'slide id_slide="'.(int)$slide['id_slide'].'" enabled="'.$slide['enabled'].'" sort_order="'.$slide['sort_order'].'"'.'>'."\n";
                     $slideLanguages= $this->getSlideAllLanguage($slide['id_slide']);
                     if($slideLanguages)
                         foreach($slideLanguages as $slideLanguage)
                         {
-                            $xml_output .='<slidelanguage iso_code="'.$slideLanguage['iso_code'].'" default="'.($slideLanguage['id_lang']==Configuration::get('PS_LANG_DEFAULT')?1:0).'">'."\n";
-                                $xml_output .='<caption><![CDATA['.$slideLanguage['caption'].']]></caption>'."\n";
-                                $xml_output .='<url><![CDATA['.$slideLanguage['url'].']]></url>'."\n";
-                                $xml_output .='<image><![CDATA['.$slideLanguage['image'].']]></image>'."\n";
-                            $xml_output .='</slidelanguage>'."\n";
+                            $xml_output .='<'.'slidelanguage iso_code="'.$slideLanguage['iso_code'].'" default="'.($slideLanguage['id_lang']==Configuration::get('PS_LANG_DEFAULT')?1:0).'">'."\n";
+                                $xml_output .='<'.'caption'.'>'.'<'.'![CDATA['.$slideLanguage['caption'].']]'.'>'.'<'.'/caption'.'>'."\n";
+                                $xml_output .='<'.'url'.'>'.'<'.'![CDATA['.$slideLanguage['url'].']]'.'>'.'<'.'/url>'."\n";
+                                $xml_output .='<'.'image'.'>'.'<'.'![CDATA['.$slideLanguage['image'].']]'.'>'.'<'.'/image'.'>'."\n";
+                            $xml_output .='<'.'/slidelanguage'.'>'."\n";
                         }
-                $xml_output .='</slide>'."\n";
+                $xml_output .='<'.'/slide'.'>'."\n";
             }
-        $galleries= $this->getGalleries();
+        $galleries= $this->getGalleries($context->shop->id);
         if($galleries)
             foreach($galleries as $gallery)
             {
-                $xml_output .='<gallery id_gallery="'.(int)$gallery['id_gallery'].'" is_featured="'.$gallery['is_featured'].'" enabled="'.$gallery['enabled'].'" sort_order="'.$gallery['sort_order'].'">'."\n";
+                $xml_output .='<'.'gallery id_gallery="'.(int)$gallery['id_gallery'].'" is_featured="'.$gallery['is_featured'].'" enabled="'.$gallery['enabled'].'" sort_order="'.$gallery['sort_order'].'"'.'>'."\n";
                     $galleryLanguages= $this->getGalleryAllLanguage($gallery['id_gallery']);
                     if($galleryLanguages)
                         foreach($galleryLanguages as $galleryLanguage)
                         {
-                            $xml_output .='<gallerylanguage iso_code="'.$galleryLanguage['iso_code'].'" default="'.($galleryLanguage['id_lang']==Configuration::get('PS_LANG_DEFAULT') ? 1:0).'">'."\n";
-                                $xml_output .='<title><![CDATA['.$galleryLanguage['title'].']]></title>'."\n";
-                                $xml_output .='<description><![CDATA['.$galleryLanguage['description'].']]></description>'."\n";
-                                $xml_output .='<image><![CDATA['.$galleryLanguage['image'].']]></image>'."\n";
-                                $xml_output .='<thumb><![CDATA['.$galleryLanguage['thumb'].']]></thumb>'."\n";
-                            $xml_output .='</gallerylanguage>'."\n";
+                            $xml_output .='<'.'gallerylanguage iso_code="'.$galleryLanguage['iso_code'].'" default="'.($galleryLanguage['id_lang']==Configuration::get('PS_LANG_DEFAULT') ? 1:0).'">'."\n";
+                                $xml_output .='<'.'title'.'>'.'<'.'![CDATA['.$galleryLanguage['title'].']]'.'>'.'<'.'/title'.'>'."\n";
+                                $xml_output .='<'.'description'.'>'.'<![CDATA['.$galleryLanguage['description'].']]'.'>'.'<'.'/description'.'>'."\n";
+                                $xml_output .='<'.'image'.'>'.'<'.'![CDATA['.$galleryLanguage['image'].']]'.'>'.'<'.'/image'.'>'."\n";
+                                $xml_output .='<'.'thumb'.'>'.'<'.'![CDATA['.$galleryLanguage['thumb'].']]'.'>'.'<'.'/thumb'.'>'."\n";
+                            $xml_output .='<'.'/gallerylanguage'.'>'."\n";
                         }
-                $xml_output .='</gallery>'."\n";
+                $xml_output .='<'.'/gallery'.'>'."\n";
             }
-        $xml_output .='<configuration>'."\n";
-        $xml_output .= $this->exportXmlConfiguration($this->defines->configs);
-        $xml_output .= $this->exportXmlConfiguration($this->defines->configs_seo);
-        $xml_output .= $this->exportXmlConfiguration($this->defines->configs_sitemap);
-        $xml_output .= $this->exportXmlConfiguration($this->defines->configs_homepage);
-        $xml_output .= $this->exportXmlConfiguration($this->defines->configs_categorypage);
-        $xml_output .= $this->exportXmlConfiguration($this->defines->configs_productpage);
-        $xml_output .= $this->exportXmlConfiguration($this->defines->configs_sidebar);
-        $xml_output .= $this->exportXmlConfiguration($this->defines->configs_email);
-        $xml_output .= $this->exportXmlConfiguration($this->defines->socials);
-        $xml_output .= $this->exportXmlConfiguration($this->defines->rss);
-        $xml_output .= $this->exportXmlConfiguration($this->defines->customer_settings);
-        $xml_output .= $this->exportXmlConfiguration($this->defines->configs_image);
-        $xml_output .='</configuration>'."\n";
-		$xml_output .= '</entity_profile>'."\n";
+        $xml_output .='<'.'configuration'.'>'."\n";
+        $xml_output .= $this->exportXmlConfiguration(Ybc_blog_defines::getInstance($context)->getConfigsGlobal());
+        $xml_output .= $this->exportXmlConfiguration(Ybc_blog_defines::getInstance($context)->getConfigsSeo());
+        $xml_output .= $this->exportXmlConfiguration(Ybc_blog_defines::getInstance($context)->getConfigSiteMap());
+        $xml_output .= $this->exportXmlConfiguration(Ybc_blog_defines::getInstance($context)->getConfigsHome());
+        $xml_output .= $this->exportXmlConfiguration(Ybc_blog_defines::getInstance($context)->getConfigsCategoryPage());
+        $xml_output .= $this->exportXmlConfiguration(Ybc_blog_defines::getInstance($context)->getConfigsProductPage());
+        $xml_output .= $this->exportXmlConfiguration(Ybc_blog_defines::getInstance($context)->getConfigsSidebar());
+        $xml_output .= $this->exportXmlConfiguration(Ybc_blog_defines::getInstance($context)->getConfigsEmail());
+        $xml_output .= $this->exportXmlConfiguration(Ybc_blog_defines::getInstance($context)->getConfigsSocials());
+        $xml_output .= $this->exportXmlConfiguration(Ybc_blog_defines::getInstance($context)->getConfigsRss());
+        $xml_output .= $this->exportXmlConfiguration(Ybc_blog_defines::getInstance($context)->getCustomerSettings($context->language->id));
+        $xml_output .= $this->exportXmlConfiguration(Ybc_blog_defines::getInstance($context)->getConfigsImage());
+        $xml_output .='<'.'/configuration'.'>'."\n";
+		$xml_output .= '<'.'/entity_profile'.'>'."\n";
         return str_replace('&','and',$xml_output);	
 	}
     public function exportXmlConfiguration($configs)
@@ -345,9 +344,9 @@ class Ybc_Blog_ImportExport extends Module
                     $xml_output .= '<'.$key.'>'."\n";
                     foreach($languages as $language)
                     {
-                        $xml_output .= '<language iso_code="'.$language['iso_code'].'"'.($language['id_lang']==$id_lang_default ? ' default="1"':' default="0"').'>'."\n";
-                            $xml_output .='<content><![CDATA['.Configuration::get($key,$language['id_lang'],null,null,false).']]></content>'."\n";
-                        $xml_output .= '</language>'."\n";
+                        $xml_output .= '<'.'language iso_code="'.$language['iso_code'].'"'.($language['id_lang']==$id_lang_default ? ' default="1"':' default="0"').'>'."\n";
+                            $xml_output .='<'.'content'.'>'.'<'.'![CDATA['.Configuration::get($key,$language['id_lang'],null,null,false).']]'.'>'.'<'.'/content'.'>'."\n";
+                        $xml_output .= '<'.'/language'.'>'."\n";
                     }
                     $xml_output .='</'.$key.'>'."\n";
                 }
@@ -364,266 +363,269 @@ class Ybc_Blog_ImportExport extends Module
         $languages = Language::getLanguages(false);
         foreach($configs as $key => $config)
         {
-            if(isset($config['lang']) && $config['lang'])
+            if(isset($xml->{$key}))
             {
-                $values = array();
-                $xmlKey = $xml->{$key};
-                $default= '';
-                $languageimporteds= array();
-                if($xmlKey->language)
+                if(isset($config['lang']) && $config['lang'])
                 {
-                    foreach($xmlKey->language as $language_xml)
+                    $values = array();
+                    $xmlKey = $xml->{$key};
+                    $default= '';
+                    $languageimporteds= array();
+                    if($xmlKey->language)
                     {
-                        if((int)$language_xml['default'])
-                            $default= (string)$language_xml->content;
-                        if($id_lang= Language::getIdByIso((string)$language_xml['iso_code']))
+                        foreach($xmlKey->language as $language_xml)
                         {
-                            $languageimporteds[]=$id_lang;
-                            $values[$id_lang] = (string)$language_xml->content;
+                            if((int)$language_xml['default'])
+                                $default= (string)$language_xml->content;
+                            if($id_lang= Language::getIdByIso((string)$language_xml['iso_code']))
+                            {
+                                $languageimporteds[]=$id_lang;
+                                $values[$id_lang] = (string)$language_xml->content;
+                            }
                         }
                     }
-                }
-                foreach($languages as $lang)
-                {
-                    if(!in_array($lang['id_lang'],$languageimporteds))
+                    foreach($languages as $lang)
                     {
-                        $values[$lang['id_lang']] = $default;
+                        if(!in_array($lang['id_lang'],$languageimporteds))
+                        {
+                            $values[$lang['id_lang']] = $default;
+                        }
                     }
+                    Configuration::updateValue($key, $values);
                 }
-                Configuration::updateValue($key, $values);
-            }
-            else
-            {
-                if(isset($xml->{$key}))
+                else
                 {
                     Configuration::updateValue($key,(string)$xml->{$key});
                 }
             }
-                
         }
     }
-    public function processImportWordPress($importoverridewp = false)
+    public function processImportWordPress($context, $importoverridewp = false)
     {
         $languages = Language::getLanguages(false);
         $errors = array();
-        $content = Tools::file_get_contents($_FILES['blogdatawordpress']['tmp_name']);
-        $content = str_replace('wp:','',$content);
-        $file_xml = time().'.xml';
-        file_put_contents(_YBC_BLOG_CACHE_DIR_.$file_xml,$content);
-        $xml =simplexml_load_file(_YBC_BLOG_CACHE_DIR_.$file_xml);
-        if(isset($xml->channel) && isset($xml->channel->item) && $xml->channel->item)
+        if(isset($_FILES['blogdatawordpress']['tmp_name']) && $_FILES['blogdatawordpress']['tmp_name'] && ($content = Tools::file_get_contents($_FILES['blogdatawordpress']['tmp_name'])))
         {
-            if(isset($xml->channel->category) && $xml->channel->category)
+            $content = str_replace('wp:','',$content);
+            $file_xml = time().'.xml';
+            file_put_contents(_YBC_BLOG_CACHE_DIR_.$file_xml,$content);
+            $xml =simplexml_load_file(_YBC_BLOG_CACHE_DIR_.$file_xml);
+            if(isset($xml->channel) && isset($xml->channel->item) && $xml->channel->item)
             {
-                foreach($xml->channel->category as $category_xml)
+                if(isset($xml->channel->category) && $xml->channel->category)
                 {
-                    if($importoverridewp && $id_category = $this->getCategoryByLinkRewrite((string)$category_xml->category_nicename))  
-                        $category= new Ybc_blog_category_class($id_category);
-                    else
-                        $category = new Ybc_blog_category_class();
-                    $category->enabled=1;
-                    foreach($languages as $language)
+                    foreach($xml->channel->category as $category_xml)
                     {
-                        $category->url_alias[$language['id_lang']] = (string)$category_xml->category_nicename;
-                        $category->title[$language['id_lang']] = (string)$category_xml->cat_name;
-                        if(isset($category_xml->category_description))
-                            $category->description[$language['id_lang']] = (string)$category_xml->category_description;
+                        if($importoverridewp && $id_category = $this->getCategoryByLinkRewrite((string)$category_xml->category_nicename))
+                            $category= new Ybc_blog_category_class($id_category);
+                        else
+                            $category = new Ybc_blog_category_class(null, null, $context->shop->id);
+                        $category->enabled=1;
+                        foreach($languages as $language)
+                        {
+                            $category->url_alias[$language['id_lang']] = (string)$category_xml->category_nicename;
+                            $category->title[$language['id_lang']] = (string)$category_xml->cat_name;
+                            if(isset($category_xml->category_description))
+                                $category->description[$language['id_lang']] = (string)$category_xml->category_description;
+                        }
+                        $id_parent =(int)$this->getCategoryByLinkRewrite((string)$category_xml->category_parent);
+                        if(!$category->id || $category->id_parent!=$id_parent)
+                        {
+                            $category->sort_order = 1+(int)Db::getInstance()->getValue('SELECT COUNT(*) FROM `'._DB_PREFIX_.'ybc_blog_category` c,`'._DB_PREFIX_.'ybc_blog_category_shop` cs WHERE c.id_category =cs.id_category AND c.id_parent="'.(int)$id_parent.'" AND cs.id_shop='.(int)$this->context->shop->id);
+                        }
+                        if($category->id)
+                            $category->update();
+                        else
+                            $category->add();
                     }
-                    $id_parent =(int)$this->getCategoryByLinkRewrite((string)$category_xml->category_parent);
-                    if(!$category->id || $category->id_parent!=$id_parent)
-                    {
-                         $category->sort_order = 1+(int)Db::getInstance()->getValue('SELECT COUNT(*) FROM `'._DB_PREFIX_.'ybc_blog_category` c,`'._DB_PREFIX_.'ybc_blog_category_shop` cs WHERE c.id_category =cs.id_category AND c.id_parent="'.(int)$id_parent.'" AND cs.id_shop='.(int)$this->context->shop->id);
-                    }
-                    if($category->id)
-                        $category->update();
-                    else
-                        $category->add();
                 }
-            }
-            foreach($xml->channel->item as $item)
-            {
-                $oldImages = array();
-                $oldThumbs = array();
-                if((string)$item->post_type=='post' && (string)$item->status!='trash')
+                foreach($xml->channel->item as $item)
                 {
-                    $link_riwite = Tools::link_rewrite((string)$item->title);
-                    if($importoverridewp && $id_post = $this->getPostByLinkRewrite($link_riwite))
+                    $oldImages = array();
+                    $oldThumbs = array();
+                    if((string)$item->post_type=='post' && (string)$item->status!='trash')
                     {
-                        $post = new Ybc_blog_post_class((int)$id_post);
-                        $post->datetime_modified = (string)$item->datetime_modified;
-                        $post->modified_by = (int)$this->context->employee->id;
-                    } 
-                    else
-                    {
-                        $post = new Ybc_blog_post_class();
-                        $post->datetime_added = (string)$item->post_date;
-                        $post->datetime_modified = (string)$item->datetime_modified;
-                        $post->datetime_active = date('Y-m-d H:i:s');
-                        $post->modified_by = (int)$this->context->employee->id;
-                        $post->added_by = (int)$this->context->employee->id;
-                        $post->is_customer=0;
-                        $post->sort_order =1+ (int)Db::getInstance()->getValue('SELECT count(*) FROM `'._DB_PREFIX_.'ybc_blog_post_shop` WHERE id_shop='.(int)$this->context->shop->id);
-                    }
-                    $content = $item->children('http://purl.org/rss/1.0/modules/content/');
-                    $excerpt = $item->children('http://wordpress.org/export/1.2/excerpt/');
-                   
-                    if(isset($item->postmeta) && $item->postmeta)
-                    {
-                        $context = stream_context_create(array('http' => array('header' => 'User-Agent: Mozilla compatible')));
-                        foreach($item->postmeta as $meta)
+                        $link_riwite = Tools::str2url((string)$item->title);
+                        if($importoverridewp && $id_post = $this->getPostByLinkRewrite($link_riwite))
                         {
-                            if((string)$meta->meta_key=='_thumbnail_id' && ($url=$this->getLinkGuidPost($xml,(int)$meta->meta_value)))
+                            $post = new Ybc_blog_post_class((int)$id_post);
+                            $post->datetime_modified = (string)$item->datetime_modified;
+                            $post->modified_by = (int)$this->context->employee->id;
+                        }
+                        else
+                        {
+                            $post = new Ybc_blog_post_class(null, null, $content->shop->id);
+                            $post->datetime_added = (string)$item->post_date;
+                            $post->datetime_modified = (string)$item->datetime_modified;
+                            $post->datetime_active = date('Y-m-d H:i:s');
+                            $post->modified_by = (int)$this->context->employee->id;
+                            $post->added_by = (int)$this->context->employee->id;
+                            $post->is_customer=0;
+                            $post->sort_order =1+ (int)Db::getInstance()->getValue('SELECT count(*) FROM `'._DB_PREFIX_.'ybc_blog_post_shop` WHERE id_shop='.(int)$this->context->shop->id);
+                        }
+                        $content = $item->children('http://purl.org/rss/1.0/modules/content/');
+                        $excerpt = $item->children('http://wordpress.org/export/1.2/excerpt/');
+
+                        if(isset($item->postmeta) && $item->postmeta)
+                        {
+                            $stream_context = stream_context_create(array('http' => array('header' => 'User-Agent: Mozilla compatible')));
+                            foreach($item->postmeta as $meta)
                             {
-                                $newImage= time().(int)$meta->meta_value.'.jpg';
-                                if(file_exists(_PS_YBC_BLOG_IMG_DIR_.'post/'.$newImage) || file_exists(_PS_YBC_BLOG_IMG_DIR_.'post/thumb/'.$newImage))
-                                    $newImage = time().$newImage;
-                                Ybc_Blog_ImportExport::copy($url,_PS_YBC_BLOG_IMG_DIR_.'post/'.$newImage,$context);
-                                Ybc_Blog_ImportExport::copy($url,_PS_YBC_BLOG_IMG_DIR_.'post/thumb/'.$newImage,$context);
-                                if(file_exists(_PS_YBC_BLOG_IMG_DIR_.'post/'.$newImage))
+                                if((string)$meta->meta_key=='_thumbnail_id' && ($url=$this->getLinkGuidPost($xml,(int)$meta->meta_value)))
                                 {
-                                    $oldImages = $post->image;
-                                    foreach($languages as $language)
+                                    $newImage= time().(int)$meta->meta_value.'.jpg';
+                                    if(file_exists(_PS_YBC_BLOG_IMG_DIR_.'post/'.$newImage) || file_exists(_PS_YBC_BLOG_IMG_DIR_.'post/thumb/'.$newImage))
+                                        $newImage = time().$newImage;
+                                    Ybc_Blog_ImportExport::copy($url,_PS_YBC_BLOG_IMG_DIR_.'post/'.$newImage,$stream_context);
+                                    Ybc_Blog_ImportExport::copy($url,_PS_YBC_BLOG_IMG_DIR_.'post/thumb/'.$newImage,$stream_context);
+                                    if(file_exists(_PS_YBC_BLOG_IMG_DIR_.'post/'.$newImage))
                                     {
-                                        $post->image[$language['id_lang']] = $newImage;
-                                    }
-                                }
-                                if(file_exists(_PS_YBC_BLOG_IMG_DIR_.'post/thumb/'.$newImage))
-                                {
-                                    $oldThumbs = $post->thumb;
-                                    foreach($languages as $language)
-                                    {
-                                        $post->thumb[$language['id_lang']] = $newImage;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    foreach($languages as $language)
-                    {
-                        $post->title[$language['id_lang']]=(string)$item->title;
-                        $post->url_alias[$language['id_lang']] = $link_riwite;
-                        $post->short_description[$language['id_lang']] = (string)$excerpt->encoded && Validate::isCleanHtml($content->encoded,true) ? (string)$excerpt->encoded : '';
-                        $post->description[$language['id_lang']] = (string)$content->encoded && Validate::isCleanHtml($content->encoded,true) ? (string)$content->encoded : '';
-                    }
-                    if((string)$item->status=='publish')
-                        $post->enabled=1;
-                    else
-                        $post->enabled=0;
-                    if($post->id)
-                        $post->update();
-                    else
-                        $post->add();
-                    if($post->id && $oldImages)
-                    {
-                        foreach($oldImages as $oldImage)
-                        {
-                            if(file_exists(_PS_YBC_BLOG_IMG_DIR_.'post/'.$oldImage))
-                                @unlink(_PS_YBC_BLOG_IMG_DIR_.'post/'.$oldImage);
-                        }
-                    }
-                    if($post->id && $oldThumbs)
-                    {
-                        foreach($oldThumbs as $oldThumb){
-                            if(file_exists(_PS_YBC_BLOG_IMG_DIR_.'post/thumb/'.$oldThumb))
-                                @unlink(_PS_YBC_BLOG_IMG_DIR_.'post/thumb/'.$oldThumb);
-                        }
-                    }
-                    if($item->category && $post->id)
-                    {
-                        $tagStr='';
-                        $tags=array();
-                        foreach($item->category as $category_item)
-                        {
-                            if($category_item['domain']=='category')
-                            {
-                                if($id_category= $this->getCategoryByLinkRewrite($category_item['nicename']))
-                                {
-                                    if(!Db::getInstance()->getRow('SELECT * FROM `'._DB_PREFIX_.'ybc_blog_post_category` WHERE id_post="'.(int)$post->id.'" AND id_category="'.(int)$id_category.'"'))
-                                    {
-                                        Db::getInstance()->execute('INSERT INTO `'._DB_PREFIX_.'ybc_blog_post_category` (id_post,id_category) VALUES("'.(int)$post->id.'","'.(int)$id_category.'")');
-                                        if(!$post->id_category_default)
+                                        $oldImages = $post->image;
+                                        foreach($languages as $language)
                                         {
-                                            $post->id_category_default = $id_category;
-                                            $post->update();
-                                        }                                 
+                                            $post->image[$language['id_lang']] = $newImage;
+                                        }
                                     }
-                                }
-                                else
-                                {
-                                    $category_class = new Ybc_blog_category_class();
-                                    foreach($languages as $language)
+                                    if(file_exists(_PS_YBC_BLOG_IMG_DIR_.'post/thumb/'.$newImage))
                                     {
-                                        $category_class->title[$language['id_lang']] = (string)$category_item;
-                                        $category_class->url_alias = (string)$category_item['nicename'];
-                                    }
-                                    $category_class->enabled=1;
-                                    $category_class->id_parent=0;
-                                    if(!$category_class->id)
-                                    {
-                                         $category_class->sort_order = 1+(int)Db::getInstance()->getValue('SELECT COUNT(*) FROM `'._DB_PREFIX_.'ybc_blog_category` c,`'._DB_PREFIX_.'ybc_blog_category_shop` cs WHERE c.id_category =cs.id_category AND c.id_parent="0" AND cs.id_shop='.(int)$this->context->shop->id);
-                                    }
-                                    if($category_class->add())
-                                    {
-                                        if(!Db::getInstance()->getRow('SELECT * FROM `'._DB_PREFIX_.'ybc_blog_post_category` WHERE id_category="'.(int)$category_class->id.'" AND id_post="'.(int)$post->id.'"'))
+                                        $oldThumbs = $post->thumb;
+                                        foreach($languages as $language)
                                         {
-                                            Db::getInstance()->execute('INSERT INTO `'._DB_PREFIX_.'ybc_blog_post_category` (id_post,id_category) VALUES("'.(int)$post->id.'","'.(int)$category_class->id.'")');
-                                            if(!$post->id_category_default)
-                                            {
-                                                $post->id_category_default = $category_class->id;
-                                                $post->update();
-                                            }
+                                            $post->thumb[$language['id_lang']] = $newImage;
                                         }
                                     }
                                 }
                             }
-                            elseif($category_item['domain']=='post_tag')
+                        }
+                        foreach($languages as $language)
+                        {
+                            $post->title[$language['id_lang']]=(string)$item->title;
+                            $post->url_alias[$language['id_lang']] = $link_riwite;
+                            $post->short_description[$language['id_lang']] = (string)$excerpt->encoded && Validate::isCleanHtml($content->encoded,true) ? (string)$excerpt->encoded : '';
+                            $post->description[$language['id_lang']] = (string)$content->encoded && Validate::isCleanHtml($content->encoded,true) ? (string)$content->encoded : '';
+                        }
+                        if((string)$item->status=='publish')
+                            $post->enabled=1;
+                        else
+                            $post->enabled=0;
+                        if($post->id)
+                            $post->update();
+                        else
+                            $post->add();
+                        if($post->id && $oldImages)
+                        {
+                            foreach($oldImages as $oldImage)
                             {
-                                $tagStr .=(string)$category_item.',';
+                                if(file_exists(_PS_YBC_BLOG_IMG_DIR_.'post/'.$oldImage))
+                                    @unlink(_PS_YBC_BLOG_IMG_DIR_.'post/'.$oldImage);
                             }
                         }
-                        $tagStr=trim($tagStr,',');
-                        if($tagStr && Validate::isTagsList($tagStr))
+                        if($post->id && $oldThumbs)
                         {
-                            $tagStr = explode(',',$tagStr);
-                            
-                            foreach($languages as $language)
-                            {
-                                $tags[$language['id_lang']]= $tagStr ? $tagStr:array();
+                            foreach($oldThumbs as $oldThumb){
+                                if(file_exists(_PS_YBC_BLOG_IMG_DIR_.'post/thumb/'.$oldThumb))
+                                    @unlink(_PS_YBC_BLOG_IMG_DIR_.'post/thumb/'.$oldThumb);
                             }
-                            Ybc_blog_post_class::updateTags($post->id,$tags);
                         }
-                        
-                    }
-                    if(isset($item->comment) && $item->comment)
-                    {
-                        foreach($item->comment as $comment)
+                        if($item->category && $post->id)
                         {
-                            $comment_class = new Ybc_blog_comment_class();
-                            $comment_class->id_user=0;
-                            $comment_class->name=(string)$comment->comment_author;
-                            $comment_class->email =(string)$comment->email;
-                            $comment_class->datetime_added =(string)$comment->comment_date;
-                            $comment_class->comment =(string)$comment->comment_content;
-                            $comment_class->id_post =$post->id;
-                            $comment_class->subject = (string)$comment->comment_author;
-                            if((int)$comment->comment_approved)
-                                $comment_class->approved=1;
-                            else
-                                $comment_class->approved=0;
-                            $comment_class->rating=5;
-                            $comment_class->reported=0;    
-                            $comment_class->add();
+                            $tagStr='';
+                            $tags=array();
+                            foreach($item->category as $category_item)
+                            {
+                                if($category_item['domain']=='category')
+                                {
+                                    if($id_category= $this->getCategoryByLinkRewrite($category_item['nicename']))
+                                    {
+                                        if(!Db::getInstance()->getRow('SELECT * FROM `'._DB_PREFIX_.'ybc_blog_post_category` WHERE id_post="'.(int)$post->id.'" AND id_category="'.(int)$id_category.'"'))
+                                        {
+                                            Db::getInstance()->execute('INSERT INTO `'._DB_PREFIX_.'ybc_blog_post_category` (id_post,id_category) VALUES("'.(int)$post->id.'","'.(int)$id_category.'")');
+                                            if(!$post->id_category_default)
+                                            {
+                                                $post->id_category_default = $id_category;
+                                                $post->update();
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        $category_class = new Ybc_blog_category_class(null, null, $context->shop->id);
+                                        foreach($languages as $language)
+                                        {
+                                            $category_class->title[$language['id_lang']] = (string)$category_item;
+                                            $category_class->url_alias = (string)$category_item['nicename'];
+                                        }
+                                        $category_class->enabled=1;
+                                        $category_class->id_parent=0;
+                                        if(!$category_class->id)
+                                        {
+                                            $category_class->sort_order = 1+(int)Db::getInstance()->getValue('SELECT COUNT(*) FROM `'._DB_PREFIX_.'ybc_blog_category` c,`'._DB_PREFIX_.'ybc_blog_category_shop` cs WHERE c.id_category =cs.id_category AND c.id_parent="0" AND cs.id_shop='.(int)$context->shop->id);
+                                        }
+                                        if($category_class->add())
+                                        {
+                                            if(!Db::getInstance()->getRow('SELECT * FROM `'._DB_PREFIX_.'ybc_blog_post_category` WHERE id_category="'.(int)$category_class->id.'" AND id_post="'.(int)$post->id.'"'))
+                                            {
+                                                Db::getInstance()->execute('INSERT INTO `'._DB_PREFIX_.'ybc_blog_post_category` (id_post,id_category) VALUES("'.(int)$post->id.'","'.(int)$category_class->id.'")');
+                                                if(!$post->id_category_default)
+                                                {
+                                                    $post->id_category_default = $category_class->id;
+                                                    $post->update();
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                elseif($category_item['domain']=='post_tag')
+                                {
+                                    $tagStr .=(string)$category_item.',';
+                                }
+                            }
+                            $tagStr=trim($tagStr,',');
+                            if($tagStr && Validate::isTagsList($tagStr))
+                            {
+                                $tagStr = explode(',',$tagStr);
+
+                                foreach($languages as $language)
+                                {
+                                    $tags[$language['id_lang']]= $tagStr;
+                                }
+                                Ybc_blog_post_class::updateTags($post->id,$tags);
+                            }
+
+                        }
+                        if(isset($item->comment) && $item->comment)
+                        {
+                            foreach($item->comment as $comment)
+                            {
+                                $comment_class = new Ybc_blog_comment_class();
+                                $comment_class->id_user=0;
+                                $comment_class->name=(string)$comment->comment_author;
+                                $comment_class->email =(string)$comment->email;
+                                $comment_class->datetime_added =(string)$comment->comment_date;
+                                $comment_class->comment =(string)$comment->comment_content;
+                                $comment_class->id_post =$post->id;
+                                $comment_class->subject = (string)$comment->comment_author;
+                                if((int)$comment->comment_approved)
+                                    $comment_class->approved=1;
+                                else
+                                    $comment_class->approved=0;
+                                $comment_class->rating=5;
+                                $comment_class->reported=0;
+                                $comment_class->add();
+                            }
                         }
                     }
                 }
             }
+            else
+            {
+                $errors[]=$this->l('Data is null');
+            }
+            if(file_exists(_YBC_BLOG_CACHE_DIR_.$file_xml))
+                @unlink(_YBC_BLOG_CACHE_DIR_.$file_xml);
         }
         else
-        {
-            $errors[]=$this->l('Data null');
-        }
-        if(file_exists(_YBC_BLOG_CACHE_DIR_.$file_xml))
-            @unlink(_YBC_BLOG_CACHE_DIR_.$file_xml);
+            $errors[] = $this->l('File is null');
         return $errors;
     }
     public function getCategoryPost($name)
@@ -651,7 +653,7 @@ class Ybc_Blog_ImportExport extends Module
         WHERE cl.id_lang="'.(int)$this->context->language->id.'" AND cl.url_alias="'.pSQL($link_riwite).'" AND cs.id_shop="'.(int)$this->context->shop->id.'" ORDER BY c.id_category DESC';
         return (int)Db::getInstance()->getValue($sql);
     }
-    public function processImport($zipfile = false,$params = array())
+    public function processImport($context, $zipfile = false,$params = array())
     {
         $errors = array();
         if(isset($params['data_import']) && $params['data_import'])
@@ -665,14 +667,17 @@ class Ybc_Blog_ImportExport extends Module
                 $uploader->setMaxSize(1048576000);
                 $uploader->setAcceptTypes(array('zip'));        
                 $uploader->setSavePath($savePath);
-                $file = $uploader->process('ybc_blog.data.zip'); 
+                $file = $uploader->process();
+                if(!empty($file[0]['save_path']))
+                    $extractUrl = $file[0]['save_path'];
+                else
+                    $extractUrl = $savePath.'ybc_blog.data.zip';
                 if ($file[0]['error'] === 0) {
-                    if (!Tools::ZipTest($savePath.'ybc_blog.data.zip')) 
+                    if (!Tools::ZipTest($extractUrl))
                         $errors[] = $this->l('Zip file seems to be broken');
                 } else {
                     $errors[] = $file[0]['error'];
                 }
-                $extractUrl = $savePath.'ybc_blog.data.zip';
             }
             else      
                 $extractUrl = $zipfile;
@@ -686,7 +691,7 @@ class Ybc_Blog_ImportExport extends Module
                     if ($zip->locateName('blog-data.xml') === false)
                     {
                         $errors[] = $this->l('blog-data.xml doesn\'t exist');                    
-                        if($extractUrl && file_exists($extractUrl) && !$zipfile)
+                        if(file_exists($extractUrl) && !$zipfile)
                         {
 
                             @unlink($extractUrl);                        
@@ -707,11 +712,13 @@ class Ybc_Blog_ImportExport extends Module
             {            
                 if(@file_exists(_YBC_BLOG_CACHE_DIR_.'blog-data.xml'))
                 {
-                    $this->importData(_YBC_BLOG_CACHE_DIR_.'blog-data.xml',$params);
+
+                    $this->importData($context, _YBC_BLOG_CACHE_DIR_.'blog-data.xml',$params);
                     @unlink(_YBC_BLOG_CACHE_DIR_.'blog-data.xml');
-                    $this->removeForderImgCache(_YBC_BLOG_CACHE_DIR_.'img');
+                    $this->removeFolderImgCache(_YBC_BLOG_CACHE_DIR_.'img');
                 }
-                $zip->close();
+                if(isset($zip))
+                    $zip->close();
                 if(@file_exists($extractUrl))
                     @unlink($extractUrl);              
             }
@@ -735,7 +742,7 @@ class Ybc_Blog_ImportExport extends Module
         }
         return false;
     }
-    public function importData($file_xml,$params = array())
+    public function importData($context, $file_xml,$params = array())
     {
         if (file_exists($file_xml))	
 		{	
@@ -755,20 +762,34 @@ class Ybc_Blog_ImportExport extends Module
                         {
                             $oldImages = array();
                             $oldThumbs = array();
-                            if($importoverride && isset($category_xml['id_category']) && ($category = new Ybc_blog_category_class((int)$category_xml['id_category'])) && Validate::isLoadedObject($category) && $category->id_shop == Context::getContext()->shop->id)
+                            if($importoverride && isset($category_xml['id_category']))
                             {
-                                $oldImages = $category->image;
-                                $oldThumbs = $category->thumb;
+                                $category = new Ybc_blog_category_class((int)$category_xml['id_category']);
+                                if(Validate::isLoadedObject($category) && $category->id_shop == $context->shop->id)
+                                {
+                                    $oldImages = $category->image;
+                                    $oldThumbs = $category->thumb;
+                                }
+                                else
+                                {
+                                    $category = new Ybc_blog_category_class(null, null, $context->shop->id);
+                                    if(isset($category_xml['id_parent'])&&(int)$category_xml['id_parent']!=0)
+                                        $id_parent = isset($categories[(int)$category_xml['id_parent']]) ? $categories[(int)$category_xml['id_parent']] : 0;
+                                    else
+                                        $id_parent=0;
+                                    $category->id_parent =$id_parent;
+                                    $category->sort_order = 1+(int)Db::getInstance()->getValue('SELECT COUNT(*) FROM `'._DB_PREFIX_.'ybc_blog_category` c,`'._DB_PREFIX_.'ybc_blog_category_shop` cs WHERE c.id_category =cs.id_category AND c.id_parent="'.(int)$id_parent.'" AND cs.id_shop='.(int)$context->shop->id);
+                                }
                             }     
                             else
                             {
-                                $category = new Ybc_blog_category_class();
+                                $category = new Ybc_blog_category_class(null, null, $context->shop->id);
                                 if(isset($category_xml['id_parent'])&&(int)$category_xml['id_parent']!=0)
                                     $id_parent = isset($categories[(int)$category_xml['id_parent']]) ? $categories[(int)$category_xml['id_parent']] : 0;
                                 else
                                     $id_parent=0;
                                 $category->id_parent =$id_parent;
-                                $category->sort_order = 1+(int)Db::getInstance()->getValue('SELECT COUNT(*) FROM `'._DB_PREFIX_.'ybc_blog_category` c,`'._DB_PREFIX_.'ybc_blog_category_shop` cs WHERE c.id_category =cs.id_category AND c.id_parent="'.(int)$id_parent.'" AND cs.id_shop='.(int)$this->context->shop->id);
+                                $category->sort_order = 1+(int)Db::getInstance()->getValue('SELECT COUNT(*) FROM `'._DB_PREFIX_.'ybc_blog_category` c,`'._DB_PREFIX_.'ybc_blog_category_shop` cs WHERE c.id_category =cs.id_category AND c.id_parent="'.(int)$id_parent.'" AND cs.id_shop='.(int)$context->shop->id);
                             }   
                             $category->enabled = (int)$category_xml['enabled'];
                             if(isset($category_xml['image']) && self::isImage((string)$category_xml['image']))
@@ -785,8 +806,8 @@ class Ybc_Blog_ImportExport extends Module
                             }
                             $category->datetime_added = Validate::isDate((string)$category_xml['datetime_added']) ? (string)$category_xml['datetime_added'] :date('Y-m-d H:i:s');
                             $category->datetime_modified = Validate::isDate((string)$category_xml['datetime_modified']) ? (string)$category_xml['datetime_modified'] : date('Y-m-d H:i:s');;
-                            $category->added_by = (int)Context::getContext()->employee->id;
-                            $category->modified_by = (int)Context::getContext()->employee->id;
+                            $category->added_by = (int)$context->employee->id;
+                            $category->modified_by = (int)$context->employee->id;
                             $languageCategoryImported=array();
                             if($category_xml->categorylanguage)
                             {
@@ -846,10 +867,10 @@ class Ybc_Blog_ImportExport extends Module
                                                 $category->image[$id_lang] = time().$image;
                                                 $category->update();
                                             }
-                                            if($image && file_exists(_YBC_BLOG_CACHE_DIR_.'img/category/'.$image))
+                                            if(file_exists(_YBC_BLOG_CACHE_DIR_.'img/category/'.$image))
                                             {
                                                 copy(_YBC_BLOG_CACHE_DIR_.'img/category/'.$image,_PS_YBC_BLOG_IMG_DIR_.'category/'.$category->image[$id_lang]);
-                                                if(isset($oldImages[$id_lang]) && $oldImages[$id_lang] && file_exists(_PS_YBC_BLOG_IMG_DIR_.'category/'.$oldImages[$id_lang]))
+                                                if(isset($oldImages[$id_lang]) && $oldImages[$id_lang] && file_exists(_PS_YBC_BLOG_IMG_DIR_.'category/'.$oldImages[$id_lang]) && !Db::getInstance()->getRow('SELECT * FROM `'._DB_PREFIX_.'ybc_blog_category_lang` WHERE image LIKE "'.pSQL($oldImages[$id_lang]).'"'))
                                                     @unlink(_PS_YBC_BLOG_IMG_DIR_.'category/'.$oldImages[$id_lang]);
                                                     
                                             }
@@ -867,10 +888,10 @@ class Ybc_Blog_ImportExport extends Module
                                                 $category->thumb[$id_lang] = time().$thumb;
                                                 $category->update();
                                             }
-                                            if($thumb && file_exists(_YBC_BLOG_CACHE_DIR_.'img/category/thumb/'.$thumb))
+                                            if(file_exists(_YBC_BLOG_CACHE_DIR_.'img/category/thumb/'.$thumb))
                                             {
                                                 copy(_YBC_BLOG_CACHE_DIR_.'img/category/thumb/'.$thumb,_PS_YBC_BLOG_IMG_DIR_.'category/thumb/'.$category->thumb[$id_lang]);
-                                                if(isset($oldThumbs[$id_lang]) && $oldThumbs[$id_lang] && file_exists(_PS_YBC_BLOG_IMG_DIR_.'category/thumb/'.$oldThumbs[$id_lang]))
+                                                if(isset($oldThumbs[$id_lang]) && $oldThumbs[$id_lang] && file_exists(_PS_YBC_BLOG_IMG_DIR_.'category/thumb/'.$oldThumbs[$id_lang]) && !Db::getInstance()->getRow('SELECT * FROM `'._DB_PREFIX_.'ybc_blog_category_lang` WHERE thumb LIKE "'.pSQL($oldThumbs[$id_lang]).'"'))
                                                     @unlink(_PS_YBC_BLOG_IMG_DIR_.'category/thumb/'.$oldThumbs[$id_lang]);
                                             }
                                         }
@@ -888,14 +909,23 @@ class Ybc_Blog_ImportExport extends Module
                 		{
                             $oldImages = array();
                             $oldThumbs = array();
-                		    if($importoverride && isset($post_xml['id_post']) && ($post = new Ybc_blog_post_class((int)$post_xml['id_post'])) && Validate::isLoadedObject($post) && $post->id_shop == Context::getContext()->shop->id)
+                		    if($importoverride && isset($post_xml['id_post']))
                             {
-                                $oldImages = $post->image;
-                                $oldThumbs = $post->thumb;
+                                $post = new Ybc_blog_post_class((int)$post_xml['id_post']);
+                                if(Validate::isLoadedObject($post) && $post->id_shop == $context->shop->id)
+                                {
+                                    $oldImages = $post->image;
+                                    $oldThumbs = $post->thumb;
+                                }
+                                else
+                                {
+                                    $post = new Ybc_blog_post_class(null, null, $context->shop->id);
+                                    $post->sort_order =1+ (int)Db::getInstance()->getValue('SELECT count(*) FROM `'._DB_PREFIX_.'ybc_blog_post_shop` WHERE id_shop='.(int)$this->context->shop->id);
+                                }
                             }
                             else
                             {
-                                $post = new Ybc_blog_post_class();
+                                $post = new Ybc_blog_post_class(null, null, $context->shop->id);
                                 $post->sort_order =1+ (int)Db::getInstance()->getValue('SELECT count(*) FROM `'._DB_PREFIX_.'ybc_blog_post_shop` WHERE id_shop='.(int)$this->context->shop->id);
                             } 
                             $post->enabled = (int)$post_xml['enabled'];
@@ -925,20 +955,19 @@ class Ybc_Blog_ImportExport extends Module
                                 }
                                 else
                                 {
-                                    $post->added_by = (int)Context::getContext()->employee->id;
-                                    $post->modified_by = (int)Context::getContext()->employee->id;
+                                    $post->added_by = (int)$context->employee->id;
+                                    $post->modified_by = (int)$context->employee->id;
                                     $post->is_customer =0;
                                 }
                             }
                             else
                             {
-                                $post->added_by = (int)Context::getContext()->employee->id;
-                                $post->modified_by = (int)Context::getContext()->employee->id;
+                                $post->added_by = (int)$context->employee->id;
+                                $post->modified_by = (int)$context->employee->id;
                                 $post->is_customer=0;
                             }
                             $post->click_number = (int)$post_xml['click_number'];
                             $post->likes = (int)$post_xml['likes'];
-                            $post->products = (string)$post_xml['products'];
                             if(isset($post_xml['thumb']) && self::isImage((string)$post_xml['thumb']))
                             {
                                 foreach($languages as $language)
@@ -1013,10 +1042,10 @@ class Ybc_Blog_ImportExport extends Module
                                                 $post->image[$id_lang] = time().$image;
                                                 $post->update();
                                             }
-                                            if($image && file_exists(_YBC_BLOG_CACHE_DIR_.'img/post/'.$image))
+                                            if(file_exists(_YBC_BLOG_CACHE_DIR_.'img/post/'.$image))
                                             {
                                                 copy(_YBC_BLOG_CACHE_DIR_.'img/post/'.$image,_PS_YBC_BLOG_IMG_DIR_.'post/'.$post->image[$id_lang]);
-                                                if(isset($oldImages[$id_lang]) && $oldImages[$id_lang] && file_exists(_PS_YBC_BLOG_IMG_DIR_.'post/'.$oldImages[$id_lang]))
+                                                if(isset($oldImages[$id_lang]) && $oldImages[$id_lang] && file_exists(_PS_YBC_BLOG_IMG_DIR_.'post/'.$oldImages[$id_lang]) && !Db::getInstance()->getRow('SELECT * FROM `'._DB_PREFIX_.'ybc_blog_post_lang` WHERE image LIKE "'.pSQL($oldImages[$id_lang]).'"'))
                                                     @unlink(_PS_YBC_BLOG_IMG_DIR_.'post/'.$oldImages[$id_lang]);
                                             }
                                         }
@@ -1034,10 +1063,16 @@ class Ybc_Blog_ImportExport extends Module
                                                 $post->thumb[$id_lang] = time().$thumb;
                                                 $post->update();
                                             }
-                                            if($thumb && file_exists(_YBC_BLOG_CACHE_DIR_.'img/post/thumb/'.$thumb))
+                                            if(file_exists(_YBC_BLOG_CACHE_DIR_.'img/post/thumb/'.$thumb))
                                             {
                                                 copy(_YBC_BLOG_CACHE_DIR_.'img/post/thumb/'.$thumb,_PS_YBC_BLOG_IMG_DIR_.'post/thumb/'.$post->thumb[$id_lang]);
-                                                if(isset($oldThumbs[$id_lang]) && $oldThumbs[$id_lang] && file_exists(_PS_YBC_BLOG_IMG_DIR_.'post/thumb/'.$oldThumbs[$id_lang]))
+                                                if(isset($oldThumbs[$id_lang]) && $oldThumbs[$id_lang] && file_exists(_PS_YBC_BLOG_IMG_DIR_.'post/thumb/'.$oldThumbs[$id_lang]) && !Db::getInstance()->getRow('SELECT * FROM `'._DB_PREFIX_.'ybc_blog_post_lang` WHERE thumb LIKE "'.pSQL($oldThumbs[$id_lang]).'"'))
+                                                    @unlink(_PS_YBC_BLOG_IMG_DIR_.'post/thumb/'.$oldThumbs[$id_lang]);
+                                            }
+                                            elseif(file_exists(_YBC_BLOG_CACHE_DIR_.'img/post/'.$thumb))
+                                            {
+                                                copy(_YBC_BLOG_CACHE_DIR_.'img/post/'.$thumb,_PS_YBC_BLOG_IMG_DIR_.'post/thumb/'.$post->thumb[$id_lang]);
+                                                if(isset($oldThumbs[$id_lang]) && $oldThumbs[$id_lang] && file_exists(_PS_YBC_BLOG_IMG_DIR_.'post/thumb/'.$oldThumbs[$id_lang]) && !Db::getInstance()->getRow('SELECT * FROM `'._DB_PREFIX_.'ybc_blog_post_lang` WHERE thumb LIKE "'.pSQL($oldThumbs[$id_lang]).'"'))
                                                     @unlink(_PS_YBC_BLOG_IMG_DIR_.'post/thumb/'.$oldThumbs[$id_lang]);
                                             }
                                         }
@@ -1069,12 +1104,12 @@ class Ybc_Blog_ImportExport extends Module
                                         }
                                     }
                                 }
-                                if($importoverride)
-                                {
-                                    Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'ybc_blog_tag` WHERE id_post='.(int)$post->id);
-                                }
                                 if(isset($post_xml->tags)&& $post_xml->tags)
                                 {
+                                    if($importoverride)
+                                    {
+                                        Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'ybc_blog_tag` WHERE id_post='.(int)$post->id);
+                                    }
                                     foreach($post_xml->tags as $tag_xml)
                                     {
                                         if((string)$tag_xml['iso_code'])
@@ -1088,12 +1123,12 @@ class Ybc_Blog_ImportExport extends Module
                                 }
                                 if(in_array('posts_comments',$data_imports))
                                 {
-                                    if($importoverride)
-                                    {
-                                        Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'ybc_blog_comment` WHERE id_post='.(int)$post->id);
-                                    }
                                     if(isset($post_xml->comment) && $post_xml->comment)
                                     {
+                                        if($importoverride)
+                                        {
+                                            Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'ybc_blog_comment` WHERE id_post='.(int)$post->id);
+                                        }
                                         foreach($post_xml->comment as $comment_xml)
                                         {
                                             $comment= new Ybc_blog_comment_class();
@@ -1107,7 +1142,7 @@ class Ybc_Blog_ImportExport extends Module
                                             $comment->subject = Validate::isCleanHtml((string)$comment_xml['subject']) ? (string)$comment_xml['subject'] :'';
                                             $comment->comment = Validate::isCleanHtml((string)$comment_xml->comment_text) ? (string)$comment_xml->comment_text :'';
                                             $comment->reply = Validate::isCleanHtml((string)$comment_xml->reply) ? (string)$comment_xml->reply :'';
-                                            $comment->replied_by = (int)Context::getContext()->employee->id;
+                                            $comment->replied_by = (int)$context->employee->id;
                                             $comment->rating = (int)$comment_xml['rating'];
                                             $comment->approved = (int)$comment_xml['approved'];
                                             $comment->datetime_added = Validate::isDate((string)$comment_xml['datetime_added']) ? (string)$comment_xml['datetime_added'] : date('Y-m-d H:i:s');
@@ -1135,12 +1170,12 @@ class Ybc_Blog_ImportExport extends Module
                                 }
                                 if(in_array('posts_polls',$data_imports))
                                 {
-                                    if($importoverride)
-                                    {
-                                        Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'ybc_blog_polls` WHERE id_post='.(int)$post->id);
-                                    }
                                     if(isset($post_xml->post_polls) && $post_xml->post_polls)
                                     {
+                                        if($importoverride)
+                                        {
+                                            Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'ybc_blog_polls` WHERE id_post='.(int)$post->id);
+                                        }
                                         foreach($post_xml->post_polls as $post_polls_xml)
                                         {
                                             $polls_class= new Ybc_blog_polls_class();
@@ -1169,11 +1204,25 @@ class Ybc_Blog_ImportExport extends Module
                         foreach ($xml->slide as $slide_xml)
                 		{
                             $oldImages = array();
-                		    if(!($importoverride && isset($slide_xml['id_slide']) && ($slide = new Ybc_blog_slide_class((int)$slide_xml['id_slide'])) && Validate::isLoadedObject($slide) && $slide->id_shop== Context::getContext()->shop->id) )
+                		    if($importoverride && isset($slide_xml['id_slide']))
                             {
-                                $slide = new Ybc_blog_slide_class();
-                                $slide->sort_order = 1+ (int)count($this->getSlides());
-                            }  
+                                $slide = new Ybc_blog_slide_class((int)$slide_xml['id_slide']);
+                                if(Validate::isLoadedObject($slide) && $slide->id_shop== $context->shop->id)
+                                {
+                                    $oldImages = $slide->image;
+                                }
+                                else{
+                                    $slide = new Ybc_blog_slide_class(null, null, $context->shop->id);
+                                    $slide->sort_order = 1+ (int)count($this->getSlides($context->shop->id));
+                                }
+
+                            }
+                            else
+                            {
+                                $slide = new Ybc_blog_slide_class(null, null, $context->shop->id);
+                                $slide->sort_order = 1+ (int)count($this->getSlides($context->shop->id));
+                            }
+
                             $slide->enabled = (int)$slide_xml['enabled'];
                             if(isset($slide_xml['image']) && self::isImage((string)$slide_xml['image']))
                             {
@@ -1227,10 +1276,10 @@ class Ybc_Blog_ImportExport extends Module
                                                 $slide->image[$id_lang] = time().$image;
                                                 $slide->update();
                                             }
-                                            if($image && file_exists(_YBC_BLOG_CACHE_DIR_.'img/slide/'.$image))
+                                            if(file_exists(_YBC_BLOG_CACHE_DIR_.'img/slide/'.$image))
                                             {
                                                 copy(_YBC_BLOG_CACHE_DIR_.'img/slide/'.$image,_PS_YBC_BLOG_IMG_DIR_.'slide/'.$slide->image[$id_lang]);
-                                                if(isset($oldImages[$id_lang]) && $oldImages[$id_lang] && file_exists(_PS_YBC_BLOG_IMG_DIR_.'slide/'.$oldImages[$id_lang]))
+                                                if(isset($oldImages[$id_lang]) && $oldImages[$id_lang] && file_exists(_PS_YBC_BLOG_IMG_DIR_.'slide/'.$oldImages[$id_lang]) && !Db::getInstance()->getRow('SELECT * FROM `'._DB_PREFIX_.'ybc_blog_slide_lang` WHERE image LIKE "'.pSQL($oldImages[$id_lang]).'"'))
                                                     @unlink(_PS_YBC_BLOG_IMG_DIR_.'slide/'.$oldImages[$id_lang]);
                                             }
                                         }
@@ -1251,15 +1300,25 @@ class Ybc_Blog_ImportExport extends Module
                         {
                             $oldImages = array();
                             $oldThumbs = array();
-                            if($importoverride && isset($gallery_xml['id_gallery']) && ($gallery = new Ybc_blog_gallery_class((int)$gallery_xml['id_gallery'])) && Validate::isLoadedObject($gallery) && $gallery->id_shop == Context::getContext()->shop->id )
+                            if($importoverride && isset($gallery_xml['id_gallery']) )
                             {
-                                $oldImages = $gallery->image;
-                                $oldThumbs = $gallery->thumb;
+                                $gallery = new Ybc_blog_gallery_class((int)$gallery_xml['id_gallery']);
+                                if(Validate::isLoadedObject($gallery) && $gallery->id_shop == $context->shop->id)
+                                {
+                                    $oldImages = $gallery->image;
+                                    $oldThumbs = $gallery->thumb;
+                                }
+                                else
+                                {
+                                    $gallery = new Ybc_blog_gallery_class(null, null, $context->shop->id);
+                                    $gallery->sort_order = 1+ count($this->getGalleries($context->shop->id));
+                                }
+
                             }
                             else
                             {
-                                $gallery = new Ybc_blog_gallery_class();
-                                $gallery->sort_order = 1+ count($this->getGalleries());
+                                $gallery = new Ybc_blog_gallery_class(null, null, $context->shop->id);
+                                $gallery->sort_order = 1+ count($this->getGalleries($context->shop->id));
                             }    
                             $gallery->enabled = (int)$gallery_xml['enabled'];
                             if(isset($gallery_xml['image']) && self::isImage((string)$gallery_xml['image']))
@@ -1324,10 +1383,10 @@ class Ybc_Blog_ImportExport extends Module
                                                 $gallery->image[$id_lang] = time().$image;
                                                 $gallery->update();
                                             }
-                                            if($image && file_exists(_YBC_BLOG_CACHE_DIR_.'img/gallery/'.$image))
+                                            if(file_exists(_YBC_BLOG_CACHE_DIR_.'img/gallery/'.$image))
                                             {
                                                 copy(_YBC_BLOG_CACHE_DIR_.'img/gallery/'.$image,_PS_YBC_BLOG_IMG_DIR_.'gallery/'.$gallery->image[$id_lang]);
-                                                if(isset($oldImages[$id_lang]) && $oldImages[$id_lang] && file_exists(_PS_YBC_BLOG_IMG_DIR_.'gallery/'.$oldImages[$id_lang]))
+                                                if(isset($oldImages[$id_lang]) && $oldImages[$id_lang] && file_exists(_PS_YBC_BLOG_IMG_DIR_.'gallery/'.$oldImages[$id_lang]) && !Db::getInstance()->getRow('SELECT * FROM `'._DB_PREFIX_.'ybc_blog_gallery_lang` WHERE image LIKE "'.pSQL($oldImages[$id_lang]).'"'))
                                                     @unlink(_PS_YBC_BLOG_IMG_DIR_.'gallery/'.$oldImages[$id_lang]);
                                             }
                                         }
@@ -1345,10 +1404,10 @@ class Ybc_Blog_ImportExport extends Module
                                                 $gallery->thumb[$id_lang] = time().$thumb;
                                                 $gallery->update();
                                             }
-                                            if($thumb && file_exists(_YBC_BLOG_CACHE_DIR_.'img/gallery/thumb/'.$thumb))
+                                            if(file_exists(_YBC_BLOG_CACHE_DIR_.'img/gallery/thumb/'.$thumb))
                                             {
                                                 copy(_YBC_BLOG_CACHE_DIR_.'img/gallery/thumb/'.$thumb,_PS_YBC_BLOG_IMG_DIR_.'gallery/thumb/'.$gallery->thumb[$id_lang]);
-                                                if(isset($oldThumbs[$id_lang]) && $oldThumbs[$id_lang] && file_exists(_PS_YBC_BLOG_IMG_DIR_.'gallery/thumb/'.$oldThumbs[$id_lang]))
+                                                if(isset($oldThumbs[$id_lang]) && $oldThumbs[$id_lang] && file_exists(_PS_YBC_BLOG_IMG_DIR_.'gallery/thumb/'.$oldThumbs[$id_lang]) && !Db::getInstance()->getRow('SELECT * FROM `'._DB_PREFIX_.'ybc_blog_gallery_lang` WHERE thumb LIKE "'.pSQL($oldThumbs[$id_lang]).'"'))
                                                     @unlink(_PS_YBC_BLOG_IMG_DIR_.'gallery/thumb/'.$oldThumbs[$id_lang]);
                                             }
                                         }
@@ -1365,18 +1424,18 @@ class Ybc_Blog_ImportExport extends Module
                 {
                     if(isset($xml->configuration) && $config_xml = $xml->configuration)
                     {
-                        $this->importXmlConfiguration($this->defines->configs,$config_xml);
-                        $this->importXmlConfiguration($this->defines->configs_seo,$config_xml);
-                        $this->importXmlConfiguration($this->defines->configs_sitemap,$config_xml);
-                        $this->importXmlConfiguration($this->defines->configs_homepage,$config_xml);
-                        $this->importXmlConfiguration($this->defines->configs_categorypage,$config_xml);
-                        $this->importXmlConfiguration($this->defines->configs_productpage,$config_xml);
-                        $this->importXmlConfiguration($this->defines->configs_sidebar,$config_xml);
-                        $this->importXmlConfiguration($this->defines->configs_email,$config_xml);
-                        $this->importXmlConfiguration($this->defines->socials,$config_xml);
-                        $this->importXmlConfiguration($this->defines->rss,$config_xml);
-                        $this->importXmlConfiguration($this->defines->customer_settings,$config_xml);
-                        $this->importXmlConfiguration($this->defines->configs_image,$config_xml);
+                        $this->importXmlConfiguration(Ybc_blog_defines::getInstance($context)->getConfigsGlobal(),$config_xml);
+                        $this->importXmlConfiguration(Ybc_blog_defines::getInstance($context)->getConfigsSeo(),$config_xml);
+                        $this->importXmlConfiguration(Ybc_blog_defines::getInstance($context)->getConfigSiteMap(),$config_xml);
+                        $this->importXmlConfiguration(Ybc_blog_defines::getInstance($context)->getConfigsHome(),$config_xml);
+                        $this->importXmlConfiguration(Ybc_blog_defines::getInstance($context)->getConfigsCategoryPage(),$config_xml);
+                        $this->importXmlConfiguration(Ybc_blog_defines::getInstance($context)->getConfigsProductPage(),$config_xml);
+                        $this->importXmlConfiguration(Ybc_blog_defines::getInstance($context)->getConfigsSidebar(),$config_xml);
+                        $this->importXmlConfiguration(Ybc_blog_defines::getInstance($context)->getConfigsEmail(),$config_xml);
+                        $this->importXmlConfiguration(Ybc_blog_defines::getInstance($context)->getConfigsSocials(),$config_xml);
+                        $this->importXmlConfiguration(Ybc_blog_defines::getInstance($context)->getConfigsRss(),$config_xml);
+                        $this->importXmlConfiguration(Ybc_blog_defines::getInstance($context)->getCustomerSettings($context->language->id),$config_xml);
+                        $this->importXmlConfiguration(Ybc_blog_defines::getInstance($context)->getConfigsImage(),$config_xml);
                     }
                 }
             }
@@ -1426,7 +1485,7 @@ class Ybc_Blog_ImportExport extends Module
             return false;
         }
     }
-    public function removeForderImgCache($forder)
+    public function removeFolderImgCache($forder)
     {
         $files = glob($forder.'/*'); 
         foreach($files as $file){ 
@@ -1435,7 +1494,7 @@ class Ybc_Blog_ImportExport extends Module
                 @unlink($file);
           }
           else
-            $this->removeForderImgCache($file);
+            $this->removeFolderImgCache($file);
         }
         rmdir($forder);
     }

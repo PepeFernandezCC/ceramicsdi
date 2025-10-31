@@ -18,8 +18,7 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 
-if (!defined('_PS_VERSION_'))
-    exit;
+if (!defined('_PS_VERSION_')) { exit; }
 function upgrade_module_3_3_7($module)
 {
     Configuration::updateGlobalValue('YBC_BLOG_DISPLAY_SORT_BY',1);

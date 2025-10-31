@@ -18,8 +18,11 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 
-if (!defined('_PS_VERSION_'))
-	exit;
+if (!defined('_PS_VERSION_')) { exit; }
+/**
+ * Class Ybc_blogSitemapModuleFrontController
+ * @property Ybc_blog $module
+ */
 class Ybc_blogSitemapModuleFrontController extends ModuleFrontController
 {
     public $display_column_left = false;
@@ -29,19 +32,19 @@ class Ybc_blogSitemapModuleFrontController extends ModuleFrontController
 	   parent::__construct();
 	   $this->display_column_left=false;
        $this->display_column_right=false;
-       $this->context = Context::getContext();
-       $this->module= new Ybc_blog();
     }
     public function init()
 	{
 		parent::init();
+		if(!Configuration::get('YBC_BLOG_ENABLE_SITEMAP'))
+		    Tools::redirect('index.php');
 	}
     public function getAlternativeLangsUrl()
     {
         $alternativeLangs = array();
         $languages = Language::getLanguages(true, $this->context->shop->id);
 
-        if ($languages < 2) {
+        if (count($languages) < 2) {
             // No need to display alternative lang if there is only one enabled
             return $alternativeLangs;
         }
@@ -68,131 +71,131 @@ class Ybc_blogSitemapModuleFrontController extends ModuleFrontController
         if(!$id_lang)
             $id_lang = $this->context->language->id;
         $pages_sitemap= explode(',',Configuration::get('YBC_BLOC_SITEMAP_PAGES'));
-        $xml ='<?xml version="1.0" encoding="UTF-8"?>';
-        $xml .='<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">'."\n";
+        $xml ='<'.'?xml version="1.0" encoding="UTF-8"?'.'>';
+        $xml .='<'.'urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"'.'>'."\n";
         if(in_array('main_blog',$pages_sitemap))
         {
-            $xml .='<url>'."\n";
-           $xml .='<loc><![CDATA['.$this->module->getLink('blog').']]></loc>'."\n";
-           $xml .='<priority>1.0</priority>'."\n"; 
-           $xml .='<changefreq>daily</changefreq>';
-           $xml .='</url>'."\n";
+            $xml .='<'.'url'.'>'."\n";
+           $xml .='<'.'loc'.'>'.'<'.'![CDATA['.$this->module->getLink('blog').']]'.'>'.'<'.'/loc'.'>'."\n";
+           $xml .='<'.'priority'.'>'.'1.0'.'<'.'/priority'.'>'."\n";
+           $xml .='<'.'changefreq'.'>'.'daily'.'<'.'/changefreq'.'>';
+           $xml .='<'.'/url'.'>'."\n";
         }
         if(in_array('single_post',$pages_sitemap))
         {
-            $posts = Ybc_blog_post_class::getPostsWithFilter(' AND p.enabled=1',$this->module->sort);
+            $posts = Ybc_blog_post_class::getPostsWithFilter($this->context, ' AND p.enabled=1',$this->module->sort);
             if($posts)
             {
                 foreach($posts as $post)
                 {
-                    $xml .='<url>'."\n";
-                    $xml .='<loc><![CDATA['.$this->module->getLink('blog',array('id_post'=>$post['id_post'])).']]></loc>'."\n";
-                    $xml .='<priority>0.9</priority>'."\n"; 
-                    $xml .='<lastmod>'.date('Y-m-d').'</lastmod>'."\n";
-                    $xml .='<changefreq>daily</changefreq>'."\n";
+                    $xml .='<'.'url'.'>'."\n";
+                    $xml .='<'.'loc'.'>'.'<'.'![CDATA['.$this->module->getLink('blog',array('id_post'=>$post['id_post'])).']]'.'>'.'<'.'/loc'.'>'."\n";
+                    $xml .='<'.'priority'.'>0.9</priority>'."\n";
+                    $xml .='<'.'lastmod'.'>'.date('Y-m-d').'<'.'/lastmod'.'>'."\n";
+                    $xml .='<'.'changefreq'.'>'.'daily'.'<'.'/changefreq'.'>'."\n";
                     if($post['thumb'] || $post['image'])
                     {
-                        $xml .='<image:image>'."\n";
-                        $xml .='<image:loc><![CDATA['.($post['thumb'] ? $this->context->link->getMediaLink(_PS_YBC_BLOG_IMG_.'post/thumb/'.$post['thumb']) : $this->context->link->getMediaLink(_PS_YBC_BLOG_IMG_.'post/'.$post['image'])).']]></image:loc>'."\n";
-                        $xml .='<image:caption><![CDATA['.$post['title'].']]></image:caption>'."\n";
-                        $xml .='<image:title><![CDATA['.$post['title'].']]></image:title>'."\n";
-                        $xml .='</image:image>'."\n";   
+                        $xml .='<'.'image:image'.'>'."\n";
+                        $xml .='<'.'image:loc'.'>'.'<'.'![CDATA['.($post['thumb'] ? $this->context->link->getMediaLink(_PS_YBC_BLOG_IMG_.'post/thumb/'.$post['thumb']) : $this->context->link->getMediaLink(_PS_YBC_BLOG_IMG_.'post/'.$post['image'])).']]'.'>'.'<'.'/image:loc'.'>'."\n";
+                        $xml .='<'.'image:caption'.'>'.'<'.'![CDATA['.$post['title'].']]'.'>'.'<'.'/image:caption'.'>'."\n";
+                        $xml .='<'.'image:title'.'>'.'<'.'![CDATA['.$post['title'].']]'.'>'.'<'.'/image:title'.'>'."\n";
+                        $xml .='<'.'/image:image'.'>'."\n";
                     }
-                    $xml .='</url>'."\n";
+                    $xml .='<'.'/url'.'>'."\n";
                 }
            }
         }
         if(in_array('category',$pages_sitemap))
         {
-           $categories = Ybc_blog_category_class::getCategoriesWithFilter(' AND c.enabled=1');
+           $categories = Ybc_blog_category_class::getCategoriesWithFilter($this->context, ' AND c.enabled=1');
            foreach($categories as $category)
            {
-                $xml .='<url>'."\n";
-                $xml .='<loc><![CDATA['.$this->module->getLink('blog',array('id_category'=>$category['id_category'])).']]></loc>'."\n";
-                $xml .='<priority>0.8</priority>'."\n"; 
-                $xml .='<lastmod>'.date('Y-m-d').'</lastmod>'."\n";
-                $xml .='<changefreq>daily</changefreq>'."\n";
-                if($category['image'] || $category['image'])
+                $xml .='<'.'url'.'>'."\n";
+                $xml .='<'.'loc'.'>'.'<'.'![CDATA['.$this->module->getLink('blog',array('id_category'=>$category['id_category'])).']]'.'>'.'<'.'/loc'.'>'."\n";
+                $xml .='<'.'priority'.'>0.8'.'<'.'/priority'.'>'."\n";
+                $xml .='<'.'lastmod'.'>'.date('Y-m-d').'<'.'/lastmod'.'>'."\n";
+                $xml .='<'.'changefreq'.'>'.'daily'.'<'.'/changefreq'.'>'."\n";
+                if(!empty($category['image']))
                 {
-                    $xml .='<image:image>'."\n";
-                    $xml .='<image:loc><![CDATA['.$this->context->link->getMediaLink(_PS_YBC_BLOG_IMG_.'category/'.$category['image']).']]></image:loc>'."\n";
-                    $xml .='<image:caption><![CDATA['.$category['title'].']]></image:caption>'."\n";
-                    $xml .='<image:title><![CDATA['.$category['title'].']]></image:title>'."\n";
-                    $xml .='</image:image>'."\n";   
+                    $xml .='<'.'image:image'.'>'."\n";
+                    $xml .='<'.'image:loc'.'>'.'<'.'![CDATA['.$this->context->link->getMediaLink(_PS_YBC_BLOG_IMG_.'category/'.$category['image']).']]'.'>'.'<'.'/image:loc'.'>'."\n";
+                    $xml .='<'.'image:caption'.'>'.'<'.'![CDATA['.$category['title'].']]'.'>'.'<'.'/image:caption'.'>'."\n";
+                    $xml .='<'.'image:title'.'>'.'<'.'![CDATA['.$category['title'].']]'.'>'.'<'.'/image:title'.'>'."\n";
+                    $xml .='<'.'/image:image'.'>'."\n";
                 }
-                $xml .='</url>'."\n";
+                $xml .='<'.'/url'.'>'."\n";
            }
         }
         if(in_array('authors',$pages_sitemap))
         {
-           $employees = Ybc_blog_post_employee_class::getEmployeesFilter();
+           $employees = Ybc_blog_post_employee_class::getEmployeesFilter($this->context, ' AND bp.id_post >0');
            foreach($employees as $employee)
            {
             
-                $alias = $employee['name'] ? Tools::link_rewrite($employee['name']): Tools::link_rewrite($employee['firstname'].' '.$employee['lastname']);
-                $xml .='<url>'."\n";
-                $xml .='<loc><![CDATA['.$this->module->getLink('blog',array('id_author'=>$employee['id_employee'],'alias'=>$alias,'is_customer'=>0)).']]></loc>'."\n";
-                $xml .='<priority>0.7</priority>'."\n"; 
-                $xml .='<lastmod>'.date('Y-m-d').'</lastmod>'."\n";
-                $xml .='<changefreq>daily</changefreq>'."\n";
-                if($employee['avata'] || $employee['avata'])
+                $alias = $employee['name'] ? Tools::str2url($employee['name']): Tools::str2url($employee['firstname'].' '.$employee['lastname']);
+                $xml .='<'.'url'.'>'."\n";
+                $xml .='<'.'loc'.'>'.'<'.'![CDATA['.$this->module->getLink('blog',array('id_author'=>$employee['id_employee'],'alias'=>$alias,'is_customer'=>0)).']]'.'>'.'<'.'/loc'.'>'."\n";
+                $xml .='<'.'priority'.'>'.'0.7'.'<'.'/priority'.'>'."\n";
+                $xml .='<'.'lastmod'.'>'.date('Y-m-d').'<'.'/lastmod'.'>'."\n";
+                $xml .='<'.'changefreq'.'>'.'daily'.'<'.'/changefreq'.'>'."\n";
+                if(!empty($employee['avata']))
                 {
-                    $xml .='<image:image>'."\n";
-                    $xml .='<image:loc><![CDATA['.$this->context->link->getMediaLink(_PS_YBC_BLOG_IMG_.'avata/'.$employee['avata']).']]></image:loc>'."\n";
-                    $xml .='<image:caption><![CDATA['.($employee['name'] ? $employee['name']: $employee['firstname'].' '.$employee['lastname']).']]></image:caption>'."\n";
-                    $xml .='<image:title><![CDATA['.($employee['name'] ? $employee['name']: $employee['firstname'].' '.$employee['lastname']).']]></image:title>'."\n";
-                    $xml .='</image:image>'."\n";   
+                    $xml .='<'.'image:image'.'>'."\n";
+                    $xml .='<'.'image:loc'.'>'.'<'.'![CDATA['.$this->context->link->getMediaLink(_PS_YBC_BLOG_IMG_.'avata/'.$employee['avata']).']]'.'>'.'<'.'/image:loc'.'>'."\n";
+                    $xml .='<'.'image:caption'.'>'.'<'.'![CDATA['.($employee['name'] ? $employee['name']: $employee['firstname'].' '.$employee['lastname']).']]'.'>'.'<'.'/image:caption'.'>'."\n";
+                    $xml .='<'.'image:title'.'>'.'<'.'![CDATA['.($employee['name'] ? $employee['name']: $employee['firstname'].' '.$employee['lastname']).']]'.'>'.'<'.'/image:title'.'>'."\n";
+                    $xml .='<'.'/image:image'.'>'."\n";
                 }
-                $xml .='</url>'."\n";
+                $xml .='<'.'/url'.'>'."\n";
            }
            if(Configuration::get('YBC_BLOG_ALLOW_CUSTOMER_AUTHOR'))
            {
-                $customers = Ybc_blog_post_employee_class::getCustomersFilter();
+                $customers = Ybc_blog_post_employee_class::getCustomersFilter($this->context, ' AND bp.id_post > 0');
                 foreach($customers as $customer)
                 {
-                    $alias = $customer['name'] ? Tools::link_rewrite($customer['name']): Tools::link_rewrite($customer['firstname'].' '.$customer['lastname']);
-                    $xml .='<url>'."\n";
-                    $xml .='<loc><![CDATA['.$this->module->getLink('blog',array('id_author'=>$customer['id_customer'],'alias'=>$alias,'is_customer'=>1)).']]></loc>'."\n";
-                    $xml .='<priority>0.6</priority>'."\n"; 
-                    $xml .='<lastmod>'.date('Y-m-d').'</lastmod>'."\n";
-                    $xml .='<changefreq>daily</changefreq>'."\n";
-                    if($customer['avata'] || $customer['avata'])
+                    $alias = $customer['name'] ? Tools::str2url($customer['name']): Tools::str2url($customer['firstname'].' '.$customer['lastname']);
+                    $xml .='<'.'url'.'>'."\n";
+                    $xml .='<'.'loc'.'>'.'<'.'![CDATA['.$this->module->getLink('blog',array('id_author'=>$customer['id_customer'],'alias'=>$alias,'is_customer'=>1)).']]'.'>'.'<'.'/loc'.'>'."\n";
+                    $xml .='<'.'priority'.'>'.'0.6'.'<'.'/priority'.'>'."\n";
+                    $xml .='<'.'lastmod'.'>'.date('Y-m-d').'<'.'/lastmod>'."\n";
+                    $xml .='<'.'changefreq'.'>'.'daily'.'<'.'/changefreq'.'>'."\n";
+                    if(!empty($customer['avata']))
                     {
-                        $xml .='<image:image>'."\n";
-                        $xml .='<image:loc><![CDATA['.$this->context->link->getMediaLink(_PS_YBC_BLOG_IMG_.'avata/'.$customer['avata']).']]></image:loc>'."\n";
-                        $xml .='<image:caption><![CDATA['.($customer['name'] ? $customer['name']: $customer['firstname'].' '.$customer['lastname']).']]></image:caption>'."\n";
-                        $xml .='<image:title><![CDATA['.($customer['name'] ? $customer['name']: $customer['firstname'].' '.$customer['lastname']).']]></image:title>'."\n";
-                        $xml .='</image:image>'."\n";   
+                        $xml .='<'.'image:image'.'>'."\n";
+                        $xml .='<'.'image:loc'.'>'.'<'.'![CDATA['.$this->context->link->getMediaLink(_PS_YBC_BLOG_IMG_.'avata/'.$customer['avata']).']]'.'>'.'<'.'/image:loc'.'>'."\n";
+                        $xml .='<'.'image:caption'.'>'.'<'.'![CDATA['.($customer['name'] ? $customer['name']: $customer['firstname'].' '.$customer['lastname']).']]'.'>'.'<'.'/image:caption'.'>'."\n";
+                        $xml .='<'.'image:title'.'>'.'<'.'![CDATA['.($customer['name'] ? $customer['name']: $customer['firstname'].' '.$customer['lastname']).']]'.'>'.'<'.'/image:title'.'>'."\n";
+                        $xml .='<'.'/image:image'.'>'."\n";
                         
                     }
-                    $xml .='</url>'."\n";
+                    $xml .='<'.'/url'.'>'."\n";
                }
            }
            
         }
         if(in_array('latest_post',$pages_sitemap))
         {
-            $xml .='<url>'."\n";
-            $xml .='<loc><![CDATA['.$this->module->getLink('blog',array('latest'=>true)).']]></loc>'."\n";
-            $xml .='<priority>1.0</priority>'."\n"; 
-            $xml .='<changefreq>daily</changefreq>';
-            $xml .='</url>'."\n";
+            $xml .='<'.'url'.'>'."\n";
+            $xml .='<'.'loc'.'>'.'<'.'![CDATA['.$this->module->getLink('blog',array('latest'=>true)).']]'.'>'.'<'.'/loc'.'>'."\n";
+            $xml .='<'.'priority'.'>'.'1.0'.'<'.'/priority'.'>'."\n";
+            $xml .='<'.'changefreq'.'>'.'daily'.'<'.'/changefreq'.'>';
+            $xml .='<'.'/url'.'>'."\n";
         }
         if(in_array('featured_post',$pages_sitemap))
         {
-            $xml .='<url>'."\n";
-            $xml .='<loc><![CDATA['.$this->module->getLink('blog',array('featured'=>true)).']]></loc>'."\n";
-            $xml .='<priority>1.0</priority>'."\n"; 
-            $xml .='<changefreq>daily</changefreq>';
-            $xml .='</url>'."\n";
+            $xml .='<'.'url'.'>'."\n";
+            $xml .='<'.'loc'.'>'.'<'.'![CDATA['.$this->module->getLink('blog',array('featured'=>true)).']]'.'>'.'<'.'/loc'.'>'."\n";
+            $xml .='<'.'priority'.'>'.'1.0'.'<'.'/priority'.'>'."\n";
+            $xml .='<'.'changefreq'.'>'.'daily'.'<'.'/changefreq'.'>';
+            $xml .='<'.'/url'.'>'."\n";
         }
         if(in_array('popular_post',$pages_sitemap))
         {
-            $xml .='<url>'."\n";
-            $xml .='<loc><![CDATA['.$this->module->getLink('blog',array('popular'=>true)).']]></loc>'."\n";
-            $xml .='<priority>1.0</priority>'."\n"; 
-            $xml .='<changefreq>daily</changefreq>';
-            $xml .='</url>'."\n";
+            $xml .='<'.'url'.'>'."\n";
+            $xml .='<'.'loc'.'>'.'<'.'![CDATA['.$this->module->getLink('blog',array('popular'=>true)).']]'.'>'.'<'.'/loc'.'>'."\n";
+            $xml .='<'.'priority'.'>'.'1.0'.'<'.'/priority'.'>'."\n";
+            $xml .='<'.'changefreq>'.'daily<'.'/changefreq'.'>';
+            $xml .='<'.'/url'.'>'."\n";
         }
         $xml .='</urlset>';
         if (ob_get_length() > 0) {
@@ -206,22 +209,22 @@ class Ybc_blogSitemapModuleFrontController extends ModuleFrontController
     {
         if($languages = Language::getLanguages(true))
         {
-            $xml ='<?xml version="1.0" encoding="UTF-8"?>'."\n";;
-            $xml .='<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n";;
+            $xml ='<'.'?xml version="1.0" encoding="UTF-8"?'.'>'."\n";;
+            $xml .='<'.'sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"'.'>'."\n";;
                 foreach($languages as $language)
                 {
-                    $xml .='<sitemap>'."\n";
-                        $xml .='<loc>'.$this->module->getBaseLink().$language['iso_code'].'/modules/ybc_blog/sitemap.xml</loc>'."\n";
-                        $xml .'<lastmod>'.date('Y-m-d').'</lastmod>'."\n";
-                    $xml .='</sitemap>'."\n";
+                    $xml .='<'.'sitemap'.'>'."\n";
+                        $xml .='<'.'loc'.'>'.$this->module->getBaseLink().$language['iso_code'].'/blog_sitemap.xml'.'<'.'/loc'.'>'."\n";
+                        $xml .'<'.'lastmod'.'>'.date('Y-m-d').'<'.'/lastmod'.'>'."\n";
+                    $xml .='<'.'/sitemap'.'>'."\n";
                 }   
-            $xml .='</sitemapindex>';
+            $xml .='<'.'/sitemapindex'.'>';
             if (ob_get_length() > 0) {
                 ob_end_clean();
             }
            header("Content-Type: application/xml; charset=ISO-8859-1");
            mb_internal_encoding('UTF-8');
-           die(utf8_encode($xml));
+           die($xml);
         }
     }
     public function getLangFromUrl($getIsoCode = false)
@@ -232,11 +235,13 @@ class Ybc_blogSitemapModuleFrontController extends ModuleFrontController
         } elseif (isset($_SERVER['HTTP_X_REWRITE_URL'])) {
             $requestUri = $_SERVER['HTTP_X_REWRITE_URL'];
         }
+        else
+            $requestUri ="";
         $requestUri = rawurldecode($requestUri);
 
-        if (isset(Context::getContext()->shop) && is_object(Context::getContext()->shop)) {
+        if (isset($this->context->shop)) {
             $requestUri = preg_replace(
-                '#^'.preg_quote(Context::getContext()->shop->getBaseURI(), '#').'#i',
+                '#^'.preg_quote($this->context->shop->getBaseURI(), '#').'#i',
                 '/',
                 $requestUri
             );
@@ -246,19 +251,16 @@ class Ybc_blogSitemapModuleFrontController extends ModuleFrontController
         if (Language::isMultiLanguageActivated()) {
             if (preg_match('#^/([a-z]{2})(?:/.*)?$#', $requestUri, $m)) {
                 $isoCode = $m[1];
-                if($isoCode)
+                $id_lang = Language::getIdByIso($isoCode);
+                if($id_lang)
                 {
-                    $id_lang = Language::getIdByIso($isoCode);
-                    if($id_lang)
+                    if($getIsoCode)
                     {
-                        if($getIsoCode)
-                        {
-                            return $isoCode;
-                        }
-                        return (int)$id_lang;
+                        return $isoCode;
                     }
-                    return false;
+                    return (int)$id_lang;
                 }
+                return false;
             }
         }
         return 0;

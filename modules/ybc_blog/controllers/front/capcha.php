@@ -18,8 +18,7 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 
-if (!defined('_PS_VERSION_'))
-	exit;
+if (!defined('_PS_VERSION_')) { exit; }
 class Ybc_blogCapchaModuleFrontController extends ModuleFrontController
 {
     public function init()
@@ -28,35 +27,32 @@ class Ybc_blogCapchaModuleFrontController extends ModuleFrontController
         die;
 	}
     public function create_image()
-    {         
-        $md5_hash = md5(rand(0,999)); 
-        $security_code = Tools::substr($md5_hash, 15, 5); 
-        $context = Context::getContext();
+    {
         $type = Tools::getValue('type','comment');
         if($type=='comment')
         {
-            setcookie('ybc_security_capcha_code', $security_code, time() + (86400 * 30), "/");
+            if(Tools::isSubmit('reset'))
+            {
+                $security_code = Tools::passwdGen(5);
+                $this->context->cookie->__set('ybc_security_captcha_code', $security_code);
+            }
+            else
+                $security_code = $this->context->cookie->__get('ybc_security_captcha_code');
         }
         else
-            setcookie('security_polls_capcha_code', $security_code, time() + (86400 * 30), "/");
-        $context->cookie->write();
-        $width = 100;  
-        $height = 30;  
-        $image = ImageCreate($width, $height);  
-        $black = ImageColorAllocate($image, 27, 79, 166); 
-        $noise_color = imagecolorallocate($image, 172,211,255);
-        $background_color = imagecolorallocate($image, 255, 255, 255);      
-        ImageFill($image,0, 0, $background_color); 
-        for( $i=0; $i<($width*$height)/3; $i++ ) {
-            imagefilledellipse($image, mt_rand(0,$width), mt_rand(0,$height), 1, 1, $noise_color);
+        {
+            if(Tools::isSubmit('reset'))
+            {
+                $security_code = Tools::passwdGen(5);
+                $this->context->cookie->__set('security_polls_captcha_code', $security_code);
+            }
+            else
+                $security_code = $this->context->cookie->__get('security_polls_captcha_code');
         }
-        for( $i=0; $i<($width*$height)/150; $i++ ) {
-            imageline($image, mt_rand(0,$width), mt_rand(0,$height), mt_rand(0,$width), mt_rand(0,$height), $noise_color);
-        }
-        ImageString($image, 5, 30, 6, $security_code, $black); 
-        header("Content-Type: image/jpeg"); 
-        ImageJpeg($image); 
-        ImageDestroy($image); 
+        require_once(_PS_MODULE_DIR_.'ybc_blog/classes/OverridUtitl');
+        $class= 'Ybc_blog_overrideUtil';
+        $method = 'createImage';
+        call_user_func_array(array($class, $method),array($security_code));
         exit();
     }
 }

@@ -18,12 +18,17 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 
-if (!defined('_PS_VERSION_'))
-	exit;
+if (!defined('_PS_VERSION_')) { exit; }
+
+/**
+ * Class Ybc_blogAuthorModuleFrontController
+ * @property Ybc_blog $module
+ */
 class Ybc_blogAuthorModuleFrontController extends ModuleFrontController
 {
     public $display_column_left = false;
     public $display_column_right = false;
+    protected $redirectionExtraExcludedKeys = ['module'];
     public function __construct()
 	{
         parent::__construct();
@@ -31,8 +36,6 @@ class Ybc_blogAuthorModuleFrontController extends ModuleFrontController
             $this->display_column_right=true;
         if(Configuration::get('YBC_BLOG_SIDEBAR_POSITION')=='left')
             $this->display_column_left =true;
-        $this->context = Context::getContext();
-
     }
     public function init()
 	{
@@ -41,13 +44,14 @@ class Ybc_blogAuthorModuleFrontController extends ModuleFrontController
         {
             Tools::redirect($this->module->getLink('author'));
         }
+        parent::canonicalRedirection($this->module->getLink('author'));
 	}
     public function getAlternativeLangsUrl()
     {
         $alternativeLangs = array();
         $languages = Language::getLanguages(true, $this->context->shop->id);
 
-        if ($languages < 2) {
+        if (count($languages) < 2) {
             // No need to display alternative lang if there is only one enabled
             return $alternativeLangs;
         }
@@ -57,17 +61,15 @@ class Ybc_blogAuthorModuleFrontController extends ModuleFrontController
         }
         return $alternativeLangs;
     }
-    public function initContent()
-	{
-        parent::initContent();
-        $module = new Ybc_blog();
+    public function _initContent()
+    {
         $page = (int)Tools::getValue('page');
-        if($page<1)
+        if($page < 1)
             $page =1;
-        $totalRecords = (int)Ybc_blog_post_employee_class::getCountAuthor();
-        $paggination = new Ybc_blog_paggination_class();            
+        $totalRecords = (int)Ybc_blog_post_employee_class::getCountAuthor($this->context->shop->id);
+        $paggination = new Ybc_blog_paggination_class();
         $paggination->total = $totalRecords;
-        $paggination->url = $module->getLink('author', array('page'=>"_page_"));
+        $paggination->url = $this->module->getLink('author', array('page'=>"_page_"));
         $paggination->limit =  8;
         $totalPages = ceil($totalRecords / $paggination->limit);
         if($page > $totalPages)
@@ -76,36 +78,36 @@ class Ybc_blogAuthorModuleFrontController extends ModuleFrontController
         $start = $paggination->limit * ($page - 1);
         if($start < 0)
             $start = 0;
-        $authors = Ybc_blog_post_employee_class::getListAuthorPost($start,$paggination->limit);
+        $authors = Ybc_blog_post_employee_class::getListAuthorPost($this->context->shop->id, $start,$paggination->limit);
         if($authors)
         {
             foreach($authors as &$author)
             {
                 if($author['is_customer'])
                 {
-                    $information = Ybc_blog_post_employee_class::getInformationByID($author['added_by']);
+                    $information = Ybc_blog_post_employee_class::getInformationByID($this->context->language->id, $author['added_by']);
                     if(!$information['name'])
                         $information['name']= $information['firstname'].' '.$information['lastname'];
                     $author['information']= $information;
-                    $author['link']=$this->module->getLink('blog',array('id_author'=>$author['added_by'],'is_customer'=>1,'alias'=> Tools::link_rewrite($information['name'])));
+                    $author['link']=$this->module->getLink('blog',array('id_author'=>$author['added_by'],'is_customer'=>1,'alias'=> Tools::str2url($information['name'])));
                     if($information['avata'])
                         $author['avata'] = $this->context->link->getMediaLink(_PS_YBC_BLOG_IMG_.'avata/'.$information['avata']);
                     else
-                       $author['avata']= $this->context->link->getMediaLink(_PS_YBC_BLOG_IMG_.'avata/'.(Configuration::get('YBC_BLOG_IMAGE_AVATA_DEFAULT')? Configuration::get('YBC_BLOG_IMAGE_AVATA_DEFAULT') :'default_customer.png')); 
+                        $author['avata']= $this->context->link->getMediaLink(_PS_YBC_BLOG_IMG_.'avata/'.(Configuration::get('YBC_BLOG_IMAGE_AVATA_DEFAULT')? Configuration::get('YBC_BLOG_IMAGE_AVATA_DEFAULT') :'default_customer.png'));
                 }
                 else
                 {
-                    $information = Ybc_blog_post_employee_class::getInformationByID($author['added_by'],false);;
+                    $information = Ybc_blog_post_employee_class::getInformationByID($this->context->language->id, $author['added_by'],false);;
                     if(!$information['name'])
                         $information['name']=$information['firstname'].' '.$information['lastname'];
                     $author['information']=$information;
-                    $author['link']=$this->module->getLink('blog',array('id_author'=>$author['added_by'],'is_customer'=>0,'alias'=> Tools::link_rewrite($information['name'])));
+                    $author['link']=$this->module->getLink('blog',array('id_author'=>$author['added_by'],'is_customer'=>0,'alias'=> Tools::str2url($information['name'])));
                     if($information['avata'])
                         $author['avata'] = $this->context->link->getMediaLink(_PS_YBC_BLOG_IMG_.'avata/'.$information['avata']);
                     else
-                       $author['avata']= $this->context->link->getMediaLink(_PS_YBC_BLOG_IMG_.'avata/'.(Configuration::get('YBC_BLOG_IMAGE_AVATA_DEFAULT')? Configuration::get('YBC_BLOG_IMAGE_AVATA_DEFAULT') :'default_customer.png')) ; 
+                        $author['avata']= $this->context->link->getMediaLink(_PS_YBC_BLOG_IMG_.'avata/'.(Configuration::get('YBC_BLOG_IMAGE_AVATA_DEFAULT')? Configuration::get('YBC_BLOG_IMAGE_AVATA_DEFAULT') :'default_customer.png')) ;
                 }
-                $author['posts'] = Ybc_blog_post_employee_class::getPosts($author['added_by'],$author['is_customer']);
+                $author['posts'] = Ybc_blog_post_employee_class::getPosts($this->context, $author['added_by'],$author['is_customer']);
                 if($author['posts'])
                 {
                     foreach($author['posts'] as &$post)
@@ -115,7 +117,7 @@ class Ybc_blogAuthorModuleFrontController extends ModuleFrontController
                 }
             }
         }
-       $this->context->smarty->assign(
+        $this->context->smarty->assign(
             array(
                 'is_main_page' =>false,
                 'allow_rating' => (int)Configuration::get('YBC_BLOG_ALLOW_RATING') ? true : false,
@@ -123,24 +125,51 @@ class Ybc_blogAuthorModuleFrontController extends ModuleFrontController
                 'allow_like' => (int)Configuration::get('YBC_BLOG_ALLOW_LIKE') ? true : false,
                 'show_date' => (int)Configuration::get('YBC_BLOG_SHOW_POST_DATE') ? true : false,
                 'show_views' => (int)Configuration::get('YBC_BLOG_SHOW_POST_VIEWS') ? true : false,
-                'path' => $this->module->getBreadCrumb(),
-                'date_format' => trim((string)Configuration::get('YBC_BLOG_DATE_FORMAT')),
-                'show_categories' => (int)Configuration::get('YBC_BLOG_SHOW_POST_CATEGORIES') ? true : false, 
-                'blog_layout' => Tools::strtolower(Configuration::get('YBC_BLOG_LAYOUT')),   
-                'blog_skin' => Tools::strtolower(Configuration::get('YBC_BLOG_SKIN')), 
+                'show_categories' => (int)Configuration::get('YBC_BLOG_SHOW_POST_CATEGORIES') ? true : false,
+                'blog_layout' => Tools::strtolower(Configuration::get('YBC_BLOG_LAYOUT')),
+                'blog_skin' => Tools::strtolower(Configuration::get('YBC_BLOG_SKIN')),
                 'authors' => $authors,
                 'blog_paggination' => $paggination->render(),
-                'breadcrumb' => $this->module->is17 ? $this->module->getBreadCrumb() : false, 
+                'is17' => $this->module->is17,
             )
-       );
-       if(Tools::isSubmit('loadajax'))
-       {
-            $this->module->loadMoreAuhors($authors,$paggination->render());
-       }
-       if($this->module->is17)
-            $this->setTemplate('module:ybc_blog/views/templates/front/list_author.tpl');      
-       else         
-            $this->setTemplate('list_author_16.tpl');     
+        );
+        if(Tools::isSubmit('loadajax'))
+        {
+            die(
+                json_encode(
+                    array(
+                        'list_blog'=> $this->module->display($this->module->getLocalPath(),'more_authors_list.tpl'),
+                        'blog_paggination'=>$paggination->render(),
+                    )
+                )
+            );
+        }
+    }
+    public function initContent()
+	{
+        parent::initContent();
+        if(Tools::isSubmit('loadajax'))
+        {
+            $this->_initContent();
+        }
+        else{
+            $page = (int)Tools::getValue('page');
+            if(!$this->module->isCached('authors_list.tpl',$this->module->_getCacheId($page)))
+            {
+                $this->_initContent();
+            }
+            $this->context->smarty->assign(
+                array(
+                    'authors_list_content' => $this->module->display($this->module->getLocalPath(),'authors_list.tpl',$this->module->_getCacheId($page)),
+                    'path' => $this->module->getBreadCrumb(),
+                    'breadcrumb' => $this->module->is17 ? $this->module->getBreadCrumb() : false,
+                )
+            );
+        }
+        if($this->module->is17)
+            $this->setTemplate('module:ybc_blog/views/templates/front/author.tpl');
+        else
+            $this->setTemplate('author_16.tpl');
        
     }
 }

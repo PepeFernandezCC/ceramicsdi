@@ -1,0 +1,60 @@
+#growls-default .growl-title{
+    display:none;
+}
+ul.list_posts li {
+    padding: 5px 10px;
+    font-size: 13px;
+    cursor: pointer;
+}
+ul.list_posts li.active {
+    background: #25b9d7;
+    color: #fff;
+}
+ul.list_posts {
+    padding: 0;
+    list-style: none;
+    border: 1px solid #bbcdd2;
+    margin-top: -1px;
+    margin-bottom: 0;
+}
+.search-with-icon ul.list_posts {
+    position: absolute;
+    z-index: 1;
+    width: 100%;
+    background: #fff;
+}
+.remove_button i:before {
+    content: "+";
+    font-size: 20px;
+    line-height: 20px;
+    position: relative;
+    transform: rotate(45deg) translateY(3px);
+    -webkit-transform: rotate(45deg) translateY(3px);
+    display: inline-block;
+}
+.remove_button i {
+    font-size: 0;
+    margin-left: 8px;
+    position: relative;
+    margin-right: -2px;
+    cursor: pointer;
+    font-style: normal;
+}
+.list_posts li img {
+    margin-bottom: 0;
+}
+.list_posts li:hover a,
+ul.list_posts li.active a{
+    color: #ffffff;
+}
+.remove_button{
+    border: none;
+}
+div#related-posts .related-post a {
+    text-decoration: none!important;
+}
+#related-posts .related-post {
+    border: 1px solid #ddd;
+    margin-top: 5px;
+    border-radius: 3px;
+}
