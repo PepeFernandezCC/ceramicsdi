@@ -695,13 +695,13 @@ class Link extends LinkCore
 			unset($params['id_lang']);
 		}
 		$controller = Dispatcher::getInstance()->getController();
-
+/*
 		if (isset($params['fc']) && $params['fc'] == 'module' && isset($params['module']) && $params['module']=='ybc_blog') {
             
             $ybc_blog = Module::getInstanceByName('ybc_blog');
             return $ybc_blog->getLink($controller, $params, $id_lang);
         }
-
+*/
 		if (!empty(Context::getContext()->controller->php_self)) {
 			$controller = Context::getContext()->controller->php_self;
 		}
