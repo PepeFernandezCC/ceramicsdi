@@ -194,6 +194,24 @@ class Product extends ProductCore {
 
     }
 
+    public static function getAmountDiscount($productId) {
+        $query = 'SELECT `reduction`, `from_quantity` FROM `ps_specific_price` WHERE `from_quantity` != "1" AND `id_product` = '.(int)$productId;
+        $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($query);
+
+        if (!$row) {
+            return [
+                'discount' => 0,
+                'amount'   => 0
+            ];
+        }
+
+        return [
+            'discount' => (float)$row['reduction'] * 100,
+            'amount'   => (int)$row['from_quantity']
+        ];
+    }
+
+
     /**
      * Obtener todos los productos agrupados por colección
      */

@@ -90,14 +90,6 @@
         {hook h='displayProductPriceBlock' product=$product type="weight" hook_origin='product_sheet'}
 
         <div class="tax-shipping-delivery-label">
-            {* PLANATEC
-
-            {if !$configuration.taxes_enabled}
-                {l s='No tax' d='Shop.Theme.Catalog'}
-            {elseif $configuration.display_taxes_label}
-                {$product.labels.tax_long}
-            {/if}
-            *}
             {hook h='displayProductPriceBlock' product=$product type="price"}
             {hook h='displayProductPriceBlock' product=$product type="after_price"}
             {if $product.is_virtual    == 0}
@@ -108,7 +100,6 @@
                 {elseif $product.additional_delivery_times == 2}
                     {if $product.quantity > 0}
                         <span class="delivery-information">{$product.delivery_in_stock}</span>
-                        {* Out of stock message should not be displayed if customer can't order the product. *}
                     {elseif $product.quantity <= 0 && $product.add_to_cart_url}
                         <span class="delivery-information">{$product.delivery_out_stock}</span>
                     {/if}

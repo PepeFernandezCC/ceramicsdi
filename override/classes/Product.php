@@ -167,9 +167,14 @@ class Product extends ProductCore {
         return number_format($minimalQuantityPrice, 2, '.', '');
     }
 
-    public static function getMinimalPriceTemplate($productId, $customerId) {
+    public static function getMinimalPriceTemplate($productId, $customerId = null) {
 
-        $showTax = Customer::getCustomerShowTax($customerId);
+        $showTax = true;
+        
+        if($customerId != null) {
+            $showTax = Customer::getCustomerShowTax($customerId);
+        }
+
         $idLang = (int) Context::getContext()->language->id;
 
         $product = new Product($productId);
