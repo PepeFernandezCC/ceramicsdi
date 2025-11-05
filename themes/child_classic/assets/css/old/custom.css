@@ -6625,6 +6625,10 @@ span.at-contact {
     display: flex;
   }
 
+  .final-price-taxed {
+    display: flex;
+    margin-top: 8px;
+  }
 
 /* versión movil */
 @media (max-width: 768px) {
@@ -6648,6 +6652,10 @@ span.at-contact {
     .margin-calculator {
       flex-direction: column;
       margin-bottom: 30px;
+    }
+    .block-title {
+      display: flex;
+      flex-direction: column-reverse;
     }
 
 
@@ -6783,6 +6791,23 @@ span.at-contact {
 
 @media (min-width:769px) {
 
+
+  .final-price-taxed {
+    justify-content: flex-end;
+    margin-top: 13px;
+  }
+
+  .custom-content {
+    padding-top: 5px;
+  }
+
+  .block-pricing {
+    margin-top: 28px;
+  }
+
+  .minimal-price {
+    text-align: right;
+  }
   .wasteLink{
     position: absolute;
     top: 22px;

@@ -1886,7 +1886,6 @@ $( document ).ready( function () {
 
       }
 
-
       //CUSTOM LOAD COUNTRIES
       if (document.getElementById("field-id_country")) {
 
@@ -2408,7 +2407,148 @@ $( document ).ready( function () {
                });
             }
          }
+
+
+      // ADDRESSES SAME ADDRESS LOGIC
+      if (document.getElementById('switchUseSame') || document.getElementById('useDifferentAddress')) {
+
+            const deliveryWrap = document.getElementById('delivery-addresses');
+            const invoiceWrap  = document.getElementById('invoice-addresses');
+            const invoicesPanel = document.getElementById('invoice-addresses-panel');
+
+            const activeForm = document.getElementById('useDifferentAddress') ? true : false;
+
+            document.getElementById('switchUseSameDiv').style.display = (activeForm || !invoiceWrap) ? 'none' : 'flex';
+            console.log ('active form es: '+ activeForm);
+
+            const toggleDiv = activeForm ? document.getElementById('switchUseSameFormDiv') : document.getElementById('switchUseSameDiv');
+            const toggle = activeForm ? document.getElementById('useDifferentAddress') : document.getElementById('switchUseSame');
+
+            const qAll = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+            const q    = (sel, root = document) => root.querySelector(sel);
+
+            // Helpers seguros: siempre existen y devuelven [] si el wrap no está
+            const deliveryRadios = () =>
+            deliveryWrap ? Array.from(deliveryWrap.querySelectorAll('input[type="radio"][name="id_address_delivery"]')) : [];
+
+            const invoiceRadios = () =>
+            invoiceWrap ? Array.from(invoiceWrap.querySelectorAll('input[type="radio"][name="id_address_invoice"]')) : [];
+
+            
+            
+
+            // Inicialización según data-same
+            const dataSame = (toggleDiv && toggleDiv.dataset && toggleDiv.dataset.same) || '';
+            if (dataSame !== '') {
+               const same = String(dataSame) === '1';
+               toggle.checked = !same;
+            }
+
+            applyMode();
+
+            toggle.addEventListener('change', applyMode);
+
+            if (deliveryWrap) {
+               deliveryWrap.addEventListener('change', onDeliveryChange);
+            }
+
+            // También cuando cambies manualmente facturación
+            if (invoiceWrap) {
+               invoiceWrap.addEventListener('change', e => {
+                  if (e.target.matches('input[name="id_address_invoice"]')) {
+                  markSelectedInvoice(e.target.value);
+                  }
+               });
+            }
+
+            /* FUNCIONES */
+            function markSelectedInvoice(value) {
+               if (!invoiceWrap) return;
+               qAll('article', invoiceWrap).forEach(article => {
+                  article.classList.toggle('selected', article.dataset.address === String(value));
+               });
+            }
+
+            function getChecked(radios) {
+               const r = radios.find(r => r.checked);
+               return r ? r.value : null;
+            }
+
+            function setCheckedByValue(radios, value) {
+               const r = radios.find(r => String(r.value) === String(value));
+               if (r) {
+                  r.checked = true;
+                  r.dispatchEvent(new Event('change', { bubbles: true }));
+                  markSelectedInvoice(value);
+                  return true;
+               }
+               return false;
+            }
+
+            function setDisabled(radios, disabled) {
+               radios.forEach(r => r.disabled = disabled);
+            }
+
+            function showInvoiceBlock(show) {
+               if (!invoiceWrap) return;
+               invoicesPanel.style.display = show ? '' : 'none';
+            }
+
+            function applyMode() {
+               let distintas = !!toggle.checked;
+               const dRadios = deliveryRadios();
+               const iRadios = invoiceRadios();
+               let addressForm = document.getElementById('address-form') ?? '';
+
+               //distintas = activeForm ? !distintas : distintas;
+
+               if (!distintas) {
+                  if(document.getElementById('useDifferentAddress')){
+                     if(!document.getElementById('use_same_address')) {
+                        hidden = document.createElement('input');
+                        hidden.type  = 'hidden';
+                        hidden.name  = 'use_same_address';
+                        hidden.value = '1';
+                        hidden.id    = 'use_same_address';
+                        addressForm.appendChild(hidden);
+                     }
+                  }
+                  // MISMA dirección: deshabilita facturación y espeja
+                  const shipValue = getChecked(dRadios) || (dRadios[0] && dRadios[0].value);
+                  if (shipValue != null) {
+                  if (!setCheckedByValue(iRadios, shipValue) && iRadios.length) {
+                     iRadios[0].checked = true;
+                     iRadios[0].dispatchEvent(new Event('change', { bubbles: true }));
+                     markSelectedInvoice(iRadios[0].value);
+                  }
+                  }
+                  setDisabled(iRadios, true);
+                  showInvoiceBlock(false);
+               } else {
+                  if(document.getElementById('useDifferentAddress')){
+                     if(document.getElementById('use_same_address')) {
+                        hidden = document.getElementById('use_same_address');
+                        if (hidden && hidden.parentNode) hidden.parentNode.removeChild(hidden);
+                     }
+                  }
+                  if(document.getElementById('use_same_address')) {
+                     document.getElementById('use_same_address').value = 0;
+                  }
+                  // DISTINTAS: habilita facturación
+                  setDisabled(iRadios, false);
+                  showInvoiceBlock(true);
+                  // actualizar visual si ya hay uno marcado
+                  markSelectedInvoice(getChecked(iRadios));
+               }
+            }
+
+            function onDeliveryChange(e) {
+               if (e.target.matches('input[name="id_address_delivery"]') && !toggle.checked) {
+                  setCheckedByValue(invoiceRadios(), e.target.value);
+               }
+            }
       }
+   }
 
    
 
@@ -2512,10 +2652,6 @@ $( document ).ready( function () {
         btnmore.style.display = 'inline-block';
       });
     }
-
-
-
-
 
    //Código para retrasar la carga del widget de eTrusted
 
