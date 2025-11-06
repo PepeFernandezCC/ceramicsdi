@@ -2298,10 +2298,11 @@ $( document ).ready( function () {
                let validations = false;
 
                if (document.getElementById("confirmAddressButton").getAttribute("data-location") == "form") {
-
-                  if (document.getElementById('useSameText')){
-                     document.getElementById("useSameText").style.display ="none";
+                  var companyVal = ($.trim($('#field-company').val() || ''));
+                  if($('#field-company').val() != ''){
+                     $('#field-empresa').prop('checked', true).trigger('change');
                   }
+
                   document.getElementById("confirmAddressButton").addEventListener("click", function(event) {
                      validations = getValidations(); 
 
@@ -2339,7 +2340,7 @@ $( document ).ready( function () {
                                  }
                               });
                            }else{  
-                              //Extranjero Particular con dni                       
+                              //Extranjero Particular con dni                     
                               $('#field-dni').val(''); //no lo pedimos a extranjeros particulares por lo que hay que borrarlo
                               $('#field-company').val(''); //si es particular no debe tener nada en campo empresa
                               document.getElementById("address-form").submit(); //envía el formulario
@@ -2356,6 +2357,13 @@ $( document ).ready( function () {
                               $('#field-company').val('');
                               document.getElementById("address-form").submit(); //envía el formulario
                            }
+                        }
+
+                        //Extranjero Particular sin dni
+                        if ($('#field-id_country').val() == 6 && $( '#field-particular' ).is( ':checked' )){
+                           event.preventDefault();   
+                           $('#field-company').val('');
+                           document.getElementById("address-form").submit(); //envía el formulario
                         }
 
                      } else{
@@ -2419,8 +2427,7 @@ $( document ).ready( function () {
             const activeForm = document.getElementById('useDifferentAddress') ? true : false;
 
             document.getElementById('switchUseSameDiv').style.display = (activeForm || !invoiceWrap) ? 'none' : 'flex';
-            console.log ('active form es: '+ activeForm);
-
+            
             const toggleDiv = activeForm ? document.getElementById('switchUseSameFormDiv') : document.getElementById('switchUseSameDiv');
             const toggle = activeForm ? document.getElementById('useDifferentAddress') : document.getElementById('switchUseSame');
 
