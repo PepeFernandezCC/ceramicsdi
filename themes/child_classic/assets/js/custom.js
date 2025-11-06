@@ -2263,31 +2263,6 @@ $( document ).ready( function () {
                return validation;
          }
 
-         /* FORZAR VALORES DE LISTADO DE DIRECCIONES*/
-         /*
-         if(document.getElementById("address-form") && document.getElementById("confirmAddressButton").getAttribute("data-location") == "directions") {
-            // Determinar use_same_address según si hay bloque de factura
-            let useSame = document.getElementById('invoice-addresses') ? '0' : '1';
-            let inputUseSame = document.querySelector('input[name="use_same_address"]');
-            if (!inputUseSame) {
-               inputUseSame = document.createElement('input');
-               inputUseSame.type = 'hidden';
-               inputUseSame.name = 'use_same_address';
-               document.getElementById('address-form').appendChild(inputUseSame);
-            }
-            inputUseSame.value = useSame;
-
-            // (Opcional) también garantiza que haya los otros hidden esperados
-            let confInput = document.querySelector('input[name="confirm-addresses"]');
-            if (!confInput) {
-               confInput = document.createElement('input');
-               confInput.type = 'hidden';
-               confInput.name = 'confirm-addresses';
-               confInput.value = '1';
-               document.getElementById('address-form').appendChild(confInput);
-            }
-         }
-      */
 
          /* VALIDAR Y COMPROBAR INTRACOMUNITARIO */
    

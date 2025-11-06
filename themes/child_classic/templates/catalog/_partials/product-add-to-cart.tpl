@@ -30,6 +30,7 @@
 {assign var="samplesInCart" value=0}
 {assign var="samplesInCart" value=Cart::getSamplesNumberInCartStatic($id_cart)}
 {assign var="maxProductsInCart" value=false}
+{assign var="boxPrice" value=Product::getMinimalPriceTemplate($product.id, $customer.id)}
 {if $samplesInCart >= 8}
     {$maxProductsInCart = true}
 {/if}
@@ -401,7 +402,7 @@
                                     class="input-group boxInput cc-background-color-secondary"
                                     aria-label="{l s='Total' d='Shop.Theme.Actions'}"
                                     readonly="readonly"
-                                    data-price="{$product.price_amount}"
+                                    data-price="{$boxPrice}"
                                     style="font-weight: bold;"
                                     >
                                 </div>
@@ -596,7 +597,7 @@
                                     class="input-group boxInput cc-background-color-secondary"
                                     aria-label="{l s='Total' d='Shop.Theme.Actions'}"
                                     readonly="readonly"
-                                    data-price="{$product.price_amount}"
+                                    data-price="{$boxPrice}"
                                     style="font-weight: bold;"
                                     >
                                 </div>
