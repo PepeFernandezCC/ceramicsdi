@@ -22,22 +22,11 @@
         <input type="hidden" name="saveAddress" value="{$type}">
         {if $type === "delivery"}
             <div class="form-group row">
-                <input type="hidden" name="use_same_address" value="1" id="use_same_address">
-                <div id="switchUseSameFormDiv" class="col-md-9 col-md-offset-3"  data-same="{$use_same_address}">
-                    <div class="wasteSwitch">
-                        <input class="toggleMin" type="checkbox"  id="useDifferentAddress" name="useDifferentAddress"  {if !$use_same_address} checked {/if}/>
-                        <label class="switch" for="useDifferentAddress"></label>
-                    </div>
-                    <div class="checkUseSameForm" style="padding-left:10px">
-                        <span>{l s='Billing address differs from shipping address' d='Shop.Theme.Checkout'}</span>
-                    </div>
+                <div class="col-md-9 col-md-offset-3">
+                    <input name = "use_same_address" id="use_same_address" type = "checkbox" value = "1" {if $use_same_address} checked {/if}>
+                    <label for="use_same_address">{l s='Use this address for invoice too' d='Shop.Theme.Checkout'}</label>
                 </div>
             </div>
-        {elseif $type === "invoice"}
-           
-            <input type="hidden" name="confirm-addresses" value="1">
-            <input type="hidden" name="use_same_address" value="0"> 
-
         {/if}
     {/block}
 

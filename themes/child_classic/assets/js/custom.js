@@ -2393,6 +2393,7 @@ $( document ).ready( function () {
 
 
       // ADDRESSES SAME ADDRESS LOGIC
+      
       if (document.getElementById('switchUseSame') || document.getElementById('useDifferentAddress')) {
 
             const deliveryWrap = document.getElementById('delivery-addresses');
@@ -2443,7 +2444,7 @@ $( document ).ready( function () {
                });
             }
 
-            /* FUNCIONES */
+            // FUNCIONES //
             function markSelectedInvoice(value) {
                if (!invoiceWrap) return;
                qAll('article', invoiceWrap).forEach(article => {
@@ -2482,7 +2483,6 @@ $( document ).ready( function () {
                const iRadios = invoiceRadios();
                let addressForm = document.getElementById('address-form') ?? '';
 
-               //distintas = activeForm ? !distintas : distintas;
 
                if (!distintas) {
                   if(document.getElementById('useDifferentAddress')){
@@ -2493,6 +2493,15 @@ $( document ).ready( function () {
                         hidden.value = '1';
                         hidden.id    = 'use_same_address';
                         addressForm.appendChild(hidden);
+                     }
+
+                     if (!document.getElementById('confirm_addresses_hidden')) {
+                        confirmHidden = document.createElement('input');
+                        confirmHidden.type  = 'hidden';
+                        confirmHidden.name  = 'confirm-addresses';
+                        confirmHidden.value = '1';
+                        confirmHidden.id    = 'confirm_addresses_hidden';
+                        addressForm.appendChild(confirmHidden);
                      }
                   }
                   // MISMA dirección: deshabilita facturación y espeja
@@ -2512,10 +2521,19 @@ $( document ).ready( function () {
                         hidden = document.getElementById('use_same_address');
                         if (hidden && hidden.parentNode) hidden.parentNode.removeChild(hidden);
                      }
+                     if(document.getElementById('confirm_addresses_hidden')) {
+                        confirmHidden = document.getElementById('confirm_addresses_hidden');
+                        if (confirmHidden && confirmHidden.parentNode) confirmHidden.parentNode.removeChild(confirmHidden);
+                     }
                   }
+
                   if(document.getElementById('use_same_address')) {
                      document.getElementById('use_same_address').value = 0;
                   }
+                  if(document.getElementById('confirm_addresses_hidden')) {
+                     document.getElementById('use_same_address').value = 0;
+                  }
+                  
                   // DISTINTAS: habilita facturación
                   setDisabled(iRadios, false);
                   showInvoiceBlock(true);
@@ -2530,6 +2548,7 @@ $( document ).ready( function () {
                }
             }
       }
+      
    }
 
    
