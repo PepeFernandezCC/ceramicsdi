@@ -91,6 +91,7 @@
                     selected    = $id_address_invoice
                     type        = "invoice"
                     interactive = !$show_delivery_address_form and !$show_invoice_address_form
+                    firstAddress = "1"
                   }
                 </div>
 

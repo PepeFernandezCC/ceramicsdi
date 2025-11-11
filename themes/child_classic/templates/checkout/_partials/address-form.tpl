@@ -17,6 +17,11 @@
         data-refresh-url="{url entity='order' params=['ajax' => 1, 'action' => 'addressForm']}"
 >
     {/block}
+    {if !isset($firstAddress)}
+        {assign var="firstAddress" value="0"}
+    {/if}
+
+    <div id="firstAddress" data-first="{$firstAddress}"></div>
 
     {block name='form_fields' append}
         <input type="hidden" name="saveAddress" value="{$type}">

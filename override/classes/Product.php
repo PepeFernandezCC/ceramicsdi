@@ -67,7 +67,9 @@ class Product extends ProductCore {
             'COLECCION_FIJI'
         ];
 
-        if ($description == $reference || in_array($description, $collection_array)) {
+        
+        
+        if ('R-'.$description == $reference || in_array($description, $collection_array)) {
             $mp4Path = '/themes/child_classic/assets/video/product/'.$description.'.mp4';
             $webmPath = '/themes/child_classic/assets/video/product/webm/'.$description.'.webm';
 

@@ -13,28 +13,6 @@ $( document ).ready( function () {
          .querySelectorAll('#menu-mobile-list a[href="#"]')
          .forEach(a => a.removeAttribute('href'));
 
-
-      /* scrip clonar imagenes borrar 
-
-      $('#imgcloner').on('click', function() {
-         $.ajax({
-            url: '/ajax/imagecloner.php', 
-            method: 'POST', 
-
-            success: function(response) {
-               
-               console.log(response.msg);
-            },
-            error: function(err) {
-               // Manejo de errores en caso de que algo falle en la solicitud
-               console.error('Error en la solicitud AJAX:', err);
-            }
-         });
-      });
-
-       fin script clonar imagenes*/
-
-
       /* MOSTRAR PROMO CODE */
       if(document.getElementById('show-promo-code')) {
          $('#promo-code').css('display', 'block');
@@ -1973,7 +1951,6 @@ $( document ).ready( function () {
          $fieldVatNumber.css( 'display', 'none' );
          $fieldVatNumber.find('input').val('');
          
-
          /* PRIMERA CARGA */
          if ( $treatment.val() === 'empresa' ) {
             $( '#field-alias' ).val('COMPANY');

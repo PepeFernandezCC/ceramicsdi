@@ -31,14 +31,6 @@
         {if $smarty.foreach.productImages.iteration == 2 and $videoProductRoute != false}
             <div class="product-cover product-video">
                 <video id="productVideoMobile" autoplay loop muted playsinline preload="auto" style="max-width: 100%; height: 99.7%;" >
-                    {*
-                        {if $videoProductRoute.webm}
-                            <source src="{$videoProductRoute.sourceMp4}" type="{$videoProductRoute.typeMp4}">
-                            <source src="{$videoProductRoute.sourceWebm}" type="{$videoProductRoute.typeWebm}">
-                        {else}
-                            <source src="{$videoProductRoute.sourceMp4}" type="{$videoProductRoute.typeMp4}">
-                        {/if}
-                    *}
                     <source src="{$videoProductRoute.sourceMp4}" type="{$videoProductRoute.typeMp4}">
                     Tu navegador no soporta la etiqueta de video.
                 </video>
