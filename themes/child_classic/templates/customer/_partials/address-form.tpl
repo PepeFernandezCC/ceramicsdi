@@ -41,7 +41,6 @@
             {block name="address_form_fields"}
                 <section class="form-fields">
                     {block name='form_fields'}
-                        {* PLANATEC *}
                         <div class="form-group row" style="width: 100%;">
                             <div class="col-md-12">
                                 <label class="radio-inline" for="field-particular"> 
@@ -82,16 +81,6 @@
                             </div>
                         {/if}
 
-                        {*
-                            <div class="form-group row" id="intracomunitary-identification">
-                                <div class="intracomunitary-check-class">
-                                    <input name="intracomunitary-checkbox" id="intracomunitary-checkbox" type ="checkbox" value="0">
-                                    <label for="intracomunitary-checkbox" style="margin: 0">{l s='I identify myself as an INTRA-COMMUNITY OPERATOR and I am exempt from taxes' d='Shop.Theme.Checkout'}.</label>
-                                </div>
-                            </div>
-                        *}
-
-                        {* END PLANATEC *}
                         {foreach from=$formFields item="field"}
                             {if $field.name != "firstname" && $field.name != "lastname"}
                                 {block name='form_field'}

@@ -29,6 +29,7 @@
     {/block}
 
 {else}
+
     <div class="form-group row {if !empty($field.errors)}has-error{/if} {if $field.name == 'customer_privacy'}hideThisCheck {/if}">
         <div class="col-md-12{if ($field.type === 'radio-buttons')} form-control-valign{/if}">
             {if $field.type !== 'checkbox'}
@@ -60,14 +61,6 @@
             {elseif $field.type === 'countrySelect'}
 
                 {block name='form_field_item_country'}
-                {*
-                    <select
-                            id="field-{$field.name}"
-                            class="form-control form-control-select js-country"
-                            name="{$field.name}"
-                            {if $field.required}required{/if}
-                    >
-                *}
                     <select
                             id="field-{$field.name}"
                             class="form-control form-control-select"

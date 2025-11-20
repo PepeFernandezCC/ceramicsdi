@@ -1890,14 +1890,21 @@ $( document ).ready( function () {
             }
         
             countrySelector.addEventListener("change", function () {
-                let countryId = this.value;
-                
-               if ($('#field-id_country').val() != 6 && $('input[name="treatment"]:checked').val() === 'particular') {
-                  $( '#field-dni' ).closest( '.form-group' ).css( 'display', 'none' );
-               }else{
-                  $( '#field-dni' ).closest( '.form-group' ).css( 'display', 'inherit' );
+               let countryId = this.value;
+               let useSameCheck = true;
+                 
+               if(document.getElementById('useDifferentAddress')) {
+                  if (document.getElementById('useDifferentAddress'). checked){ //Diferente Dirección
+                     useSameCheck = false;
+                  }
                }
-        
+                              
+               if ($('input[name="treatment"]:checked').val() === 'particular') {
+                  applyFormSetup('PARTICULAR', useSameCheck)
+               }else{
+                  applyFormSetup('COMPANY', useSameCheck)
+               }
+               
                 // Limpia las opciones anteriores
                 provinceSelector.innerHTML = '<option value=""> ... </option>';
         
@@ -1923,145 +1930,252 @@ $( document ).ready( function () {
           
 
       //CHECKOUT VAT
+      function getisNewAddress() {
+         // Obtener los parámetros de la URL actual
+         let params = new URLSearchParams(window.location.search);
+
+         // Comprobamos si existen los parámetros
+         let hasNew = params.has("newAddress");
+
+         if (hasNew) {
+            return true;
+         } 
+         // Mostrar resultados
+         return false;
+      }
+
+      function getAddressType(){
+         // Obtener los parámetros de la URL actual
+         let params = new URLSearchParams(window.location.search);
+
+         // Comprobamos si existen los parámetros
+         let hasNew = params.has("newAddress");
+         let hasEdit = params.has("editAddress");
+
+         let paramValue = null;
+
+         if (hasNew) {
+         paramValue = params.get("newAddress");
+         } else if (hasEdit) {
+         paramValue = params.get("editAddress");
+         }
+
+         return paramValue;
+      }
 
       if (document.getElementById('delivery-address')) {
 
-         let $treatment = $( 'input[name="treatment"]:checked' );
-         let $fieldAlias = $( '#field-alias' ).closest( '.form-group' );
-         let $fieldFirstName = $( '#field-firstname' ).closest( '.form-group' );
-         let $fieldLastName = $( '#field-lastname' ).closest( '.form-group' );
-         let $fieldCompany = $( '.companyClass' ).closest( '.form-group' );
-         let $fieldVatNumber = $( '#field-vat_number' ).closest( '.form-group' );
-         let $fieldDniCif = $( '#field-dni' ).closest( '.form-group' );
-         let $fieldAddress2 = $( '#field-address2' ).closest( '.form-group' );
-         let $dniLabel = $('.dniShowClass');
-         let $cifLabel = $('.cifShowClass');
-         let intracomunitaryInput = $('#intracomunitary-identification');
-   
+         const $treatment = $( 'input[name="treatment"]:checked' );
+         const $fieldAlias = $( '#field-alias' ).closest( '.form-group' );
+         const $fieldFirstName = $( '#field-firstname' ).closest( '.form-group' );
+         const $fieldLastName = $( '#field-lastname' ).closest( '.form-group' );
+         const $fieldCompany = $( '.companyClass' ).closest( '.form-group' );
+         const $fieldVatNumber = $( '#field-vat_number' ).closest( '.form-group' );
+         const $fieldDniCif = $( '#field-dni' ).closest( '.form-group' );
+         const $fieldAddress2 = $( '#field-address2' ).closest( '.form-group' );
+         const $dniLabel = $('.dniShowClass');
+         const $cifLabel = $('.cifShowClass');
          
          $fieldAlias.css( 'display', 'none' );
-         let companyTranslation = $('#company-translation').data('translation');
+         const companyTranslation = $('#company-translation').data('translation');
          $fieldCompany.find('label').html(companyTranslation);
-         let address2Translation = $('#address2-translation').data('translation');
+         const address2Translation = $('#address2-translation').data('translation');
          $fieldAddress2.find('label').html(address2Translation);
-         let firstNameTranslationCompany = $('#firstname-translation-company').data('translation');
-         let firstNameTranslationParticular = $('#firstname-translation-particular').data('translation');
-         
+         const firstNameTranslationCompany = $('#firstname-translation-company').data('translation');
+         //const firstNameTranslationParticular = $('#firstname-translation-particular').data('translation');  
          $fieldVatNumber.find('input').prop('required', false);
          $fieldVatNumber.css( 'display', 'none' );
          $fieldVatNumber.find('input').val('');
-         
-         /* PRIMERA CARGA */
-         if ( $treatment.val() === 'empresa' ) {
-            $( '#field-alias' ).val('COMPANY');
-            intracomunitaryInput.css('display', 'inherit');
-            $fieldDniCif.css( 'display', 'inherit' );
-            $fieldCompany.css( 'display', 'inherit' );
-            $fieldCompany.find('input').prop('required', true);
-            $fieldFirstName.find('label').html(firstNameTranslationCompany);
-            $fieldLastName.css('display', 'none');
-            $fieldLastName.find('input').prop('required', false);
-            $fieldLastName.find('input').val('');
-
-         } else if ( $treatment.val() === 'particular' ) {
-            $( '#field-alias' ).val('PARTICULAR');
-            $fieldCompany.css( 'display', 'none' );
-            $fieldCompany.find('input').prop('required', false);
-
-            $fieldFirstName.find('label').html(firstNameTranslationParticular);
-            $fieldLastName.css('display', 'inherit');
-            $fieldLastName.find('input').prop('required', true);
-            intracomunitaryInput.css('display', 'none');
-
-            if ($('#field-id_country').val() != 6) {
-               $fieldDniCif.css( 'display', 'none' );
-            }else{
-               $fieldDniCif.css( 'display', 'inherit' );
+         const newAddress = ((document.getElementById('newAddress') && document.getElementById('newAddress').dataset.new == '1') || getisNewAddress) ? true : false;
+         const addressType = getAddressType();
+         var useSameCheck = false;
+         const invoiceForm = document.getElementById('useDifferentAddress') ? false : true;
+         if(!invoiceForm) {
+            if (document.getElementById('useDifferentAddress'). checked){ //Diferente Dirección
+               useSameCheck = false;
+            }else{ //misma dirección
+               useSameCheck = true;
             }
-
-
          }
 
 
-         $( '#field-empresa' ).on( 'change', function () {
+         function addressFormatOnlyName() {
+                  $fieldCompany.css( 'display', 'none' );
+                  $fieldCompany.find('input').prop('required', false);
+                  $fieldFirstName.find('label').html(firstNameTranslationCompany);
+                  $fieldFirstName.css('display', 'inherit');
+                  $fieldFirstName.find('input').prop('required', true);
+                  $fieldLastName.css('display', 'inherit');
+                  $fieldLastName.find('input').prop('required', true);
+                  $fieldDniCif.css( 'display', 'none' );        
+                  $dniLabel.css( 'display', 'none' );
+                  $cifLabel.css( 'display', 'none' );
+         }
 
-            if ( $( this ).is( ':checked' ) ) {
-      
-               $( '#field-alias' ).val('COMPANY');
-               $fieldDniCif.css( 'display', 'inherit' );        
-               intracomunitaryInput.css('display', 'inherit');
-               if ($('#field-id_country').val() == 6) {
-                  intracomunitaryInput.css('display', 'none');
-               }
+         function addressFormatCompanyCif() {
+                  $fieldCompany.css( 'display', 'inherit' );
+                  $fieldCompany.find('input').prop('required', true);
+                  $fieldFirstName.find('label').html(firstNameTranslationCompany);
+                  $fieldFirstName.css('display', 'none');
+                  $fieldFirstName.find('input').prop('required', false);
+                  $fieldLastName.css('display', 'none');
+                  $fieldLastName.find('input').prop('required', false);
+                  $fieldDniCif.css( 'display', 'inherit' );        
+                  $dniLabel.css( 'display', 'none' );
+                  $cifLabel.css( 'display', 'inherit' );
+         }
 
-               $dniLabel.css( 'display', 'none' );
-               $cifLabel.css( 'display', 'inherit' );
-               $fieldCompany.css( 'display', 'inherit' );
-               $fieldCompany.find('input').prop('required', true);
-               $fieldFirstName.find('label').html(firstNameTranslationCompany);
-               $fieldLastName.css('display', 'none');
-               $fieldLastName.find('input').prop('required', false);
-               $fieldLastName.find('input').val('');
+         function addressFormatNameDni() {
+                  $fieldCompany.css( 'display', 'none' );
+                  $fieldCompany.find('input').prop('required', false);
+                  $fieldFirstName.find('label').html(firstNameTranslationCompany);
+                  $fieldFirstName.css('display', 'inherit');
+                  $fieldFirstName.find('input').prop('required', true);
+                  $fieldLastName.css('display', 'inherit');
+                  $fieldLastName.find('input').prop('required', true);
+                  $fieldDniCif.css( 'display', 'inherit' );        
+                  $dniLabel.css( 'display', 'inherit' );
+                  $cifLabel.css( 'display', 'none' );
+         }
+
+         function newAddresCompanysetup(useSameCheck) {
                
-            } else {
-               $( '#field-alias' ).val('PARTICULAR');
-               $dniLabel.css( 'display', 'inherit' );
-               $cifLabel.css( 'display', 'none' );
-               $fieldCompany.css( 'display', 'none' );
-               $fieldCompany.find('input').prop('required', false);
-               $fieldFirstName.find('label').html(firstNameTranslationParticular);
-               $fieldLastName.css('display', 'inherit');
-               $fieldLastName.find('input').prop('required', true);
-               $fieldLastName.find('input').val('');
-               intracomunitaryInput.css('display', 'none');
+            if (!useSameCheck){ //Diferente Dirección
+                  addressFormatOnlyName();
+               }else{//misma dirección
+                  addressFormatCompanyCif();
+            }
+            
+         }
 
+         function newAddresParticularsetup(useSameCheck) {
+            if (!useSameCheck) { //Diferente Dirección
+                  addressFormatOnlyName();
+            }else{//misma dirección
                if ($('#field-id_country').val() != 6) {
-                  $fieldDniCif.css( 'display', 'none' );
+                  addressFormatOnlyName();
                }else{
-                  $fieldDniCif.css( 'display', 'inherit' );
+                  addressFormatNameDni();
                }
             }
-         } );
-   
-         $( '#field-particular' ).on( 'change', function () {
-            if ( $( this ).is( ':checked' ) ) {
-               $( '#field-alias' ).val('PARTICULAR');
-               $dniLabel.css( 'display', 'inherit' );
-               $cifLabel.css( 'display', 'none' );
-               $fieldCompany.css( 'display', 'none' );
-               $fieldCompany.find('input').prop('required', false);
-               $fieldFirstName.find('label').html(firstNameTranslationParticular);
-               $fieldLastName.css('display', 'inherit');
-               $fieldLastName.find('input').prop('required', true);
-               $fieldLastName.find('input').val('');
-               intracomunitaryInput.css('display', 'none');
+            
+         }
 
+         function editAddressParticularDelivery(useSameCheck) {
+            
+            if (useSameCheck) {
+               addressFormatOnlyName(); 
+            }else{
                if ($('#field-id_country').val() != 6) {
-                  $fieldDniCif.css( 'display', 'none' );
+                  addressFormatOnlyName();
                }else{
-                  $fieldDniCif.css( 'display', 'inherit' );
+                  addressFormatNameDni();
                }
+            }
+            
 
+         }
+
+         function editAddressCompanyDelivery(useSameCheck) {
+            if (useSameCheck) {
+               addressFormatOnlyName();
+            }else{
+               addressFormatCompanyCif();
+            }
+            
+         }
+
+         function editAddressCompanyInvoice() {
+            addressFormatCompanyCif();
+         }
+
+         function editAddressParticularInvoice() {
+            addressFormatNameDni();
+         }
+
+         function applyFormSetup(mode, useSameCheck) {
+            // mode = 'COMPANY' o 'PARTICULAR'
+            $('#field-alias').val(mode);
+
+            const isCompany = (mode === 'COMPANY');
+
+            if (newAddress) {
+               if (isCompany) {
+                  newAddresCompanysetup(useSameCheck);
+               } else {
+                  newAddresParticularsetup(useSameCheck);
+               }
             } else {
-               $( '#field-alias' ).val('COMPANY');
-               $fieldDniCif.css( 'display', 'inherit' );
-               intracomunitaryInput.css('display', 'inherit');
+               if (addressType === 'delivery') {
+                  if (isCompany) {
+                  editAddressCompanyDelivery(useSameCheck);
+                  } else {
+                  editAddressParticularDelivery(useSameCheck);
+                  }
+               } else {
+                  if (isCompany) {
+                  editAddressCompanyInvoice();
+                  } else {
+                  editAddressParticularInvoice();
+                  }
+               }
+            }
+         }
 
-               if ($('#field-id_country').val() == 6) {
-                  intracomunitaryInput.css('display', 'none');
-               } 
+         /* PRIMERA CARGA */
 
-               $dniLabel.css( 'display', 'none' );
-               $cifLabel.css( 'display', 'inherit' );
-               $fieldCompany.css( 'display', 'inherit' );
-               $fieldCompany.find('input').prop('required', true);
-               $fieldFirstName.find('label').html(firstNameTranslationCompany);
-               $fieldLastName.css('display', 'none');
-               $fieldLastName.find('input').prop('required', false);
-               $fieldLastName.find('input').val('');
+         if ( $treatment.val() === 'particular' ) {
+            console.log('aplicando primera carga, particular/'+useSameCheck);
+            applyFormSetup('PARTICULAR', useSameCheck);
+         }else{
+            console.log('aplicando primera carga, particular/'+useSameCheck);
+            applyFormSetup('COMPANY', useSameCheck);
+         }
+
+
+         $('#field-empresa').on('change', function () {
+            let useSameCheck = true;
+            if(!invoiceForm) {
+               if (document.getElementById('useDifferentAddress'). checked){ //Diferente Dirección
+                  useSameCheck = false;
+               }
+            }
+            let mode = $(this).is(':checked') ? 'COMPANY' : 'PARTICULAR';
+            console.log('aplicando cambio tipo dirección : '+ mode + '/' +useSameCheck);
+            applyFormSetup(mode, useSameCheck);
+         });
+
+         $('#field-particular').on('change', function () {
+            let useSameCheck = true;
+            if(!invoiceForm) {
+               if (document.getElementById('useDifferentAddress'). checked){ //Diferente Dirección
+                  useSameCheck = false;
+               }
+            }
+            let mode = $(this).is(':checked') ? 'PARTICULAR' : 'COMPANY';
+            console.log('aplicando cambio tipo dirección : '+ mode + '/' +useSameCheck);
+            applyFormSetup(mode , useSameCheck);
+         });
+
+         $('#useDifferentAddress').on('change', function () {
+
+            let mode = 'COMPANY'
+            useSameCheck = true;
+            let useSameCheck = true;
+            if(!invoiceForm) {
+               if (document.getElementById('useDifferentAddress'). checked){ //Diferente Dirección
+                  useSameCheck = false;
+               }
             }
 
-         } );
+            if ( $( 'input[name="treatment"]:checked' ).val() === 'particular' ) {
+               mode = 'PARTICULAR';
+            }
+            console.log('aplicando cambio toggle : '+ mode + '/' +useSameCheck);
+            applyFormSetup(mode, useSameCheck);
+           
+         });
+         
 
          $fieldAddress2.css('display', 'none');
 
@@ -2158,9 +2272,32 @@ $( document ).ready( function () {
          /* VALIDACIONES */
          function getValidations() {
                let validation = true;
+               let useSameCheck = true;
+               if (document.getElementById('useDifferentAddress')) {
+                  if (document.getElementById('useDifferentAddress'). checked){ //Diferente Dirección
+                     useSameCheck = false;
+                  }
+               }
 
                if( $( '#field-particular' ).is(':checked')) { // VALIDAR PARTICULAR
                   if ($('#field-id_country').val() == 6) { //si es español
+                     if (useSameCheck){
+                        if ($('#field-dni').val() == '') {
+                           document.getElementById("dni-error").style.display = "block";// error cif/dni vacío
+                           validation = false;
+                        }else{
+                           if(document.getElementById("dni-error")) {
+                              document.getElementById("dni-error").style.display = "none";// error cif/dni vacío
+                           }  
+                        }
+                     }
+                  }
+
+               }else{//VALIDAR EMPRESA
+                  if (useSameCheck){
+                     if($( '#field-company' ).val() == '')  {
+                        console.log('error en nombre empresa')
+                     }
                      if ($('#field-dni').val() == '') {
                         document.getElementById("dni-error").style.display = "block";// error cif/dni vacío
                         validation = false;
@@ -2168,21 +2305,9 @@ $( document ).ready( function () {
                         if(document.getElementById("dni-error")) {
                            document.getElementById("dni-error").style.display = "none";// error cif/dni vacío
                         }  
-                     }
+                     }   
                   }
-
-               }else{                                          //VALIDAR EMPRESA
-                  if($( '#field-company' ).val() == '')  {
-                     console.log('error en nombre empresa')
-                  }
-                  if ($('#field-dni').val() == '') {
-                     document.getElementById("dni-error").style.display = "block";// error cif/dni vacío
-                     validation = false;
-                  }else{
-                     if(document.getElementById("dni-error")) {
-                        document.getElementById("dni-error").style.display = "none";// error cif/dni vacío
-                     }  
-                  }                                    
+                                  
                }
 
                if($('#field-city').val() == ''){ //validar ciudad
@@ -2239,7 +2364,6 @@ $( document ).ready( function () {
 
                return validation;
          }
-
 
          /* VALIDAR Y COMPROBAR INTRACOMUNITARIO */
    
@@ -2317,6 +2441,8 @@ $( document ).ready( function () {
                            $('#field-company').val('');
                            document.getElementById("address-form").submit(); //envía el formulario
                         }
+
+                        document.getElementById("address-form").submit();
 
                      } else{
                         event.preventDefault();
@@ -2525,6 +2651,8 @@ $( document ).ready( function () {
                }
             }
       }
+
+      
       
    }
 

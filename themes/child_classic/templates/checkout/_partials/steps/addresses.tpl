@@ -57,7 +57,6 @@
             </p>
 
           {/if}
-
           
             <div id="switchUseSameDiv" class="switchUseSame" data-same="{$use_same_address}">
               <div class="wasteSwitch" style="padding-right: 15px">
@@ -91,7 +90,7 @@
                     selected    = $id_address_invoice
                     type        = "invoice"
                     interactive = !$show_delivery_address_form and !$show_invoice_address_form
-                    firstAddress = "1"
+                   
                   }
                 </div>
 
@@ -122,3 +121,4 @@
     </form>
   </div>
 {/block}
+

@@ -34,7 +34,7 @@
         <div class="col-md-1" style="padding-right: 10px"><i class="fas fa-map-marker-alt"></i></div>
         <div class="col-md-11">
             <div class="data">
-                <div>Avenida Mediterraneo, 138 Onda 12200</div>
+                <div>Avenida Real de Extremadura, 9 Onda 12200</div>
                 <div>Castellón, {l s='Spain' d='Shop.Theme.Global'}</div>
             </div>
 
