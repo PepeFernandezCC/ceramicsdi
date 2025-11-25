@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>blackfriday</name>
+    <displayName><![CDATA[Black Friday - 50% env&iacute;o muestras]]></displayName>
+    <version><![CDATA[2.1.0]]></version>
+    <description><![CDATA[Reduce a la mitad los gastos de env&iacute;o de pedidos de muestras a Espa&ntilde;a y muestra el descuento en checkout y factura.]]></description>
+    <author><![CDATA[Ceramic Connection]]></author>
+    <tab><![CDATA[pricing_promotion]]></tab>
+    <is_configurable>1</is_configurable>
+    <need_instance>0</need_instance>
+	<limited_countries></limited_countries>
+</module>

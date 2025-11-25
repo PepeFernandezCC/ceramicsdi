@@ -6948,6 +6948,23 @@ div#deliveryPriceCalculator {
 }
 
 /* CHECKOUT ADDRESSES */
+body#checkout section.checkout-step .address-item>header {
+    min-height: 90px;
+}
+body#checkout section.checkout-step .address-item.selected {
+    background: #fff;
+    border: #000000 3px solid;
+}
+.custom-radio input[type="radio"]:checked+span {
+    position: absolute;
+    top: .125rem;
+    left: .125rem;
+    display: block;
+    width: 12px;
+    height: 12px;
+    background-color: #000000;
+    border-radius: 50%;
+}
 
 .switchUseSame {
     display: flex;
@@ -6994,3 +7011,5 @@ div#deliveryPriceCalculator {
 .toggleMin:checked + .switch {
   background: #eac133;
 }
+
+

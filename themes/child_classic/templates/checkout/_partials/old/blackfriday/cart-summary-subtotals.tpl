@@ -28,7 +28,7 @@
     {* PLANATEC *}
     <p>
         {l s='Total shipping weight' d='Shop.Theme.Checkout'}&nbsp;
-        <span class="value" data-location="cart" style="font-weight: bold;">{Context::getContext()->cart->getTotalWeight()|string_format:"%.2f"|replace:'.':','} {Configuration::get('PS_WEIGHT_UNIT')}</span>
+        <span class="value" style="font-weight: bold;">{Context::getContext()->cart->getTotalWeight()|string_format:"%.2f"|replace:'.':','} {Configuration::get('PS_WEIGHT_UNIT')}</span>
     </p>
     {* END PLANATEC *}
 
@@ -36,16 +36,16 @@
         {if $subtotal && $subtotal.value|count_characters > 0 && $subtotal.type !== 'tax'}
             <div class="cart-summary-line cart-summary-subtotals" id="cart-subtotal-{$subtotal.type}">
 
-                <span class="label">
-                    {$subtotal.label}
-                </span>
+        <span class="label">
+            {$subtotal.label}
+        </span>
 
                 <span class="value">
-                    {if 'discount' == $subtotal.type}-&nbsp;{/if}{$subtotal.value}
-                </span>
+          {if 'discount' == $subtotal.type}-&nbsp;{/if}{$subtotal.value}
+        </span>
             </div>
         {/if}
     {/foreach}
-    {hook h='displayBlackFridayShippingDiscount' mod='blackfriday'}
+
 </div>
 

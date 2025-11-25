@@ -13,7 +13,7 @@
                 {* PLANATEC *}
                 <p>
                     {l s='Total shipping weight' d='Shop.Theme.Checkout'}&nbsp;
-                    <span class="value" data-location="cart" style="font-weight: bold;">{Context::getContext()->cart->getTotalWeight()|string_format:"%.2f"|replace:'.':','} {Configuration::get('PS_WEIGHT_UNIT')}</span>
+                    <span class="value" style="font-weight: bold;">{Context::getContext()->cart->getTotalWeight()|string_format:"%.2f"|replace:'.':','} {Configuration::get('PS_WEIGHT_UNIT')}</span>
                 </p>
                 {* END PLANATEC *}
 
@@ -64,7 +64,7 @@
                     </div>
                     {/if}
                 {/block}
-                    {hook h='displayBlackFridayShippingDiscount' mod='blackfriday'}
+
             </div>
         </div>
         <div>

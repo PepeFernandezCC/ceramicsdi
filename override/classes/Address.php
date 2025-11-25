@@ -1,19 +1,45 @@
 <?php
-/**
- * NOTICE OF LICENSE
- *
- * This file is licenced under the Software License Agreement.
- * With the purchase or the installation of the software in your application
- * you accept the licence agreement.
- *
- * You must not modify, adapt or create derivative works of this source code.
- *
- *  @author    Active Design <office@activedesign.ro>
- *  @copyright 2018 Active Design
- *  @license   LICENSE.txt
- */
+
 class Address extends AddressCore
 {
+    /** @var int */
+    public $is_invoice;
+
+    public function __construct($id = null, $idLang = null)
+    {
+        parent::__construct($id, $idLang);
+
+        // Añadimos el campo a la definición del modelo
+        self::$definition['fields']['is_invoice'] = [
+            'type'     => self::TYPE_INT,
+            'validate' => 'isUnsignedInt',
+            'required' => false,
+        ];
+    }
+
+    public function add($autodate = true, $null_values = false)
+    {
+        // Forzar que el objeto coja lo que viene del formulario
+        $postIsInvoice = \Tools::getValue('is_invoice');
+        if ($postIsInvoice !== null) {
+            $this->is_invoice = (int) $postIsInvoice;
+        }
+
+        return parent::add($autodate, $null_values);
+    }
+
+    public function update($null_values = false)
+    {
+        $postIsInvoice = \Tools::getValue('is_invoice');
+        if ($postIsInvoice !== null) {
+            $this->is_invoice = (int) $postIsInvoice;
+        }
+
+        return parent::update($null_values);
+    }
+
+
+
     public static function getVatApiData($id_address) {
         $address = new address($id_address);
         $cif = $address->dni;
@@ -21,7 +47,6 @@ class Address extends AddressCore
         $country = $address->id_country;
         $customer = $address->id_customer;
         $validate = true;
-        
 
         if ($country == 6) {
             customer::removeIntracomunitaryGroup($customer);
@@ -34,33 +59,32 @@ class Address extends AddressCore
             'country' => $country, 
             'validate' => $validate
         ];
-
-
-        
     }
 
     public static function updateIntracomunitaryAddress($idAddress, $vatNumber) {
-            Db::getInstance()->update('address', [
-                'vat_number' => $vatNumber,
-            ], 'id_address = ' . $idAddress);
+        Db::getInstance()->update('address', [
+            'vat_number' => $vatNumber,
+        ], 'id_address = ' . (int) $idAddress);
     }
     
     public static function getAddressValidations($id_address) {
-        $query = 'SELECT * FROM `ps_address` WHERE `id_address` = ' . (int)$id_address ;
+        $query = 'SELECT * FROM `'._DB_PREFIX_.'address` WHERE `id_address` = ' . (int)$id_address ;
         $addresses = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
         $address = $addresses[0];
         $dni_error = false;
         $postCode_error = false;
         $error = 'Sin errores';
         $spain = false; 
+
         if ($address['id_country'] == '6') {
             $spain = true;
         } 
+
         if($spain) {
             if ($address['dni'] == '') {
                 $dni_error = true;
             }
-        }else{
+        } else {
             if ($address['dni'] == '' && $address['company'] != '') {
                 $dni_error = true;
             }
@@ -71,7 +95,6 @@ class Address extends AddressCore
         }
 
         if ($dni_error || $postCode_error) {
-
             if ($dni_error) {
                 $error = 'Error en el campo dni';
             }
@@ -83,21 +106,20 @@ class Address extends AddressCore
             }
 
             return [
-                'validations' => false,
-                'dni_error' => $dni_error,
-                'postCode_error' => $postCode_error, 
-                'spain' => $spain,
-                'error' => $error
+                'validations'   => false,
+                'dni_error'     => $dni_error,
+                'postCode_error'=> $postCode_error, 
+                'spain'         => $spain,
+                'error'         => $error
             ];
         }
 
         return [
-            'validations' => true,
-            'dni_error' => $dni_error,
-            'postCode_error' => $postCode_error, 
-            'spain' => $spain,
-            'error' => $error
+            'validations'   => true,
+            'dni_error'     => $dni_error,
+            'postCode_error'=> $postCode_error, 
+            'spain'         => $spain,
+            'error'         => $error
         ];
-
     }
 }

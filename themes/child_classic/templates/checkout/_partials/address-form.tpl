@@ -22,6 +22,11 @@
     {block name='form_fields'}
         {* 1. hidden para saber qué tipo de dirección es (envío/factura) *}
         <input type="hidden" name="saveAddress" value="{$type}">
+        {if ($type == "delivery")}
+            <input type="hidden" name="is_invoice" value="0" id="is_invoice">
+        {else}
+            <input type="hidden" name="is_invoice" value="1" id="is_invoice">
+        {/if}
 
         {* 2. radios particular / empresa (igual que en la plantilla base) *}
         <div class="form-group row" style="width: 100%;">
@@ -85,64 +90,18 @@
             <input type="hidden" name="use_same_address" value="0"> 
         {/if}
 
-        {*
-        {if $use_same_address}
-            <div class="form-group row" data-name="option-5">
-                <div class="col-md-12">
-                    <h2 class="h4">{l s='Shipping Address' d='Shop.Theme.Checkout'}</h2>
-                </div>
-            </div>
-        {/if}
-        *}
-
         {* 6. resto de campos del formulario *}
         
         {foreach from=$formFields item="field"}
-            {*if $field.name != "firstname" && $field.name != "lastname"*}
                 {block name='form_field'}
                     {form_field field=$field}
                 {/block}
-            {*/if*}
         {/foreach}
         
     {/block}
 
-
-    {*
-
-    {block name='form_fields' append}
-        <input type="hidden" name="saveAddress" value="{$type}">
-
-        {if $type === "delivery"}
-            {if !isset($firstAddress)}
-                {assign var="firstAddress" value="0"}
-            {/if}
-
-            <div id="firstAddress" data-first="{$firstAddress}"></div>
-            <div class="form-group row">
-                <input type="hidden" name="use_same_address" value="1" id="use_same_address">
-                <div id="switchUseSameFormDiv" class="col-md-9 col-md-offset-3"  data-same="{$use_same_address}">
-                    <div class="wasteSwitch">
-                        <input class="toggleMin" type="checkbox"  id="useDifferentAddress" name="useDifferentAddress"  {if !$use_same_address} checked {/if}/>
-                        <label class="switch" for="useDifferentAddress"></label>
-                    </div>
-                    <div class="checkUseSameForm" style="padding-left:10px">
-                        <span>{l s='Billing address differs from shipping address' d='Shop.Theme.Checkout'}</span>
-                    </div>
-                </div>
-            </div>
-        {elseif $type === "invoice"}
-           
-            <input type="hidden" name="confirm-addresses" value="1">
-            <input type="hidden" name="use_same_address" value="0"> 
-
-        {/if}
-    {/block}
-
-    *}
-
     {block name='form_buttons'}
-        {if !$id_address }
+        {if !$id_address}
             {if !$form_has_continue_button}
                 <button id="confirmAddressButton" data-location="form" data-customer="{$customer.id}" type="submit" class="btn btn-primary float-xs-right">
                     {l s='Save' d='Shop.Theme.Actions'}
@@ -161,7 +120,12 @@
                 </form>
             {/if}
         {else}
-            <div class="clearfix"data-continuebuttontrue="{$form_has_continue_button}"></div>
+            {if $type == "invoice"}
+                <button id="confirmAddressButton" data-location="form" data-customer="{$customer.id}" type="submit" class="continue btn btn-primary float-xs-right" name="confirm-addresses" value="1">
+                    {l s='Continue' d='Shop.Theme.Actions'}
+                </button>
+            {/if}
+            <div class="clearfix" data-continuebuttontrue="{$form_has_continue_button}"></div>
             <a id="cancel-address-form" class="btn js-cancel-address cancel-address float-xs-right" href="{url entity='order' params=['cancelAddress' => {$type}]}">{l s='Cancel' d='Shop.Theme.Actions'}</a>
         {/if}
     {/block}

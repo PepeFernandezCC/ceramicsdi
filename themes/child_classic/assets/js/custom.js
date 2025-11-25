@@ -1944,6 +1944,8 @@ $( document ).ready( function () {
          return false;
       }
 
+      /* logica formulario direcciones */
+
       function getAddressType(){
          // Obtener los parámetros de la URL actual
          let params = new URLSearchParams(window.location.search);
@@ -1963,10 +1965,51 @@ $( document ).ready( function () {
          return paramValue;
       }
 
+      function addSameInputs() {
+            let addressForm = document.getElementById('address-form') ?? '';
+
+               if ( $('#switchUseSame').prop('checked', false)) {
+                  if(document.getElementById('useDifferentAddress')){
+                     if(!document.getElementById('use_same_address')) {
+                        hidden = document.createElement('input');
+                        hidden.type  = 'hidden';
+                        hidden.name  = 'use_same_address';
+                        hidden.value = '1';
+                        hidden.id    = 'use_same_address';
+                        addressForm.appendChild(hidden);
+                     }
+
+                     if (!document.getElementById('confirm_addresses_hidden')) {
+                        confirmHidden = document.createElement('input');
+                        confirmHidden.type  = 'hidden';
+                        confirmHidden.name  = 'confirm-addresses';
+                        confirmHidden.value = '1';
+                        confirmHidden.id    = 'confirm_addresses_hidden';
+                        addressForm.appendChild(confirmHidden);
+                     }
+                  }
+               }            
+
+      }
+
+      function removeSameInputs() {
+            if(document.getElementById('useDifferentAddress')){
+               if(document.getElementById('use_same_address')) {
+                  hidden = document.getElementById('use_same_address');
+                  if (hidden && hidden.parentNode) hidden.parentNode.removeChild(hidden);
+               }
+               if(document.getElementById('confirm_addresses_hidden')) {
+                  confirmHidden = document.getElementById('confirm_addresses_hidden');
+                  if (confirmHidden && confirmHidden.parentNode) confirmHidden.parentNode.removeChild(confirmHidden);
+               }
+            }  
+      }
+
       if (document.getElementById('delivery-address')) {
 
          const $treatment = $( 'input[name="treatment"]:checked' );
          const $fieldAlias = $( '#field-alias' ).closest( '.form-group' );
+         const customerTypeBox = $('#field-empresa').closest( '.form-group' );
          const $fieldFirstName = $( '#field-firstname' ).closest( '.form-group' );
          const $fieldLastName = $( '#field-lastname' ).closest( '.form-group' );
          const $fieldCompany = $( '.companyClass' ).closest( '.form-group' );
@@ -1975,27 +2018,32 @@ $( document ).ready( function () {
          const $fieldAddress2 = $( '#field-address2' ).closest( '.form-group' );
          const $dniLabel = $('.dniShowClass');
          const $cifLabel = $('.cifShowClass');
-         
+         const originalIsInvoice = $('#is_invoice').val();
          $fieldAlias.css( 'display', 'none' );
          const companyTranslation = $('#company-translation').data('translation');
          $fieldCompany.find('label').html(companyTranslation);
          const address2Translation = $('#address2-translation').data('translation');
          $fieldAddress2.find('label').html(address2Translation);
          const firstNameTranslationCompany = $('#firstname-translation-company').data('translation');
-         //const firstNameTranslationParticular = $('#firstname-translation-particular').data('translation');  
          $fieldVatNumber.find('input').prop('required', false);
          $fieldVatNumber.css( 'display', 'none' );
          $fieldVatNumber.find('input').val('');
-         const newAddress = ((document.getElementById('newAddress') && document.getElementById('newAddress').dataset.new == '1') || getisNewAddress) ? true : false;
+         let getNewAddresParam = getisNewAddress();
+         const newAddress = ((document.getElementById('newAddress') && document.getElementById('newAddress').dataset.new == '1') || getNewAddresParam) ? true : false;
          const addressType = getAddressType();
          var useSameCheck = false;
          const invoiceForm = document.getElementById('useDifferentAddress') ? false : true;
          if(!invoiceForm) {
-            if (document.getElementById('useDifferentAddress'). checked){ //Diferente Dirección
+            if (document.getElementById('useDifferentAddress').checked){ //Diferente Dirección
                useSameCheck = false;
+               $('#is_invoice').val(originalIsInvoice);
             }else{ //misma dirección
                useSameCheck = true;
+               $('#is_invoice').val('2');
             }
+         }else{
+            useSameCheck = false;
+            $('#is_invoice').val('1');
          }
 
 
@@ -2038,17 +2086,21 @@ $( document ).ready( function () {
                   $cifLabel.css( 'display', 'none' );
          }
 
-         function newAddresCompanysetup(useSameCheck) {
-               
-            if (!useSameCheck){ //Diferente Dirección
-                  addressFormatOnlyName();
-               }else{//misma dirección
-                  addressFormatCompanyCif();
+         function newAddresCompanysetup() {
+             let switchUseSame = $('#switchUseSameFormDiv').closest( '.form-group' );
+             switchUseSame.css('display', 'none');
+            if($('#is_invoice').val() != '0'){
+               addressFormatCompanyCif();
+            }else{
+               addressFormatOnlyName();
             }
+             
             
          }
 
          function newAddresParticularsetup(useSameCheck) {
+            let switchUseSame = $('#switchUseSameFormDiv').closest( '.form-group' );
+            switchUseSame.css('display', 'flex');
             if (!useSameCheck) { //Diferente Dirección
                   addressFormatOnlyName();
             }else{//misma dirección
@@ -2101,7 +2153,7 @@ $( document ).ready( function () {
 
             if (newAddress) {
                if (isCompany) {
-                  newAddresCompanysetup(useSameCheck);
+                  newAddresCompanysetup();
                } else {
                   newAddresParticularsetup(useSameCheck);
                }
@@ -2124,47 +2176,96 @@ $( document ).ready( function () {
 
          /* PRIMERA CARGA */
 
-         if ( $treatment.val() === 'particular' ) {
-            console.log('aplicando primera carga, particular/'+useSameCheck);
-            applyFormSetup('PARTICULAR', useSameCheck);
-         }else{
-            console.log('aplicando primera carga, particular/'+useSameCheck);
-            applyFormSetup('COMPANY', useSameCheck);
-         }
+         let initialMode = null;
 
+         // 1) Si estamos en formulario de FACTURACIÓN, intentamos usar lo guardado
+         if (invoiceForm) {
+            console.log(getAddressType());
+            if(!getAddressType()) {
+               customerTypeBox.css('display', 'none');
+            }
+            
+            const storedMode = localStorage.getItem('customer_type'); // 'COMPANY' o 'PARTICULAR'
 
-         $('#field-empresa').on('change', function () {
-            let useSameCheck = true;
-            if(!invoiceForm) {
-               if (document.getElementById('useDifferentAddress'). checked){ //Diferente Dirección
-                  useSameCheck = false;
+            if (storedMode === 'COMPANY' || storedMode === 'PARTICULAR') {
+               initialMode = storedMode;
+
+               // Sincronizamos el radio para que coincida con lo guardado
+               if (storedMode === 'COMPANY') {
+                  $('#field-empresa').prop('checked', true);
+               } else {
+                  $('#field-particular').prop('checked', true);
                }
             }
+         }
+
+         // 2) Si no hay valor en localStorage (o no es invoiceForm), usamos lo que venga marcado
+         if (!initialMode) {
+            if ($treatment.val() === 'particular') {
+               initialMode = 'PARTICULAR';
+            } else {
+               initialMode = 'COMPANY';
+            }
+         }
+
+         // 3) Si localStorage aún no tiene valor, lo inicializamos con el modo detectado
+         if (!localStorage.getItem('customer_type')) {
+            localStorage.setItem('customer_type', initialMode);
+         }
+
+         // 4) Aplicamos la configuración inicial del formulario
+         applyFormSetup(initialMode, useSameCheck);
+
+         $('#field-empresa').on('change', function () {
             let mode = $(this).is(':checked') ? 'COMPANY' : 'PARTICULAR';
-            console.log('aplicando cambio tipo dirección : '+ mode + '/' +useSameCheck);
-            applyFormSetup(mode, useSameCheck);
+            let check = $(this).is(':checked') ? false : true;
+
+            if ($(this).is(':checked')) {
+               $('#is_invoice').val(originalIsInvoice);
+               removeSameInputs();
+               localStorage.setItem('customer_type', mode);
+            }
+            
+            applyFormSetup(mode, check);
+
          });
 
          $('#field-particular').on('change', function () {
             let useSameCheck = true;
+            let mode = $(this).is(':checked') ? 'PARTICULAR' : 'COMPANY';
+
             if(!invoiceForm) {
-               if (document.getElementById('useDifferentAddress'). checked){ //Diferente Dirección
+               if (document.getElementById('useDifferentAddress').checked){ //Diferente Dirección
                   useSameCheck = false;
                }
             }
-            let mode = $(this).is(':checked') ? 'PARTICULAR' : 'COMPANY';
-            console.log('aplicando cambio tipo dirección : '+ mode + '/' +useSameCheck);
+            
+            if ($(this).is(':checked')) {
+               if (!useSameCheck) {
+                  $('#is_invoice').val(originalIsInvoice);
+                  removeSameInputs();
+               } else {
+                  if(!invoiceForm) {
+                     $('#is_invoice').val('2');
+                  }
+                  addSameInputs();
+               }
+               localStorage.setItem('customer_type', mode);
+            }
+
             applyFormSetup(mode , useSameCheck);
          });
 
          $('#useDifferentAddress').on('change', function () {
 
             let mode = 'COMPANY'
-            useSameCheck = true;
             let useSameCheck = true;
             if(!invoiceForm) {
-               if (document.getElementById('useDifferentAddress'). checked){ //Diferente Dirección
+               if (document.getElementById('useDifferentAddress').checked){ //Diferente Dirección
                   useSameCheck = false;
+                  $('#is_invoice').val(originalIsInvoice);
+               }else{
+                  $('#is_invoice').val('2');
                }
             }
 
@@ -2178,6 +2279,9 @@ $( document ).ready( function () {
          
 
          $fieldAddress2.css('display', 'none');
+
+
+         /* FIN LOGICA FORMULARIO DIRECCIONES */
 
          function resetButtonState() {
             setTimeout(() => {
@@ -2273,6 +2377,7 @@ $( document ).ready( function () {
          function getValidations() {
                let validation = true;
                let useSameCheck = true;
+
                if (document.getElementById('useDifferentAddress')) {
                   if (document.getElementById('useDifferentAddress'). checked){ //Diferente Dirección
                      useSameCheck = false;
@@ -2285,6 +2390,7 @@ $( document ).ready( function () {
                         if ($('#field-dni').val() == '') {
                            document.getElementById("dni-error").style.display = "block";// error cif/dni vacío
                            validation = false;
+                           console.log('Error: validation dni particular español vacio | check off');
                         }else{
                            if(document.getElementById("dni-error")) {
                               document.getElementById("dni-error").style.display = "none";// error cif/dni vacío
@@ -2293,19 +2399,24 @@ $( document ).ready( function () {
                      }
                   }
 
-               }else{//VALIDAR EMPRESA
-                  if (useSameCheck){
+               }
+               
+               if( $( '#field-empresa' ).is(':checked')) {//VALIDAR EMPRESA
+                  if (invoiceForm){
                      if($( '#field-company' ).val() == '')  {
                         console.log('error en nombre empresa')
                      }
+
                      if ($('#field-dni').val() == '') {
                         document.getElementById("dni-error").style.display = "block";// error cif/dni vacío
+                        console.log('Error: validation cif empresa vacio | check off');
                         validation = false;
                      }else{
                         if(document.getElementById("dni-error")) {
                            document.getElementById("dni-error").style.display = "none";// error cif/dni vacío
                         }  
                      }   
+
                   }
                                   
                }
@@ -2393,35 +2504,38 @@ $( document ).ready( function () {
                               document.getElementById("cancel-address-form").style.display ="none";
                            }
                            // Extranjero Empresa con dni
-                           if ($( '#field-empresa' ).is( ':checked' ) ) {
-                              event.preventDefault();    
-                              $.ajax({ // comprueba si el vat es válido
-                                 url: '/ajax/validateVatNumber.php',
-                                 method: 'POST', 
-                                 data: {
-                                    country: $('#field-id_country').val(),
-                                    vat_number: $('#field-dni').val(),
-                                    customer: document.getElementById("confirmAddressButton").getAttribute("data-customer"),
-                                 },
-                                 success: function(response) {                                 
-                                    if (response.result) {
-                                       $fieldVatNumber.find('input').val(response.fullVat); 
-                                    } 
-                                    console.log(response);
-                                    document.getElementById("address-form").submit(); //envía el formulario
-                                 },
-                                 error: function(err) {
-                                    console.error('Error en la solicitud AJAX:', err);
-                                    resetButtonState();
-                                 }
-                              });
-                           }else{  
-                              //Extranjero Particular con dni                     
-                              $('#field-dni').val(''); //no lo pedimos a extranjeros particulares por lo que hay que borrarlo
-                              $('#field-company').val(''); //si es particular no debe tener nada en campo empresa
-                              document.getElementById("address-form").submit(); //envía el formulario
-                           }
+                           if (!invoiceForm) {
+                              if ($( '#field-empresa' ).is( ':checked' )) {
+                                 event.preventDefault();    
+                                 $.ajax({ // comprueba si el vat es válido
+                                    url: '/ajax/validateVatNumber.php',
+                                    method: 'POST', 
+                                    data: {
+                                       country: $('#field-id_country').val(),
+                                       vat_number: $('#field-dni').val(),
+                                       customer: document.getElementById("confirmAddressButton").getAttribute("data-customer"),
+                                    },
+                                    success: function(response) {                                 
+                                       if (response.result) {
+                                          $fieldVatNumber.find('input').val(response.fullVat); 
+                                       } 
+                                       console.log(response);
+                                       document.getElementById("address-form").submit(); //envía el formulario
+                                    },
+                                    error: function(err) {
+                                       console.error('Error en la solicitud AJAX:', err);
+                                       resetButtonState();
+                                    }
+                                 });
+                              }else{  
+                                 //Extranjero Particular con dni                     
+                                 $('#field-dni').val(''); //no lo pedimos a extranjeros particulares por lo que hay que borrarlo
+                                 $('#field-company').val(''); //si es particular no debe tener nada en campo empresa
+                                 document.getElementById("address-form").submit(); //envía el formulario
+                              }
                            
+                           }
+
                         }
 
                         //Extranjero Particular sin dni
@@ -2493,167 +2607,7 @@ $( document ).ready( function () {
                });
             }
          }
-
-
-      // ADDRESSES SAME ADDRESS LOGIC
-      
-      if (document.getElementById('switchUseSame') || document.getElementById('useDifferentAddress')) {
-
-            const deliveryWrap = document.getElementById('delivery-addresses');
-            const invoiceWrap  = document.getElementById('invoice-addresses');
-            const invoicesPanel = document.getElementById('invoice-addresses-panel');
-
-            const activeForm = document.getElementById('useDifferentAddress') ? true : false;
-
-            document.getElementById('switchUseSameDiv').style.display = (activeForm || !invoiceWrap) ? 'none' : 'flex';
-            
-            const toggleDiv = activeForm ? document.getElementById('switchUseSameFormDiv') : document.getElementById('switchUseSameDiv');
-            const toggle = activeForm ? document.getElementById('useDifferentAddress') : document.getElementById('switchUseSame');
-
-            const qAll = (sel, root = document) => Array.from(root.querySelectorAll(sel));
-            const q    = (sel, root = document) => root.querySelector(sel);
-
-            // Helpers seguros: siempre existen y devuelven [] si el wrap no está
-            const deliveryRadios = () =>
-            deliveryWrap ? Array.from(deliveryWrap.querySelectorAll('input[type="radio"][name="id_address_delivery"]')) : [];
-
-            const invoiceRadios = () =>
-            invoiceWrap ? Array.from(invoiceWrap.querySelectorAll('input[type="radio"][name="id_address_invoice"]')) : [];
-
-            
-            
-
-            // Inicialización según data-same
-            const dataSame = (toggleDiv && toggleDiv.dataset && toggleDiv.dataset.same) || '';
-            if (dataSame !== '') {
-               const same = String(dataSame) === '1';
-               toggle.checked = !same;
-            }
-
-            applyMode();
-
-            toggle.addEventListener('change', applyMode);
-
-            if (deliveryWrap) {
-               deliveryWrap.addEventListener('change', onDeliveryChange);
-            }
-
-            // También cuando cambies manualmente facturación
-            if (invoiceWrap) {
-               invoiceWrap.addEventListener('change', e => {
-                  if (e.target.matches('input[name="id_address_invoice"]')) {
-                  markSelectedInvoice(e.target.value);
-                  }
-               });
-            }
-
-            // FUNCIONES //
-            function markSelectedInvoice(value) {
-               if (!invoiceWrap) return;
-               qAll('article', invoiceWrap).forEach(article => {
-                  article.classList.toggle('selected', article.dataset.address === String(value));
-               });
-            }
-
-            function getChecked(radios) {
-               const r = radios.find(r => r.checked);
-               return r ? r.value : null;
-            }
-
-            function setCheckedByValue(radios, value) {
-               const r = radios.find(r => String(r.value) === String(value));
-               if (r) {
-                  r.checked = true;
-                  r.dispatchEvent(new Event('change', { bubbles: true }));
-                  markSelectedInvoice(value);
-                  return true;
-               }
-               return false;
-            }
-
-            function setDisabled(radios, disabled) {
-               radios.forEach(r => r.disabled = disabled);
-            }
-
-            function showInvoiceBlock(show) {
-               if (!invoiceWrap) return;
-               invoicesPanel.style.display = show ? '' : 'none';
-            }
-
-            function applyMode() {
-               let distintas = !!toggle.checked;
-               const dRadios = deliveryRadios();
-               const iRadios = invoiceRadios();
-               let addressForm = document.getElementById('address-form') ?? '';
-
-
-               if (!distintas) {
-                  if(document.getElementById('useDifferentAddress')){
-                     if(!document.getElementById('use_same_address')) {
-                        hidden = document.createElement('input');
-                        hidden.type  = 'hidden';
-                        hidden.name  = 'use_same_address';
-                        hidden.value = '1';
-                        hidden.id    = 'use_same_address';
-                        addressForm.appendChild(hidden);
-                     }
-
-                     if (!document.getElementById('confirm_addresses_hidden')) {
-                        confirmHidden = document.createElement('input');
-                        confirmHidden.type  = 'hidden';
-                        confirmHidden.name  = 'confirm-addresses';
-                        confirmHidden.value = '1';
-                        confirmHidden.id    = 'confirm_addresses_hidden';
-                        addressForm.appendChild(confirmHidden);
-                     }
-                  }
-                  // MISMA dirección: deshabilita facturación y espeja
-                  const shipValue = getChecked(dRadios) || (dRadios[0] && dRadios[0].value);
-                  if (shipValue != null) {
-                  if (!setCheckedByValue(iRadios, shipValue) && iRadios.length) {
-                     iRadios[0].checked = true;
-                     iRadios[0].dispatchEvent(new Event('change', { bubbles: true }));
-                     markSelectedInvoice(iRadios[0].value);
-                  }
-                  }
-                  setDisabled(iRadios, true);
-                  showInvoiceBlock(false);
-               } else {
-                  if(document.getElementById('useDifferentAddress')){
-                     if(document.getElementById('use_same_address')) {
-                        hidden = document.getElementById('use_same_address');
-                        if (hidden && hidden.parentNode) hidden.parentNode.removeChild(hidden);
-                     }
-                     if(document.getElementById('confirm_addresses_hidden')) {
-                        confirmHidden = document.getElementById('confirm_addresses_hidden');
-                        if (confirmHidden && confirmHidden.parentNode) confirmHidden.parentNode.removeChild(confirmHidden);
-                     }
-                  }
-
-                  if(document.getElementById('use_same_address')) {
-                     document.getElementById('use_same_address').value = 0;
-                  }
-                  if(document.getElementById('confirm_addresses_hidden')) {
-                     document.getElementById('use_same_address').value = 0;
-                  }
-                  
-                  // DISTINTAS: habilita facturación
-                  setDisabled(iRadios, false);
-                  showInvoiceBlock(true);
-                  // actualizar visual si ya hay uno marcado
-                  markSelectedInvoice(getChecked(iRadios));
-               }
-            }
-
-            function onDeliveryChange(e) {
-               if (e.target.matches('input[name="id_address_delivery"]') && !toggle.checked) {
-                  setCheckedByValue(invoiceRadios(), e.target.value);
-               }
-            }
-      }
-
-      
-      
+     
    }
 
    

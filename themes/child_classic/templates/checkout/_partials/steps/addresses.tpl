@@ -1,5 +1,19 @@
 
 {extends file='checkout/_partials/steps/checkout-step.tpl'}
+{* Filtrar direcciones según is_invoice *}
+{assign var='delivery_addresses' value=[]}
+{assign var='invoice_addresses' value=[]}
+{foreach from=$customer.addresses item=address}
+
+  {if $address.is_invoice == 0 || $address.is_invoice == 2}
+    {append var='delivery_addresses' value=$address}
+  {/if}
+
+  {if $address.is_invoice == 1 || $address.is_invoice == 2}
+    {append var='invoice_addresses' value=$address}
+  {/if}
+        
+{/foreach}
 
 {block name='step_content'}
   <div class="js-address-form">
@@ -36,9 +50,10 @@
 
           {elseif $customer.addresses|count > 0}
 
+
             <div id="delivery-addresses" class="address-selector js-address-selector">
               {include  file        = 'checkout/_partials/address-selector-block.tpl'
-                addresses   = $customer.addresses
+                addresses   = $delivery_addresses
                 name        = "id_address_delivery"
                 selected    = $id_address_delivery
                 type        = "delivery"
@@ -57,16 +72,17 @@
             </p>
 
           {/if}
-          
-            <div id="switchUseSameDiv" class="switchUseSame" data-same="{$use_same_address}">
-              <div class="wasteSwitch" style="padding-right: 15px">
-                <input class="toggleMin" type="checkbox" id="switchUseSame" name="switchUseSame" />
-                <label class="switch" for="switchUseSame" style="margin-bottom:0"></label>
+            {*
+              <div id="switchUseSameDiv" class="switchUseSame" data-same="{$use_same_address}">
+                <div class="wasteSwitch" style="padding-right: 15px">
+                  <input class="toggleMin" type="checkbox" id="switchUseSame" name="switchUseSame" />
+                  <label class="switch" for="switchUseSame" style="margin-bottom:0"></label>
+                </div>
+                <div class="checkUseSameForm" >
+                  <span>{l s='Billing address differs from shipping address' d='Shop.Theme.Checkout'}</span>
+                </div>
               </div>
-              <div class="checkUseSameForm" >
-                <span>{l s='Billing address differs from shipping address' d='Shop.Theme.Checkout'}</span>
-              </div>
-            </div>
+            *}
 
           {if $customer.addresses|count > 0}
             <div id="invoice-addresses-panel">
@@ -85,7 +101,7 @@
               {else}
                 <div id="invoice-addresses" class="address-selector js-address-selector">
                   {include  file        = 'checkout/_partials/address-selector-block.tpl'
-                    addresses   = $customer.addresses
+                    addresses   = $invoice_addresses
                     name        = "id_address_invoice"
                     selected    = $id_address_invoice
                     type        = "invoice"

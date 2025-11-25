@@ -866,3 +866,80 @@ iframe#redsys-hosted-pay-button {
   max-height: 20px !important;
   height: 19.6px !important;
 }
+
+/* Banner Black Friday */
+.bf-banner {
+    background: #000;
+    color: #68ff95;
+    text-align: center;
+    font-size: 14px;
+    line-height: 1.4;
+    padding: 6px 40px 6px 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 99999;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.bf-banner__text {
+    white-space: nowrap;
+}
+
+.bf-banner__close {
+    position: absolute;
+    right: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    color: #68ff95;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+}
+
+.bf-banner__close:hover {
+    opacity: 0.7;
+}
+/* Ajustes para móvil */
+@media (max-width: 1223px) {
+
+    .bf-banner {
+        position: relative;      /* deja de ser fixed en móvil */
+        top: auto;
+    }
+
+    #header {
+        margin-top: 0 !important;  /* anulamos el margin-top que mete el JS */
+    }
+
+    .bf-banner__text {
+      font-size: 12px;
+      padding-left: 20px;
+    }
+
+    .bf-banner__close {
+   
+      right: 15px;
+
+    }
+
+}
+
+@media (min-width: 1224px) {
+    .bf-separation {
+      padding-left:40px;
+    }
+}
+
+/**********************/

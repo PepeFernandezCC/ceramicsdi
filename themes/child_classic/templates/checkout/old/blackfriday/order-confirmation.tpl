@@ -143,8 +143,6 @@
                                     </div>
                                 {/if}
                             {/foreach}
-                           
-                            {hook h='displayBlackFridayShippingDiscount' mod='blackfriday'}
                         </div>
                     </div>
                 </section>
