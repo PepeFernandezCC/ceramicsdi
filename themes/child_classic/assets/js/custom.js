@@ -8,7 +8,6 @@ $( document ).ready( function () {
          .querySelectorAll('#menu-desktop-list a[href="#"]')
          .forEach(a => a.removeAttribute('href'));
 
-
       document
          .querySelectorAll('#menu-mobile-list a[href="#"]')
          .forEach(a => a.removeAttribute('href'));
@@ -1900,9 +1899,9 @@ $( document ).ready( function () {
                }
                               
                if ($('input[name="treatment"]:checked').val() === 'particular') {
-                  applyFormSetup('PARTICULAR', useSameCheck)
+                  applyFormSetup('PARTICULAR', useSameCheck);
                }else{
-                  applyFormSetup('COMPANY', useSameCheck)
+                  applyFormSetup('COMPANY', useSameCheck);
                }
                
                 // Limpia las opciones anteriores
@@ -1944,6 +1943,21 @@ $( document ).ready( function () {
          return false;
       }
 
+      function getisEditAddress() {
+         // Obtener los parámetros de la URL actual
+         let params = new URLSearchParams(window.location.search);
+
+         // Comprobamos si existen los parámetros
+         let hasNew = params.has("editAddress");
+
+         if (hasNew) {
+            return true;
+         } 
+         // Mostrar resultados
+         return false;
+      }
+
+
       /* logica formulario direcciones */
 
       function getAddressType(){
@@ -1965,44 +1979,55 @@ $( document ).ready( function () {
          return paramValue;
       }
 
-      function addSameInputs() {
-            let addressForm = document.getElementById('address-form') ?? '';
+      function addSameInput(){
+         let addressForm = document.getElementById('address-form') ?? '';
+      
+         if (!addressForm) return;
 
-               if ( $('#switchUseSame').prop('checked', false)) {
-                  if(document.getElementById('useDifferentAddress')){
-                     if(!document.getElementById('use_same_address')) {
-                        hidden = document.createElement('input');
-                        hidden.type  = 'hidden';
-                        hidden.name  = 'use_same_address';
-                        hidden.value = '1';
-                        hidden.id    = 'use_same_address';
-                        addressForm.appendChild(hidden);
-                     }
-
-                     if (!document.getElementById('confirm_addresses_hidden')) {
-                        confirmHidden = document.createElement('input');
-                        confirmHidden.type  = 'hidden';
-                        confirmHidden.name  = 'confirm-addresses';
-                        confirmHidden.value = '1';
-                        confirmHidden.id    = 'confirm_addresses_hidden';
-                        addressForm.appendChild(confirmHidden);
-                     }
-                  }
-               }            
+         if (document.getElementById('useDifferentAddress')) {
+            // Siempre que es "misma dirección" queremos tener use_same_address = 1
+            if (!document.getElementById('use_same_address')) {
+               let hidden = document.createElement('input');
+               hidden.type  = 'hidden';
+               hidden.name  = 'use_same_address';
+               hidden.value = '1';
+               hidden.id    = 'use_same_address';
+               addressForm.appendChild(hidden);
+            }
 
       }
 
-      function removeSameInputs() {
-            if(document.getElementById('useDifferentAddress')){
-               if(document.getElementById('use_same_address')) {
-                  hidden = document.getElementById('use_same_address');
-                  if (hidden && hidden.parentNode) hidden.parentNode.removeChild(hidden);
-               }
-               if(document.getElementById('confirm_addresses_hidden')) {
-                  confirmHidden = document.getElementById('confirm_addresses_hidden');
-                  if (confirmHidden && confirmHidden.parentNode) confirmHidden.parentNode.removeChild(confirmHidden);
-               }
-            }  
+      }
+
+      function addConfirmAddress(){
+         let addressForm = document.getElementById('address-form');
+         if (!addressForm) return;
+
+         // si ya existe, no creamos otro
+         let confirmHidden = document.getElementById('confirm_addresses_hidden');
+         if (!confirmHidden) {
+            confirmHidden = document.createElement('input');
+            confirmHidden.type  = 'hidden';
+            confirmHidden.name  = 'confirm-addresses';
+            confirmHidden.value = '1';
+            confirmHidden.id    = 'confirm_addresses_hidden';
+            addressForm.appendChild(confirmHidden);
+         }
+      }
+
+      function removeConfirm() {
+         if (document.getElementById('useDifferentAddress')) {
+            let confirmHidden = document.getElementById('confirm_addresses_hidden');
+            if (confirmHidden && confirmHidden.parentNode) confirmHidden.parentNode.removeChild(confirmHidden);
+         }
+
+      }
+      function removeSame() {
+
+         if (document.getElementById('useDifferentAddress')) {
+            let hidden = document.getElementById('use_same_address');
+            if (hidden && hidden.parentNode) hidden.parentNode.removeChild(hidden);
+         }
       }
 
       if (document.getElementById('delivery-address')) {
@@ -2018,7 +2043,6 @@ $( document ).ready( function () {
          const $fieldAddress2 = $( '#field-address2' ).closest( '.form-group' );
          const $dniLabel = $('.dniShowClass');
          const $cifLabel = $('.cifShowClass');
-         const originalIsInvoice = $('#is_invoice').val();
          $fieldAlias.css( 'display', 'none' );
          const companyTranslation = $('#company-translation').data('translation');
          $fieldCompany.find('label').html(companyTranslation);
@@ -2033,19 +2057,112 @@ $( document ).ready( function () {
          const addressType = getAddressType();
          var useSameCheck = false;
          const invoiceForm = document.getElementById('useDifferentAddress') ? false : true;
-         if(!invoiceForm) {
-            if (document.getElementById('useDifferentAddress').checked){ //Diferente Dirección
-               useSameCheck = false;
-               $('#is_invoice').val(originalIsInvoice);
-            }else{ //misma dirección
-               useSameCheck = true;
-               $('#is_invoice').val('2');
-            }
+         let isInvoiceParam = getIsInvoiceParam();
+         const originalIsInvoice = isInvoiceParam ? isInvoiceParam : $('#field-is_invoice').val();
+         if ((document.getElementById('newAddress') && document.getElementById('newAddress').dataset.new == '1') && !getNewAddresParam){
+            $('#cancel-address-form').css('display', 'none');
+         }
+         if (isInvoiceParam) {
+            $('#field-is_invoice').val(isInvoiceParam);
          }else{
-            useSameCheck = false;
-            $('#is_invoice').val('1');
+            setIsInvoiceDefault();
+         }
+ 
+         function getIsInvoiceParam() {         
+
+            // Obtener los parámetros de la URL actual
+            let params = new URLSearchParams(window.location.search);
+
+            // Comprobamos si existen los parámetros
+            let isInvoiceParam = params.has("address_toggle");
+
+            if (!isInvoiceParam) {
+               return false;
+            }
+
+            return params.get("address_toggle");
+      
          }
 
+         function setIsInvoiceDefault() {     
+
+            if(!invoiceForm) {
+               if (document.getElementById('useDifferentAddress').checked){ //Diferente Dirección
+                  useSameCheck = false;
+                  $('#field-is_invoice').val(originalIsInvoice);
+               }else{ //misma dirección
+                  useSameCheck = true;
+                  $('#field-is_invoice').val('2');
+               }
+            }else{
+               useSameCheck = false;
+               $('#field-is_invoice').val('1');
+            }
+
+         }
+
+         function setConfirmAndSameInputs() {
+            let hasToggle   = !!document.getElementById('useDifferentAddress'); 
+            let useSameCheck = true;
+            let confirm = true;
+            let useSameInput = true;
+            let firstAddress = false;
+            if ((document.getElementById('newAddress') && document.getElementById('newAddress').dataset.new == '1') && !getisNewAddress()){
+               firstAddress = true;
+            }
+  
+            removeSame();
+            removeConfirm();
+            console.log('removing inputs...');
+
+            if (hasToggle && document.getElementById('useDifferentAddress').checked){ //Diferente Dirección
+               useSameCheck = false;
+            }
+            if($('#field-empresa').is(':checked')) {
+               useSameCheck = false;
+            }
+            
+            //si es nueva o editar desde botón fuera input
+
+            if (firstAddress){
+               confirm = true;
+               if(useSameCheck) {
+                  useSameInput = true;
+               }else{
+                  useSameInput = false;
+               }
+            }
+
+            if (getisNewAddress()) {
+               useSameInput = false;
+               confirm = false;
+               if(useSameCheck && !invoiceForm){
+                     confirm = true;
+                     useSameInput = true;
+               }
+               
+            }
+
+
+            if(getisEditAddress()) {
+               useSameInput = false;
+               confirm = false;
+            }
+        
+            if(useSameInput) {
+               addSameInput();
+               console.log('add usesame input...');
+            }
+
+
+            if (confirm) {
+               addConfirmAddress();
+               console.log('add confirm input...');
+            }
+
+            console.log('setup finalizada...');
+
+         }
 
          function addressFormatOnlyName() {
                   $fieldCompany.css( 'display', 'none' );
@@ -2089,7 +2206,7 @@ $( document ).ready( function () {
          function newAddresCompanysetup() {
              let switchUseSame = $('#switchUseSameFormDiv').closest( '.form-group' );
              switchUseSame.css('display', 'none');
-            if($('#is_invoice').val() != '0'){
+            if($('#field-is_invoice').val() != '0'){
                addressFormatCompanyCif();
             }else{
                addressFormatOnlyName();
@@ -2101,7 +2218,7 @@ $( document ).ready( function () {
          function newAddresParticularsetup(useSameCheck) {
             let switchUseSame = $('#switchUseSameFormDiv').closest( '.form-group' );
             switchUseSame.css('display', 'flex');
-            if (!useSameCheck) { //Diferente Dirección
+            if (!useSameCheck && !invoiceForm) { //Diferente Dirección y no es facturacion
                   addressFormatOnlyName();
             }else{//misma dirección
                if ($('#field-id_country').val() != 6) {
@@ -2114,8 +2231,10 @@ $( document ).ready( function () {
          }
 
          function editAddressParticularDelivery(useSameCheck) {
+            let switchUseSame = $('#switchUseSameFormDiv').closest( '.form-group' );
+            switchUseSame.css('display', 'none');
             
-            if (useSameCheck) {
+            if (!useSameCheck) {
                addressFormatOnlyName(); 
             }else{
                if ($('#field-id_country').val() != 6) {
@@ -2128,21 +2247,28 @@ $( document ).ready( function () {
 
          }
 
-         function editAddressCompanyDelivery(useSameCheck) {
-            if (useSameCheck) {
-               addressFormatOnlyName();
-            }else{
-               addressFormatCompanyCif();
-            }
+         function editAddressCompanyDelivery() {
+            let switchUseSame = $('#switchUseSameFormDiv').closest( '.form-group' );
+            switchUseSame.css('display', 'none');
+            
+            addressFormatOnlyName();
             
          }
 
          function editAddressCompanyInvoice() {
+            let switchUseSame = $('#switchUseSameFormDiv').closest( '.form-group' );
+            switchUseSame.css('display', 'none');
             addressFormatCompanyCif();
          }
 
          function editAddressParticularInvoice() {
-            addressFormatNameDni();
+            let switchUseSame = $('#switchUseSameFormDiv').closest( '.form-group' );
+            switchUseSame.css('display', 'none');
+            if ($('#field-id_country').val() != 6) {
+               addressFormatOnlyName();
+            } else {
+               addressFormatNameDni();
+            }
          }
 
          function applyFormSetup(mode, useSameCheck) {
@@ -2160,7 +2286,7 @@ $( document ).ready( function () {
             } else {
                if (addressType === 'delivery') {
                   if (isCompany) {
-                  editAddressCompanyDelivery(useSameCheck);
+                  editAddressCompanyDelivery();
                   } else {
                   editAddressParticularDelivery(useSameCheck);
                   }
@@ -2174,28 +2300,58 @@ $( document ).ready( function () {
             }
          }
 
+         function showGoToInvoiceButton() {
+            $('#continue-label').css('display', 'none');
+            $('#goto-invoice-label').css('display', 'inherit');
+            document.getElementById("confirmAddressButton").classList.remove("continue");
+            document.getElementById("confirmAddressButton").classList.replace("btn-primary", "btn-secondary");
+            document.getElementById("confirmAddressButton").classList.replace("float-xs-right", "float-xs-left");
+         }
+      
+         function hideGoToInvoiceButton() {
+            $('#goto-invoice-label').css('display', 'none');
+            $('#continue-label').css('display', 'inherit');
+            document.getElementById("confirmAddressButton").classList.add("continue");
+            document.getElementById("confirmAddressButton").classList.replace("btn-secondary", "btn-primary");
+            document.getElementById("confirmAddressButton").classList.replace("float-xs-left", "float-xs-right");
+         }
          /* PRIMERA CARGA */
 
          let initialMode = null;
+  
 
          // 1) Si estamos en formulario de FACTURACIÓN, intentamos usar lo guardado
+         
          if (invoiceForm) {
-            console.log(getAddressType());
-            if(!getAddressType()) {
-               customerTypeBox.css('display', 'none');
-            }
-            
-            const storedMode = localStorage.getItem('customer_type'); // 'COMPANY' o 'PARTICULAR'
 
-            if (storedMode === 'COMPANY' || storedMode === 'PARTICULAR') {
-               initialMode = storedMode;
-
-               // Sincronizamos el radio para que coincida con lo guardado
-               if (storedMode === 'COMPANY') {
-                  $('#field-empresa').prop('checked', true);
-               } else {
-                  $('#field-particular').prop('checked', true);
+            if($('#field-alias').val() == '' || newAddress) {
+               if(!getAddressType()) {
+                  customerTypeBox.css('display', 'none');
                }
+               const storedMode = localStorage.getItem('customer_type'); // 'COMPANY' o 'PARTICULAR'
+
+               if (storedMode === 'COMPANY' || storedMode === 'PARTICULAR') {
+                  initialMode = storedMode;
+
+                  // Sincronizamos el radio para que coincida con lo guardado
+                  if (storedMode === 'COMPANY') {
+                     $('#field-empresa').prop('checked', true);
+                  } else {
+                     $('#field-particular').prop('checked', true);
+                  }
+               }
+
+            }else{
+               //EDITAR FORMULARIO
+                  console.log('alias guardado: '+ $('#field-alias').val());
+                  if($('#field-alias').val() == 'COMPANY'){
+                     initialMode = 'COMPANY';
+                     $('#field-empresa').prop('checked', true);
+                  }
+                  if($('#field-alias').val() == 'PARTICULAR'){
+                     initialMode = 'PARTICULAR';
+                     $('#field-particular').prop('checked', true);
+                  }
             }
          }
 
@@ -2214,15 +2370,18 @@ $( document ).ready( function () {
          }
 
          // 4) Aplicamos la configuración inicial del formulario
+          console.log('type: '+invoiceForm+' | new: '+($('#field-alias').val() == '' || newAddress)+ ' |mode: '+ initialMode +' | useSame: '+useSameCheck);
          applyFormSetup(initialMode, useSameCheck);
 
          $('#field-empresa').on('change', function () {
             let mode = $(this).is(':checked') ? 'COMPANY' : 'PARTICULAR';
             let check = $(this).is(':checked') ? false : true;
-
+   
             if ($(this).is(':checked')) {
-               $('#is_invoice').val(originalIsInvoice);
-               removeSameInputs();
+               if ((document.getElementById('newAddress') && document.getElementById('newAddress').dataset.new == '1') && !getNewAddresParam) {//primera dirección
+                  showGoToInvoiceButton();
+               }     
+               $('#field-is_invoice').val(originalIsInvoice);
                localStorage.setItem('customer_type', mode);
             }
             
@@ -2230,9 +2389,12 @@ $( document ).ready( function () {
 
          });
 
+
+
          $('#field-particular').on('change', function () {
             let useSameCheck = true;
             let mode = $(this).is(':checked') ? 'PARTICULAR' : 'COMPANY';
+            let invoiceParam = getIsInvoiceParam();
 
             if(!invoiceForm) {
                if (document.getElementById('useDifferentAddress').checked){ //Diferente Dirección
@@ -2242,15 +2404,27 @@ $( document ).ready( function () {
             
             if ($(this).is(':checked')) {
                if (!useSameCheck) {
-                  $('#is_invoice').val(originalIsInvoice);
-                  removeSameInputs();
+                  $('#field-is_invoice').val(originalIsInvoice);
                } else {
-                  if(!invoiceForm) {
-                     $('#is_invoice').val('2');
+                  if(!invoiceForm && !invoiceParam) {
+                     $('#field-is_invoice').val('2');
                   }
-                  addSameInputs();
+                  //addSameInputs(newAddress);
+                  if ((document.getElementById('newAddress') && document.getElementById('newAddress').dataset.new == '1') && !getNewAddresParam) {//primera dirección
+                     if(useSameCheck){
+                        hideGoToInvoiceButton();
+                     }else{
+                        showGoToInvoiceButton();
+                     }
+
+                  }     
                }
+
                localStorage.setItem('customer_type', mode);
+            }
+
+            if (invoiceParam && invoiceParam != '2') {
+               useSameCheck = false;
             }
 
             applyFormSetup(mode , useSameCheck);
@@ -2258,20 +2432,33 @@ $( document ).ready( function () {
 
          $('#useDifferentAddress').on('change', function () {
 
-            let mode = 'COMPANY'
+            let mode = 'PARTICULAR'
             let useSameCheck = true;
-            if(!invoiceForm) {
-               if (document.getElementById('useDifferentAddress').checked){ //Diferente Dirección
-                  useSameCheck = false;
-                  $('#is_invoice').val(originalIsInvoice);
-               }else{
-                  $('#is_invoice').val('2');
-               }
-            }
+            let invoiceParam = getIsInvoiceParam();
 
-            if ( $( 'input[name="treatment"]:checked' ).val() === 'particular' ) {
-               mode = 'PARTICULAR';
+            localStorage.setItem('customer_type', mode);
+            
+            if (document.getElementById('useDifferentAddress').checked){ //Diferente Dirección
+               useSameCheck = false;
+               $('#field-is_invoice').val(originalIsInvoice);
+
+               if ((document.getElementById('newAddress') && document.getElementById('newAddress').dataset.new == '1') && !getNewAddresParam) {
+                  showGoToInvoiceButton();
+               }
+
+            }else{
+
+               if ((document.getElementById('newAddress') && document.getElementById('newAddress').dataset.new == '1') && !getNewAddresParam) {
+                  hideGoToInvoiceButton();
+               }
+
+               if (!invoiceParam){
+                  $('#field-is_invoice').val('2');
+               }
+               
             }
+            
+
             console.log('aplicando cambio toggle : '+ mode + '/' +useSameCheck);
             applyFormSetup(mode, useSameCheck);
            
@@ -2373,6 +2560,83 @@ $( document ).ready( function () {
             return prefijosProvincias[provincia] === prefijo;
          }
 
+         function validarDNI() {
+            const dniInput = document.getElementById("field-dni").value.toUpperCase();
+            const dniRegex = /^[0-9]{8}[A-Z]$/;  // DNI: 8 dígitos y 1 letra
+            const nieRegex = /^[XYZ][0-9]{7}[A-Z]$/;  // NIE: X, Y o Z seguido de 7 dígitos y 1 letra
+            const cifRegex = /^[ABCDEFGHJKLMNPQRSVW][0-9]{7}[0-9A-J]$/; // CIF
+
+            if (dniRegex.test(dniInput)) {
+               // Validación del DNI
+               const numero = parseInt(dniInput.slice(0, 8));
+               const letras = "TRWAGMYFPDXBNJZSQVHLCKE";
+               const letraEsperada = letras[numero % 23];
+               return dniInput[8] === letraEsperada;
+            } else if (nieRegex.test(dniInput)) {
+               // Validación del NIE
+               let numero = dniInput.slice(1, 8);
+               switch (dniInput[0]) {
+                     case 'X': numero = '0' + numero; break;
+                     case 'Y': numero = '1' + numero; break;
+                     case 'Z': numero = '2' + numero; break;
+               }
+               const letras = "TRWAGMYFPDXBNJZSQVHLCKE";
+               const letraEsperada = letras[parseInt(numero) % 23];
+               return dniInput[8] === letraEsperada;
+            } else if (cifRegex.test(dniInput)) {
+               // Validación del CIF
+               return isValidCif(dniInput);
+            }
+
+            return false; // Si no coincide con ninguna de las expresiones regulares
+         }
+
+         // Función para validar el CIF
+         function isValidCif(cif) {
+            if (!cif || cif.length !== 9) {
+               return false;
+            }
+
+            var letters = ['J', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
+            var digits = cif.substr(1, cif.length - 2);
+            var letter = cif.substr(0, 1);
+            var control = cif.substr(cif.length - 1);
+            var sum = 0;
+
+            if (!letter.match(/[A-Z]/)) {
+               return false;
+            }
+
+            for (let i = 0; i < digits.length; ++i) {
+               let digit = parseInt(digits[i]);
+
+               if (isNaN(digit)) {
+                     return false;
+               }
+
+               if (i % 2 === 0) {
+                     digit *= 2;
+                     if (digit > 9) {
+                        digit = Math.floor(digit / 10) + (digit % 10);
+                     }
+               }
+
+               sum += digit;
+            }
+
+            sum %= 10;
+            let digitControl = (sum !== 0) ? (10 - sum) : 0;
+
+            if (letter.match(/[ABEH]/)) {
+               return String(digitControl) === control;
+            }
+            if (letter.match(/[NPQRSW]/)) {
+               return letters[digitControl] === control;
+            }
+
+            return String(digitControl) === control || letters[digitControl] === control;
+         }
+
          /* VALIDACIONES */
          function getValidations() {
                let validation = true;
@@ -2384,6 +2648,14 @@ $( document ).ready( function () {
                   }
                }
 
+               let isInvoiceParam = getIsInvoiceParam();
+
+               
+               if (isInvoiceParam) {
+                  useSameCheck = (isInvoiceParam == '2' || isInvoiceParam == '1') ? true : false;
+               }
+
+
                if( $( '#field-particular' ).is(':checked')) { // VALIDAR PARTICULAR
                   if ($('#field-id_country').val() == 6) { //si es español
                      if (useSameCheck){
@@ -2391,6 +2663,12 @@ $( document ).ready( function () {
                            document.getElementById("dni-error").style.display = "block";// error cif/dni vacío
                            validation = false;
                            console.log('Error: validation dni particular español vacio | check off');
+                        }else if (!validarDNI()) {
+                           validation = false;
+                           console.log('ERRORES CON DNI...');
+                           const errorSpan = document.getElementById("dni-error");
+                           errorSpan.style.display = "block";
+                           errorSpan.innerText = "Formato incorrecto. Introduzca un DNI, NIE o CIF válido.";
                         }else{
                            if(document.getElementById("dni-error")) {
                               document.getElementById("dni-error").style.display = "none";// error cif/dni vacío
@@ -2479,93 +2757,49 @@ $( document ).ready( function () {
          /* VALIDAR Y COMPROBAR INTRACOMUNITARIO */
    
          if(document.getElementById("address-form")) {
-     
 
                var loader = document.getElementById("loader-overlay");
                let validations = false;
 
                if (document.getElementById("confirmAddressButton").getAttribute("data-location") == "form") {
-                  var companyVal = ($.trim($('#field-company').val() || ''));
+
                   if($('#field-company').val() != ''){
                      $('#field-empresa').prop('checked', true).trigger('change');
                   }
 
                   document.getElementById("confirmAddressButton").addEventListener("click", function(event) {
+                     // LOGICA NUEVA SIN AJAX
+                     event.preventDefault();
                      validations = getValidations(); 
 
-                     console.log('formulario de direcciones detectado...');
-
-                     if (validations === true) {       
-                        //Extranjero con dni     
-                        if ($('#field-id_country').val() != 6 && $( '#field-dni' ).val() != ''){
-                           loader.style.display = "flex";
-                           document.getElementById("confirmAddressButton").classList.add("disabled");
-                           if(document.getElementById("cancel-address-form")) {
-                              document.getElementById("cancel-address-form").style.display ="none";
-                           }
-                           // Extranjero Empresa con dni
-                           if (!invoiceForm) {
-                              if ($( '#field-empresa' ).is( ':checked' )) {
-                                 event.preventDefault();    
-                                 $.ajax({ // comprueba si el vat es válido
-                                    url: '/ajax/validateVatNumber.php',
-                                    method: 'POST', 
-                                    data: {
-                                       country: $('#field-id_country').val(),
-                                       vat_number: $('#field-dni').val(),
-                                       customer: document.getElementById("confirmAddressButton").getAttribute("data-customer"),
-                                    },
-                                    success: function(response) {                                 
-                                       if (response.result) {
-                                          $fieldVatNumber.find('input').val(response.fullVat); 
-                                       } 
-                                       console.log(response);
-                                       document.getElementById("address-form").submit(); //envía el formulario
-                                    },
-                                    error: function(err) {
-                                       console.error('Error en la solicitud AJAX:', err);
-                                       resetButtonState();
-                                    }
-                                 });
-                              }else{  
-                                 //Extranjero Particular con dni                     
-                                 $('#field-dni').val(''); //no lo pedimos a extranjeros particulares por lo que hay que borrarlo
-                                 $('#field-company').val(''); //si es particular no debe tener nada en campo empresa
-                                 document.getElementById("address-form").submit(); //envía el formulario
-                              }
-                           
-                           }
-
-                        }
-
-                        //Extranjero Particular sin dni
-                        if ($('#field-id_country').val() != 6 && $( '#field-dni' ).val() == ''){
-                           loader.style.display = "flex";
-                           if ($( '#field-particular' ).is( ':checked' ) ) {
-                              event.preventDefault();   
-                              $( '#field-dni' ).val('');
-                              $('#field-company').val('');
-                              document.getElementById("address-form").submit(); //envía el formulario
-                           }
-                        }
-
-                        //Extranjero Particular sin dni
-                        if ($('#field-id_country').val() == 6 && $( '#field-particular' ).is( ':checked' )){
-                           event.preventDefault();   
-                           $('#field-company').val('');
-                           document.getElementById("address-form").submit(); //envía el formulario
-                        }
-
-                        document.getElementById("address-form").submit();
-
-                     } else{
-                        event.preventDefault();
+                     if (validations !== true) {
                         console.log('Fallo validaciones...');
                         resetButtonState();
+                        return;
                      }
+                     
+                     // Extranjero PARTICULAR con DNI: limpiamos DNI y empresa antes de enviar
+                     if ($('#field-id_country').val() != 6 && $('#field-dni').val() != '' && $('#field-particular').is(':checked')) {
+                        $('#field-dni').val('');
+                        $('#field-company').val('');
+                     }
+
+                     // Extranjero PARTICULAR sin DNI: limpiar empresa por si acaso
+                     if ($('#field-id_country').val() != 6 && $('#field-dni').val() == '' && $('#field-particular').is(':checked')) {
+                        $('#field-company').val('');
+                     }
+
+                     // España + PARTICULAR: limpiar empresa
+                     if ($('#field-id_country').val() == 6 && $('#field-particular').is(':checked')) {
+                        $('#field-company').val('');
+                     }
+
+                     setConfirmAndSameInputs();
+                     document.getElementById("address-form").submit();
+
+
                   });
                }
-
 
          
          }

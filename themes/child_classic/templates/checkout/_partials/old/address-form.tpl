@@ -33,6 +33,11 @@
                     </div>
                 </div>
             </div>
+        {elseif $type === "invoice"}
+           
+            <input type="hidden" name="confirm-addresses" value="1">
+            <input type="hidden" name="use_same_address" value="0"> 
+
         {/if}
     {/block}
 

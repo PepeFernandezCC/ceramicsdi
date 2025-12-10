@@ -30,15 +30,24 @@ p {
   color: black;
 }
 
-.btn-primary {
-  background-color: #D5D7D1;
+.btn-primary, .btn-secondary {
+  background-color: #ffffff;
   color: black;
+  border:1px solid black;
+  min-height: 40px;
 }
+
 .btn-primary:hover {
   background-color: #aaaaaa;
   color: black;
 }
 
+.mt-100 {
+  margin-top:100px;
+}
+.mt-65 {
+  margin-top:65px;
+}
 .btn {
   font-size: 0.75rem;
 }
@@ -3037,7 +3046,7 @@ form .form-group select.form-control:not([size]):not([multiple]) {
   height: auto;
 }
 form .form-footer {
-  padding-left: 2.5rem;
+  /*padding-left: 2.5rem;*/
 }
 form .input-group .input-group-btn > .btn[data-action=show-password] {
   padding: 0.3rem;
@@ -5483,6 +5492,9 @@ body#order-confirmation .checkout-grid .cart-grid-tabs #checkout-addresses-step 
 body#order-confirmation .checkout-grid .cart-grid-tabs #checkout-addresses-step #delivery-address .js-address-form .form-fields .form-group:nth-of-type(7) {
   width: 50%;
 }
+/* LAST CHILD FORM CHECKOUT */
+
+/*
 body#checkout .checkout-grid .cart-grid-body #checkout-addresses-step #delivery-address .js-address-form .form-fields .form-group:last-child,
 body#checkout .checkout-grid .cart-grid-tabs #checkout-addresses-step #delivery-address .js-address-form .form-fields .form-group:last-child, body#order-confirmation .checkout-grid .cart-grid-body #checkout-addresses-step #delivery-address .js-address-form .form-fields .form-group:last-child,
 body#order-confirmation .checkout-grid .cart-grid-tabs #checkout-addresses-step #delivery-address .js-address-form .form-fields .form-group:last-child {
@@ -5494,6 +5506,7 @@ body#order-confirmation .checkout-grid .cart-grid-tabs #checkout-addresses-step 
   display: flex;
   align-items: center;
 }
+*/
 body#checkout .checkout-grid .cart-grid-body #checkout-addresses-step #delivery-address .js-address-form .form-fields .form-group:last-child > div label,
 body#checkout .checkout-grid .cart-grid-tabs #checkout-addresses-step #delivery-address .js-address-form .form-fields .form-group:last-child > div label, body#order-confirmation .checkout-grid .cart-grid-body #checkout-addresses-step #delivery-address .js-address-form .form-fields .form-group:last-child > div label,
 body#order-confirmation .checkout-grid .cart-grid-tabs #checkout-addresses-step #delivery-address .js-address-form .form-fields .form-group:last-child > div label {
@@ -6940,4 +6953,139 @@ span.at-contact {
 
 div#deliveryPriceCalculator {
     margin: 22px;
+}
+
+.checkUseSameForm{
+  text-transform: uppercase;
+  font-size: 13px;
+}
+
+/* CHECKOUT ADDRESSES */
+body#checkout section.checkout-step .address-item>header {
+    min-height: 90px;
+}
+body#checkout section.checkout-step .address-item.selected {
+    background: #fff;
+    border: #000000 3px solid;
+}
+.custom-radio input[type="radio"]:checked+span {
+    position: absolute;
+    top: .125rem;
+    left: .125rem;
+    display: block;
+    width: 12px;
+    height: 12px;
+    background-color: #000000;
+    border-radius: 50%;
+}
+.ac-error{
+  padding-top:20px;
+  font-weight: 600;
+  text-align: center;
+  color:red;
+}
+.switchUseSame {
+    display: flex;
+    align-items: center;
+    margin: 25px 0;
+}
+
+/* SWITCH TOGLE MINI */
+
+.toggleMin {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.toggleMin + .switch {
+  position: relative;
+  display: block;
+  background: #ffffff;
+  width: 40px;
+  height: 20px;
+  cursor: pointer;
+  border: 1px solid;
+  border-radius: 30px;
+  transition: 0.2s;
+}
+
+.toggleMin + .switch:before {
+  content: "";
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #000000;
+  border-radius: 50%;
+  margin: 0px 2px;
+  left: 5%;
+  transition: 0.2s;
+}
+.toggleMin:checked + .switch:before {
+  background: #ffffff; /* BOLITA ACTIVADA BLANCA */
+  left: 95%;
+  transform: translate(calc(-100% - 5px), -50%);
+}
+.toggleMin:checked + .switch {
+  background: #eac133;
+}
+
+
+/* FORMULARIO DIRECCIONES CLIENTE */
+.customer-addresses-box {
+  width: 80%;
+  margin: 0 auto;
+}
+.customer-item-addresses {
+  margin-bottom: 50px;
+}
+
+.customer-addresses-warning {
+    background: black;
+    color: white;
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 11px;
+    font-weight: 600;
+    font-size: 16px;
+}
+.customer-addresses-type-title {
+    margin-bottom: 25px;
+}
+
+.customer-address-data {
+  flex: 0 0 calc(33.333% - 10px);  /* 3 por fila, restando el margen horizontal */
+  box-sizing: border-box;
+  padding: 20px;
+  border: 3px solid black;
+  margin: 0 5px 10px;
+}
+
+.customer-address-item {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+@media (max-width:769px) {
+
+  .customer-address-data {
+      width: 100%;
+      margin-bottom: 10px;
+  }
+  .customer-address-item {
+    display: flex;
+    flex-direction: column;
+  }
+
+}
+
+.condition-label a {
+    font-weight: bold;
+    text-decoration: underline;
+}
+.alert {
+    font-size: 15px !important; 
+    font-weight: 600 !important;
 }

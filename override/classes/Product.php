@@ -169,7 +169,7 @@ class Product extends ProductCore {
         return number_format($minimalQuantityPrice, 2, '.', '');
     }
 
-    public static function getMinimalPriceTemplate($productId, $customerId = null) {
+    public static function getMinimalPriceTemplate($productId, $customerId = null, $regular=false) {
 
         $showTax = true;
         
@@ -182,6 +182,9 @@ class Product extends ProductCore {
         $product = new Product($productId);
 
         $discount = self::getProductDiscount($productId);
+        if($regular) {
+            $discount = 0;
+        }
         $price = $product->price * (1-$discount);
 
         if ($showTax) {
@@ -651,6 +654,31 @@ class Product extends ProductCore {
             error_log("Error en checkSampleVinculation: " . $e->getMessage());
             return false;
         }
+    }
+
+    public static function getCartQuantityValue($lang, $productId, $quantity) {
+        $piecesText = [1 => 'Piezas', 2 => "Pièces", 3 => "Pieces", 4 => "Stücks", 5 => "Peças", 6=>"Pieces"];
+        $unitysText = [1 => 'Unidades', 2 => "Unités", 3 => "Units", 4 => "Einheiten", 5 => "Unidades", 6=>"Eenheden"];
+
+        if ($quantity == '1') {
+            $piecesText = [1 => 'Pieza', 2 => "Pièce", 3 => "Piece", 4 => "Stück", 5 => "Peça", 6=>"Piece"];
+            $unitysText = [1 => 'Unidad', 2 => "Unité", 3 => "Unit", 4 => "Einheit", 5 => "Unidade", 6=>"Eenheid"];
+        }
+
+
+        if (self::getIfNormalSell($productId)) {
+            return $quantity . ' ' . $unitysText[$lang];
+        } 
+
+        $pieceTypology = self::getTipology($productId);
+       
+        if ($pieceTypology) {
+            return $quantity . ' ' . $piecesText[$lang];  
+        } 
+
+
+        return self::getM2CajaValue($productId) * $quantity . ' m²';
+
     }
 
 

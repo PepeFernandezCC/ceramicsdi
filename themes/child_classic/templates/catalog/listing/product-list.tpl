@@ -48,7 +48,7 @@
 
 {extends file=$layout}
 
-
+ {assign var="altTextCarrousel" value={l s='Other tile categories' d='Shop.Theme.Catalog'}}
 
 {block name='head_microdata_special'}
 
@@ -174,7 +174,7 @@
                                                             <img 
                                                                 src="{$imageCat}" 
                                                                 loading="lazy" 
-                                                                alt="items material: {$normalized_title}" 
+                                                                alt="{$altTextCarrousel}: {$normalized_title}" 
                                                                 data-show-category-name="{$normalized_title}"
                                                                 onerror="this.onerror=null; this.src='/themes/child_classic/assets/img/web/default.webp';"
                                                             >
@@ -205,6 +205,7 @@
                     <div class="container-fluid text-center px-0 related-category-show-mobile">
 
                         <h2 style="color: black;">{l s='Other tile categories' d='Shop.Theme.Catalog'}</h2>
+                       
 
                         <div id="recipeCarousel" class="row mx-auto my-auto justify-content-center">
 
@@ -226,7 +227,7 @@
                                                     <a href="{$link->getCategoryLink($cat.id_category)|escape:'html':'UTF-8'}">
 
                                                         <div class="material-img">
-                                                            <img src="{$imageCat}" loading="lazy" alt="items material: {$normalized_title}"
+                                                            <img src="{$imageCat}" loading="lazy" alt="{$altTextCarrousel}: {$normalized_title}"
                                                             onerror="this.onerror=null; this.src='/themes/child_classic/assets/img/web/default.webp';"
                                                             data-show-category-name="{$normalized_title}">
                                                         </div>
@@ -282,7 +283,7 @@
                                                     <a href="{$link->getCategoryLink($cat.id_category)|escape:'html':'UTF-8'}">
 
                                                         <div class="material-img">
-                                                            <img src="{$imageCat}" loading="lazy" alt="items material: {$normalized_title}"
+                                                            <img src="{$imageCat}" loading="lazy" alt="{$altTextCarrousel}: {$normalized_title}"
                                                             onerror="this.onerror=null; this.src='/themes/child_classic/assets/img/web/default.webp';"
                                                             data-show-category-name="{$normalized_title}">
                                                         </div>

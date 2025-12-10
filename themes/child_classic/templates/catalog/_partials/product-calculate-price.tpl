@@ -41,8 +41,11 @@
         {/if}
     {/if}
 {/foreach}
+{if !isset($regular_price)}
+    {assign var="regular_price" value=false}
+{/if}
 
-{assign var="customPrice" value=Product::getMinimalPriceTemplate($product.id, $customer.id)}
+{assign var="customPrice" value=Product::getMinimalPriceTemplate($product.id, $customer.id, $regular_price)}
 
 {if $normalSell}
     {$customPrice} €

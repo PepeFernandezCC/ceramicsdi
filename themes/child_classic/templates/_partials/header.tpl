@@ -22,10 +22,10 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
+{*custom banner*}
+{*
 
-{if isset($language) && $language.id == 1
-    && $smarty.now|date_format:"%Y-%m-%d" >= '2025-11-24'
-    && $smarty.now|date_format:"%Y-%m-%d" <= '2025-12-01'}
+{if $smarty.now|date_format:"%Y-%m-%d" >= '2025-11-24' && $smarty.now|date_format:"%Y-%m-%d" <= '2025-12-01'}
     
     <div id="bf-banner" class="bf-banner">
         <span class="bf-banner__text">
@@ -37,6 +37,9 @@
     </div>
 
 {/if}
+
+*}
+
 {block name='header_banner'}
     <div class="header-banner">
         {hook h='displayBanner'}

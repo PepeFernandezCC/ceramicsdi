@@ -41,47 +41,26 @@
         {/if}
     {/if}
 {/foreach}
-
-{capture name='custom_price'}{hook h='displayProductPriceBlock' product=$product type='custom_price' hook_origin='product_sheet'}{/capture}
-{if '' !== $smarty.capture.custom_price}
-    {$smarty.capture.custom_price nofilter}
-{else}
-    {if $normalSell}
-        {if $regular_price|default:false}
-            {$product.regular_price}
-        {else}
-            {$product.price}
-        {/if}
-    {else}
-        {assign var="priceM2" value=0}
-        {if $m2Caja == 0 and $m2Pieza == 0}
-            {assign var="priceM2" value=0}
-        {elseif $m2Pieza == 0}
-            {* Situación de precio por metro cuadrado *}
-            {if $regular_price|default:false}
-                {if is_float($product.regular_price_amount)}
-                    {assign var="priceM2" value="{$product.regular_price_amount / $m2Caja}"}
-                {else}
-                    {$productPriceFloat = $product.regular_price_amount|replace:'€':''|replace:',':'.'|floatval}
-                    {assign var="priceM2" value="{$productPriceFloat / $m2Caja}"}
-                {/if}
-            {else}
-                {if is_float($product.price_amount)}
-                    {assign var="priceM2" value="{$product.price_amount / $m2Caja}"}
-                {else}
-                    {$productPriceFloat = $product.price_amount|replace:'€':''|replace:',':'.'|floatval}
-                    {assign var="priceM2" value="{$productPriceFloat / $m2Caja}"}
-                {/if}
-            {/if}
-        {else}
-            {* Situación de precio por pieza *}
-            {if $regular_price|default:false}
-                {assign var="priceM2" value="{$product.regular_price_amount|floatval}"}
-            {else}
-                {assign var="priceM2" value="{$product.price_amount|floatval}"}
-            {/if}
-        {/if}
-
-        {$priceM2|number_format:2|replace:'.':','}&nbsp;€{$tipologia nofilter}
-    {/if}
+{if !isset($regular_price)}
+    {assign var="regular_price" value=false}
 {/if}
+
+{assign var="customPrice" value=Product::getMinimalPriceTemplate($product.id, $customer.id, $regular_price)}
+
+{if $normalSell}
+    {$customPrice} €
+{else}
+    {assign var="priceM2" value=0}
+    {if $m2Caja == 0 and $m2Pieza == 0}
+        {assign var="priceM2" value=0}
+    {elseif $m2Pieza == 0}
+        {* Situación de precio por metro cuadrado *}
+        {assign var="priceM2" value="{$customPrice / $m2Caja}"}
+    {else}
+        {* Situación de precio por pieza *}
+        {assign var="priceM2" value="{$customPrice|floatval}"}     
+    {/if}
+
+    {$priceM2|number_format:2|replace:'.':','}&nbsp;€{$tipologia nofilter}
+{/if}
+

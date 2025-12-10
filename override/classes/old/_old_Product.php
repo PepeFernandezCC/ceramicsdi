@@ -67,7 +67,9 @@ class Product extends ProductCore {
             'COLECCION_FIJI'
         ];
 
-        if ($description == $reference || in_array($description, $collection_array)) {
+        
+        
+        if ('R-'.$description == $reference || in_array($description, $collection_array)) {
             $mp4Path = '/themes/child_classic/assets/video/product/'.$description.'.mp4';
             $webmPath = '/themes/child_classic/assets/video/product/webm/'.$description.'.webm';
 
@@ -167,14 +169,22 @@ class Product extends ProductCore {
         return number_format($minimalQuantityPrice, 2, '.', '');
     }
 
-    public static function getMinimalPriceTemplate($productId, $customerId) {
+    public static function getMinimalPriceTemplate($productId, $customerId = null, $regular=false) {
 
-        $showTax = Customer::getCustomerShowTax($customerId);
+        $showTax = true;
+        
+        if($customerId != null) {
+            $showTax = Customer::getCustomerShowTax($customerId);
+        }
+
         $idLang = (int) Context::getContext()->language->id;
 
         $product = new Product($productId);
 
         $discount = self::getProductDiscount($productId);
+        if($regular) {
+            $discount = 0;
+        }
         $price = $product->price * (1-$discount);
 
         if ($showTax) {

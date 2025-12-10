@@ -1,6 +1,6 @@
 
 {assign var="colorArray" value=[41, 42, 43, 47, 44, 77, 78, 79, 83, 84, 85, 86]}
-{assign var="lookArray" value=[20, 19, 26, 4, 18, 25, 27, 30, 31, 32, 46, 48, 89]}
+{assign var="lookArray" value=[20, 19, 26, 4, 18, 25, 27, 1740, 30, 31, 32, 46, 48, 89]}
 {assign var="mostWantedArray" value=[103, 105, 40, 39]}
 {assign var="otherMaterialsArray" value=[81, 82, 88]}
 {assign var="installationArray" value=[36, 94]}

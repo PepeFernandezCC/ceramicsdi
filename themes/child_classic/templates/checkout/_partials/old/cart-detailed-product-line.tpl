@@ -149,14 +149,6 @@
 
                     {/foreach}
 
-                    {assign var='terracota' value='88'}
-
-                    {if in_array($terracota, $categoriasProducto)}
-                            
-                        <p style="margin-bottom: 0"><span style="color:red; font-size:11px">Los productos terracotta se trabajan bajo pedido mínimo de 4.</span></p>
-                        
-                    {/if}
-
                     {if is_array($product.customizations) && $product.customizations|count}
 
                         <br>
@@ -333,10 +325,22 @@
 
                 {if !$esMuestra}
 
-                    {assign var="quantityValue" value=Product::getCartQuantityValue($language.id, $product.id, $product.quantity)}
+                    {foreach from=Product::getFrontFeaturesStatic($language.id, $product.id) item='feature'}
 
-                    <div class="label">{$quantityValue}</div>
+                        {if $feature.id_feature === $FEATURE_M2_CAJA_ID}
 
+                            {assign var="m2Caja" value="{$feature.value|replace:',':'.'}"}
+
+                        {/if}
+
+                    {/foreach}
+
+                        {if !$normalSell}
+
+                            <div class="label">{($product.quantity * $m2Caja)|replace:'.':','} m<sup>2</sup></div>
+
+                        {/if}
+                
                 {else}
 
                     <div class="label" style="font-weight:700">{$sampleText}</div>
@@ -354,21 +358,13 @@
                 </div>
 
                 <div class="price">
+
                     <span class="product-price">
 
                         {if $esMuestra}
                             {$product.total}
                         {else}
-                            {assign var="priceData" value=Product::calculateCustomPrice($product.id, true, $language.id)}
-                            {$priceData.price}
-
-                            {if $priceData.tipologia == ''}
-                                 €{l s='/unit' d='Shop.Theme.Catalog'}
-                            {elseif $priceData.tipologia == '/piece'}
-                                 €{l s='/piece' d='Shop.Theme.Catalog'}
-                            {else}
-                                 €{$priceData.tipologia nofilter}
-                            {/if}
+                            {include file='catalog/_partials/product-calculate-price.tpl'} 
                         {/if}
                         
                     </span>
@@ -730,9 +726,21 @@
 
                         {if !$esMuestra}
 
-                            {assign var="quantityValue" value=Product::getCartQuantityValue($language.id, $product.id, $product.quantity)}
+                            {foreach from=Product::getFrontFeaturesStatic($language.id, $product.id) item='feature'}
 
-                            <div class="product-price">{$quantityValue}</div>
+                                {if $feature.id_feature === $FEATURE_M2_CAJA_ID}
+
+                                    {assign var="m2Caja" value="{$feature.value|replace:',':'.'}"}
+
+                                {/if}
+
+                            {/foreach}
+
+                                {if !$normalSell}
+
+                                    <div class="product-price">{($product.quantity * $m2Caja)|replace:'.':','} m<sup>2</sup></div>
+
+                                {/if}
                         
                         {else}
 

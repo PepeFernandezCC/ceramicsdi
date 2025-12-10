@@ -21,18 +21,21 @@
     <div id="loader-overlay" style="display:none;">
         <div class="loader"></div>
     </div>
+
     <form
       id="address-form"
       method="POST"
       action="{url entity='order' params=['id_address' => $id_address]}"
       data-refresh-url="{url entity='order' params=['ajax' => 1, 'action' => 'addressForm']}"
     >
+
       <div id="warning-incomplete-address" style="display:none">
          <p class="alert alert-danger js-address-error" name="alert-delivery">{l s="Your address is incomplete, please update it." d="Shop.Notifications.Error"}</p>
       </div>
 
       <div id="delivery-address-panel" data-same="{$use_same_address}">
         <div class="js-address-form">
+
           {assign var="copy_same_address" value=$use_same_address}
             
           <h2 class="h4">{l s='Shipping Address' d='Shop.Theme.Checkout'}</h2>
@@ -50,8 +53,8 @@
 
           {elseif $customer.addresses|count > 0}
 
-
             <div id="delivery-addresses" class="address-selector js-address-selector">
+
               {include  file        = 'checkout/_partials/address-selector-block.tpl'
                 addresses   = $delivery_addresses
                 name        = "id_address_delivery"
@@ -59,6 +62,7 @@
                 type        = "delivery"
                 interactive = !$show_delivery_address_form and !$show_invoice_address_form
               }
+
             </div>
 
             {if isset($delivery_address_error)}
@@ -68,28 +72,18 @@
             {/if}
 
             <p class="add-address">
-              <a href="{$new_address_delivery_url}"><i class="material-icons">&#xE145;</i>{l s='add new address' d='Shop.Theme.Actions'}</a>
+              <a href="{$new_address_delivery_url}"><i class="material-icons">&#xE145;</i>{l s='New shipping address' d='Shop.Theme.Actions'}</a>
             </p>
 
           {/if}
-            {*
-              <div id="switchUseSameDiv" class="switchUseSame" data-same="{$use_same_address}">
-                <div class="wasteSwitch" style="padding-right: 15px">
-                  <input class="toggleMin" type="checkbox" id="switchUseSame" name="switchUseSame" />
-                  <label class="switch" for="switchUseSame" style="margin-bottom:0"></label>
-                </div>
-                <div class="checkUseSameForm" >
-                  <span>{l s='Billing address differs from shipping address' d='Shop.Theme.Checkout'}</span>
-                </div>
-              </div>
-            *}
 
           {if $customer.addresses|count > 0}
-            <div id="invoice-addresses-panel">
+            <div id="invoice-addresses-panel" class="mt-65">
 
               <h2 class="h4">{l s='Your Invoice Address' d='Shop.Theme.Checkout'}</h2>
 
               {if $show_invoice_address_form}
+
                 <div id="invoice-address">
                   {render file                = 'checkout/_partials/address-form.tpl'
                     ui                        = $address_form
@@ -98,16 +92,18 @@
                     form_has_continue_button  = $form_has_continue_button
                   }
                 </div>
+
               {else}
                 <div id="invoice-addresses" class="address-selector js-address-selector">
+
                   {include  file        = 'checkout/_partials/address-selector-block.tpl'
                     addresses   = $invoice_addresses
                     name        = "id_address_invoice"
                     selected    = $id_address_invoice
                     type        = "invoice"
                     interactive = !$show_delivery_address_form and !$show_invoice_address_form
-                   
                   }
+
                 </div>
 
                 {if isset($invoice_address_error)}
@@ -117,21 +113,36 @@
                 {/if}
 
                 <p class="add-address">
-                  <a href="{$new_address_invoice_url}"><i class="material-icons">&#xE145;</i>{l s='add new address' d='Shop.Theme.Actions'}</a>
+                  <a href="{$new_address_invoice_url}"><i class="material-icons">&#xE145;</i>{l s='New billing address' d='Shop.Theme.Actions'}</a>
                 </p>
               {/if}
 
             </div>
           {/if}
-
-          {if !$form_has_continue_button}
+          {assign var="addressControl" value='1'}
+          {if $delivery_addresses|count < 1 || $invoice_addresses|count < 1}
+            {assign var="addressControl" value='0'}
+          {/if}
+          {* BOTÓN CONTINUAR CUANDO NO HAY FORMULARIOS ABIERTOS *}
+          {if !$show_delivery_address_form && !$show_invoice_address_form}
             <div class="clearfix">
-              <button id="confirmAddressButton" data-customer="{$customer.id}" data-location="directions" type="submit" class="btn btn-primary continue float-xs-right" name="confirm-addresses" value="1">
+            {if $addressControl == '1'}
+              <button id="confirmAddressButton"
+                      data-customer="{$customer.id}"
+                      data-location="directions"
+                      type="submit"
+                      class="btn btn-primary continue float-xs-right"
+                      name="confirm-addresses"
+                      data-control="{$addressControl}"
+                      value="1">
                 {l s='Continue' d='Shop.Theme.Actions'}
               </button>
-              <input type="hidden" id="not-valid-addresses" class="js-not-valid-addresses" value="{$not_valid_addresses}">
+            {else}
+              <div class="ac-error">{l s='Address requirement message' d='Shop.Theme.Actions'}</div>
+            {/if}
             </div>
           {/if}
+
         </div>
       </div>
     </form>

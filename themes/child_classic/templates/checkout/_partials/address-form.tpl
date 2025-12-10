@@ -8,24 +8,21 @@
         {/if}
     {/block}
 
-    {block name="address_form_url"}
-        <form
-                method="POST"
-                id="address-form"
-                action="{url entity='order' params=['id_address' => $id_address]}"
-                data-id-address="{$id_address}"
-                data-refresh-url="{url entity='order' params=['ajax' => 1, 'action' => 'addressForm']}"
-        >
-
-    {/block}
-
     {block name='form_fields'}
         {* 1. hidden para saber qué tipo de dirección es (envío/factura) *}
         <input type="hidden" name="saveAddress" value="{$type}">
-        {if ($type == "delivery")}
-            <input type="hidden" name="is_invoice" value="0" id="is_invoice">
+        
+        {if isset($is_invoice_value) && $is_invoice_value !== null}
+       
+            <input type="hidden" name="is_invoice" value="{$is_invoice_value}" id="field-is_invoice">
         {else}
-            <input type="hidden" name="is_invoice" value="1" id="is_invoice">
+       
+            {if $type == "delivery"}
+                <input type="hidden" name="is_invoice" value="0" id="field-is_invoice">
+            {else}
+                <input type="hidden" name="is_invoice" value="1" id="field-is_invoice">
+            {/if}
+            
         {/if}
 
         {* 2. radios particular / empresa (igual que en la plantilla base) *}
@@ -64,68 +61,70 @@
         {* 3. SOLO PARA NUEVAS DIRECCIONES DE ENVÍO: switch debajo de los radios *}
         {if $type === "delivery"}
             {assign var="newAddress" value="0"}
-            {if !$id_address }
+            {if  !$id_address}
                 {assign var="newAddress" value="1"}
             {/if}
 
             <div id="newAddress" data-new="{$newAddress}" style="display:none"></div>
 
             <div class="form-group row" style="width:100%">
-                <input type="hidden" name="use_same_address" value="1" id="use_same_address">
-                <div id="switchUseSameFormDiv" class="col-md-12 d-flex" data-same="{$use_same_address}">
-                    <div class="wasteSwitch">
-                        <input class="toggleMin" type="checkbox" id="useDifferentAddress" name="useDifferentAddress" {if !$use_same_address} checked {/if}/>
-                        <label class="switch" for="useDifferentAddress"></label>
-                    </div>
-                    <div class="checkUseSameForm" style="padding-left:10px">
-                        <span>{l s='Billing address differs from shipping address' d='Shop.Theme.Checkout'}</span>
-                    </div>
+            {* aquí sí puedes dejar el use_same_address por defecto *}
+            <input type="hidden" name="use_same_address" value="1" id="use_same_address">
+            <div id="switchUseSameFormDiv" class="col-md-12 d-flex" data-same="{$use_same_address}">
+                <div class="wasteSwitch">
+                <input class="toggleMin" type="checkbox" id="useDifferentAddress" name="useDifferentAddress"/>
+                <label class="switch" for="useDifferentAddress"></label>
                 </div>
+                <div class="checkUseSameForm" style="padding-left:10px">
+                <span>{l s='I want a different billing address' d='Shop.Theme.Checkout'}</span>
+                </div>
+            </div>
             </div>
         {/if}
 
-        {* 4. PARA FORMULARIO DE FACTURACIÓN: marcar que no usa misma dirección *}
-        {if $type === "invoice"}
-            <input type="hidden" name="confirm-addresses" value="1">
-            <input type="hidden" name="use_same_address" value="0"> 
-        {/if}
+    {* 4. PARA FORMULARIO DE FACTURACIÓN: marcar que no usa misma dirección *}
+    {if $type === "invoice"}
+        <input type="hidden" name="use_same_address" value="0">
+    {/if}
 
-        {* 6. resto de campos del formulario *}
-        
-        {foreach from=$formFields item="field"}
-                {block name='form_field'}
-                    {form_field field=$field}
-                {/block}
-        {/foreach}
-        
+    {* 6. resto de campos del formulario *}
+    {foreach from=$formFields item="field"}
+        {block name='form_field'}
+        {form_field field=$field}
+        {/block}
+    {/foreach}
     {/block}
 
     {block name='form_buttons'}
-        {if !$id_address}
-            {if !$form_has_continue_button}
-                <button id="confirmAddressButton" data-location="form" data-customer="{$customer.id}" type="submit" class="btn btn-primary float-xs-right">
-                    {l s='Save' d='Shop.Theme.Actions'}
-                </button>
-                <div class="clearfix" data-continuebuttonfalse="{$form_has_continue_button}"></div>
-                <a id="cancel-address-form" class="btn js-cancel-address cancel-address float-xs-right" href="{url entity='order' params=['cancelAddress' => {$type}]}">{l s='Cancel' d='Shop.Theme.Actions'}</a>
-            {else}
-                <form>
-                    <button id="confirmAddressButton" data-location="form" data-customer="{$customer.id}" type="submit" class="continue btn btn-primary float-xs-right" name="confirm-addresses" value="1">
-                        {l s='Continue' d='Shop.Theme.Actions'}
-                    </button>
-                    {if $customer.addresses|count > 0}
-                        <div class="clearfix"data-continuebuttontrue="{$form_has_continue_button}"></div>
-                        <a id="cancel-address-form" class="btn js-cancel-address cancel-address float-xs-right" href="{url entity='order' params=['cancelAddress' => {$type}]}">{l s='Cancel' d='Shop.Theme.Actions'}</a>
-                    {/if}
-                </form>
-            {/if}
+        {if $form_has_continue_button}
+            {* En flujo de checkout: este formulario PUEDE cerrar paso, pero lo decide JS *}
+            <button id="confirmAddressButton"
+                    data-location="form"
+                    data-customer="{$customer.id}"
+                    type="submit"
+                    style="margin-top:10px"
+                    class="continue btn btn-primary float-xs-right">
+            <span id="continue-label">{l s='Continue' d='Shop.Theme.Actions'}</span>
+            <span id="goto-invoice-label" style="display:none">{l s='fill billing data' d='Shop.Theme.Actions'}</span>
+            </button>
         {else}
-            {if $type == "invoice"}
-                <button id="confirmAddressButton" data-location="form" data-customer="{$customer.id}" type="submit" class="continue btn btn-primary float-xs-right" name="confirm-addresses" value="1">
-                    {l s='Continue' d='Shop.Theme.Actions'}
-                </button>
-            {/if}
-            <div class="clearfix" data-continuebuttontrue="{$form_has_continue_button}"></div>
-            <a id="cancel-address-form" class="btn js-cancel-address cancel-address float-xs-right" href="{url entity='order' params=['cancelAddress' => {$type}]}">{l s='Cancel' d='Shop.Theme.Actions'}</a>
+            {* Fuera del checkout (gestión de direcciones): sólo guardar *}
+            <button id="confirmAddressButton"
+                    data-location="form"
+                    data-customer="{$customer.id}"
+                    type="submit"
+                    class="btn btn-primary float-xs-right"
+                    style="margin-top:10px">
+            {l s='Save' d='Shop.Theme.Actions'}
+            </button>
         {/if}
+
+
+        <div class="clearfix"></div>
+
+        <a id="cancel-address-form"
+            class="btn js-cancel-address cancel-address float-xs-right"
+            href="{url entity='order' params=['cancelAddress' => {$type}]}">
+            {l s='Cancel' d='Shop.Theme.Actions'}
+        </a>
     {/block}

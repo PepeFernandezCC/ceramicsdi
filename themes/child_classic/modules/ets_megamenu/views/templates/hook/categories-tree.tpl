@@ -7,18 +7,23 @@
 {if isset($categories) && $categories}
     <ul class="ets_mm_categories">
         {foreach from=$categories item='category'}
+            {assign var="altText" value={l s='items' mod='Shop.Theme.Actions'}}
             {assign var="categoryFilter" value ="ets_category_normal"}
             {if in_array($category.id_category, $colorArray)}
+                {assign var="altText" value={l s='colored items' mod='Shop.Theme.Actions'}}    
                 {assign var="categoryFilter" value ="ets_category_color"}
             {elseif in_array($category.id_category, $lookArray)}
+                {assign var="altText" value={l s='imitation items' mod='Shop.ThemeActions'}}    
                 {assign var="categoryFilter" value ="ets_category_look"}
             {elseif in_array($category.id_category, $otherMaterialsArray)}
+                {assign var="altText" value={l s='material type' mod='Shop.Theme.Actions'}}
                 {assign var="categoryFilter" value ="ets_category_other_material"}
             {elseif in_array($category.id_category, $installationArray)}
                 {assign var="categoryFilter" value ="ets_category_installation"}
             {elseif in_array($category.id_category, $mostWantedArray)}
                 {assign var="categoryFilter" value ="ets_category_most_wanted"}
             {/if}
+
 
             <li class="{$categoryFilter} hover_menu">
                 <a class="ets_mm_url" href="{$link->getCategoryLink($category.id_category|intval)}">    
@@ -28,7 +33,7 @@
                             class="menu-image {if $categoryFilter eq 'ets_category_other_material'}ets_mm_thumbnail_other_materials{elseif $categoryFilter eq 'ets_category_installation'}ets_mm_thumbnail_installation{else}ets_mm_thumbnail_size{/if}"
                             loading="lazy" 
                             fetchpriority="low"
-                            alt = "artículos de color: {$category.name|escape:'html':'UTF-8'}"
+                            alt = "{$altText}: {$category.name|escape:'html':'UTF-8'}"
 			  		        />
 
                         {/if}

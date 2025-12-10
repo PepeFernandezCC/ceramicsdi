@@ -324,6 +324,117 @@ $( document ).ready( function () {
         }
     }
       
+    if (document.getElementById('bf-banner')) {
+        var banner = document.getElementById('bf-banner');
+        if (!banner) return;
+
+        // Si ya se cerró, ocúltalo y no toques nada
+        if (document.cookie.indexOf('bf_banner_closed=1') !== -1) {
+            banner.style.display = 'none';
+            return;
+        }
+
+        var bannerHeight = banner.offsetHeight || 30;
+
+        // ==== HEADER (margen gris) ====
+        var header = document.querySelector('#header, .header-container, header, .page-header, .top-menu');
+        var originalHeaderMarginTop = null;
+        var originalBodyPaddingTop = null;
+
+        if (header) {
+            originalHeaderMarginTop = header.style.marginTop || '';
+            header.style.marginTop = bannerHeight + 'px';
+        } else {
+            originalBodyPaddingTop = document.body.style.paddingTop || '';
+            document.body.style.paddingTop = bannerHeight + 'px';
+        }
+
+        // ==== NAV Y MENU DESKTOP (se aplica en todos los tamaños) ====
+        var menuCeramic = document.getElementById('menu-ceramic');
+        var stickyNav   = document.querySelector('nav.header-nav.header-sticky');
+
+        var originalMenuTop = null;
+        var originalStickyNavTop = null;
+
+        if (menuCeramic) {
+            var csMenu = window.getComputedStyle(menuCeramic);
+            originalMenuTop = csMenu.top; // p.ej. "104px"
+            var currentMenuTop = parseFloat(csMenu.top) || 0;
+            menuCeramic.style.top = (currentMenuTop + bannerHeight) + 'px';
+        }
+
+        if (stickyNav) {
+            var csNav = window.getComputedStyle(stickyNav);
+            originalStickyNavTop = csNav.top; // p.ej. "0px"
+            var currentNavTop = parseFloat(csNav.top) || 0;
+            stickyNav.style.top = (currentNavTop + bannerHeight) + 'px';
+        }
+
+        // ==== MENÚ MÓVIL ====
+        var mobileMenu = document.getElementById('menu-mobile-list');
+        var burgerInnerDiv = document.querySelector('#openMenuButton + div');
+
+        var originalMobileTop = null;
+        var originalBurgerPadding = null;
+
+        if (window.innerWidth < 1224) {
+            // #menu-mobile-list → +32px al top
+            if (mobileMenu) {
+                var csMobile = window.getComputedStyle(mobileMenu);
+                originalMobileTop = csMobile.top; // ej. "0px"
+                var currentMobileTop = parseFloat(csMobile.top) || 0;
+                mobileMenu.style.top = (currentMobileTop + 32) + 'px';
+            }
+
+            // div debajo de #openMenuButton → +30 al padding-top (5 → 35)
+            if (burgerInnerDiv) {
+                var csBurger = window.getComputedStyle(burgerInnerDiv);
+                originalBurgerPadding = csBurger.paddingTop; // ej. "5px"
+                var currentPadding = parseFloat(csBurger.paddingTop) || 5;
+                burgerInnerDiv.style.paddingTop = (currentPadding + 30) + 'px';
+            }
+        }
+
+        // ==== BOTÓN CERRAR ====
+        var closeBtn = banner.querySelector('.bf-banner__close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function () {
+                banner.style.display = 'none';
+
+                // Restaurar header / body
+                if (header && originalHeaderMarginTop !== null) {
+                    header.style.marginTop = originalHeaderMarginTop;
+                }
+                if (!header && originalBodyPaddingTop !== null) {
+                    document.body.style.paddingTop = originalBodyPaddingTop;
+                }
+
+                // Restaurar menuCeramic y stickyNav
+                if (menuCeramic && originalMenuTop !== null) {
+                    menuCeramic.style.top = originalMenuTop;
+                }
+                if (stickyNav && originalStickyNavTop !== null) {
+                    stickyNav.style.top = originalStickyNavTop;
+                }
+
+                // Restaurar menú móvil
+                if (mobileMenu && originalMobileTop !== null) {
+                    mobileMenu.style.top = originalMobileTop;
+                }
+                if (burgerInnerDiv && originalBurgerPadding !== null) {
+                    burgerInnerDiv.style.paddingTop = originalBurgerPadding;
+                }
+
+                // Guardar cookie para no mostrarlo más
+                var d = new Date();
+                d.setDate(d.getDate() + 7);
+                document.cookie = 'bf_banner_closed=1; path=/; expires=' + d.toUTCString();
+            });
+        }
+    }
+
+
+
 });
 
 

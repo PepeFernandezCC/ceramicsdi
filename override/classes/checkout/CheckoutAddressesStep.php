@@ -4,31 +4,40 @@
 
 class CheckoutAddressesStep extends CheckoutAddressesStepCore
 {
-    public function handleRequest(array $requestParams = [])
+       public function handleRequest(array $requestParams = [])
     {
-        // Deja al core procesar primero (selección/edición de direcciones, etc.)
+        // 1) Deja que el core haga TODO su trabajo primero
         parent::handleRequest($requestParams);
 
-        // Solo intervenimos al confirmar direcciones y si no hay errores previos
-        if (!isset($requestParams['confirm-addresses']) || $this->getCheckoutProcess()->hasErrors()) {
+        // --- Detectar si estamos en flujo de edición / creación de dirección ---
+        $editAddress = Tools::getValue('editAddress');
+        $newAddress  = Tools::getValue('newAddress');
+        $isEditOrNew = !empty($editAddress) || !empty($newAddress);
+
+        if ($isEditOrNew) {
+            $this->setCurrent(true);
+            $this->setComplete(false);
+        }
+
+
+        // 2) Solo intervenimos cuando el usuario ha pulsado "Continuar"
+        //    y NO hay errores previos (del core o de otros módulos)
+        if (empty($requestParams['confirm-addresses']) || $this->getCheckoutProcess()->hasErrors()) {
             return $this;
         }
 
-        $session = $this->getCheckoutSession();
-
-        // 1) Normaliza "use_same_address" e invoice si no viene
+        $session   = $this->getCheckoutSession();
         $idDelivery = (int) $session->getIdAddressDelivery();
         $idInvoice  = (int) $session->getIdAddressInvoice();
 
-        $useSame = array_key_exists('use_same_address', $requestParams)
-            ? (bool) $requestParams['use_same_address']
-            : (!isset($requestParams['id_address_invoice']) || !$idInvoice);
-
-        if ($useSame) {
+        // 3) Asegurar que existe dirección de facturación.
+        //    Si el core no ha puesto ninguna, copiamos la de envío.
+        if (!$idInvoice && $idDelivery) {
+            $session->setIdAddressInvoice($idDelivery);
             $idInvoice = $idDelivery;
-            $session->setIdAddressInvoice($idInvoice);
         }
 
+        // 4) Si falta alguna de las dos, bloqueamos y nos quedamos en direcciones
         if (!$idDelivery || !$idInvoice) {
             $this->getCheckoutProcess()->setHasErrors(true);
             $this->context->controller->errors[] = $this->getTranslator()->trans(
@@ -37,168 +46,151 @@ class CheckoutAddressesStep extends CheckoutAddressesStepCore
                 'Shop.Notifications.Error'
             );
             $this->setCurrent(true);
+            $this->setComplete(false);
+
             return $this;
         }
 
-        // 3) Lógica intracomunitaria del AJAX (en servidor)
-        //    address::getVatApiData($address) debe existir como en tu AJAX
-        $data = Address::getVatApiData($idInvoice);
+        // 5) Lógica intracomunitaria
+        //    getVatApiData($idDelivery, $idInvoice) -> ya tienes esa función
+        $data = Address::getVatApiData($idDelivery, $idInvoice);
 
-        $validate     = isset($data['validate']) ? (bool)$data['validate'] : false;
-        $vat_input    = isset($data['vat_number']) ? (string)$data['vat_number'] : '';
-        $customer_id  = isset($data['customer']) ? (int)$data['customer'] : (int)$this->context->customer->id;
-        $idCountry    = isset($data['country']) ? (int)$data['country'] : 0;
-
-        $FRANCE_ID = 8;
-
-        $country = new Country($idCountry);
+        $validate    = !empty($data['validate']);
+        $vat_input   = isset($data['vat_number']) ? (string)$data['vat_number'] : '';
+        $customer_id = isset($data['customer']) ? (int)$data['customer'] : (int)$this->context->customer->id;
+        $idCountry   = isset($data['country']) ? (int)$data['country'] : 0;
 
         $vat_input = preg_replace('/[^A-Za-z0-9]/', '', strtoupper($vat_input));
 
+        // Si no hay VAT, no hacemos nada y dejamos que el core avance normal
+        if ($vat_input === '') {
+            return $this;
+        }
 
-        // Si quieres forzar VIES siempre que haya VAT, dejamos la validación como abajo.
+        $country   = new Country($idCountry);
+        $FRANCE_ID = 8;
 
-        if ($vat_input !== '') {
+        // Si ya desde Address::getVatApiData nos dicen que NO es apto, lo tratamos
+        // como "no intracomunitario" pero NO bloqueamos el checkout
 
-            if (!$validate) {
-                // Tu AJAX: "Cliente no apto para intracomunitario"
-                Customer::insertIntracomunitaryLog(false, 'DIRECCIONES: Cliente no apto', $vat_input, $customer_id, $idCountry);
-                $errors_msg = 'Cliente no apto para intracomunitario';
-                        // Si hemos llegado aquí, no hay errores: asegúrate de avanzar a envío
-                if (!$this->getCheckoutProcess()->hasErrors()) {
+        if (!$validate || strlen($vat_input) < 3) {
+            Customer::insertIntracomunitaryLog(false, 'DIRECCIONES: Cliente no apto o VAT inválido', $vat_input, $customer_id, $idCountry);
+
+            // SOLO avanzamos a envío si NO estamos en edit/new
+            if (!$this->getCheckoutProcess()->hasErrors() && !$isEditOrNew) {
                     $session = $this->getCheckoutSession();
 
-                    // por si acaso, garantiza invoice cuando use_same o no vino
-                    if (!(int)$session->getIdAddressInvoice()) {
-                        $session->setIdAddressInvoice((int)$session->getIdAddressDelivery());
-                    }
-
-                    // Marca siguiente paso y completa este
-                    $this->setNextStepAsCurrent();
-
+                if (!(int)$session->getIdAddressInvoice()) {
+                    $session->setIdAddressInvoice((int)$session->getIdAddressDelivery());
                 }
 
-                // Nada de recalcular totales/aquí.
-                return $this;
+                $this->setNextStepAsCurrent();
+                $this->setComplete(
+                    (bool)$session->getIdAddressInvoice() &&
+                    (bool)$session->getIdAddressDelivery()
+                );
             }
 
-            if (strlen($vat_input) < 3) {
-                Customer::insertIntracomunitaryLog(false, 'DIRECCIONES: VAT CON FORMATO INCORRECTO', $vat_input, $customer_id, $idCountry);
-                $error_msg = 'Invalid VAT input';
+            return $this;
+        }
 
-                if (!$this->getCheckoutProcess()->hasErrors()) {
-                    $session = $this->getCheckoutSession();
+        // 6) Normalizar VAT (caso especial Francia incluido)
+        $prefix = substr($vat_input, 0, 2);
 
-                    // por si acaso, garantiza invoice cuando use_same o no vino
-                    if (!(int)$session->getIdAddressInvoice()) {
-                        $session->setIdAddressInvoice((int)$session->getIdAddressDelivery());
-                    }
-
-                    // Marca siguiente paso y completa este
-                    $this->setNextStepAsCurrent();
-
-                }
-
-                // Nada de recalcular totales/aquí.
-                return $this;
+        if ($prefix === $country->iso_code) {
+            $vatNumber = $vat_input;
+        } else {
+            if ($idCountry === $FRANCE_ID && strlen($vat_input) == 9) {
+                $siren = (int) $vat_input;
+                $clave = (12 + 3 * ($siren % 97)) % 97;
+                $vat_input = str_pad((string)$clave, 2, '0', STR_PAD_LEFT) . $vat_input;
             }
 
-            // Prefijo y número
-            $prefix = substr($vat_input, 0, 2);
+            $vatNumber = $country->iso_code . $vat_input;
+        }
 
-            if ($prefix === $country->iso_code) {
-                $vatNumber = $vat_input;
-            } else {
-                // Caso FR: si mandan SIREN de 9 dígitos, calcula clave
-                if ($idCountry === $FRANCE_ID) {
-                    if (strlen($vat_input) != 9 && strlen($vat_input) != 11) {
-                        Customer::insertIntracomunitaryLog(false, 'DIRECCIONES: VAT NO VALIDO', $vat_input, $customer_id, $idCountry);
-                        $error_msg = 'Numero Vat no válido';
+        // 7) Llamada a VIES (via viesapi.eu)
+        $apiUrl   = 'https://viesapi.eu/api/get/vies/euvat/' . urlencode($vatNumber);
+        $apiKeyId = 'qhzV8CuqUKqa';
+        $apiKey   = 'NCUE2Ghk0GaI';
+        $auth     = base64_encode($apiKeyId . ':' . $apiKey);
+
+        $ch = curl_init($apiUrl);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Authorization: Basic ' . $auth,
+            'Accept: text/xml',
+            'User-Agent: VIESAPIClient/1.0 PHP/8.1',
+        ]);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+
+        $response = curl_exec($ch);
+        $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        $ok  = false;
+        $msg = '';
+
+        if ($httpCode === 200) {
+            $xml = @simplexml_load_string($response);
+            if ($xml) {
+                if (isset($xml->error)) {
+                    $code = (string) $xml->error->code;
+                    $desc = (string) $xml->error->description;
+                    $ok   = false;
+                    $msg  = "Error en VIES (código $code): $desc";
+
+                    // Caso especial: MS_MAX_CONCURRENT_REQ (código 58)
+                    if ($code === '58') {
+                        $this->getCheckoutProcess()->setHasErrors(true);
+                        $this->context->controller->errors[] = $this->getTranslator()->trans(
+                            'We could not validate your VAT number due to a temporary issue with the VIES service. Please try again later.',
+                            [],
+                            'Shop.Notifications.Error'
+                        );
+                        $this->setCurrent(true);
+                        $this->setComplete(false);
+
+                        Customer::insertIntracomunitaryLog(false, 'DIRECCIONES: ' . $msg, $vatNumber, $customer_id, $idCountry);
+                        return $this;
                     }
-                    if (strlen($vat_input) == 9) {
-                        $siren = (int) $vat_input;
-                        $clave = (12 + 3 * ($siren % 97)) % 97;
-                        $vat_input = str_pad((string)$clave, 2, '0', STR_PAD_LEFT) . $vat_input;
-                    }
-                }
-                $vatNumber = $country->iso_code . $vat_input;
-            }
 
-            // Llamada a VIES (igual que tu AJAX)
-            $apiUrl   = 'https://viesapi.eu/api/get/vies/euvat/' . urlencode($vatNumber);
-            $apiKeyId = 'qhzV8CuqUKqa';
-            $apiKey   = 'NCUE2Ghk0GaI';
-            $auth     = base64_encode($apiKeyId . ':' . $apiKey);
-
-            $ch = curl_init($apiUrl);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                'Authorization: Basic ' . $auth,
-                'Accept: text/xml',
-                'User-Agent: VIESAPIClient/1.0 PHP/8.1',
-            ]);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-
-            $response = curl_exec($ch);
-            $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            curl_close($ch);
-
-            $ok  = false;
-            $msg = '';
-
-            if ($httpCode === 200) {
-                $xml = @simplexml_load_string($response);
-                if ($xml) {
-                    if (isset($xml->error)) {
-                        $code = (string)$xml->error->code;
-                        $desc = (string)$xml->error->description;
-                        $ok   = false;
-                        $msg  = "Error en VIES (código $code): $desc";
-                    } elseif (isset($xml->vies->valid)) {
-                        $ok  = ((string)$xml->vies->valid === 'true');
-                        $msg = $ok ? 'VAT válido' : 'VAT NO válido';
-                    } else {
-                        $ok  = false;
-                        $msg = 'Error en la API desconocido.';
-                    }
+                    // Otros errores de VIES → solo log, NO bloqueamos
+                    Customer::insertIntracomunitaryLog(false, 'DIRECCIONES: ' . $msg, $vatNumber, $customer_id, $idCountry);
+                    return $this;
+                } elseif (isset($xml->vies->valid)) {
+                    $ok  = ((string) $xml->vies->valid === 'true');
+                    $msg = $ok ? 'VAT válido' : 'VAT NO válido';
                 } else {
                     $ok  = false;
-                    $msg = 'Respuesta XML mal formada.';
+                    $msg = 'Error en la API desconocido.';
                 }
             } else {
                 $ok  = false;
-                $msg = "Error en petición HTTP ($httpCode)";
+                $msg = 'Respuesta XML mal formada.';
             }
-
-            if ($ok) {
-                Address::updateIntracomunitaryAddress($idInvoice, $vatNumber);
-                Customer::updateCustomerSiret($customer_id, $vatNumber);
-                Customer::assignIntracomunitaryGroup($customer_id);
-            }
-
-            Customer::insertIntracomunitaryLog($ok, 'DIRECCIONES: ' . $msg, $vatNumber, $customer_id, $idCountry);
+        } else {
+            $ok  = false;
+            $msg = "Error en petición HTTP ($httpCode)";
         }
 
-        // Si hemos llegado aquí, no hay errores: asegúrate de avanzar a envío
-        if (!$this->getCheckoutProcess()->hasErrors()) {
-            $session = $this->getCheckoutSession();
-
-            // por si acaso, garantiza invoice cuando use_same o no vino
-            if (!(int)$session->getIdAddressInvoice()) {
-                $session->setIdAddressInvoice((int)$session->getIdAddressDelivery());
-            }
-
-            // Marca siguiente paso y completa este
-            $this->setNextStepAsCurrent();
-            $this->setComplete(
-                (bool)$session->getIdAddressInvoice() &&
-                (bool)$session->getIdAddressDelivery()
+        // 8) Aplicamos cambios solo si VIES confirma OK
+        if ($ok) {
+            Address::updateIntracomunitaryAddress($idInvoice, $vatNumber);
+            Customer::updateCustomerSiret($customer_id, $vatNumber);
+            Customer::assignIntracomunitaryGroup($customer_id);
+            $this->context->controller->success[] = $this->getTranslator()->trans(
+                'Your VAT number has been validated. Prices have been updated for intra-community supply. You can continue.',
+                [],
+                'Shop.Notifications.Success'
             );
         }
 
-        // Nada de recalcular totales/aquí.
+        Customer::insertIntracomunitaryLog($ok, 'DIRECCIONES: ' . $msg, $vatNumber, $customer_id, $idCountry);
+
         return $this;
     }
+
 }
 
 

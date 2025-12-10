@@ -1,12 +1,12 @@
 <?php
 
 class Customer extends CustomerCore {
-
+    
     public static function assignIntracomunitaryGroup($idCustomer)
     {
 
         $customerGroups = customer::checkCustomerGroup($idCustomer);
-
+        
         if($customerGroups['default_group'] != '6') {
 
             Db::getInstance()->update('customer', [
@@ -14,7 +14,8 @@ class Customer extends CustomerCore {
             ], 'id_customer = ' . $idCustomer);
 
         }
-
+        
+        
         if (!in_array('6', $customerGroups['customer_groups'])) {
             Db::getInstance()->insert('customer_group', [
                 'id_customer' => (int)$idCustomer,
@@ -145,6 +146,7 @@ class Customer extends CustomerCore {
         if (null === $idLang) {
             $idLang = Context::getContext()->language->id;
         }
+        
         $shareOrder = (bool) Context::getContext()->shop->getGroup()->share_order;
 
         $sql = 'SELECT DISTINCT

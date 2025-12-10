@@ -21,6 +21,7 @@ class Address extends AddressCore
     {
         // Forzar que el objeto coja lo que viene del formulario
         $postIsInvoice = \Tools::getValue('is_invoice');
+        
         if ($postIsInvoice !== null) {
             $this->is_invoice = (int) $postIsInvoice;
         }
@@ -40,15 +41,18 @@ class Address extends AddressCore
 
 
 
-    public static function getVatApiData($id_address) {
-        $address = new address($id_address);
+    public static function getVatApiData($id_delivery, $id_invoice) {
+        $delivery_address = new address($id_delivery);
+        $delivery_country = $delivery_address->id_country;
+
+        $address = new address($id_invoice);
         $cif = $address->dni;
         $vat = $address->vat_number;
         $country = $address->id_country;
         $customer = $address->id_customer;
         $validate = true;
 
-        if ($country == 6) {
+        if ($country == 6 || $delivery_country == 6) {
             customer::removeIntracomunitaryGroup($customer);
             $validate = false;
         }
