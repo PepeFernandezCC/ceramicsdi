@@ -189,6 +189,11 @@
             cbq('setHost', 'https://conversionsapimeta.ceramicconnection.es/');
             cbq('init', '1995950068885803330');
             cbq('track', 'PageView');
+            cbq('track', 'AddPaymentInfo');
+            cbq('track', 'AddToCart');
+            cbq('track', 'FindLocation');
+            cbq('track', 'InitiateCheckout');
+            cbq('track', 'Purchase', {value: '0.00',currency: 'EUR'});
 
         </script>
     {/literal}

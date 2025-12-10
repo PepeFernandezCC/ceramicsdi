@@ -112,6 +112,94 @@ class Link extends LinkCore
 		}
 		return $id_feature_Value_array;
 	}
+
+	public function getGroupedUseFeatures(array $features,array $useArray) {
+        $grouped = [];
+		$validFeatureIdArray = [56, 448, 7578, 112067, 112063, 112066, 112061, 112068, 112062, 112060, 112064,
+        						14, 19, 145, 1843, 7340, 7341, 7342, 7343, 7344, 7346, 7347,
+        						111962,111963,111964,111965,111966,111967,111968,111969,111970,111971,111972,111973
+								];
+		$linkFeatureIds = [3, 7, 26, 46, 52];
+        foreach ($features as $row) {
+            $idFeature       = (int) $row['id_feature'];
+            $idFeatureValue  = (int) $row['id_feature_value'];
+            $name            = $row['name'];
+            $value           = $row['value'];
+
+            // Solo las que están en $USE_ARRAY
+            if (!in_array($idFeature, $useArray)) {
+                continue;
+            }
+
+            if (!isset($grouped[$idFeature])) {
+                $grouped[$idFeature] = [
+                    'id_feature' => $idFeature,
+                    'name'       => $name,
+                    'values'     => [],
+                ];
+            }
+
+            $isLinkFeature = in_array($idFeature, $linkFeatureIds);
+            $isValidId     = in_array($idFeatureValue, $validFeatureIdArray);
+
+            $entry = [
+                'id_feature_value' => $idFeatureValue,
+                'value'            => $value,
+                'is_link'          => $isLinkFeature && $isValidId,
+                'url'              => null,
+            ];
+
+            if ($entry['is_link']) {
+                $entry['url'] = $this->getCategoryLinkByIdFeatureValue($idFeatureValue);
+            }
+
+            $grouped[$idFeature]['values'][] = $entry;
+        }
+
+        // Devolvemos un array reindexado
+        return array_values($grouped);
+    }
+	 public function getGroupedFeaturesForDetails(
+        array $features,
+        array $linkFeatureIds,
+        array $validFeatureIdArray
+    ) {
+        $grouped = [];
+
+        foreach ($features as $row) {
+            $idFeature      = (int) $row['id_feature'];
+            $idFeatureValue = (int) $row['id_feature_value'];
+            $name           = $row['name'];
+            $value          = $row['value'];
+
+            if (!isset($grouped[$idFeature])) {
+                $grouped[$idFeature] = [
+                    'id_feature' => $idFeature,
+                    'name'       => $name,
+                    'values'     => [],
+                ];
+            }
+
+            $isLinkFeature = in_array($idFeature, $linkFeatureIds);
+            $isValidId     = in_array($idFeatureValue, $validFeatureIdArray);
+
+            $item = [
+                'id_feature_value' => $idFeatureValue,
+                'value'            => $value,
+                'is_link'          => $isLinkFeature && $isValidId,
+                'url'              => null,
+            ];
+
+            if ($item['is_link']) {
+                $item['url'] = $this->getCategoryLinkByIdFeatureValue($idFeatureValue);
+            }
+
+            $grouped[$idFeature]['values'][] = $item;
+        }
+
+        return array_values($grouped);
+    }
+
 	public function getCategoryLinkByIdFeatureValue($id_feature_value){
 		$categoryFeatureArray = [
 			56 => 40, //mate

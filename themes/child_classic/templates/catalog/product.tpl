@@ -284,29 +284,6 @@
                                             </div>
                                         
                                         </div>
-                                        {*
-                                        <div class="row" style="padding-top: 5px">
-
-                                            <div class="col-xs-12 alignText">
-
-                                                <span class="tax-message">
-
-                                                    {if $customerShowTax}
-
-                                                        ({l s='Tax included' d='Admin.Global'})
-
-                                                    {else}
-
-                                                        ({l s='Tax excluded' d='Admin.Global'})
-
-                                                    {/if}
-
-                                                </span>
-
-                                            </div>
-
-                                        </div>
-                                        *}
 
                                     </div>
 
@@ -485,7 +462,6 @@
 
                                         {$product.description nofilter}
 
-
                                         <p class="product-feature-espesor font-weight-bold"></p>
 
                                     {/block}
@@ -551,11 +527,6 @@
                 <div class="newCalculatorBox">
 
                     {if !($CATEGORY_INSTALACION_ID|in_array:$categoriasProducto) && !($CATEGORY_MANTENIMIENTO_ID|in_array:$categoriasProducto)}
-                       {*
-                        {block name='product_discounts'}
-                            {include file='catalog/_partials/product-discounts.tpl'}
-                        {/block}
-                        *}
 
                         <div class="rowTitleCalculator">
                             <div class="calculator-title">

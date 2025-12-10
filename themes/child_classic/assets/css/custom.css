@@ -4787,6 +4787,9 @@ label[for=field-vat_number] {
 }
 
 /*Pagina producto*/
+.accordion-li {
+  margin-bottom:10px;
+}
 .capacity-format {
   width: 100%;
   display: flex;
