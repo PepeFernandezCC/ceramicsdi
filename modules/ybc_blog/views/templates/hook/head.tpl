@@ -26,9 +26,7 @@ var baseAdminDir ='{$baseAdminDir|escape:'html':'UTF-8'}';
 var ybc_blog_product_category ='{$ybc_blog_product_category|intval}';
 var ybc_blog_polls_g_recaptcha = false;
 </script>
-{if $link_current}
-    <link href="{$link_current|escape:'html':'UTF-8'}" rel="canonical" />
-{/if}
+
 {if isset($css) && $css}
     <style>{$css nofilter}</style>
 {/if}
