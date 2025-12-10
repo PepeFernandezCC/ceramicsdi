@@ -3,7 +3,40 @@ $( document ).ready( function () {
    let myGlobal = [];
    
    let initializeCustom = function () {
+      /* ocultar images large */
+      $(function () {
+         var $productModal = $('#product-modal');
 
+         // Si no existe el modal, no hacemos nada
+         if (!$productModal.length) {
+            return;
+         }
+
+         // Cuando el modal se ha mostrado
+         $productModal.on('shown.bs.modal', function () {
+            var $cover = $(this).find('.js-modal-product-cover');
+
+            if (!$cover.length) {
+               return;
+            }
+
+            var largeSrc = $cover.data('large-src');
+
+            // Si no hay large o ya se ha cargado antes, salimos
+            if (!largeSrc || $cover.data('large-loaded')) {
+               return;
+            }
+
+            // Cambiamos el src a la versión grande
+            $cover.attr('src', largeSrc);
+
+            // Marcamos que ya la hemos cargado para no repetir
+            $cover.data('large-loaded', true);
+         });
+      });
+
+
+      /* QUITAR ENLACES MENU */
       document
          .querySelectorAll('#menu-desktop-list a[href="#"]')
          .forEach(a => a.removeAttribute('href'));
