@@ -54,7 +54,7 @@
                     {else}
                         alt="{$product.name}"
                     {/if}
-                    loading="lazy"
+                     {if $smarty.foreach.productImages.iteration != 1}loading="lazy"{/if}
                     width="{$image.bySize.medium_default.width}"
                     height="{$image.bySize.medium_default.height}"
                     data-lightbox="{$image.bySize.medium_default.url}"

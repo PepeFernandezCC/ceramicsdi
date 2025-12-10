@@ -52,7 +52,7 @@
     {assign var="clean_url" value=$clean_url|regex_replace:"/\/[0-9]+/" : ""}  {* Eliminación de números al final *}
 {/if}
 
-{*<link rel="canonical" href="{$urls.current_url}">*}
+
 <link rel="canonical" href="{$clean_url}">
 
     {block name='head_hreflang'}
@@ -173,3 +173,23 @@
         </script>
     {/literal}
 <!-- TikTok Pixel Code End -->
+
+<!-- Signals Gateway Pixel Code -->
+    {literal}
+        <script>
+            !function(a,h,e,v,n,t,s)
+                {if(a.cbq)return;n=a.cbq=function(){n.callMethod?
+                n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+                if(!a._cbq)a._cbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+                n.queue=[];t=h.createElement(e);t.async=!0;
+                t.src=v;s=h.getElementsByTagName(e)[0];
+                s.parentNode.insertBefore(t,s)}(window, document,'script',
+                'https://conversionsapimeta.ceramicconnection.es/sdk/1995950068885803330/events.js');
+                
+            cbq('setHost', 'https://conversionsapimeta.ceramicconnection.es/');
+            cbq('init', '1995950068885803330');
+            cbq('track', 'PageView');
+
+        </script>
+    {/literal}
+<!-- End Signals Gateway Pixel Code -->

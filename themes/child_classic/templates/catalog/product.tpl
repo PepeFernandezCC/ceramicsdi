@@ -328,7 +328,6 @@
                                 {if $product.show_availability && $product.availability_message}
                                     {if $product.availability == 'available' and $product.quantity > 0}
                                         <i class="material-icons rtl-no-flip product-available">&#xE5CA;</i> 
-                                        {* <img class="stock-icon" src="/themes/child_classic/assets/img/web/icons/stock-ico.png" alt="icon stock"/> *}
                                     {elseif $product.availability == 'last_remaining_items'}
                                         <i class="material-icons product-last-items">&#xE002;</i>
                                     {else}
@@ -681,7 +680,7 @@
                                                 <div class="modalBanner" style="font-weight:bold; padding-top:10px; padding-bottom:10px">
                                                     <div style="width: 50px;"> 
                                                         <span>
-                                                            <img class="baner-icon" src="/themes/child_classic/assets/img/web/icons/sample-ico.png" alt="icon sample"/>
+                                                            <img class="baner-icon" loading="lazy" src="/themes/child_classic/assets/img/web/icons/sample-ico.png" alt="icon sample"/>
                                                         </span> 
                                                     </div>
                                                     <div class="whyordersampletext">
@@ -764,7 +763,6 @@
                                                 <div class="modalBanner" style="padding: 15px">
                                                     <div style="width: 50px;"> 
                                                         <span style="font-size:30px">
-                                                            {*<img class="baner-icon" src="/themes/child_classic/assets/img/web/icons/truck-ico.png" alt="icon truck"/>*}
                                                             <i class="fa-regular fa-file-lines"></i>
                                                         </span> 
                                                     </div>
@@ -776,7 +774,7 @@
                                                 <div class="modalBanner">
                                                     <div style="width: 50px;"> 
                                                         <span>
-                                                            <img class="baner-icon" src="/themes/child_classic/assets/img/web/icons/refund-ico.png" alt="icon refund"/>
+                                                            <img loading="lazy" class="baner-icon" src="/themes/child_classic/assets/img/web/icons/refund-ico.png" alt="icon refund"/>
                                                         </span>
                                                     </div>
                                                     <div style="font-weight:500">{l s='Returns / issues' d='Shop.Theme.Catalog'} </div>                                              
