@@ -278,6 +278,59 @@ $( document ).ready( function () {
         // Insertar las migas de pan en el div 
     
         document.getElementById('bread-crumps-container').innerHTML = breadCrumpsHtml;
+
+        /* AÑADIR BREADCRUMPS AL JSON */
+
+        try {
+            const crumbsContainer = document.getElementById('bread-crumps-container');
+            const links = crumbsContainer.querySelectorAll('a');
+
+            const itemListElement = [];
+            
+            // 1) Añadimos todas las migas que son enlace
+            links.forEach((a, index) => {
+                itemListElement.push({
+                    "@type": "ListItem",
+                    "position": index + 1,
+                    "item": {
+                        "name": a.textContent.trim(),
+                        "@id": a.href
+                    }
+                });
+            });
+
+            // 2) Añadimos la última miga (la página actual) si no es enlace
+            const fullText = crumbsContainer.textContent.split('>').map(t => t.trim()).filter(Boolean);
+            const lastText = fullText[fullText.length - 1] || '';
+            const lastLinkText = links.length ? links[links.length - 1].textContent.trim() : '';
+
+            if (lastText && lastText !== lastLinkText) {
+                itemListElement.push({
+                    "@type": "ListItem",
+                    "position": itemListElement.length + 1,
+                    "item": {
+                        "name": lastText,
+                        "@id": currentUrl // la URL actual como destino de la última miga
+                    }
+                });
+            }
+
+            // 3) Construimos el JSON-LD con el formato que te pide el equipo de SEO
+            const breadcrumbLd = {
+                "@context": "http://schema.org",
+                "@type": "BreadcrumbList",
+                "itemListElement": itemListElement
+            };
+
+            const script = document.createElement('script');
+            script.type = 'application/ld+json';
+            script.text = JSON.stringify(breadcrumbLd, null, 2);
+            document.head.appendChild(script);
+        } catch (e) {
+            console.error('Error generando JSON-LD de breadcrumbs', e);
+        }
+
+
     }
 
     if(document.getElementById('openModal')) {
