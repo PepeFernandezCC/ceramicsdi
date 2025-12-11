@@ -775,6 +775,24 @@ class Link extends LinkCore
 			$context = Context::getContext();
 		}
 		$params = $_GET;
+		        // Eliminar parámetros de tracking que rompen las URLs al cambiar de idioma
+        $trackingParams = [
+            'srsltid',
+            'gclid',
+            'fbclid',
+            'msclkid',
+            'utm_source',
+            'utm_medium',
+            'utm_campaign',
+            'utm_term',
+            'utm_content',
+        ];
+
+        foreach ($trackingParams as $trk) {
+            if (isset($params[$trk])) {
+                unset($params[$trk]);
+            }
+        }
 
 		unset($params['isolang'], $params['controller']);
 		if (!$this->allow) {
@@ -783,16 +801,79 @@ class Link extends LinkCore
 			unset($params['id_lang']);
 		}
 		$controller = Dispatcher::getInstance()->getController();
-/*
-		if (isset($params['fc']) && $params['fc'] == 'module' && isset($params['module']) && $params['module']=='ybc_blog') {
-            
-            $ybc_blog = Module::getInstanceByName('ybc_blog');
-            return $ybc_blog->getLink($controller, $params, $id_lang);
+
+        if ($controller == 'module-planatec_recomendaciones-display') {
+            // Ignoramos todos los parámetros actuales (category_rewrite, etc.)
+            return $this->getModuleLink(
+                'planatec_recomendaciones',
+                'display',
+                [],       // sin parámetros extra
+                null,     // SSL auto
+                (int)$id_lang
+            );
         }
-*/
+
 		if (!empty(Context::getContext()->controller->php_self)) {
 			$controller = Context::getContext()->controller->php_self;
 		}
+
+		if ($controller == 'product') {
+
+            // 1) Intentar conseguir id_product si ya viene en params
+            $idProduct = 0;
+            if (isset($params['id_product'])) {
+                $idProduct = (int) $params['id_product'];
+            }
+
+            // 2) Si no lo tenemos, lo sacamos del slug de la URL actual
+            if ($idProduct <= 0 && isset($_SERVER['REQUEST_URI'])) {
+                // Limpiamos la query string: ?srsltid=..., ?utm_..., etc.
+                $cleanUri = strtok($_SERVER['REQUEST_URI'], '?');
+
+                // Nos quedamos con la última parte del path: pure-blanco-brillo-20x20.html
+                $slug = basename(trim($cleanUri, '/'));
+
+                // Quitamos .html si existe
+                $slug = preg_replace('/\.html$/', '', $slug);
+
+                // Usamos tu propia función auxiliar para buscar el producto por link_rewrite
+                $idProduct = (int) $this->getProductExistance($slug);
+            }
+
+            // 3) Si hemos encontrado producto, devolvemos directamente su enlace en el idioma de destino
+            if ($idProduct > 0) {
+                return $this->getProductLink(
+                    $idProduct,
+                    null,   // rewrite, que lo calcule solo según idioma
+                    null,   // categoría
+                    null,   // ean, etc.
+                    (int) $id_lang
+                );
+            }
+
+            // Si no encontró nada, dejamos que siga la lógica normal (caerá en getPageLink('product'))
+        }
+
+		// 🔹 CASO ESPECIAL: página de recomendaciones del módulo planatec_recomendaciones
+		$requestUri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
+
+		// Si la URL contiene "/recomendaciones" y no estamos tratando una categoría/producto/cms concreto,
+		// asumimos que es la ruta del módulo y devolvemos el enlace limpio al cambiar de idioma
+		if (strpos($requestUri, '/recomendaciones') !== false
+			&& !isset($params['id_category'])
+			&& !isset($params['id_product'])
+			&& !isset($params['id_cms'])
+		) {
+			// Muy importante: NO pasar category_rewrite ni nada raro
+			return $this->getModuleLink(
+				'planatec_recomendaciones',
+				'display',
+				[],       // sin parámetros extra
+				null,     // SSL auto
+				(int)$id_lang
+			);
+		}
+
 
 		$def_page = (int)$this->checkKeyExistance($controller);
 		
@@ -934,7 +1015,6 @@ class Link extends LinkCore
 			unset($params['category_rewrite']);
 			unset($params['product_rewrite']);
 		}
-
 		if ($controller == 'product' && isset($params['id_product'])) {
 			return $this->getProductLink((int)$params['id_product'], null, null, null, (int)$id_lang);
 		}

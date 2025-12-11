@@ -266,23 +266,7 @@ class Planatec_recomendaciones extends Module implements WidgetInterface {
 			]
 		];
 	}*/
-	public function hookModuleRoutes($params)
-	{
-		return [
-			'module-planatec_recomendaciones-display' => [
-				'controller' => 'display',
-				'rule'       => 'recomendaciones',
-				'keywords'   => [],
-				'params'     => [
-					'fc'         => 'module',
-					'module'     => $this->name,
-					'controller' => 'display',
-					// ya no pasamos "recomendacion" aquí
-				]
-			]
-		];
-	}
-
+	
 	public function getContent() {
 		//$this->_html .= $this->headerHTML();
 		

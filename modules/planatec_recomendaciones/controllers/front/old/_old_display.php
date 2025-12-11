@@ -18,57 +18,43 @@ class planatec_recomendacionesDisplayModuleFrontController extends ModuleFrontCo
 	
 	public function initContent() {
 		parent::initContent();
-
-		// Siempre intentamos coger "recomendacion", pero si no existe, usamos 1
-		$idPage = (int) Tools::getValue('recomendacion', 1);
-
-		$recomendacionPagina = $this->getRecomendacionPaginaById($idPage);
-
+		
+		$idPage = (int) Tools::getValue( 'recomendacion' );
+		
+		$recomendacionPagina = $this->getRecomendacionPaginaById( $idPage );
+		
 		$this->context->smarty->assign(
 			[
 				'image_baseurl'       => $this->module->getPathUri() . 'images/',
 				'recomendacionPagina' => $recomendacionPagina
 			]
 		);
-
-		$this->setTemplate($this->template);
+		
+		$this->setTemplate( $this->template );
 	}
-
-
 	
-	private function getRecomendacionPaginaById($id)
-	{
+	private function getRecomendacionPaginaById( $id ) {
 		$this->context = Context::getContext();
 		$id_lang       = $this->context->language->id;
-
-		$recomendacionPagina = Db::getInstance((bool) _PS_USE_SQL_SLAVE_)->executeS(
+		
+		$recomendacionPagina = Db::getInstance( (bool) _PS_USE_SQL_SLAVE_ )->executeS(
 			'SELECT rp.`id_planatec_recomendaciones_paginas` as id_recomendacion_pagina,
-				rp.`posicion`, rp.`activo`, rpl.`titulo`
+			rp.`posicion`, rp.`activo`, rpl.`titulo`
 			FROM ' . _DB_PREFIX_ . 'planatec_recomendaciones_paginas rp
-			LEFT JOIN ' . _DB_PREFIX_ . 'planatec_recomendaciones_paginas_lang rpl
-				ON (rp.id_planatec_recomendaciones_paginas = rpl.id_planatec_recomendaciones_paginas)
+			LEFT JOIN ' . _DB_PREFIX_ . 'planatec_recomendaciones_paginas_lang rpl ON (rp.id_planatec_recomendaciones_paginas = rpl.id_planatec_recomendaciones_paginas)
 			WHERE rpl.id_lang = ' . (int) $id_lang . '
 			AND rp.`id_planatec_recomendaciones_paginas` = ' . (int) $id . '
-			ORDER BY rp.posicion'
+         ORDER BY rp.posicion'
 		);
-
-		if (empty($recomendacionPagina)) {
-			// si no existe, puedes:
-			// - devolver null
-			// - redirigir a 404
-			// - forzar id 1, por ejemplo:
-			return $this->getRecomendacionPaginaById(1);
-		}
-
-		$recomendacionPagina = $recomendacionPagina[0];
-
-		$recomendacionPagina['secciones'] = $this->getRecomendacionesSeccionesByPagina(
-			$recomendacionPagina['id_recomendacion_pagina']
+		
+		$recomendacionPagina = $recomendacionPagina[ 0 ];
+		
+		$recomendacionPagina[ 'secciones' ] = $this->getRecomendacionesSeccionesByPagina(
+			$recomendacionPagina[ 'id_recomendacion_pagina' ]
 		);
-
+		
 		return $recomendacionPagina;
 	}
-
 	
 	private function getRecomendacionesSeccionesByPagina( $idRecomendacionPagina, $active = null ) {
 		$this->context = Context::getContext();
