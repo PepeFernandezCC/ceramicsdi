@@ -271,7 +271,7 @@ class CustomRelatedProducts extends Module
 
         Tools::redirectAdmin(AdminController::$currentIndex . '&configure=' . $this->name . '&token=' . Tools::getAdminTokenLite('AdminModules'));
     }
-
+/*
     public function findRelatedProducts($idProduct, $allProductIds) 
     {
 
@@ -325,6 +325,133 @@ class CustomRelatedProducts extends Module
                 if ($randomId != $idProduct && !in_array($randomId, $relatedIds)) {
                     $relatedIds[] = $randomId;
                     if (count($relatedIds) >= $limit) break;
+                }
+            }
+        }
+
+        return $relatedIds;
+    }
+*/
+
+    public function findRelatedProducts($idProduct, $allProductIds)
+    {
+        $idProduct = (int) $idProduct;
+        $limit = (int) Configuration::get('PS_QUANTITY_RELATED_PRODUCTS');
+
+        if ($limit <= 0) {
+            return [];
+        }
+
+        $relatedIds = [];
+
+        /*
+        * 1. Productos relacionados por colección (feature = 57)
+        *    Solo productos activos (p.active = 1)
+        */
+        $sqlCollection = '
+            SELECT fp2.id_product 
+            FROM ' . _DB_PREFIX_ . 'feature_product fp1
+            INNER JOIN ' . _DB_PREFIX_ . 'feature_product fp2 
+                ON fp1.id_feature_value = fp2.id_feature_value
+            INNER JOIN ' . _DB_PREFIX_ . 'product p
+                ON p.id_product = fp2.id_product
+            WHERE fp1.id_feature = 57
+                AND fp1.id_product = ' . $idProduct . '
+                AND fp2.id_product != ' . $idProduct . '
+                AND p.active = 1
+            GROUP BY fp2.id_product
+            LIMIT ' . $limit;
+
+        $collectionProducts = Db::getInstance()->executeS($sqlCollection);
+
+        foreach ($collectionProducts as $p) {
+            if (count($relatedIds) >= $limit) {
+                break;
+            }
+
+            $relatedId = (int) $p['id_product'];
+
+            if (!in_array($relatedId, $relatedIds)) {
+                $relatedIds[] = $relatedId;
+            }
+        }
+
+        /*
+        * 2. Productos TOP (feature = 69, value = 146347)
+        *    Solo productos activos (p.active = 1)
+        */
+        if (count($relatedIds) < $limit) {
+            $remaining = $limit - count($relatedIds);
+
+            $sqlTop = '
+                SELECT DISTINCT fp.id_product 
+                FROM ' . _DB_PREFIX_ . 'feature_product fp
+                INNER JOIN ' . _DB_PREFIX_ . 'product p
+                    ON p.id_product = fp.id_product
+                WHERE fp.id_feature = 69
+                    AND fp.id_feature_value = 146347
+                    AND fp.id_product != ' . $idProduct . '
+                    AND p.active = 1
+                LIMIT ' . (int) $remaining;
+
+            $topProducts = Db::getInstance()->executeS($sqlTop);
+
+            foreach ($topProducts as $p) {
+                if (count($relatedIds) >= $limit) {
+                    break;
+                }
+
+                $relatedId = (int) $p['id_product'];
+
+                if (!in_array($relatedId, $relatedIds)) {
+                    $relatedIds[] = $relatedId;
+                }
+            }
+        }
+
+        /*
+        * 3. Productos aleatorios a partir de $allProductIds
+        *    Filtrados por active = 1 y excluyendo ya seleccionados
+        */
+        if (count($relatedIds) < $limit && !empty($allProductIds)) {
+            $remaining = $limit - count($relatedIds);
+
+            // Normalizamos y limpiamos IDs
+            $candidateIds = array_map('intval', (array) $allProductIds);
+
+            // Quitamos el propio producto
+            $candidateIds = array_diff($candidateIds, [$idProduct]);
+
+            if (!empty($candidateIds)) {
+                $inIds = implode(',', $candidateIds);
+
+                $sqlRandom = '
+                    SELECT p.id_product
+                    FROM ' . _DB_PREFIX_ . 'product p
+                    WHERE p.active = 1
+                        AND p.id_product IN (' . $inIds . ')';
+
+                // Evitamos repetir los que ya están en $relatedIds
+                if (!empty($relatedIds)) {
+                    $sqlRandom .= ' AND p.id_product NOT IN (' . implode(',', array_map('intval', $relatedIds)) . ')';
+                }
+
+                $sqlRandom .= '
+                    ORDER BY RAND()
+                    LIMIT ' . (int) $remaining;
+
+                $randomProducts = Db::getInstance()->executeS($sqlRandom);
+
+                foreach ($randomProducts as $p) {
+                    if (count($relatedIds) >= $limit) {
+                        break;
+                    }
+
+                    $relatedId = (int) $p['id_product'];
+
+                    if (!in_array($relatedId, $relatedIds)) {
+                        $relatedIds[] = $relatedId;
+                    }
                 }
             }
         }
