@@ -13,7 +13,7 @@
              data-full="{$productItem.urlImageFull|escape:'html':'UTF-8'}"
              aria-label="open image">
             <img src="{$productItem.urlImageThumb|escape:'html':'UTF-8'}"
-                 loading="lazy" alt="{$altPreText}: {$altText}" />
+                 loading="lazy" alt="{$productItem.imageLegend|escape:'html':'UTF-8'}" />
           </a>
         {/foreach}
       </div>

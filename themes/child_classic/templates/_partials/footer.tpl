@@ -64,7 +64,7 @@
 
                 <div>{$cmsFooterColumn1 nofilter}</div>
                 <div><img src="/themes/child_classic/assets/img/web/Ecommerce-Awards-Espana-Logo.webp" class="logo-adwards" alt="banner ecommerce awards"/></div>
-
+                        
             </div>
 
 
@@ -127,6 +127,21 @@
                 {hook h='displayFooterAfter'}
 
             {/block}
+
+        </div>
+
+        <div class="row">
+
+            <div id="generalitat-ayudas">
+                <div class="generalitat-help-description">
+                    <div>{l s='collab' d='Shop.Theme.Global'}:</div>
+                    <div>{l s='cv help text' d='Shop.Theme.Global'}</div>
+                    <div>{l s='amount received' d='Shop.Theme.Global'}: 20.596,97 €</div>
+                </div>
+                <div class="generalitat-banner-box">
+                    <img src="/themes/child_classic/assets/img/web/gva-banner-color-logo-cut.png" class="gva-banner-img" alt="banner gva"/>
+                </div>
+            </div>
 
         </div>
 

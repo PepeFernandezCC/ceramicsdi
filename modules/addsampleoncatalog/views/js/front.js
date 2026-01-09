@@ -377,116 +377,315 @@ $( document ).ready( function () {
         }
     }
       
-    if (document.getElementById('bf-banner')) {
+    /*
+
+    (function () {
+  var banner = document.getElementById('bf-banner');
+  if (!banner) return;
+
+  // Si ya se cerró, ocúltalo y no toques nada
+  if (document.cookie.indexOf('bf_banner_closed=1') !== -1) {
+    banner.style.display = 'none';
+    return;
+  }
+
+  var header      = document.querySelector('#header, .header-container, header, .page-header, .top-menu');
+  var menuCeramic = document.getElementById('menu-ceramic');
+  var stickyNav   = document.querySelector('nav.header-nav.header-sticky');
+
+  var mobileMenu     = document.getElementById('menu-mobile-list');
+  var burgerInnerDiv = document.querySelector('#openMenuButton + div');
+
+  // Guardar originales (1 vez) para evitar acumulación
+  var orig = {
+    headerMarginStyle: header ? (header.style.marginTop || '') : null,
+    headerMarginNum: header ? (parseFloat(window.getComputedStyle(header).marginTop) || 0) : 0,
+
+    menuTopStyle: menuCeramic ? (menuCeramic.style.top || '') : null,
+    menuTopNum: menuCeramic ? (parseFloat(window.getComputedStyle(menuCeramic).top) || 0) : 0,
+
+    stickyTopStyle: stickyNav ? (stickyNav.style.top || '') : null,
+    stickyTopNum: stickyNav ? (parseFloat(window.getComputedStyle(stickyNav).top) || 0) : 0,
+
+    mobileTopStyle: mobileMenu ? (mobileMenu.style.top || '') : null,
+    mobileTopNum: mobileMenu ? (parseFloat(window.getComputedStyle(mobileMenu).top) || 0) : 0,
+
+    burgerPadStyle: burgerInnerDiv ? (burgerInnerDiv.style.paddingTop || '') : null,
+    burgerPadNum: burgerInnerDiv ? (parseFloat(window.getComputedStyle(burgerInnerDiv).paddingTop) || 0) : 0,
+  };
+
+  function getBannerHeight() {
+    // altura real renderizada (mejor en iPhone que offsetHeight)
+    return Math.ceil(banner.getBoundingClientRect().height || 0);
+  }
+
+  function resetToOriginal() {
+    if (header && orig.headerMarginStyle !== null) header.style.marginTop = orig.headerMarginStyle;
+
+    if (menuCeramic && orig.menuTopStyle !== null) menuCeramic.style.top = orig.menuTopStyle;
+    if (stickyNav && orig.stickyTopStyle !== null) stickyNav.style.top = orig.stickyTopStyle;
+
+    if (mobileMenu && orig.mobileTopStyle !== null) mobileMenu.style.top = orig.mobileTopStyle;
+    if (burgerInnerDiv && orig.burgerPadStyle !== null) burgerInnerDiv.style.paddingTop = orig.burgerPadStyle;
+  }
+
+  function applyDesktop(h) {
+    // === lo que a ti ya te funcionaba en escritorio ===
+    if (header) {
+      header.style.marginTop = (orig.headerMarginNum + h) + 'px';
+    }
+
+    if (menuCeramic) {
+      menuCeramic.style.top = (orig.menuTopNum + h) + 'px';
+    }
+
+    if (stickyNav) {
+      stickyNav.style.top = (orig.stickyTopNum + h) + 'px';
+    }
+  }
+
+  function applyMobile(h) {
+    // === móvil “iPhone-safe”: empujar solo lo fijo/sticky con TOP ===
+    // (si alguno no es fixed/sticky, no lo tocamos para evitar barra gris)
+    if (stickyNav) {
+      var posNav = window.getComputedStyle(stickyNav).position;
+      if (posNav === 'fixed' || posNav === 'sticky') {
+        stickyNav.style.top = (orig.stickyTopNum + h) + 'px';
+      }
+    }
+
+    if (menuCeramic) {
+      var posMenu = window.getComputedStyle(menuCeramic).position;
+      if (posMenu === 'fixed' || posMenu === 'sticky') {
+        menuCeramic.style.top = (orig.menuTopNum + h) + 'px';
+      }
+    }
+
+    if (header) {
+      var posHeader = window.getComputedStyle(header).position;
+      // Si tu header móvil realmente es fijo/sticky, empújalo también:
+      if (posHeader === 'fixed' || posHeader === 'sticky') {
+        // Muchísimos temas usan top:0 aquí; lo empujamos sin acumular
+        header.style.marginTop = orig.headerMarginStyle; // por si acaso
+        header.style.top = (h) + 'px';
+      } else {
+        // Si NO es fijo, margin-top funciona bien
+        header.style.marginTop = (orig.headerMarginNum + h) + 'px';
+      }
+    }
+
+    // Menú móvil desplegable: si se te tapa al abrir, aquí sí conviene sumar h
+    if (mobileMenu) {
+      mobileMenu.style.top = (orig.mobileTopNum + h) + 'px';
+    }
+    if (burgerInnerDiv) {
+      burgerInnerDiv.style.paddingTop = (orig.burgerPadNum + h) + 'px';
+    }
+  }
+
+  function update() {
+    if (banner.style.display === 'none') return;
+
+    var h = getBannerHeight();
+    if (!h) return;
+
+    // Reset antes de aplicar para que jamás se acumule
+    resetToOriginal();
+
+    if (window.innerWidth >= 1224) {
+      applyDesktop(h);
+    } else {
+      applyMobile(h);
+    }
+  }
+
+  function scheduleUpdate() {
+    requestAnimationFrame(function () {
+      update();
+      // segundo pase por iOS (fuentes / reflow)
+      requestAnimationFrame(update);
+    });
+  }
+
+  window.addEventListener('load', scheduleUpdate);
+  window.addEventListener('resize', scheduleUpdate);
+  scheduleUpdate();
+
+  // Botón cerrar
+  var closeBtn = banner.querySelector('.bf-banner__close');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', function () {
+      banner.style.display = 'none';
+      resetToOriginal();
+
+      var d = new Date();
+      d.setDate(d.getDate() + 7);
+      document.cookie = 'bf_banner_closed=1; path=/; expires=' + d.toUTCString();
+    });
+  }
+    })();
+    */
+    
+    (function () {
         var banner = document.getElementById('bf-banner');
         if (!banner) return;
 
-        // Si ya se cerró, ocúltalo y no toques nada
         if (document.cookie.indexOf('bf_banner_closed=1') !== -1) {
             banner.style.display = 'none';
             return;
         }
 
-        var bannerHeight = banner.offsetHeight || 30;
+        // Candidatos típicos de header/nav en temas Prestashop
+        var selectors = [
+            '#header',
+            '.header-container',
+            'header',
+            '.page-header',
+            '.top-menu',
+            '.header-top',
+            '.header-middle',
+            '.header-bottom',
+            '.header-wrapper',
+            '.header-nav',
+            'nav.header-nav',
+            'nav.header-nav.header-sticky',
+            '.header-sticky',
+            '.sticky-header',
+            '#menu-ceramic'
+        ];
 
-        // ==== HEADER (margen gris) ====
-        var header = document.querySelector('#header, .header-container, header, .page-header, .top-menu');
-        var originalHeaderMarginTop = null;
-        var originalBodyPaddingTop = null;
+        // Recolecta nodos únicos
+        var nodes = [];
+        selectors.forEach(function (sel) {
+            document.querySelectorAll(sel).forEach(function (el) {
+            if (nodes.indexOf(el) === -1) nodes.push(el);
+            });
+        });
 
-        if (header) {
-            originalHeaderMarginTop = header.style.marginTop || '';
-            header.style.marginTop = bannerHeight + 'px';
-        } else {
-            originalBodyPaddingTop = document.body.style.paddingTop || '';
-            document.body.style.paddingTop = bannerHeight + 'px';
+        // Guardar originales una sola vez (idempotente)
+        function remember(el) {
+            if (el.dataset.bfSaved === '1') return;
+            var cs = window.getComputedStyle(el);
+            el.dataset.bfSaved = '1';
+            el.dataset.bfOrigTopNum = String(parseFloat(cs.top) || 0);
+            el.dataset.bfOrigTopStyle = el.style.top || '';
+            el.dataset.bfOrigPos = cs.position || '';
         }
 
-        // ==== NAV Y MENU DESKTOP (se aplica en todos los tamaños) ====
-        var menuCeramic = document.getElementById('menu-ceramic');
-        var stickyNav   = document.querySelector('nav.header-nav.header-sticky');
-
-        var originalMenuTop = null;
-        var originalStickyNavTop = null;
-
-        if (menuCeramic) {
-            var csMenu = window.getComputedStyle(menuCeramic);
-            originalMenuTop = csMenu.top; // p.ej. "104px"
-            var currentMenuTop = parseFloat(csMenu.top) || 0;
-            menuCeramic.style.top = (currentMenuTop + bannerHeight) + 'px';
+        function bannerHeight() {
+            return Math.ceil(banner.getBoundingClientRect().height || 0);
         }
 
-        if (stickyNav) {
-            var csNav = window.getComputedStyle(stickyNav);
-            originalStickyNavTop = csNav.top; // p.ej. "0px"
-            var currentNavTop = parseFloat(csNav.top) || 0;
-            stickyNav.style.top = (currentNavTop + bannerHeight) + 'px';
+        function reset() {
+            nodes.forEach(function (el) {
+            if (el.dataset.bfSaved === '1') {
+                el.style.top = el.dataset.bfOrigTopStyle;
+            }
+            });
         }
 
-        // ==== MENÚ MÓVIL ====
-        var mobileMenu = document.getElementById('menu-mobile-list');
-        var burgerInnerDiv = document.querySelector('#openMenuButton + div');
+        function apply() {
+            // Detectar iOS (iPhone/iPad/iPod) + iPadOS (MacIntel con touch)
+            var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+            let extraHeigt = 0;
+            let closeIconPadding = 58;
+            if (banner.style.display === 'none') return;
 
-        var originalMobileTop = null;
-        var originalBurgerPadding = null;
+            // ==== MENÚ MÓVIL ==== 
+            var burgerInnerDiv = document.querySelector('#openMenuButton + div'); 
+            var originalBurgerPadding = null; 
+            console.log('buscando resolución...');
+            if (window.innerWidth < 1224) { 
 
-        if (window.innerWidth < 1224) {
-            // #menu-mobile-list → +32px al top
-            if (mobileMenu) {
-                var csMobile = window.getComputedStyle(mobileMenu);
-                originalMobileTop = csMobile.top; // ej. "0px"
-                var currentMobileTop = parseFloat(csMobile.top) || 0;
-                mobileMenu.style.top = (currentMobileTop + 32) + 'px';
+                var bodyId = document.body.id;
+
+                if (bodyId === 'category') {
+                    var leftColumn = document.getElementById('left-column');
+                    if (leftColumn) {
+                        leftColumn.style.marginTop = '55px';
+                    }
+                }
+
+                if (bodyId === 'product' || bodyId === 'contact') {
+                    var contentWrapper = document.getElementById('content-wrapper');
+                    if (contentWrapper) {
+                        contentWrapper.style.marginTop = '55px';
+                    }
+                }
+
+                if (!isIOS) {
+                    //extraHeigt = 25;
+                    //closeIconPadding = 58;
+                }
+                // div debajo de #openMenuButton → +30 al padding-top (5 → 35) 
+                if (burgerInnerDiv) { 
+                    var csBurger = window.getComputedStyle(burgerInnerDiv); 
+                    originalBurgerPadding = csBurger.paddingTop; // ej. "5px" 
+                    burgerInnerDiv.style.paddingTop = closeIconPadding + 'px'; 
+                } 
+            }else{
+                var bodyId = document.body.id;
+                
+                if (bodyId === 'category') {
+                    var section = document.getElementById('wrapper');
+                    if (section) {
+                        section.style.paddingTop = '78px';
+                    }
+                }
+
+                if (bodyId === 'product' || bodyId === 'contact') {
+                    var section = document.getElementById('main');
+                    if (section) {
+                        section.style.paddingTop = '30px';
+                    }
+                }
             }
 
-            // div debajo de #openMenuButton → +30 al padding-top (5 → 35)
-            if (burgerInnerDiv) {
-                var csBurger = window.getComputedStyle(burgerInnerDiv);
-                originalBurgerPadding = csBurger.paddingTop; // ej. "5px"
-                var currentPadding = parseFloat(csBurger.paddingTop) || 5;
-                burgerInnerDiv.style.paddingTop = (currentPadding + 30) + 'px';
+            var h = bannerHeight() + extraHeigt;
+            if (!h) return;
+
+            // Reset antes de aplicar para no acumular
+            reset();
+
+            // Empuja TODOS los fixed/sticky (iPhone + Android)
+            nodes.forEach(function (el) {
+            remember(el);
+
+            var cs = window.getComputedStyle(el);
+            var pos = cs.position;
+
+            if (pos === 'fixed' || pos === 'sticky') {
+                var baseTop = parseFloat(el.dataset.bfOrigTopNum) || 0;
+                el.style.top = (baseTop + h) + 'px';
             }
+            });
         }
 
-        // ==== BOTÓN CERRAR ====
+        function scheduleApply() {
+            requestAnimationFrame(function () {
+            apply();
+            requestAnimationFrame(apply);
+            });
+        }
+
+        window.addEventListener('load', scheduleApply);
+        window.addEventListener('resize', scheduleApply);
+        scheduleApply();
+
+        // Cerrar banner
         var closeBtn = banner.querySelector('.bf-banner__close');
         if (closeBtn) {
             closeBtn.addEventListener('click', function () {
-                banner.style.display = 'none';
+            banner.style.display = 'none';
+            reset();
 
-                // Restaurar header / body
-                if (header && originalHeaderMarginTop !== null) {
-                    header.style.marginTop = originalHeaderMarginTop;
-                }
-                if (!header && originalBodyPaddingTop !== null) {
-                    document.body.style.paddingTop = originalBodyPaddingTop;
-                }
-
-                // Restaurar menuCeramic y stickyNav
-                if (menuCeramic && originalMenuTop !== null) {
-                    menuCeramic.style.top = originalMenuTop;
-                }
-                if (stickyNav && originalStickyNavTop !== null) {
-                    stickyNav.style.top = originalStickyNavTop;
-                }
-
-                // Restaurar menú móvil
-                if (mobileMenu && originalMobileTop !== null) {
-                    mobileMenu.style.top = originalMobileTop;
-                }
-                if (burgerInnerDiv && originalBurgerPadding !== null) {
-                    burgerInnerDiv.style.paddingTop = originalBurgerPadding;
-                }
-
-                // Guardar cookie para no mostrarlo más
-                var d = new Date();
-                d.setDate(d.getDate() + 7);
-                document.cookie = 'bf_banner_closed=1; path=/; expires=' + d.toUTCString();
+            var d = new Date();
+            d.setDate(d.getDate() + 7);
+            document.cookie = 'bf_banner_closed=1; path=/; expires=' + d.toUTCString();
             });
         }
-    }
-
-
+    })();
+            
 
 });
 

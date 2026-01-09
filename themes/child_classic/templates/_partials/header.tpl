@@ -22,15 +22,16 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
-{*custom banner*}
-{*
 
-{if $smarty.now|date_format:"%Y-%m-%d" >= '2025-11-24' && $smarty.now|date_format:"%Y-%m-%d" <= '2025-12-01'}
+{*custom banner*}
+{if $smarty.now|date_format:"%Y-%m-%d" >= '2025-12-10' && $smarty.now|date_format:"%Y-%m-%d" <= '2026-01-05'}
     
     <div id="bf-banner" class="bf-banner">
-        <span class="bf-banner__text">
-            <span style="font-weight:800">BLACK FRIDAY</span> <span class="bf-separation">Envíos de muestras al <span style="font-weight:600">50%</span></span>
-        </span>
+        <div class="bf-banner__text">
+            <div><i class="fa-regular fa-snowflake"></i></div>
+            <div style="padding: 0 10px">{l s='Desde el 22 de diciembre hasta el 5 de enero, los plazos de entrega se verán ampliados, disculpen las molestias.' d='Shop.Theme.Catalog'}</div>
+            <div><i class="fa-regular fa-snowflake"></i></div>
+        </div>
         <button class="bf-banner__close" type="button" aria-label="Cerrar aviso">
             &times;
         </button>
@@ -38,7 +39,7 @@
 
 {/if}
 
-*}
+
 
 {block name='header_banner'}
     <div class="header-banner">

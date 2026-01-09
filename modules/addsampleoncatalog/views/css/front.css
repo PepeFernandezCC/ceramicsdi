@@ -869,8 +869,8 @@ iframe#redsys-hosted-pay-button {
 
 /* Banner Black Friday */
 .bf-banner {
-    background: #000;
-    color: #68ff95;
+    background: #cc0000;
+    color: #ffffff;
     text-align: center;
     font-size: 14px;
     line-height: 1.4;
@@ -892,6 +892,8 @@ iframe#redsys-hosted-pay-button {
 
 .bf-banner__text {
     white-space: nowrap;
+    display: flex;
+    align-items: center;
 }
 
 .bf-banner__close {
@@ -901,7 +903,7 @@ iframe#redsys-hosted-pay-button {
     transform: translateY(-50%);
     border: none;
     background: transparent;
-    color: #68ff95;
+    color: #ffffff;
     font-size: 18px;
     line-height: 1;
     cursor: pointer;
@@ -913,33 +915,49 @@ iframe#redsys-hosted-pay-button {
 }
 /* Ajustes para móvil */
 @media (max-width: 1223px) {
+    .bf-banner{
+    position: fixed;
+    top: 0;
+  }
 
-    .bf-banner {
-        position: relative;      /* deja de ser fixed en móvil */
-        top: auto;
-    }
+  .bf-banner__text{
+    white-space: normal;   /* <-- clave: permite saltos de línea */
+    text-align: center;
+    line-height: 1.25;
+    font-size: 12px;
+  }
 
-    #header {
-        margin-top: 0 !important;  /* anulamos el margin-top que mete el JS */
-    }
+  .bf-banner__close{
+    right: 12px;
+    top: 17px;
+    transform: none;       /* mejor arriba a la derecha en móvil */
+  }
 
-    .bf-banner__text {
-      font-size: 12px;
-      padding-left: 20px;
-    }
-
-    .bf-banner__close {
-   
-      right: 15px;
-
-    }
-
+  #header{
+    margin-top: 0 !important;
+  }
 }
 
+
 @media (min-width: 1224px) {
+    .bf-banner{
+      position: fixed;
+      top: auto;
+    }
+
     .bf-separation {
       padding-left:40px;
     }
 }
 
 /**********************/
+
+:root { --bf-banner-h: 0px; }
+
+/* Móvil: el banner es fixed, así que empujamos el header completo */
+@media (max-width: 1223px) {
+  #header{
+    padding-top: var(--bf-banner-h) !important;
+    margin-top: 0 !important;
+  }
+}

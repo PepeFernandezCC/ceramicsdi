@@ -7,16 +7,16 @@
 {if isset($categories) && $categories}
     <ul class="ets_mm_categories">
         {foreach from=$categories item='category'}
-            {assign var="altText" value={l s='items' mod='Shop.Theme.Actions'}}
+            {assign var="altText" value={l s='items' d='Shop.Theme.Actions'}}
             {assign var="categoryFilter" value ="ets_category_normal"}
             {if in_array($category.id_category, $colorArray)}
-                {assign var="altText" value={l s='colored items' mod='Shop.Theme.Actions'}}    
+                {assign var="altText" value={l s='colored items' d='Shop.Theme.Actions'}}    
                 {assign var="categoryFilter" value ="ets_category_color"}
             {elseif in_array($category.id_category, $lookArray)}
-                {assign var="altText" value={l s='imitation items' mod='Shop.ThemeActions'}}    
+                {assign var="altText" value={l s='imitation items' d='Shop.ThemeActions'}}    
                 {assign var="categoryFilter" value ="ets_category_look"}
             {elseif in_array($category.id_category, $otherMaterialsArray)}
-                {assign var="altText" value={l s='material type' mod='Shop.Theme.Actions'}}
+                {assign var="altText" value={l s='material type' d='Shop.Theme.Actions'}}
                 {assign var="categoryFilter" value ="ets_category_other_material"}
             {elseif in_array($category.id_category, $installationArray)}
                 {assign var="categoryFilter" value ="ets_category_installation"}

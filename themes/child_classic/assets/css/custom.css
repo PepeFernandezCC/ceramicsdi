@@ -3360,12 +3360,14 @@ body.noscroll .ets_mm_megamenu::before {
   font-size: 50px;
   background-color: white;
 }
+/*
 .custom-featured-products .owl-carousel .owl-nav .owl-prev:hover,
 .custom-featured-products .owl-carousel .owl-nav .owl-next:hover,
 #recipeCarousel .owl-carousel .owl-nav .owl-prev:hover,
 #recipeCarousel .owl-carousel .owl-nav .owl-next:hover {
   background-color: #aaaaaa;
 }
+*/
 .custom-featured-products .owl-carousel .owl-nav .owl-prev,
 #recipeCarousel .owl-carousel .owl-nav .owl-prev {
   left: 0;
@@ -6367,7 +6369,7 @@ span.at-contact {
 
 .logo-adwards {
   width:auto;
-  padding-top:90px;
+  padding:10px 0;
 }
 
 .mw-img-color {
@@ -7090,4 +7092,67 @@ body#checkout section.checkout-step .address-item.selected {
 .alert {
     font-size: 15px !important; 
     font-weight: 600 !important;
+}
+
+/* banner generalitat */
+div#generalitat-ayudas {
+    display: flex;
+    flex-direction: row-reverse;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: center;
+    width: 24%;
+    margin-top: 10px;
+}
+
+.generalitat-ayudas {
+  margin: 25px 0;
+}
+.generalitat-banner-box {
+    width: 54%;
+}
+.gva-banner-img {
+  width: 90% !important;
+}
+
+.generalitat-help-description {
+    font-size: 11px;
+    padding: 10px 0;
+    text-transform: uppercase;
+    width: 40%;
+    font-weight: 500;
+}
+
+/* addresses account*/
+
+span.manage-addresses {
+    background: black;
+    color: white;
+    padding: 15px;
+}
+
+@media (max-width:769px) {
+
+  .gva-banner-img {
+      width: 100% !important;
+  }
+
+  .generalitat-banner-box {
+    margin-bottom: 5px;
+    width: 70%;
+  }
+
+  .generalitat-help-description {
+      width: 78%;
+      text-align: left;
+  }
+
+    div#generalitat-ayudas {
+      margin: 10px 0;
+  }
+
+  div#generalitat-ayudas {
+    flex-direction: column-reverse;
+    width: 100%;
+  }
 }

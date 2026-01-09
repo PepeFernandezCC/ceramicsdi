@@ -72,14 +72,10 @@
                 {/if}
             {else}
                 <a class="col-lg-4 col-md-6 col-sm-6 col-xs-12 count-lg-{$block_count_lg} count-md-{$block_count_md}" id="address-link"
-                   href="#"
-                   style="flex-direction: column">
+                   href="{$urls.pages.address}">
                   <span class="link-item">
                     <i class="material-icons">&#xE567;</i>
-                    {l s='Addresses' d='Shop.Theme.Customeraccount'}
-                  </span>
-                  <span class="manage-addresses">
-                    {l s='Puede gestionar sus direcciones desde el paso de direcciones en el proceso de checkout' d='Shop.Theme.Checkout'}
+                    {l s='Add first address' d='Shop.Theme.Customeraccount'}
                   </span>
                 </a>
                 {if $block_count_lg == 3}

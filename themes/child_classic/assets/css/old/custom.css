@@ -4787,6 +4787,9 @@ label[for=field-vat_number] {
 }
 
 /*Pagina producto*/
+.accordion-li {
+  margin-bottom:10px;
+}
 .capacity-format {
   width: 100%;
   display: flex;
@@ -7080,7 +7083,6 @@ body#checkout section.checkout-step .address-item.selected {
   }
 
 }
-
 .condition-label a {
     font-weight: bold;
     text-decoration: underline;
@@ -7088,4 +7090,65 @@ body#checkout section.checkout-step .address-item.selected {
 .alert {
     font-size: 15px !important; 
     font-weight: 600 !important;
+}
+
+
+/* banner generalitat */
+div#generalitat-ayudas {
+    display: flex;
+    flex-direction: row-reverse;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.generalitat-ayudas {
+  margin: 25px 0;
+}
+.generalitat-banner-box {
+    width: 54%;
+}
+.gva-banner-img {
+  width: 90% !important;
+}
+
+.generalitat-help-description {
+    font-size: 11px;
+    padding: 10px 0;
+    text-transform: uppercase;
+    width: 40%;
+    font-weight: 500;
+}
+
+/* addresses account*/
+
+span.manage-addresses {
+    background: black;
+    color: white;
+    padding: 15px;
+}
+
+@media (max-width:769px) {
+
+  .gva-banner-img {
+      width: 75% !important;
+  }
+
+  .generalitat-banner-box {
+    margin-bottom: 5px;
+    width: 95%;
+  }
+
+  .generalitat-help-description {
+      width: 78%;
+      text-align: left;
+  }
+
+    div#generalitat-ayudas {
+      margin: 10px 0;
+  }
+
+  div#generalitat-ayudas {
+    flex-direction: column-reverse;
+  }
 }

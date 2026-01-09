@@ -234,15 +234,24 @@ class Inspiration extends Module
                 continue; // sin imagen que mostrar
             }
 
+            $legend = (string)Db::getInstance()->getValue('
+                SELECT legend
+                FROM '._DB_PREFIX_.'image_lang
+                WHERE id_image='.(int)$idImage.'
+                AND id_lang='.(int)$idLang.'
+            ');
+
             // Generar URLs mini y grande (ajusta tipos si necesitas otros)
             $thumb = self::getImageUrlByIdImage($idImage, $rewrite, 'home_default');
             $full  = self::getImageUrlByIdImage($idImage, $rewrite, 'large_default');
+
 
             if ($thumb && $full) {
                 $out[] = [
                     'urlProduct'    => $urlProduct,     // no se usará en el click ahora
                     'urlImageThumb' => $thumb,
                     'urlImageFull'  => $full,
+                    'imageLegend'   => $legend,
                 ];
             }
         }
