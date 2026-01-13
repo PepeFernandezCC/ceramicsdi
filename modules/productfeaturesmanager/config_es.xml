@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>productfeaturesmanager</name>
+    <displayName><![CDATA[Gestor de Caracter&iacute;sticas de Productos]]></displayName>
+    <version><![CDATA[1.1.0]]></version>
+    <description><![CDATA[Permite visualizar, editar y controlar masivamente las caracter&iacute;sticas de los productos]]></description>
+    <author><![CDATA[Qwavee]]></author>
+    <tab><![CDATA[administration]]></tab>
+	<confirmUninstall><![CDATA[¿Estás seguro de que quieres desinstalar?]]></confirmUninstall>
+    <is_configurable>0</is_configurable>
+    <need_instance>0</need_instance>
+	<limited_countries></limited_countries>
+</module>

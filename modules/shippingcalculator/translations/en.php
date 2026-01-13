@@ -1,0 +1,34 @@
+<?php
+
+global $_MODULE;
+$_MODULE = array();
+$_MODULE['<{shippingcalculator}prestashop>shippingcalculator_64eee776362ffdd4c543b822cb6f1ee9'] = 'Shipping and Delivery Calculator';
+$_MODULE['<{shippingcalculator}prestashop>shippingcalculator_c93c3c1bc5eac87f6b70877cd9454c8e'] = 'System for calculating shipping costs and delivery times';
+$_MODULE['<{shippingcalculator}prestashop>shippingcalculator_b896aaf86c7aa1d32798a801c725fb77'] = 'Are you sure you want to uninstall?';
+$_MODULE['<{shippingcalculator}prestashop>product_preparation_ecbc281a9291d5471dd92b010fb89158'] = 'Preparation Period';
+$_MODULE['<{shippingcalculator}prestashop>product_preparation_cab54d2267be1354969cd07926f1bbde'] = 'Preparation days';
+$_MODULE['<{shippingcalculator}prestashop>product_preparation_98b0049fd77f747fc6377f064290b024'] = 'Number of days required to prepare this product before shipment';
+$_MODULE['<{shippingcalculator}prestashop>shopping_cart_delivery_486373455a167cea8e743a8d37c02db2'] = 'ESTIMATED DELIVERY TIME';
+$_MODULE['<{shippingcalculator}prestashop>shopping_cart_delivery_e9a78e5ca390e4c8bec9cb6e7faf050b'] = 'Preparation:';
+$_MODULE['<{shippingcalculator}prestashop>shopping_cart_delivery_9ae6e063e269320735c1f470d68c4179'] = 'day';
+$_MODULE['<{shippingcalculator}prestashop>shopping_cart_delivery_79b6ae4ce99e33b634a24499333a04bc'] = 'days';
+$_MODULE['<{shippingcalculator}prestashop>shopping_cart_delivery_c4c8e9cc008c1035ae673f1c4d4fdba2'] = 'ESTIMATED DELIVERY:';
+$_MODULE['<{shippingcalculator}prestashop>shopping_cart_delivery_58fc4b411a52f8cec786c7ee16a2b7e7'] = 'ESTIMATED DELIVERY:';
+$_MODULE['<{shippingcalculator}prestashop>shopping_cart_delivery_fa4a4d39af8d62e33961d74795614695'] = 'The delivery time indicated is approximate and may vary.';
+$_MODULE['<{shippingcalculator}prestashop>adminshippingcalculatorcontroller_901742d2be3e2f6e98a187a84834acb0'] = 'Please select products, a country, and a province.';
+$_MODULE['<{shippingcalculator}prestashop>adminshippingcalculatorcontroller_756d5a30cc380f15e5a2bf0a1fd6f30b'] = 'Please select a valid country';
+$_MODULE['<{shippingcalculator}prestashop>adminshippingcalculatorcontroller_8f9e40c0946e5a86667730a7def37a22'] = 'The selected country does not exist.';
+$_MODULE['<{shippingcalculator}prestashop>adminshippingcalculatorcontroller_d182d199e64d54781dc3cf668058f44a'] = 'The selected country is inactive. Please activate it in International > Countries.';
+$_MODULE['<{shippingcalculator}prestashop>adminshippingcalculatorcontroller_584acbe44a7c937b6e323fdb97273171'] = 'The selected province/state does not exist for this country.';
+$_MODULE['<{shippingcalculator}prestashop>adminshippingcalculatorcontroller_41ae5cd09504c7f4faad3d8ec9fb850e'] = 'Shipping times and costs correctly saved';
+$_MODULE['<{shippingcalculator}prestashop>adminshippingcalculatorcontroller_a3f042fb2ee49bd5392d4fdc3a3d7711'] = 'Settings saved successfully';
+$_MODULE['<{shippingcalculator}prestashop>adminshippingcalculatorcontroller_277e688875c75e13a4f1a62bf497428b'] = 'Error uploading CSV file';
+$_MODULE['<{shippingcalculator}prestashop>adminshippingcalculatorcontroller_cd79001942e3da357e83fef33d7a6b57'] = 'The file could not be read';
+$_MODULE['<{shippingcalculator}prestashop>adminshippingcalculatorcontroller_86339d20b181c9940368a77117200e1a'] = 'Invalid file format. Must contain at least: province_code, province_name, delivery_days_min, delivery_days_max';
+$_MODULE['<{shippingcalculator}prestashop>adminshippingcalculatorcontroller_8fe62625e73688a983e43307e8ed8f06'] = 'Invalid file format. Missing required columns: province_code, province_name';
+$_MODULE['<{shippingcalculator}prestashop>adminshippingcalculatorcontroller_82ffa3a52cb7e94e068d61eeb19e759a'] = 'missing delivery_days_min or delivery_days_max';
+$_MODULE['<{shippingcalculator}prestashop>adminshippingcalculatorcontroller_eab88d68ac696e3d0c159951f935f086'] = 'Empty province code';
+$_MODULE['<{shippingcalculator}prestashop>adminshippingcalculatorcontroller_47e933158970a68d929c4111f6c247f2'] = 'The minimum number of days cannot exceed the maximum number of days.';
+$_MODULE['<{shippingcalculator}prestashop>adminshippingcalculatorcontroller_b27a49ed6763bbc33f727a411b3f9c5f'] = 'Error saving to database';
+$_MODULE['<{shippingcalculator}prestashop>adminshippingcalculatorcontroller_2167cc672c53cdca7b97671d44b3ce32'] = 'Imported';
+$_MODULE['<{shippingcalculator}prestashop>adminshippingcalculatorcontroller_0cdc2b706597fb6629585da3203af2d5'] = 'records of';

@@ -1,0 +1,44 @@
+/**
+ * 2007-2024 PrestaShop
+ *
+ * NOTICE OF LICENSE
+ */
+
+.panel-heading-action {
+    float: right;
+    position: relative;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.panel-heading-action .btn-group {
+    display: inline-flex;
+    vertical-align: middle;
+}
+
+.panel-heading-action > .btn,
+.panel-heading-action .btn-group > .btn {
+    display: inline-block;
+    vertical-align: middle;
+    min-width: 140px;
+    padding: 6px 12px;
+    height: auto;
+    line-height: 1.42857143;
+}
+
+#products-features-table {
+    width: 100% !important;
+}
+
+.feature-value-select {
+    min-width: 200px;
+}
+
+.modal-body .help-block {
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+}
+
