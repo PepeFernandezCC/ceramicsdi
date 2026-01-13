@@ -208,6 +208,22 @@ class ShippingCalculator extends Module
     {
         $id_lang = (int)Context::getContext()->language->id;
         $id_shop = (int)Context::getContext()->shop->id;
+
+        // 1) PRIORIDAD: característica id=60 (días de preparación)
+        $sql = 'SELECT fvl.value
+                FROM `' . _DB_PREFIX_ . 'feature_product` fp
+                INNER JOIN `' . _DB_PREFIX_ . 'feature_value_lang` fvl
+                    ON (fvl.id_feature_value = fp.id_feature_value AND fvl.id_lang = ' . (int)$id_lang . ')
+                WHERE fp.id_product = ' . (int)$id_product . '
+                AND fp.id_feature = 60
+                ';
+
+        $feature_value = Db::getInstance()->getValue($sql);
+
+        if (!empty($feature_value)) {
+            return $this->parseDaysFromText($feature_value);
+        }
+
         
         // Obtener el valor de additional_delivery_times del producto
         $sql = 'SELECT additional_delivery_times 

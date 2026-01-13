@@ -2839,7 +2839,26 @@ $( document ).ready( function () {
          
         
       }
-   
+
+
+      (function () {
+      var step = document.getElementById('checkout-delivery-step');
+      if (!step) return;
+
+      // Solo si el paso está activo/visible
+      if (!step.classList.contains('-current') && !step.classList.contains('js-current-step')) return;
+
+      var inputs = step.querySelectorAll('input[name^="delivery_option["]');
+      if (inputs.length !== 1) return;
+
+      var input = inputs[0];
+      if (input.checked) return;
+
+      input.checked = true;
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+      })();
+      
+
          /* END CHECKOUT */
 
          /* Enlaces ofuscados */

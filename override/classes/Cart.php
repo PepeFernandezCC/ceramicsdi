@@ -211,6 +211,17 @@ class Cart extends CartCore {
 		
 		return true;
 	}
+	
+	public function getTotalShippingCost($delivery_option = null, $use_tax = true, Country $default_country = null)
+    {
+        // Si NO hay transportista seleccionado, no sumar envío
+        if ((int) $this->id_carrier <= 0) {
+            return 0.0;
+        }
+
+        return parent::getTotalShippingCost($delivery_option, $use_tax, $default_country);
+    }
+
     /*
     * module: orderfees_shipping
     * date: 2024-02-02 08:19:55
