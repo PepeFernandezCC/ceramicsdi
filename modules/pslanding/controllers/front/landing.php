@@ -63,7 +63,10 @@ class PslandingLandingModuleFrontController extends ModuleFrontController
             $s['image_url'] = !empty($s['image']) ? $uploadBase.$s['image'] : '';
             $s['product_url'] = !empty($s['id_product'])
                 ? $this->context->link->getProductLink((int)$s['id_product'])
-                : '';
+                : '#';
+            $s['category_url'] = !empty($s['id_category'])
+                ? $this->context->link->getCategoryLink((int)$s['id_category'])
+                : '#';
         }
         unset($s);
 
@@ -194,7 +197,7 @@ class PslandingLandingModuleFrontController extends ModuleFrontController
     protected function getSlidesByLanding($idLanding)
     {
         return Db::getInstance()->executeS('
-            SELECT id_pslanding_slide, position, image, id_product, active
+            SELECT id_pslanding_slide, position, image, id_product, id_category, active
             FROM '._DB_PREFIX_.'pslanding_slide
             WHERE id_pslanding='.(int)$idLanding.' AND active=1
             ORDER BY position ASC, id_pslanding_slide ASC

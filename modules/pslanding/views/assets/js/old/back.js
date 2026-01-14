@@ -1,8 +1,5 @@
-/* =========================
-   Características (igual que tenías)
-========================= */
 document.addEventListener('DOMContentLoaded', function () {
-  console.log('Papi is here...');
+    console.log('Papi está aquí...');
   const root = document.getElementById('pslanding-characteristics');
   if (!root) return;
 
@@ -19,11 +16,6 @@ document.addEventListener('DOMContentLoaded', function () {
     return (s || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
   }
 
-  function syncHidden() {
-    if (!hidden) return;
-    hidden.value = JSON.stringify(items);
-  }
-
   function render() {
     list.innerHTML = '';
 
@@ -35,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
       let tabs = '';
       let panes = '';
 
-      languages.forEach((l) => {
+      languages.forEach((l, i) => {
         const idLang = l.id_lang;
         const active = (idLang === defaultLang) ? 'active' : '';
         tabs += `<li class="${active}"><a href="#pslc_${idx}_${idLang}" data-toggle="tab">${escapeHtml(l.iso_code || l.name || idLang)}</a></li>`;
@@ -71,6 +63,7 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
       `;
 
+      // events
       card.querySelector('.pslanding-remove').addEventListener('click', function () {
         items.splice(idx, 1);
         render();
@@ -101,6 +94,11 @@ document.addEventListener('DOMContentLoaded', function () {
     syncHidden();
   }
 
+  function syncHidden() {
+    if (!hidden) return;
+    hidden.value = JSON.stringify(items);
+  }
+
   btnAdd.addEventListener('click', function () {
     items.push({ title: {}, text: {} });
     render();
@@ -110,9 +108,8 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
-/* =========================
-   Slides / Carousel (MODIFICADO: producto o categoría según template)
-========================= */
+/* agregar diapositivas al carousel*/
+
 document.addEventListener('DOMContentLoaded', function () {
   const root = document.getElementById('pslanding-slides');
   if (!root) return;
@@ -122,15 +119,14 @@ document.addEventListener('DOMContentLoaded', function () {
   const btnAdd = document.getElementById('pslanding-add-slide');
   const inputJson = document.querySelector('input[name="slides_json"]');
 
-  const templateSelect = document.querySelector('select[name="template"]');
-
-  function getTemplate() {
-    return templateSelect ? templateSelect.value : (cfg.template || 'landing-default');
-  }
-  function isSimpleTemplate() {
-    console.log('template: ' + getTemplate());
-    return getTemplate() === 'landing-simple';
-  }
+  // normaliza items
+  let slides = Array.isArray(cfg.items) ? cfg.items.map((s, i) => ({
+    idx: i + 1, // idx estable para inputs file
+    active: s.active ? 1 : 0,
+    image: s.image || '',
+    id_product: s.id_product || '',
+    product_name: s.product_name || '',
+  })) : [];
 
   function escapeHtml(str) {
     return String(str || '')
@@ -138,56 +134,11 @@ document.addEventListener('DOMContentLoaded', function () {
       .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
   }
 
-  // Normaliza items (incluye id_category / category_name)
-  let slides = Array.isArray(cfg.items)
-    ? cfg.items.map((s, i) => ({
-        idx: i + 1, // idx estable para inputs file
-        active: s.active ? 1 : 0,
-        image: s.image || '',
-        id_product: s.id_product || '',
-        product_name: s.product_name || '',
-        id_category: s.id_category || '',
-        category_name: s.category_name || '',
-      }))
-    : [];
-
-  function renderLinkBlock(s) {
-    if (isSimpleTemplate()) {
-      return `
-        <label><strong>Categoría</strong></label>
-        <div style="display:flex;gap:8px;align-items:center;">
-          <input type="text" class="form-control" placeholder="Buscar categoría..." value="${escapeHtml(s.category_name)}"
-            data-action="category-search" data-idx="${s.idx}">
-          <input type="hidden" data-k="id_category" value="${escapeHtml(s.id_category)}">
-          <button type="button" class="btn btn-default" data-action="clear-category" data-idx="${s.idx}">Limpiar</button>
-        </div>
-        <div class="help-block">Selecciona una categoría (se guardará el id_category).</div>
-        <div data-action="results-category" data-idx="${s.idx}"></div>
-      `;
-    }
-
-    return `
-      <label><strong>Producto</strong></label>
-      <div style="display:flex;gap:8px;align-items:center;">
-        <input type="text" class="form-control" placeholder="Selecciona un Producto..." value="${escapeHtml(s.product_name)}"
-          data-action="product-search" data-idx="${s.idx}">
-        <input type="hidden" data-k="id_product" value="${escapeHtml(s.id_product)}">
-        <button type="button" class="btn btn-default" data-action="clear-product" data-idx="${s.idx}">Limpiar</button>
-      </div>
-      <div class="help-block">Selecciona un producto (se guardará el id_product).</div>
-      <div data-action="results-product" data-idx="${s.idx}"></div>
-    `;
-  }
-
   function render() {
-    console.log('renderizando bloque de slides...');
-    list.innerHTML = slides.map((s) => {
-      const preview = s.image
-        ? `<img src="/modules/pslanding/uploads/${escapeHtml(s.image)}" style="max-width:120px;max-height:80px;display:block;margin-bottom:6px;">`
-        : '';
-
+    list.innerHTML = slides.map((s, pos) => {
+      const preview = s.image ? `<img src="/modules/pslanding/uploads/${escapeHtml(s.image)}" style="max-width:120px;max-height:80px;display:block;margin-bottom:6px;">` : '';
       return `
-        <div class="panel" style="padding:12px;margin-bottom:10px;" data-idx="${s.idx}">
+        <div class="panel" style="padding:12px;margin-bottom:10px;">
           <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;">
             <div style="min-width:160px;">
               <label><strong>Imagen</strong></label>
@@ -197,7 +148,15 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>
 
             <div style="flex:1;min-width:260px;">
-              ${renderLinkBlock(s)}
+              <label><strong>Producto</strong></label>
+              <div style="display:flex;gap:8px;align-items:center;">
+                <input type="text" class="form-control" placeholder="Buscar producto..." value="${escapeHtml(s.product_name)}"
+                  data-action="product-search" data-idx="${s.idx}">
+                <input type="hidden" data-k="id_product" value="${escapeHtml(s.id_product)}">
+                <button type="button" class="btn btn-default" data-action="clear-product" data-idx="${s.idx}">Limpiar</button>
+              </div>
+              <div class="help-block">Selecciona un producto (se guardará el id_product).</div>
+              <div data-action="results" data-idx="${s.idx}"></div>
             </div>
 
             <div style="min-width:180px;">
@@ -222,6 +181,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function syncJson() {
+    // Lee lo que hay en el DOM (por si el usuario cambió cosas)
     const panels = list.querySelectorAll('.panel');
     const out = [];
 
@@ -229,25 +189,13 @@ document.addEventListener('DOMContentLoaded', function () {
       const idxInput = panel.querySelector('input[type="file"]')?.name?.match(/slide_image_(\d+)/);
       const idx = idxInput ? parseInt(idxInput[1], 10) : (i + 1);
 
+      const id_product = panel.querySelector('input[data-k="id_product"]')?.value || '';
       const image = panel.querySelector('input[data-k="image"]')?.value || '';
       const active = panel.querySelector('input[data-action="toggle-active"]')?.checked ? 1 : 0;
 
-      // según template, guardamos producto o categoría
-      let id_product = null;
-      let id_category = null;
-
-      if (isSimpleTemplate()) {
-        const raw = panel.querySelector('input[data-k="id_category"]')?.value || '';
-        id_category = raw ? parseInt(raw, 10) : null;
-      } else {
-        const raw = panel.querySelector('input[data-k="id_product"]')?.value || '';
-        id_product = raw ? parseInt(raw, 10) : null;
-      }
-
       out.push({
         idx,
-        id_product,
-        id_category,
+        id_product: id_product ? parseInt(id_product, 10) : null,
         image,
         active
       });
@@ -265,43 +213,19 @@ document.addEventListener('DOMContentLoaded', function () {
     return await res.json();
   }
 
-  // NECESITAS implementar ajaxProcessSearchCategories en AdminPsLandingController
-  async function searchCategories(q) {
-    const url = new URL(cfg.ajax_url, window.location.origin);
-    url.searchParams.set('ajax', '1');
-    url.searchParams.set('action', 'searchCategories');
-    url.searchParams.set('q', q);
-    const res = await fetch(url.toString(), { credentials: 'same-origin' });
-    return await res.json();
-  }
-
   btnAdd.addEventListener('click', function () {
     const nextIdx = slides.length ? Math.max(...slides.map(s => s.idx)) + 1 : 1;
-
-    slides.push({
-      idx: nextIdx,
-      active: 1,
-      image: '',
-      id_product: '',
-      product_name: '',
-      id_category: '',
-      category_name: '',
-    });
-
+    slides.push({ idx: nextIdx, active: 1, image: '', id_product: '', product_name: '' });
     render();
   });
 
-  // Delegación de eventos (input)
+  // Delegación de eventos
   list.addEventListener('input', async function (e) {
     const el = e.target;
-    if (!el || !el.dataset.action) return;
-
-    const idx = el.dataset.idx ? parseInt(el.dataset.idx, 10) : null;
-    const q = el.value.trim();
-
-    // PRODUCT SEARCH
-    if (el.dataset.action === 'product-search') {
-      const box = list.querySelector(`[data-action="results-product"][data-idx="${idx}"]`);
+    if (el && el.dataset.action === 'product-search') {
+      const idx = parseInt(el.dataset.idx, 10);
+      const q = el.value.trim();
+      const box = list.querySelector(`[data-action="results"][data-idx="${idx}"]`);
       if (!box) return;
 
       if (q.length < 2) {
@@ -322,37 +246,9 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
       `;
       syncJson();
-      return;
-    }
-
-    // CATEGORY SEARCH
-    if (el.dataset.action === 'category-search') {
-      const box = list.querySelector(`[data-action="results-category"][data-idx="${idx}"]`);
-      if (!box) return;
-
-      if (q.length < 2) {
-        box.innerHTML = '';
-        syncJson();
-        return;
-      }
-
-      const results = await searchCategories(q);
-      box.innerHTML = `
-        <div class="list-group" style="margin-top:6px;">
-          ${results.map(r => `
-            <button type="button" class="list-group-item" data-action="pick-category"
-              data-idx="${idx}" data-id="${r.id_category}" data-name="${escapeHtml( r.label || r.name)}">
-              ${escapeHtml(r.label || ('#'+r.id_category+' - '+r.name))}
-            </button>
-          `).join('')}
-        </div>
-      `;
-      syncJson();
-      return;
     }
   });
 
-  // Delegación de eventos (click)
   list.addEventListener('click', function (e) {
     const btn = e.target.closest('[data-action]');
     if (!btn) return;
@@ -366,19 +262,11 @@ document.addEventListener('DOMContentLoaded', function () {
       return;
     }
 
-    if (action === 'toggle-active') {
-      syncJson();
-      return;
-    }
-
-    // PRODUCT actions
     if (action === 'clear-product' && idx != null) {
       const panel = btn.closest('.panel');
-      const idInput = panel.querySelector('input[data-k="id_product"]');
-      const txtInput = panel.querySelector('input[data-action="product-search"]');
-      if (idInput) idInput.value = '';
-      if (txtInput) txtInput.value = '';
-      const box = panel.querySelector('[data-action="results-product"]');
+      panel.querySelector('input[data-k="id_product"]').value = '';
+      panel.querySelector('input[data-action="product-search"]').value = '';
+      const box = panel.querySelector('[data-action="results"]');
       if (box) box.innerHTML = '';
       syncJson();
       return;
@@ -390,59 +278,17 @@ document.addEventListener('DOMContentLoaded', function () {
       const panel = btn.closest('.panel');
       panel.querySelector('input[data-k="id_product"]').value = id;
       panel.querySelector('input[data-action="product-search"]').value = name;
-      const box = panel.querySelector('[data-action="results-product"]');
+      const box = panel.querySelector('[data-action="results"]');
       if (box) box.innerHTML = '';
       syncJson();
       return;
     }
 
-    // CATEGORY actions
-    if (action === 'clear-category' && idx != null) {
-      const panel = btn.closest('.panel');
-      const idInput = panel.querySelector('input[data-k="id_category"]');
-      const txtInput = panel.querySelector('input[data-action="category-search"]');
-      if (idInput) idInput.value = '';
-      if (txtInput) txtInput.value = '';
-      const box = panel.querySelector('[data-action="results-category"]');
-      if (box) box.innerHTML = '';
-      syncJson();
-      return;
-    }
-
-    if (action === 'pick-category' && idx != null) {
-      const id = btn.dataset.id;
-      const name = btn.dataset.name;
-      const panel = btn.closest('.panel');
-      panel.querySelector('input[data-k="id_category"]').value = id;
-      panel.querySelector('input[data-action="category-search"]').value = name;
-      const box = panel.querySelector('[data-action="results-category"]');
-      if (box) box.innerHTML = '';
+    if (action === 'toggle-active') {
       syncJson();
       return;
     }
   });
-
-  // Al cambiar template, repintar el carrusel y limpiar campos incompatibles
-  if (templateSelect) {
-    templateSelect.addEventListener('change', () => {
-      if (isSimpleTemplate()) {
-        // vamos a simple: borrar productos
-        slides = slides.map(s => ({
-          ...s,
-          id_product: '',
-          product_name: '',
-        }));
-      } else {
-        // vamos a default: borrar categorías
-        slides = slides.map(s => ({
-          ...s,
-          id_category: '',
-          category_name: '',
-        }));
-      }
-      render();
-    });
-  }
 
   // Al enviar el form, asegura JSON actualizado
   const form = root.closest('form');
@@ -456,23 +302,25 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
-/* =========================
-   Mostrar/Ocultar campos según plantilla (igual que tenías)
-========================= */
+/* Seleccionar campos según plantilla */
 document.addEventListener('DOMContentLoaded', () => {
   const templateSelect = document.querySelector('select[name="template"]');
   if (!templateSelect) return;
 
   const applyVisibility = () => {
-    const tpl = templateSelect.value;
+    const tpl = templateSelect.value; // "landing-default" / "landing-simple"
+    // Mapea a clases
     const isDefault = tpl === 'landing-default';
     const isSimple  = tpl === 'landing-simple';
 
     document.querySelectorAll('.js-tpl').forEach(el => {
+      // el es el form-group
       if (el.classList.contains('tpl-default')) {
         el.style.display = isDefault ? '' : 'none';
       } else if (el.classList.contains('tpl-simple')) {
         el.style.display = isSimple ? '' : 'none';
+      } else {
+        // si lo quieres "común" no le pongas js-tpl
       }
     });
   };
@@ -480,3 +328,4 @@ document.addEventListener('DOMContentLoaded', () => {
   templateSelect.addEventListener('change', applyVisibility);
   applyVisibility();
 });
+

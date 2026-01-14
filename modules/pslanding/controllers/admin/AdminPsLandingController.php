@@ -355,8 +355,12 @@ class AdminPsLandingController extends ModuleAdminController
             $items = $this->getSlides($idLanding);
         }
 
+        $currentTemplate = (Validate::isLoadedObject($this->object) ? (string)$this->object->template : (string)Tools::getValue('template', 'landing-default'));
+
+ 
         $json = json_encode([
             'items' => $items,
+            'template' => $currentTemplate,
             'ajax_url' => $this->context->link->getAdminLink($this->controller_name, true),
             'token' => Tools::getAdminTokenLite($this->controller_name),
         ]);
@@ -419,6 +423,113 @@ class AdminPsLandingController extends ModuleAdminController
         header('Content-Type: application/json');
         die(json_encode($out));
     }
+
+    /*
+    public function ajaxProcessSearchCategories()
+    {
+        $q = trim(Tools::getValue('q', ''));
+        $id_lang = (int)$this->context->language->id;
+        $id_shop = (int)$this->context->shop->id;
+
+        if ($q === '' || Tools::strlen($q) < 2) {
+            header('Content-Type: application/json');
+            die(json_encode([]));
+        }
+
+        $like = '%'.pSQL($q).'%';
+
+        $rows = Db::getInstance()->executeS('
+            SELECT c.id_category, cl.name
+            FROM '._DB_PREFIX_.'category c
+            INNER JOIN '._DB_PREFIX_.'category_shop cs
+                ON (cs.id_category = c.id_category AND cs.id_shop='.(int)$id_shop.')
+            INNER JOIN '._DB_PREFIX_.'category_lang cl
+                ON (cl.id_category = c.id_category AND cl.id_lang='.(int)$id_lang.' AND cl.id_shop='.(int)$id_shop.')
+            WHERE c.active = 1
+            AND cl.name LIKE "'.$like.'"
+            ORDER BY cl.name ASC
+            LIMIT 20
+        ');
+
+        $out = [];
+        foreach ($rows as $r) {
+            $out[] = [
+                'id_category' => (int)$r['id_category'],
+                'name' => $r['name'],
+            ];
+        }
+
+        header('Content-Type: application/json');
+        die(json_encode($out));
+    }
+    */
+    public function ajaxProcessSearchCategories()
+    {
+        $q = trim(Tools::getValue('q', ''));
+        $id_lang = (int)$this->context->language->id;
+        $id_shop = (int)$this->context->shop->id;
+
+        if ($q === '' || Tools::strlen($q) < 2) {
+            header('Content-Type: application/json');
+            die(json_encode([]));
+        }
+
+        $like = '%'.pSQL($q).'%';
+
+        $rows = Db::getInstance()->executeS('
+            SELECT c.id_category
+            FROM '._DB_PREFIX_.'category c
+            INNER JOIN '._DB_PREFIX_.'category_shop cs
+                ON (cs.id_category = c.id_category AND cs.id_shop='.(int)$id_shop.')
+            INNER JOIN '._DB_PREFIX_.'category_lang cl
+                ON (cl.id_category = c.id_category AND cl.id_lang='.(int)$id_lang.' AND cl.id_shop='.(int)$id_shop.')
+            WHERE c.active = 1
+            AND cl.name LIKE "'.$like.'"
+            ORDER BY cl.name ASC
+            LIMIT 20
+        ');
+
+        $out = [];
+
+        foreach ($rows as $r) {
+            $id_category = (int)$r['id_category'];
+            $cat = new Category($id_category, $id_lang, $id_shop);
+            if (!Validate::isLoadedObject($cat)) {
+                continue;
+            }
+
+            // Devuelve desde la categoría hasta Home (según versión)
+            $parents = $cat->getParentsCategories($id_lang);
+            $parts = [];
+
+            if (is_array($parents) && !empty($parents)) {
+                $parents = array_reverse($parents); // Home -> ... -> Actual
+                foreach ($parents as $p) {
+                    if (!empty($p['name'])) {
+                        $parts[] = $p['name'];
+                    }
+                }
+            } else {
+                $parts[] = $cat->name;
+            }
+
+            // Si no quieres que salga "Home", descomenta:
+            if (!empty($parts) && Tools::strtolower($parts[0]) === 'home') array_shift($parts);
+
+            $path = implode(' / ', $parts);
+
+            $out[] = [
+                'id_category' => $id_category,
+                'name' => $cat->name,
+                'path' => $path,
+                'label' => '#'.$id_category.' - '.$path,
+            ];
+        }
+
+        header('Content-Type: application/json');
+        die(json_encode($out));
+    }
+
 
     protected function saveSlidesFromJson($idLanding)
     {

@@ -126,7 +126,7 @@
                 <div id="collageBox-landing" class="row">
                  
                     {foreach from=$landing_slides item=productItem}
-                      <a class="landing-collage-slide" href="{$productItem.product_url|escape:'html':'UTF-8'}">
+                      <a class="landing-collage-slide" href="{$productItem.category_url|escape:'html':'UTF-8'}">
                          <img class="collage-landing-img" src="{$productItem.image_url|escape:'html':'UTF-8'}" alt="{$landing.title|escape:'html':'UTF-8'}">
                       </a>
                     {/foreach}
