@@ -1,0 +1,60 @@
+CREATE TABLE IF NOT EXISTS `ps_pslanding` (
+  `id_pslanding` INT(11) NOT NULL AUTO_INCREMENT,
+  `active` TINYINT(1) NOT NULL DEFAULT 1,
+  `template` VARCHAR(64) NOT NULL DEFAULT 'landing-default',
+  `id_category` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+  `id_feature_value_collection` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+  `date_add` DATETIME NULL,
+  `date_upd` DATETIME NULL,
+  PRIMARY KEY (`id_pslanding`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `ps_pslanding_lang` (
+  `id_pslanding` INT(11) NOT NULL,
+  `id_lang` INT(11) NOT NULL,
+  `id_shop` INT(11) NOT NULL,
+  `title` VARCHAR(255) NOT NULL,
+  `slug` VARCHAR(255) NOT NULL,
+  `hero_title` VARCHAR(255) NULL,
+  `hero_subtitle` TEXT NULL,
+  `block2_title` VARCHAR(255) NULL,
+  `block2_text` TEXT NULL,
+  `products_title` VARCHAR(255) NULL,
+  `products_subtitle` TEXT NULL,
+  PRIMARY KEY (`id_pslanding`,`id_lang`,`id_shop`),
+  KEY `idx_slug_lang_shop` (`slug`, `id_lang`, `id_shop`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `ps_pslanding_characteristic` (
+  `id_pslanding_characteristic` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_pslanding` INT(10) UNSIGNED NOT NULL,
+  `position` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id_pslanding_characteristic`),
+  KEY `idx_pslanding` (`id_pslanding`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `ps_pslanding_characteristic_lang` (
+  `id_pslanding_characteristic` INT(10) UNSIGNED NOT NULL,
+  `id_lang` INT(10) UNSIGNED NOT NULL,
+  `id_shop` INT(10) UNSIGNED NOT NULL,
+  `title` VARCHAR(255) NOT NULL,
+  `text` TEXT NOT NULL,
+  PRIMARY KEY (`id_pslanding_characteristic`, `id_lang`, `id_shop`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `ps_pslanding_slide` (
+  `id_pslanding_slide` INT(11) NOT NULL AUTO_INCREMENT,
+  `id_pslanding` INT(11) NOT NULL,
+  `position` INT(11) NOT NULL DEFAULT 1,
+  `image` VARCHAR(255) NULL,
+  `id_product` INT(11) NULL,
+  `id_category` INT(11) NULL,
+  `active` TINYINT(1) NOT NULL DEFAULT 1,
+  PRIMARY KEY (`id_pslanding_slide`),
+  KEY `idx_pslanding` (`id_pslanding`, `position`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+ALTER TABLE `ps_pslanding`
+  ADD COLUMN `hero_media` VARCHAR(255) NULL AFTER `id_feature_value_collection`,
+  ADD COLUMN `block2_image` VARCHAR(255) NULL AFTER `hero_media`;

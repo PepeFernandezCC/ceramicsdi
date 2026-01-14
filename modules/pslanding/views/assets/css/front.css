@@ -1,0 +1,419 @@
+body#module-pslanding-landing #content {
+    padding: 0 !important;
+}
+
+#module-pslanding-landing strong {
+    font-weight: 600;
+}
+
+/* BLOQUE SLIDE */
+
+.block-landing {
+    border-top: 1px solid black;
+    
+}
+
+#landing-slider p {
+    color: white;
+    font-size: 25px;
+}
+
+.slide-landing {
+    padding: 50px;
+    height: 735px;
+}
+
+.landing-slide-title h1 {
+    font-size: 60px;
+    color: white;
+    margin-bottom:20px;
+}
+
+
+.landing-slide-subtitle span {
+    font-size: 25px;
+}
+
+/* Hero base */
+.landing-hero {
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  overflow: hidden;
+}
+
+/* Video como background */
+.landing-hero.has-video {
+  background: none;
+}
+
+.landing-hero-video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+}
+
+/* Contenido por encima */
+.landing-hero .slide-landing {
+  position: relative;
+  z-index: 2;
+}
+
+/* Overlay opcional para legibilidad */
+.landing-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.35); /* ajusta */
+  z-index: 1;
+}
+
+/* Contenedor hero */
+#landing-slider.landing-hero {
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  overflow: hidden;
+  min-height: 420px; /* ajusta según diseño */
+}
+
+/* Video en “background” */
+#landing-slider.landing-hero.has-video .landing-hero-video {
+  position: absolute;
+  /*inset: 0;*/
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+/* Overlay opcional para legibilidad */
+#landing-slider.landing-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.35); /* ajusta */
+  z-index: 1;
+}
+
+/* Contenido por encima del fondo */
+#landing-slider.landing-hero .slide-landing {
+  position: relative;
+  z-index: 2;
+}
+
+
+
+/* BLOQUE PRESENTACIÓN */
+
+.presentation-landing-info {
+    padding: 50px;
+    display: flex;
+    height: 600px;
+    justify-content: center;
+}
+
+.presentation-landing-reverse-info {
+    padding: 50px;
+    display: flex;
+    height: 600px;
+    justify-content: center;
+    flex-direction: row-reverse;
+}
+
+.presentation-landing-data {
+    line-height: 20px;
+}
+
+.presentation-landing-image {
+    height: 500px;
+}
+
+.presentation-landing-image img{
+    height: 500px;
+    margin-left: 150px;
+}
+
+video.landing-media {
+    height: 505px;
+    margin-left: 150px;
+}
+
+.presentation-landing-reverse-image img{
+    height: 500px;
+    margin-right: 150px;
+}
+
+video.landing-media-reverse {
+    height: 505px;
+    margin-right: 150px;
+}
+
+
+.presentation-landing-title {
+    width: 35%;
+}
+
+.presentation-landing-title h2 {
+    font-size: 40px;
+    font-weight: 500;
+    margin-top: 0px;
+    margin-bottom: 20px;
+}
+
+.presentation-landing-data p {
+    font-size: 20px;
+    font-weight: 300;
+}
+
+/* TITULOS */
+
+.feature-landing-block,
+.carousel-landing-block,
+.related-landing-block {
+    height: 600px;
+}
+
+.feature-landing-title,
+.carousel-landing-title,
+.related-landing-title {
+    text-align: center;
+    text-transform: uppercase;
+    padding: 30px 0;
+}
+
+.feature-landing-title h2,
+.carousel-landing-title h2,
+.related-landing-title h2 {
+    font-size: 35px;
+    font-weight: 500;
+    margin-bottom: 0;
+}
+/* BLOQUE CARACTERÍSTICAS */
+.features-landing-list {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 30px;
+}
+
+.feature-landing-item {
+    width: 20%;
+    padding: 45px;
+}
+
+.feature-item-title {
+    text-transform: uppercase;
+    font-weight: 500;
+    font-size: 20px;
+    padding-bottom: 15px;
+}
+
+.feature-item-text {
+    border-top: 1px solid;
+    padding-top: 15px;
+    font-size: 18px;
+}
+/* BLOQUE CAROUSEL */
+
+/* Centrar todo el carrusel */
+#carousel-landings .owl-stage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Cada elemento ocupa más espacio y se centra */
+#carousel-landings .owl-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 0 !important;
+  margin-right: 0 !important;
+}
+
+#carousel-landings .owl-stage-outer .owl-item {
+    padding: 0 !important;
+}
+
+#carousel-landings .owl-stage-outer {
+    border-bottom: none !important;
+}
+
+/* Miniaturas del carrusel */
+.inspiration-owl .inspiration-thumb img {
+  height: 220px;        /* 🔥 más grande */
+  width: auto;
+  display: block;
+  object-fit: cover;
+  box-shadow: 0 2px 8px rgba(0,0,0,.15);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+/* Animación al pasar el ratón */
+.inspiration-owl .inspiration-thumb:hover img {
+  transform: scale(1.03);
+  box-shadow: 0 4px 16px rgba(0,0,0,.25);
+}
+
+/* Reducir espacio entre elementos */
+.inspiration-owl .owl-stage-outer {
+  padding: 10px 0;
+}
+
+.inspiration-owl .owl-item {
+  margin-right: 6px !important;  /* 🔥 menos espacio lateral */
+}
+
+/* Quitar padding lateral de Owl */
+.inspiration-owl {
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* BLOQUE PRODUCTOS RELACIONADOS */
+.related-landing-list {
+    width: 75%;
+    margin: auto;
+}
+
+
+/* BLOQUE FAQ */
+.faq-title {
+    text-align: center;
+    font-size: 35px;
+    padding: 35px;
+    font-weight: 500;
+}
+
+.faq-data {
+    width: 50%;
+    margin: 0 auto;
+}
+
+.landing-related-box {
+    border-top: 1px solid;
+    border-left: 1px solid;
+    padding: 0 15px;
+    margin-bottom: 50px;
+}
+
+/* Bloque Collage */
+
+div#collageBox-landing {
+    display: flex;
+    flex-wrap: wrap;
+    width: 80%;
+    margin: 0 auto;
+}
+
+.landing-collage-slide{
+    width: 25%;
+    padding:10px;
+}
+
+.collage-landing-img {
+    width:100%
+}
+
+/* listas */
+.presentation-landing-data ul {
+  list-style: none;
+  padding-left: 1em;
+}
+.presentation-landing-data ul li {
+    font-size: 20px;
+    line-height: 40px;
+}
+
+.presentation-landing-data ul li::before {
+  content: "•";
+  font-size: 0.6em;
+  margin-right: 0.6em;
+  vertical-align: middle;
+}
+
+.presentation-landing-data ol {
+  list-style: none;
+  counter-reset: item;
+}
+
+.presentation-landing-data ol li {
+  counter-increment: item;
+  font-size: 20px;
+  line-height: 40px;
+}
+
+.presentation-landing-data ol li::before {
+  content: counter(item) ". ";
+  font-weight: bold;
+  font-size: 1.3em;
+}
+
+
+@media (max-width: 768px) {
+    .inspiration-owl .inspiration-thumb img {
+        height: 200px;  /* un poco más grande en móvil */
+    }
+
+    .slide-landing {
+        padding: 15px;
+    }
+
+    .presentation-landing-image {
+        height: 350px;
+    }
+
+    .presentation-landing-image img {
+        height: 350px;
+    }
+
+    .presentation-landing-info {
+        padding: 20px;
+        display: flex;
+        height: auto; 
+        justify-content: center;
+        flex-direction: column;
+    }
+
+    .presentation-landing-title {
+        width: auto;
+    }
+
+    .presentation-landing-title h2 {
+        font-size: 25px;
+        font-weight: 500;
+        margin-top: 10px;
+        margin-bottom: 15px;
+    }
+
+    .presentation-landing-data p {
+        font-size: 18px;
+        font-weight: 300;
+    }
+
+    .related-landing-list {
+        width: 100%;
+        margin: 0;
+    }
+    .landing-related-box {
+        border-left: none;
+    }
+
+    .carousel-landing-block {
+        height: auto;
+    }
+
+    .feature-landing-item {
+        width: 50%;
+        padding: 10px;
+        margin-bottom: 30px;
+    }
+
+}
