@@ -444,7 +444,7 @@
                                                 class="btn btn-primary add-to-cart add-to-cart-sample add-sample-to-cart"
                                                 data-button-action="add-to-cart-sample"
                                                 type="button"
-                                                {if !$product.add_to_cart_url || $muestraEnCarrito || $maxProductsInCart || $productoEnCarrito}
+                                                {if $muestraEnCarrito || $maxProductsInCart || $productoEnCarrito}
                                                     disabled
                                                 {/if}
                                         >

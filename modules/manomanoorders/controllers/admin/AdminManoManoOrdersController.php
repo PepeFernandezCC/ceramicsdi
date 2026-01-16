@@ -24,7 +24,6 @@ class AdminManoManoOrdersController extends ModuleAdminController
 
         $orders = $this->getManoManoOrders();
         $template = 'module:' . $this->module->name . '/views/templates/admin/orders.tpl';
-
         $this->context->smarty->assign([
             'orders' => $orders,
             'module_dir' => $this->module->getPathUri(),
@@ -37,46 +36,67 @@ class AdminManoManoOrdersController extends ModuleAdminController
 
     private function getManoManoOrders()
     {
+        $SELLER_ID_ES = '40134643';
+        $SELLER_ID_DE = '42401412';
+        $SELLER_ID_FR = '42401388';
+       
         $apiKey = Configuration::get('MM_API_KEY');
-        $sellerId = Configuration::get('MM_SELLER_ID');
-
-        if (empty($apiKey) || empty($sellerId)) {
+        $sellerIds = [
+            'es' => $SELLER_ID_ES,
+            'de' => $SELLER_ID_DE,
+            'fr' => $SELLER_ID_FR
+        ];  
+        
+        if (empty($apiKey) || empty($sellerIds)) {
             return ['error' => 'Configura API Key y Seller ID en la configuración del módulo.'];
         }
 
-        $url = 'https://partnersapi.manomano.com/orders/v1/orders?seller_contract_id=' . urlencode($sellerId);
+        $allOrders = [];
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'x-api-key: ' . $apiKey,
-            'x-thirdparty-name: Prestashop_1.7.11'
-        ]);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 20);
+        foreach($sellerIds as $country=>$sellerId) {
+            if (empty($sellerId)) {
+                continue; 
+            }
+            
+            $url = 'https://partnersapi.manomano.com/orders/v1/orders?seller_contract_id=' . urlencode($sellerId);
 
-        $response = curl_exec($ch);
-        $err = curl_error($ch);
-        curl_close($ch);
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'x-api-key: ' . $apiKey,
+                'x-thirdparty-name: Prestashop_1.7.11'
+            ]);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 20);
 
-        if ($response === false) {
-            return ['error' => 'Error CURL: ' . $err];
+            $response = curl_exec($ch);
+            $err = curl_error($ch);
+            curl_close($ch);
+
+            if ($response === false) {
+                return ['error' => 'Error CURL: ' . $err];
+            }
+            $data = json_decode($response, true);
+            if (!$data) {
+                return ['error' => 'Respuesta no válida de ManoMano: ' . htmlspecialchars($response)];
+            }
+
+            $orders = $data['content'] ?? [];
+
+            // Filtrar pedidos ya importados
+            $importedRefs = Db::getInstance()->executeS('SELECT order_reference FROM `'._DB_PREFIX_.'mm_orders_imported`');
+            $importedRefs = array_column($importedRefs, 'order_reference');
+
+            $orders = array_filter($orders, function($o) use ($importedRefs) {
+                return !in_array($o['order_reference'], $importedRefs);
+            });
+
+            // Acumular todos los pedidos
+            $allOrders = array_merge($allOrders, $orders);
+            
         }
 
-        $data = json_decode($response, true);
-        if (!$data) {
-            return ['error' => 'Respuesta no válida de ManoMano: ' . htmlspecialchars($response)];
-        }
-
-        $orders = $data['content'] ?? [];
-
-        // Filtrar pedidos ya importados
-        $importedRefs = Db::getInstance()->executeS('SELECT order_reference FROM `'._DB_PREFIX_.'mm_orders_imported`');
-        $importedRefs = array_column($importedRefs, 'order_reference');
-
-        return array_filter($orders, function($o) use ($importedRefs) {
-            return !in_array($o['order_reference'], $importedRefs);
-        });
+        return $allOrders;
     }
 
     public function postProcess()

@@ -76,12 +76,12 @@ class ManoManoOrders extends Module
     {
         if (Tools::isSubmit('submit'.$this->name)) {
             Configuration::updateValue('MM_API_KEY', Tools::getValue('MM_API_KEY'));
-            Configuration::updateValue('MM_SELLER_ID', Tools::getValue('MM_SELLER_ID'));
+            //Configuration::updateValue('MM_SELLER_ID', Tools::getValue('MM_SELLER_ID'));
         }
 
         return $this->renderForm();
     }
-
+    //SELLER ID ES UN ARRAY EN EL CONTROLADOR
     private function renderForm()
     {
         $fields_form = [
@@ -96,13 +96,15 @@ class ManoManoOrders extends Module
                         'label' => $this->l('API Key'),
                         'name' => 'MM_API_KEY',
                         'required' => true
-                    ],
-                    [
+                    ]
+                    /*
+                    ,[
                         'type' => 'text',
                         'label' => $this->l('Seller Contract ID'),
                         'name' => 'MM_SELLER_ID',
                         'required' => true
                     ]
+                    */
                 ],
                 'submit' => [
                     'title' => $this->l('Guardar'),
@@ -120,7 +122,7 @@ class ManoManoOrders extends Module
         $helper->token = Tools::getAdminTokenLite('AdminModules');
 
         $helper->fields_value['MM_API_KEY'] = Configuration::get('MM_API_KEY');
-        $helper->fields_value['MM_SELLER_ID'] = Configuration::get('MM_SELLER_ID');
+        //$helper->fields_value['MM_SELLER_ID'] = Configuration::get('MM_SELLER_ID');
 
         return $helper->generateForm([$fields_form]);
     }

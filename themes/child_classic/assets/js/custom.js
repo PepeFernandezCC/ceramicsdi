@@ -1375,13 +1375,17 @@ $( document ).ready( function () {
                // Si la respuesta es válida, puedes usar el resultado (por ejemplo, el costo de envío)
                if (response.can_add_sample && response.id_sample !== false) {
 
+
                   var quantityOriginalValue = $( '#quantity-input' ).val();
 
                   $('#product_page_product_id').val(response.id_sample);
                   
                   $( '#quantity-input' ).val( 1 );
 
-                  $( '#add-to-cart-submit' ).trigger('click');
+                  let addButton = $('#add-to-cart-submit');
+                  addButton.prop('disabled', false);
+                  addButton.trigger('click');
+                  addButton.prop('disabled', true);
       
                   $( '#quantity-input' ).val( quantityOriginalValue );
 
