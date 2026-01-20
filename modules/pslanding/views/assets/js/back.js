@@ -1,8 +1,8 @@
 /* =========================
-   Características (igual que tenías)
+   Características
 ========================= */
 document.addEventListener('DOMContentLoaded', function () {
-  console.log('Papi is here...');
+  console.log('Papi está aquí...');
   const root = document.getElementById('pslanding-characteristics');
   if (!root) return;
 
@@ -16,7 +16,9 @@ document.addEventListener('DOMContentLoaded', function () {
   const hidden = document.querySelector('input[name="characteristics_json"]');
 
   function escapeHtml(s) {
-    return (s || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+    return (s || '').replace(/[&<>"']/g, m => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+    }[m]));
   }
 
   function syncHidden() {
@@ -101,17 +103,23 @@ document.addEventListener('DOMContentLoaded', function () {
     syncHidden();
   }
 
-  btnAdd.addEventListener('click', function () {
-    items.push({ title: {}, text: {} });
-    render();
-  });
+  if (btnAdd) {
+    btnAdd.addEventListener('click', function () {
+      items.push({ title: {}, text: {} });
+      render();
+    });
+  }
 
   render();
 });
 
 
 /* =========================
-   Slides / Carousel (MODIFICADO: producto o categoría según template)
+   Slides / Carousel
+   - landing-default: producto
+   - landing-simple : categoría
+   - IMAGEN POR IDIOMA (tabs)
+   - SIN textos
 ========================= */
 document.addEventListener('DOMContentLoaded', function () {
   const root = document.getElementById('pslanding-slides');
@@ -122,15 +130,9 @@ document.addEventListener('DOMContentLoaded', function () {
   const btnAdd = document.getElementById('pslanding-add-slide');
   const inputJson = document.querySelector('input[name="slides_json"]');
 
+  const languages = Array.isArray(cfg.languages) ? cfg.languages : [];
+  const defaultLang = cfg.default_lang || (languages[0] && languages[0].id_lang) || 1;
   const templateSelect = document.querySelector('select[name="template"]');
-
-  function getTemplate() {
-    return templateSelect ? templateSelect.value : (cfg.template || 'landing-default');
-  }
-  function isSimpleTemplate() {
-    console.log('template: ' + getTemplate());
-    return getTemplate() === 'landing-simple';
-  }
 
   function escapeHtml(str) {
     return String(str || '')
@@ -138,16 +140,29 @@ document.addEventListener('DOMContentLoaded', function () {
       .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
   }
 
-  // Normaliza items (incluye id_category / category_name)
+  function getTemplate() {
+    return templateSelect ? templateSelect.value : (cfg.template || 'landing-default');
+  }
+  function isSimpleTemplate() {
+    return getTemplate() === 'landing-simple';
+  }
+
+  function normalizeImagesMap(v) {
+    // queremos {id_lang: filename}
+    if (v && typeof v === 'object' && !Array.isArray(v)) return v;
+    return {};
+  }
+
+  // Normaliza slides: images por idioma
   let slides = Array.isArray(cfg.items)
     ? cfg.items.map((s, i) => ({
-        idx: i + 1, // idx estable para inputs file
+        idx: i + 1,
         active: s.active ? 1 : 0,
-        image: s.image || '',
         id_product: s.id_product || '',
         product_name: s.product_name || '',
         id_category: s.id_category || '',
         category_name: s.category_name || '',
+        images: normalizeImagesMap(s.images), // <<--- viene del PHP getSlides()
       }))
     : [];
 
@@ -169,7 +184,7 @@ document.addEventListener('DOMContentLoaded', function () {
     return `
       <label><strong>Producto</strong></label>
       <div style="display:flex;gap:8px;align-items:center;">
-        <input type="text" class="form-control" placeholder="Selecciona un Producto..." value="${escapeHtml(s.product_name)}"
+        <input type="text" class="form-control" placeholder="Buscar producto..." value="${escapeHtml(s.product_name)}"
           data-action="product-search" data-idx="${s.idx}">
         <input type="hidden" data-k="id_product" value="${escapeHtml(s.id_product)}">
         <button type="button" class="btn btn-default" data-action="clear-product" data-idx="${s.idx}">Limpiar</button>
@@ -179,25 +194,71 @@ document.addEventListener('DOMContentLoaded', function () {
     `;
   }
 
-  function render() {
-    console.log('renderizando bloque de slides...');
-    list.innerHTML = slides.map((s) => {
-      const preview = s.image
-        ? `<img src="/modules/pslanding/uploads/${escapeHtml(s.image)}" style="max-width:120px;max-height:80px;display:block;margin-bottom:6px;">`
-        : '';
+  function renderImageTabs(s) {
+    if (!languages.length) {
+      // Fallback: sin idiomas, usa defaultLang
+      const old = (s.images && s.images[defaultLang]) ? s.images[defaultLang] : '';
+      const preview = old
+        ? `<img src="/modules/pslanding/uploads/${escapeHtml(old)}" style="max-width:180px;max-height:120px;display:block;margin-bottom:6px;">`
+        : `<em>No hay imagen</em>`;
 
+      return `
+        <hr style="margin:12px 0;">
+        <label><strong>Imagen del slide</strong></label>
+        <div style="margin-top:6px;">
+          ${preview}
+          <input type="file" name="slide_image_${s.idx}_${defaultLang}" accept="image/*">
+          <input type="hidden" data-k="image_${defaultLang}" value="${escapeHtml(old)}">
+          <div class="help-block">Si no subes nada, se mantiene la imagen actual.</div>
+        </div>
+      `;
+    }
+
+    let tabs = '';
+    let panes = '';
+
+    languages.forEach((l) => {
+      const idLang = l.id_lang;
+      const active = (idLang === defaultLang) ? 'active' : '';
+      const label = escapeHtml(l.iso_code || l.name || idLang);
+
+      tabs += `<li class="${active}">
+        <a href="#psls_img_${s.idx}_${idLang}" data-toggle="tab">${label}</a>
+      </li>`;
+
+      const old = (s.images && s.images[idLang]) ? s.images[idLang] : '';
+      const preview = old
+        ? `<img src="/modules/pslanding/uploads/${escapeHtml(old)}" style="max-width:180px;max-height:120px;display:block;margin-bottom:6px;">`
+        : `<em>No hay imagen</em>`;
+
+      panes += `
+        <div class="tab-pane ${active}" id="psls_img_${s.idx}_${idLang}">
+          <div style="margin-top:6px;">
+            ${preview}
+            <input type="file" name="slide_image_${s.idx}_${idLang}" accept="image/*">
+            <input type="hidden" data-k="image_${idLang}" value="${escapeHtml(old)}">
+            <div class="help-block">Idioma ${label}: si no subes nada, se mantiene la imagen actual.</div>
+          </div>
+        </div>
+      `;
+    });
+
+    return `
+      <hr style="margin:12px 0;">
+      <label><strong>Imágenes por idioma</strong></label>
+      <ul class="nav nav-tabs">${tabs}</ul>
+      <div class="tab-content" style="padding-top:10px">${panes}</div>
+    `;
+  }
+
+  function render() {
+    list.innerHTML = slides.map((s) => {
       return `
         <div class="panel" style="padding:12px;margin-bottom:10px;" data-idx="${s.idx}">
           <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;">
-            <div style="min-width:160px;">
-              <label><strong>Imagen</strong></label>
-              ${preview}
-              <input type="file" name="slide_image_${s.idx}" accept="image/*">
-              <input type="hidden" data-k="image" value="${escapeHtml(s.image)}">
-            </div>
-
-            <div style="flex:1;min-width:260px;">
+            <div style="flex:1;min-width:360px;">
               ${renderLinkBlock(s)}
+              ${renderImageTabs(s)}
             </div>
 
             <div style="min-width:180px;">
@@ -226,13 +287,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const out = [];
 
     panels.forEach((panel, i) => {
-      const idxInput = panel.querySelector('input[type="file"]')?.name?.match(/slide_image_(\d+)/);
-      const idx = idxInput ? parseInt(idxInput[1], 10) : (i + 1);
-
-      const image = panel.querySelector('input[data-k="image"]')?.value || '';
+      const idx = panel.dataset.idx ? parseInt(panel.dataset.idx, 10) : (i + 1);
       const active = panel.querySelector('input[data-action="toggle-active"]')?.checked ? 1 : 0;
 
-      // según template, guardamos producto o categoría
+      // Link target según template
       let id_product = null;
       let id_category = null;
 
@@ -244,16 +302,26 @@ document.addEventListener('DOMContentLoaded', function () {
         id_product = raw ? parseInt(raw, 10) : null;
       }
 
+      // Images map por idioma (desde hidden inputs)
+      const images = {};
+      const hiddenImgs = panel.querySelectorAll('input[type="hidden"][data-k^="image_"]');
+      hiddenImgs.forEach(h => {
+        const m = (h.dataset.k || '').match(/^image_(\d+)$/);
+        if (!m) return;
+        const lang = parseInt(m[1], 10);
+        images[lang] = h.value || '';
+      });
+
       out.push({
         idx,
+        active,
         id_product,
         id_category,
-        image,
-        active
+        images
       });
     });
 
-    inputJson.value = JSON.stringify(out);
+    if (inputJson) inputJson.value = JSON.stringify(out);
   }
 
   async function searchProducts(q) {
@@ -265,7 +333,6 @@ document.addEventListener('DOMContentLoaded', function () {
     return await res.json();
   }
 
-  // NECESITAS implementar ajaxProcessSearchCategories en AdminPsLandingController
   async function searchCategories(q) {
     const url = new URL(cfg.ajax_url, window.location.origin);
     url.searchParams.set('ajax', '1');
@@ -275,32 +342,32 @@ document.addEventListener('DOMContentLoaded', function () {
     return await res.json();
   }
 
-  btnAdd.addEventListener('click', function () {
-    const nextIdx = slides.length ? Math.max(...slides.map(s => s.idx)) + 1 : 1;
-
-    slides.push({
-      idx: nextIdx,
-      active: 1,
-      image: '',
-      id_product: '',
-      product_name: '',
-      id_category: '',
-      category_name: '',
+  if (btnAdd) {
+    btnAdd.addEventListener('click', function () {
+      const nextIdx = slides.length ? Math.max(...slides.map(s => s.idx)) + 1 : 1;
+      slides.push({
+        idx: nextIdx,
+        active: 1,
+        id_product: '',
+        product_name: '',
+        id_category: '',
+        category_name: '',
+        images: {}, // sin imágenes al crear
+      });
+      render();
     });
+  }
 
-    render();
-  });
-
-  // Delegación de eventos (input)
+  // Inputs: búsquedas
   list.addEventListener('input', async function (e) {
     const el = e.target;
     if (!el || !el.dataset.action) return;
 
+    const action = el.dataset.action;
     const idx = el.dataset.idx ? parseInt(el.dataset.idx, 10) : null;
-    const q = el.value.trim();
+    const q = (el.value || '').trim();
 
-    // PRODUCT SEARCH
-    if (el.dataset.action === 'product-search') {
+    if (action === 'product-search') {
       const box = list.querySelector(`[data-action="results-product"][data-idx="${idx}"]`);
       if (!box) return;
 
@@ -325,8 +392,7 @@ document.addEventListener('DOMContentLoaded', function () {
       return;
     }
 
-    // CATEGORY SEARCH
-    if (el.dataset.action === 'category-search') {
+    if (action === 'category-search') {
       const box = list.querySelector(`[data-action="results-category"][data-idx="${idx}"]`);
       if (!box) return;
 
@@ -341,8 +407,8 @@ document.addEventListener('DOMContentLoaded', function () {
         <div class="list-group" style="margin-top:6px;">
           ${results.map(r => `
             <button type="button" class="list-group-item" data-action="pick-category"
-              data-idx="${idx}" data-id="${r.id_category}" data-name="${escapeHtml( r.label || r.name)}">
-              ${escapeHtml(r.label || ('#'+r.id_category+' - '+r.name))}
+              data-idx="${idx}" data-id="${r.id_category}" data-name="${escapeHtml(r.name)}">
+              ${escapeHtml(r.label || r.name)}
             </button>
           `).join('')}
         </div>
@@ -352,7 +418,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  // Delegación de eventos (click)
+  // Clicks: pick/clear/remove/toggle
   list.addEventListener('click', function (e) {
     const btn = e.target.closest('[data-action]');
     if (!btn) return;
@@ -371,7 +437,7 @@ document.addEventListener('DOMContentLoaded', function () {
       return;
     }
 
-    // PRODUCT actions
+    // PRODUCT
     if (action === 'clear-product' && idx != null) {
       const panel = btn.closest('.panel');
       const idInput = panel.querySelector('input[data-k="id_product"]');
@@ -396,7 +462,7 @@ document.addEventListener('DOMContentLoaded', function () {
       return;
     }
 
-    // CATEGORY actions
+    // CATEGORY
     if (action === 'clear-category' && idx != null) {
       const panel = btn.closest('.panel');
       const idInput = panel.querySelector('input[data-k="id_category"]');
@@ -422,29 +488,19 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  // Al cambiar template, repintar el carrusel y limpiar campos incompatibles
+  // Cambia template -> repinta y limpia campos incompatibles (no toca imágenes)
   if (templateSelect) {
     templateSelect.addEventListener('change', () => {
       if (isSimpleTemplate()) {
-        // vamos a simple: borrar productos
-        slides = slides.map(s => ({
-          ...s,
-          id_product: '',
-          product_name: '',
-        }));
+        slides = slides.map(s => ({ ...s, id_product: '', product_name: '' }));
       } else {
-        // vamos a default: borrar categorías
-        slides = slides.map(s => ({
-          ...s,
-          id_category: '',
-          category_name: '',
-        }));
+        slides = slides.map(s => ({ ...s, id_category: '', category_name: '' }));
       }
       render();
     });
   }
 
-  // Al enviar el form, asegura JSON actualizado
+  // Submit -> JSON actualizado
   const form = root.closest('form');
   if (form) {
     form.addEventListener('submit', function () {
@@ -457,7 +513,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 /* =========================
-   Mostrar/Ocultar campos según plantilla (igual que tenías)
+   Mostrar/Ocultar campos según plantilla
 ========================= */
 document.addEventListener('DOMContentLoaded', () => {
   const templateSelect = document.querySelector('select[name="template"]');

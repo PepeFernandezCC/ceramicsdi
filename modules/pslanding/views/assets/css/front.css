@@ -19,8 +19,17 @@ body#module-pslanding-landing #content {
 }
 
 .slide-landing {
-    padding: 50px;
     height: 735px;
+    width: 40%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    margin-left: 90px;
+}
+
+.landing-slide-title {
+    margin-left: 110px;
 }
 
 .landing-slide-title h1 {
@@ -29,6 +38,15 @@ body#module-pslanding-landing #content {
     margin-bottom:20px;
 }
 
+.landing-slide-subtitle {
+    width: 70%;
+    line-height: 37px;
+    margin-top: 70px;
+}
+
+.landing-slide-subtitle p {
+    margin-bottom: 65px;
+}
 
 .landing-slide-subtitle span {
     font-size: 25px;
@@ -70,7 +88,7 @@ body#module-pslanding-landing #content {
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.35); /* ajusta */
+  background: rgba(0,0,0,0.50); /* ajusta */
   z-index: 1;
 }
 
@@ -99,7 +117,7 @@ body#module-pslanding-landing #content {
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.35); /* ajusta */
+  background: none;
   z-index: 1;
 }
 
@@ -116,27 +134,35 @@ body#module-pslanding-landing #content {
 .presentation-landing-info {
     padding: 50px;
     display: flex;
-    height: 600px;
-    justify-content: center;
+    justify-content: space-around;
+    align-items: center;
+    /*margin-bottom: 5%;*/
 }
 
 .presentation-landing-reverse-info {
-    padding: 50px;
     display: flex;
-    height: 600px;
     justify-content: center;
     flex-direction: row-reverse;
+    align-items: center;
+}
+
+.presentation-landing-h2 {
+    margin: 40px 0;
+    text-align: center;
+    font-size: 30px;
+    font-weight: 600;
 }
 
 .presentation-landing-data {
-    line-height: 20px;
+    line-height: 28px;
 }
 
 .presentation-landing-image {
     height: 500px;
 }
 
-.presentation-landing-image img{
+.presentation-landing-image img, 
+.presentation-landing-reverse img{
     height: 500px;
     margin-left: 150px;
 }
@@ -146,34 +172,35 @@ video.landing-media {
     margin-left: 150px;
 }
 
-.presentation-landing-reverse-image img{
-    height: 500px;
-    margin-right: 150px;
-}
-
 video.landing-media-reverse {
     height: 505px;
-    margin-right: 150px;
+    margin-right: 34px;
 }
 
 
 .presentation-landing-title {
-    width: 35%;
+    width: 30%;
 }
 
 .presentation-landing-title h2 {
     font-size: 40px;
     font-weight: 500;
     margin-top: 0px;
-    margin-bottom: 20px;
+    margin-bottom: 50px;
 }
 
 .presentation-landing-data p {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 300;
 }
 
 /* TITULOS */
+
+.related-landing-subtitle {
+    text-align: center;
+    margin-bottom: 50px;
+    font-size: 20px;
+}
 
 .feature-landing-block,
 .carousel-landing-block,
@@ -186,7 +213,7 @@ video.landing-media-reverse {
 .related-landing-title {
     text-align: center;
     text-transform: uppercase;
-    padding: 30px 0;
+    padding: 45px 0;
 }
 
 .feature-landing-title h2,
@@ -240,6 +267,10 @@ video.landing-media-reverse {
 
 #carousel-landings .owl-stage-outer .owl-item {
     padding: 0 !important;
+}
+
+#bloque-4 .presentation-landing-info {
+    padding-top: 0;
 }
 
 #carousel-landings .owl-stage-outer {
@@ -311,6 +342,8 @@ div#collageBox-landing {
     flex-wrap: wrap;
     width: 80%;
     margin: 0 auto;
+    padding-top: 35px;
+    padding-bottom: 50px;
 }
 
 .landing-collage-slide{
@@ -325,37 +358,89 @@ div#collageBox-landing {
 /* listas */
 .presentation-landing-data ul {
   list-style: none;
-  padding-left: 1em;
 }
 .presentation-landing-data ul li {
-    font-size: 20px;
-    line-height: 40px;
+    font-size: 18px;
+    line-height: 50px;
 }
 
 .presentation-landing-data ul li::before {
-  content: "•";
-  font-size: 0.6em;
-  margin-right: 0.6em;
-  vertical-align: middle;
+    content: "•";
+    font-size: 41px;
+    margin-right: 8px;
+    vertical-align: middle;
 }
 
 .presentation-landing-data ol {
   list-style: none;
   counter-reset: item;
+  padding: 0;
 }
 
 .presentation-landing-data ol li {
   counter-increment: item;
-  font-size: 20px;
-  line-height: 40px;
+  font-size: 18px;
+  line-height: 50px;
 }
 
 .presentation-landing-data ol li::before {
-  content: counter(item) ". ";
+  content: counter(item) " ";
   font-weight: bold;
-  font-size: 1.3em;
+  font-size: 30px;
 }
 
+/* TEXTO SLIDES SIMPLE */
+
+/* Contenedor para overlay */
+.landing-collage-media{
+  position: relative;
+  width: 100%;
+}
+
+/* Overlay encima de la imagen */
+.landing-collage-overlay{
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;   /* texto abajo */
+  gap: 6px;
+  padding: 14px;
+  color: #fff;
+  pointer-events: none;        /* no rompe el click del <a> */
+  /*background: linear-gradient(
+    to top,
+    rgba(0,0,0,.55) 0%,
+    rgba(0,0,0,.25) 45%,
+    rgba(0,0,0,0) 75%
+  );*/
+}
+
+.landing-collage-title{
+  font-weight: 700;
+  line-height: 1.1;
+  text-shadow: 0 2px 10px rgba(0,0,0,.45);
+}
+
+.landing-collage-desc{
+  font-weight: 400;
+  line-height: 1.2;
+  opacity: .95;
+  text-shadow: 0 2px 10px rgba(0,0,0,.45);
+}
+
+#bloque-4 strong {
+    font-weight: 600;
+    font-size: 20px;
+}
+
+#bloque-3-data {
+    margin-left: 30px;
+}
+
+#faq-landing-box article {
+    margin-top: 0;
+}
 
 @media (max-width: 768px) {
     .inspiration-owl .inspiration-thumb img {
@@ -363,15 +448,38 @@ div#collageBox-landing {
     }
 
     .slide-landing {
-        padding: 15px;
+        height: auto;
+        width: 100%;
+        display: block;
+        flex-direction: column;
+        padding: 20px;
+        margin: 0;
+    }
+
+    .landing-slide-title {
+        margin: 0;
+        margin-top: 65%;
+        width: 80%;
+    }
+
+    .landing-slide-subtitle {
+        width: auto;
+        display: none;
+    }
+
+    .landing-slide-title h1 {
+        font-size: 35px;
     }
 
     .presentation-landing-image {
-        height: 350px;
+        height: auto;
+        margin-bottom: 10px;
     }
 
     .presentation-landing-image img {
-        height: 350px;
+        width: 390px;
+        height: 390px;
+        margin: 0 auto;
     }
 
     .presentation-landing-info {
@@ -380,22 +488,18 @@ div#collageBox-landing {
         height: auto; 
         justify-content: center;
         flex-direction: column;
+        align-items: flex-start;
     }
 
     .presentation-landing-title {
         width: auto;
-    }
-
-    .presentation-landing-title h2 {
-        font-size: 25px;
-        font-weight: 500;
-        margin-top: 10px;
-        margin-bottom: 15px;
+        margin-bottom: 20px;
     }
 
     .presentation-landing-data p {
-        font-size: 18px;
+        font-size: 16px;
         font-weight: 300;
+        line-height: 25px;
     }
 
     .related-landing-list {
@@ -404,6 +508,7 @@ div#collageBox-landing {
     }
     .landing-related-box {
         border-left: none;
+        margin-bottom: 0;
     }
 
     .carousel-landing-block {
@@ -414,6 +519,113 @@ div#collageBox-landing {
         width: 50%;
         padding: 10px;
         margin-bottom: 30px;
+    }
+
+    
+    .presentation-landing-reverse img{
+  
+        margin-left: 0;
+    }
+
+    .presentation-landing-reverse-info {
+        flex-direction: column-reverse;
+    }
+
+    .faq-data {
+        width: 90%;
+    }
+
+    video.landing-media-reverse {
+        height: 245px;
+        margin-right: 0;
+        max-width: 100%;
+    }
+}
+    #bloque-3-data{
+        margin: 0 20px;
+        margin-top: 20px;
+    }
+
+    #bloque-3-data strong{
+        font-size: 18px;
+    }
+
+    .presentation-landing-title h2 {
+
+        font-weight: 500;
+        margin-top: 10px;
+        font-size: 25px;
+        margin-bottom: 30px;
+    }
+
+    .presentation-landing-h2 {
+        margin: 30px 0;
+        text-align: center;
+        font-size: 20px;
+        font-weight: 600;
+    }
+
+    .presentation-landing-data ul li {
+        font-size: 16px;
+        line-height: 35px;
+    }
+
+    .presentation-landing-data ol li {
+        font-size: 16px;
+        line-height: 35px;
+    }
+    .presentation-landing-data ol{
+        margin: 0
+    }
+
+    .presentation-landing-data ol li::before {
+        content: counter(item) " ";
+        font-weight: 500;
+        font-size: 20px;
+    }
+    /*collage template simple*/
+    div#collageBox-landing {
+        width: 95%;
+        margin-bottom: 20px;
+        padding: 0;
+    }
+    .landing-collage-slide {
+        width: 50%;
+    }
+
+    #bloque-4 strong {
+        font-weight: 600;
+        font-size: 18px;
+    }
+
+    #bloque-4 .presentation-landing-info {
+        padding-top: 0;
+    }
+
+    .related-landing-title h2 {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 0;
+    }
+
+    .related-landing-subtitle {
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 16px;
+        padding: 0 20px
+    }
+
+    .related-landing-title {
+        text-align: center;
+        text-transform: uppercase;
+        padding: 30px 0;
+    }
+
+    #faq-landing-box .faq-title {
+        text-align: center;
+        font-size: 22px;
+        padding: 30px;
+        font-weight: 600;
     }
 
 }

@@ -196,11 +196,22 @@ class PslandingLandingModuleFrontController extends ModuleFrontController
 
     protected function getSlidesByLanding($idLanding)
     {
+        $id_lang = (int)$this->context->language->id;
+
+        // idioma fallback por si no existe imagen en el idioma actual
+        $id_lang_default = 1;
+
         return Db::getInstance()->executeS('
-            SELECT id_pslanding_slide, position, image, id_product, id_category, active
-            FROM '._DB_PREFIX_.'pslanding_slide
-            WHERE id_pslanding='.(int)$idLanding.' AND active=1
-            ORDER BY position ASC, id_pslanding_slide ASC
+            SELECT 
+                s.id_pslanding_slide, s.position, s.id_product, s.id_category, s.active,
+                COALESCE(sl.image, sld.image) AS image
+            FROM '._DB_PREFIX_.'pslanding_slide s
+            LEFT JOIN '._DB_PREFIX_.'pslanding_slide_lang sl
+                ON (sl.id_pslanding_slide = s.id_pslanding_slide AND sl.id_lang='.(int)$id_lang.')
+            LEFT JOIN '._DB_PREFIX_.'pslanding_slide_lang sld
+                ON (sld.id_pslanding_slide = s.id_pslanding_slide AND sld.id_lang='.(int)$id_lang_default.')
+            WHERE s.id_pslanding='.(int)$idLanding.' AND s.active=1
+            ORDER BY s.position ASC, s.id_pslanding_slide ASC
         ');
     }
 

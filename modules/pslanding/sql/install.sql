@@ -46,12 +46,18 @@ CREATE TABLE IF NOT EXISTS `ps_pslanding_slide` (
   `id_pslanding_slide` INT(11) NOT NULL AUTO_INCREMENT,
   `id_pslanding` INT(11) NOT NULL,
   `position` INT(11) NOT NULL DEFAULT 1,
-  `image` VARCHAR(255) NULL,
   `id_product` INT(11) NULL,
   `id_category` INT(11) NULL,
   `active` TINYINT(1) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id_pslanding_slide`),
   KEY `idx_pslanding` (`id_pslanding`, `position`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `ps_pslanding_slide_lang` (
+  `id_pslanding_slide` INT UNSIGNED NOT NULL,
+  `id_lang` INT UNSIGNED NOT NULL,
+  `image` VARCHAR(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id_pslanding_slide`, `id_lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 

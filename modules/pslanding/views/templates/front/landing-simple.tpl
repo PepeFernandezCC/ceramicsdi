@@ -81,16 +81,19 @@
 
     <div class="block-landing">
       <div class="presentation-landing-reverse">
+
+        <h2 class="presentation-landing-h2">
+          {if $landing.block3_title}
+            {$landing.block3_title|escape:'html'}
+          {else}
+            {$landing.title|escape:'html'}
+          {/if}
+        </h2>
+
         <div class="presentation-landing-reverse-info">
           <div class="presentation-landing-title">
-            <h2>
-              {if $landing.block3_title}
-                {$landing.block3_title|escape:'html'}
-              {else}
-                {$landing.title|escape:'html'}
-              {/if}
-            </h2>
-            <div class="presentation-landing-data">
+
+            <div id="bloque-3-data" class="presentation-landing-data">
               {if $landing.block3_text}
                   {$landing.block3_text nofilter}
               {/if}
@@ -105,7 +108,6 @@
                     muted
                     loop
                     autoplay
-                    
                     preload="auto">
               </video>
             {elseif $landing.block3_media_type == 'image' && $landing.block3_media_url}
@@ -117,41 +119,62 @@
       </div>
 
       <div class="collage-landing-block">
-
         <div class="collage-landing-item">
 
           {if $landing_slides|@count}
-            <section id="collage-landings" class="mb-3">
-          
-                <div id="collageBox-landing" class="row">
-                 
-                    {foreach from=$landing_slides item=productItem}
-                      <a class="landing-collage-slide" href="{$productItem.category_url|escape:'html':'UTF-8'}">
-                         <img class="collage-landing-img" src="{$productItem.image_url|escape:'html':'UTF-8'}" alt="{$landing.title|escape:'html':'UTF-8'}">
-                      </a>
-                    {/foreach}
- 
-                </div>
+            <section id="collage-landings">
+              <div id="collageBox-landing" class="row">
 
+                {foreach from=$landing_slides item=productItem}
+                  {* Elegir filename por idioma *}
+                  {assign var=slideFilename value=''}
+
+                  {if isset($productItem.images) && isset($productItem.images[$language.id]) && $productItem.images[$language.id]}
+                    {assign var=slideFilename value=$productItem.images[$language.id]}
+                  {/if}
+
+                  {* Construir URL final *}
+                  {assign var=slideImgUrl value=''}
+
+                  {if $slideFilename}
+                    {assign var=slideImgUrl value="`$urls.base_url`modules/pslanding/uploads/`$slideFilename`"}
+                  {elseif isset($productItem.image_url) && $productItem.image_url}
+                    {* fallback si sigues generando image_url en PHP *}
+                    {assign var=slideImgUrl value=$productItem.image_url}
+                  {/if}
+
+                  <a class="landing-collage-slide" href="{$productItem.category_url|escape:'html':'UTF-8'}">
+                    {if $slideImgUrl}
+                      <img
+                        class="collage-landing-img"
+                        src="{$slideImgUrl|escape:'html':'UTF-8'}"
+                        alt="{$landing.title|escape:'html':'UTF-8'}">
+                    {/if}
+                  </a>
+                {/foreach}
+
+              </div>
             </section>
           {/if}
 
         </div>
       </div>
 
+
     </div>
 
-    <div class="block-landing">
+    <div id="bloque-4" class="block-landing">
       <div class="presentation-landing">
-        <div class="presentation-landing-info">
-          <div class="presentation-landing-title">
-            <h2>
+          <h2 class="presentation-landing-h2">
               {if $landing.block4_title}
                 {$landing.block4_title|escape:'html'}
               {else}
                 {$landing.title|escape:'html'}
               {/if}
-            </h2>
+          </h2>
+        <div class="presentation-landing-info">
+          <div class="presentation-landing-title">
+
             <div class="presentation-landing-data">
               {if $landing.block4_text}
                   {$landing.block4_text nofilter}
@@ -181,7 +204,11 @@
     <div id="category" class="block-landing">
       <div id="content-wrapper" class="related-landing-block" style="height: auto">
         <div class="related-landing-title">
-          <h2>{l s='related products' d='Modules.Pslanding.Shop'}</h2>
+          <h2>{l s='Empieza por la muestra.' d='Shop.Theme.Catalog'}</h2>
+        </div>
+
+        <div class="related-landing-subtitle">
+          <span>{l s='Explora los azulejos que te encajan y pide tu muestra antes de tomar una decisión.' d='Shop.Theme.Catalog'}</span>
         </div>
 
         <section id="products" class="related-landing-list">
@@ -198,7 +225,7 @@
     </div>
 
     <div class="block-landing">
-      <div class="faq-landing-block">
+      <div id="faq-landing-box" class="faq-landing-block">
         <div class="faq-title">
           {l s='FAQ' d='Shop.Theme.Global'}
         </div>

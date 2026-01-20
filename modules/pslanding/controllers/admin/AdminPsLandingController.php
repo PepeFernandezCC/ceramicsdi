@@ -357,10 +357,14 @@ class AdminPsLandingController extends ModuleAdminController
 
         $currentTemplate = (Validate::isLoadedObject($this->object) ? (string)$this->object->template : (string)Tools::getValue('template', 'landing-default'));
 
+        $languages = Language::getLanguages(false);
+        $defaultLang = (int)$this->context->language->id;
  
         $json = json_encode([
             'items' => $items,
             'template' => $currentTemplate,
+            'languages' => $languages,
+            'default_lang' => $defaultLang,
             'ajax_url' => $this->context->link->getAdminLink($this->controller_name, true),
             'token' => Tools::getAdminTokenLite($this->controller_name),
         ]);
@@ -376,20 +380,45 @@ class AdminPsLandingController extends ModuleAdminController
             </div>
 
             <p class="help-block">
-                ' . $this->l('Cada slide tiene imagen + producto. Puedes añadir varios.') . '
+                ' . $this->l('Cada slide tiene 1 imagen por idioma.') . '
             </p>
         </div>';
     }
 
     protected function getSlides($idLanding)
     {
-        return Db::getInstance()->executeS('
-            SELECT id_pslanding_slide, position, image, id_product, id_category, active
-            FROM ' . _DB_PREFIX_ . 'pslanding_slide
-            WHERE id_pslanding=' . (int)$idLanding . '
+        $slides = Db::getInstance()->executeS('
+            SELECT id_pslanding_slide, position, id_product, id_category, active
+            FROM '._DB_PREFIX_.'pslanding_slide
+            WHERE id_pslanding='.(int)$idLanding.'
             ORDER BY position ASC, id_pslanding_slide ASC
         ');
+
+        if (!$slides) return [];
+
+        $ids = array_map('intval', array_column($slides, 'id_pslanding_slide'));
+        $rows = Db::getInstance()->executeS('
+            SELECT id_pslanding_slide, id_lang, image
+            FROM '._DB_PREFIX_.'pslanding_slide_lang
+            WHERE id_pslanding_slide IN ('.implode(',', $ids).')
+        ');
+
+        $bySlide = [];
+        foreach ($rows as $r) {
+            $sid = (int)$r['id_pslanding_slide'];
+            $lid = (int)$r['id_lang'];
+            $bySlide[$sid][$lid] = (string)$r['image'];
+        }
+
+        foreach ($slides as &$s) {
+            $sid = (int)$s['id_pslanding_slide'];
+            $s['images'] = $bySlide[$sid] ?? []; // mapa id_lang => filename
+        }
+        unset($s);
+
+        return $slides;
     }
+
 
     public function ajaxProcessSearchProducts()
     {
@@ -424,45 +453,7 @@ class AdminPsLandingController extends ModuleAdminController
         die(json_encode($out));
     }
 
-    /*
-    public function ajaxProcessSearchCategories()
-    {
-        $q = trim(Tools::getValue('q', ''));
-        $id_lang = (int)$this->context->language->id;
-        $id_shop = (int)$this->context->shop->id;
 
-        if ($q === '' || Tools::strlen($q) < 2) {
-            header('Content-Type: application/json');
-            die(json_encode([]));
-        }
-
-        $like = '%'.pSQL($q).'%';
-
-        $rows = Db::getInstance()->executeS('
-            SELECT c.id_category, cl.name
-            FROM '._DB_PREFIX_.'category c
-            INNER JOIN '._DB_PREFIX_.'category_shop cs
-                ON (cs.id_category = c.id_category AND cs.id_shop='.(int)$id_shop.')
-            INNER JOIN '._DB_PREFIX_.'category_lang cl
-                ON (cl.id_category = c.id_category AND cl.id_lang='.(int)$id_lang.' AND cl.id_shop='.(int)$id_shop.')
-            WHERE c.active = 1
-            AND cl.name LIKE "'.$like.'"
-            ORDER BY cl.name ASC
-            LIMIT 20
-        ');
-
-        $out = [];
-        foreach ($rows as $r) {
-            $out[] = [
-                'id_category' => (int)$r['id_category'],
-                'name' => $r['name'],
-            ];
-        }
-
-        header('Content-Type: application/json');
-        die(json_encode($out));
-    }
-    */
     public function ajaxProcessSearchCategories()
     {
         $q = trim(Tools::getValue('q', ''));
@@ -530,7 +521,7 @@ class AdminPsLandingController extends ModuleAdminController
         die(json_encode($out));
     }
 
-
+/*
     protected function saveSlidesFromJson($idLanding)
     {
         $json = Tools::getValue('slides_json');
@@ -542,7 +533,11 @@ class AdminPsLandingController extends ModuleAdminController
         if (!is_array($items)) {
             return;
         }
-
+        Db::getInstance()->execute('
+            DELETE sl FROM '._DB_PREFIX_.'pslanding_slide_lang sl
+            INNER JOIN '._DB_PREFIX_.'pslanding_slide s ON (s.id_pslanding_slide = sl.id_pslanding_slide)
+            WHERE s.id_pslanding='.(int)$idLanding.'
+            ');
         Db::getInstance()->delete('pslanding_slide', 'id_pslanding=' . (int)$idLanding);
 
         $uploadDir = $this->getUploadDir();
@@ -554,6 +549,7 @@ class AdminPsLandingController extends ModuleAdminController
         }
 
         $position = 0;
+   
         foreach ($items as $it) {
             $position++;
 
@@ -588,6 +584,124 @@ class AdminPsLandingController extends ModuleAdminController
                 'id_category' => $id_category,
                 'active' => (int)$active,
             ]);
+
+            $idSlide = (int)Db::getInstance()->Insert_ID();
+
+            // textos (estructura esperada desde JS):
+            // it.title = { 1: "...", 2: "..." }
+            // it.description = { 1: "...", 2: "..." }
+            $titles = (!empty($it['title']) && is_array($it['title'])) ? $it['title'] : [];
+            $descs  = (!empty($it['description']) && is_array($it['description'])) ? $it['description'] : [];
+
+            foreach (Language::getLanguages(false) as $lang) {
+                $id_lang = (int)$lang['id_lang'];
+                Db::getInstance()->insert('pslanding_slide_lang', [
+                    'id_pslanding_slide' => (int)$idSlide,
+                    'id_lang' => (int)$id_lang,
+                    'title' => pSQL($titles[$id_lang] ?? ''),
+                    'description' => pSQL($descs[$id_lang] ?? '', true),
+                ]);
+            }
+        }
+    }
+*/
+    protected function saveSlidesFromJson($idLanding)
+    {
+        $json = Tools::getValue('slides_json');
+        if (!$json) {
+            return;
+        }
+
+        $items = json_decode($json, true);
+        if (!is_array($items)) {
+            return;
+        }
+
+        // 1) Borrar langs + slides anteriores
+        Db::getInstance()->execute('
+            DELETE sl
+            FROM '._DB_PREFIX_.'pslanding_slide_lang sl
+            INNER JOIN '._DB_PREFIX_.'pslanding_slide s ON (s.id_pslanding_slide = sl.id_pslanding_slide)
+            WHERE s.id_pslanding='.(int)$idLanding
+        );
+        Db::getInstance()->delete('pslanding_slide', 'id_pslanding='.(int)$idLanding);
+
+        // 2) Preparar uploads
+        $uploadDir = $this->getUploadDir();
+        if (!is_dir($uploadDir)) {
+            @mkdir($uploadDir, 0755, true);
+        }
+        if (!file_exists($uploadDir.'index.php')) {
+            @file_put_contents($uploadDir.'index.php', "<?php\n");
+        }
+
+        $languages = Language::getLanguages(false);
+        $position = 0;
+
+        foreach ($items as $it) {
+            $position++;
+
+            $active      = !empty($it['active']) ? 1 : 0;
+            $id_product  = !empty($it['id_product']) ? (int)$it['id_product'] : null;
+            $id_category = !empty($it['id_category']) ? (int)$it['id_category'] : null;
+
+            $idx = isset($it['idx']) ? (int)$it['idx'] : $position;
+
+            // images existentes por idioma (del JSON)
+            $existingImages = (!empty($it['images']) && is_array($it['images'])) ? $it['images'] : [];
+
+            // 3) Insertar slide base (sin imagen aquí, imagen va en _lang)
+            Db::getInstance()->insert('pslanding_slide', [
+                'id_pslanding' => (int)$idLanding,
+                'position'     => (int)$position,
+                'id_product'   => $id_product,
+                'id_category'  => $id_category,
+                'active'       => (int)$active,
+            ]);
+
+            $idSlide = (int)Db::getInstance()->Insert_ID();
+
+            // 4) Guardar/actualizar imagen por idioma
+            foreach ($languages as $lang) {
+                $id_lang = (int)$lang['id_lang'];
+
+                // nombre del input file esperado: slide_image_{idx}_{id_lang}
+                $fileField = 'slide_image_'.$idx.'_'.$id_lang;
+
+                // filename anterior para ese idioma (si no suben nuevo)
+                $oldFilename = isset($existingImages[$id_lang]) ? (string)$existingImages[$id_lang] : '';
+
+                $finalFilename = $oldFilename;
+
+                // ¿suben nuevo fichero para este idioma?
+                if (!empty($_FILES[$fileField]['name']) && is_uploaded_file($_FILES[$fileField]['tmp_name'])) {
+                    $ext = Tools::strtolower(pathinfo($_FILES[$fileField]['name'], PATHINFO_EXTENSION));
+                    $allowed = ['jpg', 'jpeg', 'png', 'webp'];
+
+                    if (!in_array($ext, $allowed, true)) {
+                        $this->errors[] = sprintf('Slide %d (lang %d): extensión no permitida', $position, $id_lang);
+                    } else {
+                        $finalFilename = 'slide_'.$idLanding.'_'.$idx.'_'.$id_lang.'_'.sha1(uniqid('', true)).'.'.$ext;
+
+                        if (!move_uploaded_file($_FILES[$fileField]['tmp_name'], $uploadDir.$finalFilename)) {
+                            $this->errors[] = sprintf('Slide %d (lang %d): no se pudo mover la imagen', $position, $id_lang);
+                            $finalFilename = $oldFilename; // fallback
+                        } else {
+                            // borrar viejo si había y es distinto
+                            if ($oldFilename && $oldFilename !== $finalFilename && file_exists($uploadDir.$oldFilename)) {
+                                @unlink($uploadDir.$oldFilename);
+                            }
+                        }
+                    }
+                }
+
+                // Insert lang row (si existe, la insertamos igual porque hemos borrado todo arriba)
+                Db::getInstance()->insert('pslanding_slide_lang', [
+                    'id_pslanding_slide' => (int)$idSlide,
+                    'id_lang'            => (int)$id_lang,
+                    'image'              => pSQL($finalFilename),
+                ]);
+            }
         }
     }
 
