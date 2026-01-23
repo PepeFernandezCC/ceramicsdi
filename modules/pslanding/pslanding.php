@@ -123,17 +123,6 @@ class Pslanding extends Module
     public function hookModuleRoutes($params)
     {
         return [
-            // /landing
-            'module-pslanding-landing-home' => [
-                'controller' => 'landing',
-                'rule'       => 'landing',
-                'keywords'   => [],
-                'params'     => [
-                    'fc'     => 'module',
-                    'module' => $this->name,
-                ],
-            ],
-
             // /landing/{slug}
             'module-pslanding-landing' => [
                 'controller' => 'landing',
@@ -146,6 +135,16 @@ class Pslanding extends Module
                     'module' => $this->name,
                 ],
             ],
+             // /landing
+            'module-pslanding-landing-home' => [
+                'controller' => 'landing',
+                'rule'       => 'landing',
+                'keywords'   => [],
+                'params'     => [
+                    'fc'     => 'module',
+                    'module' => $this->name,
+                ],
+            ]
         ];
     }
 

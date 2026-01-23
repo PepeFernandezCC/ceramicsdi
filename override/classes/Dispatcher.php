@@ -703,7 +703,9 @@ class Dispatcher extends DispatcherCore
 					else {
 						$disperseuri = explode('?', $this->request_uri);
 						$disperseuri = $disperseuri[0];
-						$_mod_uri = end(array_values(array_filter(explode('/', $disperseuri))));
+						$parts = array_values(array_filter(explode('/', $disperseuri)));
+						$_mod_uri = !empty($parts) ? end($parts) : '';
+
 					}
 					$modules_routes = $this->getFriendlyModRoute($_mod_uri);
 					if ($modules_routes) {

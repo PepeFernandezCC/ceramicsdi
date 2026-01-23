@@ -8,7 +8,6 @@ class PsLandingModel extends ObjectModel
     public $id_pslanding;
     public $active;
     public $template;
-    public $id_category;
     public $id_feature_value_collection;
 
     public $date_add;
@@ -19,11 +18,17 @@ class PsLandingModel extends ObjectModel
     public $hero_title;
     public $hero_subtitle;
     public $hero_media;
+
     public $block2_title;
     public $block2_text;
     public $block2_image;
     public $products_title;
     public $products_subtitle;
+
+    public $hero2_title;
+    public $hero2_button;
+    public $hero2_media;
+    public $hero2_product;
 
     public $block3_title;
     public $block3_text;
@@ -42,7 +47,6 @@ class PsLandingModel extends ObjectModel
         'fields' => [
             'active' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true],
             'template' => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'size' => 64],
-            'id_category' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
             'id_feature_value_collection' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
             'date_add' => ['type' => self::TYPE_DATE, 'validate' => 'isDateFormat'],
             'date_upd' => ['type' => self::TYPE_DATE, 'validate' => 'isDateFormat'],
@@ -53,6 +57,11 @@ class PsLandingModel extends ObjectModel
             'hero_title' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isCleanHtml', 'size' => 255],
             'hero_subtitle' => ['type' => self::TYPE_HTML, 'lang' => true, 'validate' => 'isCleanHtml'],
             'hero_media'   => ['type' => self::TYPE_STRING, 'validate' => 'isFileName', 'size' => 255],
+    
+            'hero2_button' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isCleanHtml', 'size' => 255],
+            'hero2_title' => ['type' => self::TYPE_HTML, 'lang' => true, 'validate' => 'isCleanHtml'],
+            'hero2_media'   => ['type' => self::TYPE_STRING, 'validate' => 'isFileName', 'size' => 255],
+            'hero2_product' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
 
             'block2_title' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isCleanHtml', 'size' => 255],
             'block2_text' => ['type' => self::TYPE_HTML,    'lang' => true, 'validate' => 'isCleanHtml'],

@@ -12,12 +12,15 @@ class PslandingLandingModuleFrontController extends ModuleFrontController
 
     public function initContent()
     {
+
+        parent::initContent();
+
         $slug = Tools::getValue('slug');
+
         if (!$slug) {
             return $this->set404();
         }
 
-        parent::initContent();
 
         $id_lang = (int) $this->context->language->id;
         $id_shop = (int) $this->context->shop->id;
@@ -27,7 +30,10 @@ class PslandingLandingModuleFrontController extends ModuleFrontController
         if (!$landing || !(int) $landing['active']) {
             return $this->set404();
         }
-
+        header('X-Robots-Tag: noindex, nofollow', true);
+        $this->context->smarty->assign('nobots', true);
+        $this->context->smarty->assign('meta_robots', 'noindex,nofollow');
+        
         // Construir URLs para media subidos (guardamos solo filename en BD)
         $uploadBase = $this->module->getPathUri() . 'uploads/';
 
@@ -35,6 +41,11 @@ class PslandingLandingModuleFrontController extends ModuleFrontController
         $heroMedia = $this->buildMedia($landing, 'hero_media', $uploadBase);
         $landing['hero_media_url']  = $heroMedia['url'];
         $landing['hero_media_type'] = $heroMedia['type'];
+
+        // Hero2
+        $hero2Media = $this->buildMedia($landing, 'hero2_media', $uploadBase);
+        $landing['hero2_media_url']  = $hero2Media['url'];
+        $landing['hero2_media_type'] = $hero2Media['type'];
 
         // Block2
         $block2Media = $this->buildMedia($landing, 'block2_image', $uploadBase);
@@ -77,13 +88,13 @@ class PslandingLandingModuleFrontController extends ModuleFrontController
         }
 
         $this->context->smarty->assign([
-            'landing'    => $landing,
+            'landing' => $landing,
             'landing_slides' => $slides,
             'characteristics' => $characteristics,
             'meta_title' => $landing['title'],
             'related_products' => $relatedProducts,
         ]);
-
+   
         $template = !empty($landing['template']) ? $landing['template'] : 'landing-default';
         $this->setTemplate('module:pslanding/views/templates/front/' . $template . '.tpl');
     }
@@ -132,6 +143,7 @@ class PslandingLandingModuleFrontController extends ModuleFrontController
     protected function set404()
     {
         header('HTTP/1.1 404 Not Found');
+        header('Status: 404 Not Found');
         $this->setTemplate('errors/404.tpl');
     }
 
@@ -139,10 +151,11 @@ class PslandingLandingModuleFrontController extends ModuleFrontController
     {
         // 1) Intento: slug + idioma actual + shop actual
         $sql = 'SELECT
-                    l.id_pslanding, l.active, l.template, l.id_category, l.id_feature_value_collection,
-                    l.hero_media, l.block2_image, l.block3_image, l.block4_image,
+                    l.id_pslanding, l.active, l.template, l.id_feature_value_collection,
+                    l.hero_media, l.hero2_media, l.hero2_product, l.block2_image, l.block3_image, l.block4_image,
                     pl.title,
                     pl.hero_title, pl.hero_subtitle,
+                    pl.hero2_button, pl.hero2_title,
                     pl.block2_title, pl.block2_text,
                     pl.block3_title, pl.block3_text,
                     pl.block4_title, pl.block4_text,
@@ -161,10 +174,11 @@ class PslandingLandingModuleFrontController extends ModuleFrontController
 
         // 2) Fallback: cualquier idioma para el mismo shop
         $sql2 = 'SELECT
-                    l.id_pslanding, l.active, l.template, l.id_category, l.id_feature_value_collection,
-                    l.hero_media, l.block2_image, l.block3_image, l.block4_image,
-                    pl.title
+                    l.id_pslanding, l.active, l.template, l.id_feature_value_collection,
+                    l.hero_media, l.hero2_product, l.hero2_media, l.block2_image, l.block3_image, l.block4_image,
+                    pl.title,
                     pl.hero_title, pl.hero_subtitle,
+                    pl.hero2_title, pl.hero2_button,
                     pl.block2_title, pl.block2_text,
                     pl.block3_title, pl.block3_text,
                     pl.block4_title, pl.block4_text,
@@ -173,8 +187,7 @@ class PslandingLandingModuleFrontController extends ModuleFrontController
                  INNER JOIN `'._DB_PREFIX_.'pslanding_lang` pl
                     ON (l.id_pslanding = pl.id_pslanding)
                  WHERE pl.slug = "'.pSQL($slug).'"
-                   AND pl.id_shop = '.(int)$id_shop.'
-                 LIMIT 1';
+                   AND pl.id_shop = '.(int)$id_shop;
 
         return Db::getInstance()->getRow($sql2);
     }
@@ -203,7 +216,7 @@ class PslandingLandingModuleFrontController extends ModuleFrontController
 
         return Db::getInstance()->executeS('
             SELECT 
-                s.id_pslanding_slide, s.position, s.id_product, s.id_category, s.active,
+                s.id_pslanding_slide, s.position, s.id_product, s.id_category, s.slot, s.active,
                 COALESCE(sl.image, sld.image) AS image
             FROM '._DB_PREFIX_.'pslanding_slide s
             LEFT JOIN '._DB_PREFIX_.'pslanding_slide_lang sl

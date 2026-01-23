@@ -103,7 +103,7 @@
                     {assign var="otherMaterialsArray" value=[81, 82, 88]}
                     {assign var="isByPiece" value=false}
                     {assign var="showDays" value=true}
-                    {assign var="customerShowTask" value=customer::getCustomerShowTax($customer.id)}
+                    {assign var="customerShowTax" value=customer::getCustomerShowTax($customer.id)}
 
                     {foreach from=$product.features item='feature'}
                         {if isset($feature.id_feature) && $feature.id_feature == $FEATURE_COLOR}
@@ -216,82 +216,73 @@
                         {block name='page_header_container'}
 
                             {block name='page_header'}
+
                                 <div class="row product-head">
-                                    <div class="col-md-12 col-xs-12">
+
+                                    <div class="col-md-6 col-xs-12 block-title">
+
                                         {assign var="product_mini_title_key" value=Product::getProductMinititleKey($product.id)}
 
-                                        <div class="product-type">
-                                            <div style="padding-bottom: 15px;">
-                                                {l s={$product_mini_title_key} d='Shop.Theme.Catalog'}
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row product-head">
-
-                                    <div class="col-md-6 col-xs-12">
-
-                                        <h1 class="h1 product-card-title">
-
-                                            {block name='page_title'}
+                                        <div>
+                                            <h1 class="h1 product-card-title">
+                                                <div class="product-type" style="padding-bottom: 15px;">
+                                                    {l s={$product_mini_title_key} d='Shop.Theme.Catalog'}
+                                                </div>
                                                 <div style="margin-bottom:10px; text-transform:uppercase">
                                                     {$product.name}
                                                 </div>
-
+                                            </h1>
+                                        </div>
+                                        
+                                        {block name='page_title'}
                                             {if isset($product.reference_to_display) && $product.reference_to_display neq ''}
                                                 <div class="product-reference">
                                                     <span>{$product.reference_to_display}</span>
                                                 </div>
                                             {/if}
-                                            {/block}
-
-                                        </h1>
+                                        {/block}
 
                                     </div>
 
-                                    <div class="col-md-6 col-xs-12">
+
+                                    <div class="col-md-6 col-xs-12 block-pricing">
                                         <div>
-                                        {*
-                                            <div class="minimal-price">
-                                                
-                                                {assign var="minimalPrice" value=Product::getMinimalPriceTemplate($product.id, $customer)}
-                                                <div style="padding-right: 10px">
-                                                    {l s='Minimum order price' d='ShopThemeCatalog'}:
-                                                </div>
-                                                <div>
-                                                    <span style="font-size: 20px">{$minimalPrice} €</strong>
-                                                </div>
-                                            </div>
-                                        *}
                                             <div>
                                                 {block name='product_prices'}
                                                     {include file='catalog/_partials/product-prices.tpl'}
                                                 {/block}
                                             </div>
-                                        </div>
+                                            {assign var="productType" value=Product::getProductUnit($product.id)}
+                                            <div class="final-price-taxed">
+                                                {if $productType != "UNIT"}
+                                                    <div class="minimal-price">
+                                                        
+                                                        {assign var="minimalPrice" value=Product::getMinimalPriceTemplate($product.id, $customer.id)}
+                                                        
+                                                        <div style="padding-right: 10px">
+                                                            <span>
+                                                                {$minimalPrice} €/<span style="text-transform:capitalize">{if $productType == "PIECE"}{l s='piece' d='Shop.Theme.Catalog'}{else}{l s='box' d='Shop.Theme.Catalog'}{/if}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                {/if}
+                                                <div class="tax-message-box alignText">
+                                                    <span class="tax-message">
 
-                                        <div class="row" style="padding-top: 5px">
+                                                        {if $customerShowTax}
 
-                                            <div class="col-xs-12 alignText">
+                                                            {l s='Tax included' d='Admin.Global'}
 
-                                                <span class="tax-message">
+                                                        {else}
 
-                                                    {if $customerShowTask}
+                                                            {l s='Tax excluded' d='Admin.Global'}
 
-                                                        ({l s='Tax included' d='Admin.Global'})
+                                                        {/if}
 
-                                                    {else}
-
-                                                        ({l s='Tax excluded' d='Admin.Global'})
-
-                                                    {/if}
-
-                                                </span>
-
+                                                    </span>
+                                                </div>
                                             </div>
-
+                                        
                                         </div>
 
                                     </div>
@@ -314,7 +305,6 @@
                                 {if $product.show_availability && $product.availability_message}
                                     {if $product.availability == 'available' and $product.quantity > 0}
                                         <i class="material-icons rtl-no-flip product-available">&#xE5CA;</i> 
-                                        {* <img class="stock-icon" src="/themes/child_classic/assets/img/web/icons/stock-ico.png" alt="icon stock"/> *}
                                     {elseif $product.availability == 'last_remaining_items'}
                                         <i class="material-icons product-last-items">&#xE002;</i>
                                     {else}
@@ -472,7 +462,6 @@
 
                                         {$product.description nofilter}
 
-
                                         <p class="product-feature-espesor font-weight-bold"></p>
 
                                     {/block}
@@ -538,11 +527,6 @@
                 <div class="newCalculatorBox">
 
                     {if !($CATEGORY_INSTALACION_ID|in_array:$categoriasProducto) && !($CATEGORY_MANTENIMIENTO_ID|in_array:$categoriasProducto)}
-                       {*
-                        {block name='product_discounts'}
-                            {include file='catalog/_partials/product-discounts.tpl'}
-                        {/block}
-                        *}
 
                         <div class="rowTitleCalculator">
                             <div class="calculator-title">
@@ -667,7 +651,7 @@
                                                 <div class="modalBanner" style="font-weight:bold; padding-top:10px; padding-bottom:10px">
                                                     <div style="width: 50px;"> 
                                                         <span>
-                                                            <img class="baner-icon" src="/themes/child_classic/assets/img/web/icons/sample-ico.png" alt="icon sample"/>
+                                                            <img class="baner-icon" loading="lazy" src="/themes/child_classic/assets/img/web/icons/sample-ico.png" alt="icon sample"/>
                                                         </span> 
                                                     </div>
                                                     <div class="whyordersampletext">
@@ -750,7 +734,6 @@
                                                 <div class="modalBanner" style="padding: 15px">
                                                     <div style="width: 50px;"> 
                                                         <span style="font-size:30px">
-                                                            {*<img class="baner-icon" src="/themes/child_classic/assets/img/web/icons/truck-ico.png" alt="icon truck"/>*}
                                                             <i class="fa-regular fa-file-lines"></i>
                                                         </span> 
                                                     </div>
@@ -762,7 +745,7 @@
                                                 <div class="modalBanner">
                                                     <div style="width: 50px;"> 
                                                         <span>
-                                                            <img class="baner-icon" src="/themes/child_classic/assets/img/web/icons/refund-ico.png" alt="icon refund"/>
+                                                            <img loading="lazy" class="baner-icon" src="/themes/child_classic/assets/img/web/icons/refund-ico.png" alt="icon refund"/>
                                                         </span>
                                                     </div>
                                                     <div style="font-weight:500">{l s='Returns / issues' d='Shop.Theme.Catalog'} </div>                                              

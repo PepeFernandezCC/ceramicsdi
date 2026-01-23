@@ -1,0 +1,220 @@
+/* =========================
+   PS Landing BO UI
+   ========================= */
+
+
+.form-group.landing-admin-card {
+    border: 1px solid #cacaca;
+    padding: 20px;
+    margin-bottom: 50px;
+    box-shadow: 10px 10px #f2f4fff0;
+}
+.landing-block-title h3 {
+    border-bottom: none !important;
+    background: none !important;
+    margin-left: 25% !important;
+    padding: 15px;
+    font-size: 20px !important;
+}
+/* Evitar que el layout rompa el BO (grid bootstrap) */
+.psl-layout{
+  display:flex;
+  gap:var(--psl-gap);
+  align-items:flex-start;
+  width:100%;
+  min-width:0;
+}
+
+/* Responsive: nav arriba, contenido debajo */
+@media (max-width: 1200px){
+  .psl-layout{
+    flex-direction:column;
+  }
+}
+
+/* =========================
+   Nav lateral
+   ========================= */
+.psl-nav{
+  flex:0 0 260px;
+  width:260px;
+  position: sticky;
+  top: 90px; /* se ajusta si tu header BO cambia */
+  background:#fff;
+  border:1px solid var(--psl-border);
+  border-radius:var(--psl-radius);
+  padding:12px;
+  box-shadow: var(--psl-shadow);
+  max-height: calc(100vh - 110px);
+  overflow:auto;
+}
+
+@media (max-width: 1200px){
+  .psl-nav{
+    position:relative;
+    top:auto;
+    width:100%;
+    flex:0 0 auto;
+    max-height:none;
+  }
+}
+
+/* Título */
+.psl-nav__title{
+  font-weight:700;
+  font-size:12px;
+  color:#666;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  margin:0 0 10px 0;
+}
+
+/* Items */
+.psl-nav__item{
+  display:block;
+  padding:9px 10px;
+  border-radius:10px;
+  color:#2e2e2e;
+  text-decoration:none;
+  font-size:13px;
+  line-height:1.2;
+  transition: background .12s ease, color .12s ease;
+}
+.psl-nav__item:hover{
+  background:#f5f7fb;
+  text-decoration:none;
+}
+.psl-nav__item.is-active{
+  background:#eaf2ff;
+  color:#1f4aa8;
+  font-weight:600;
+}
+
+/* =========================
+   Main content
+   ========================= */
+.psl-main{
+  flex:1 1 auto;
+  min-width:0;
+}
+
+/* =========================
+   Cards
+   ========================= */
+.psl-card{
+  background:#fff;
+  border:1px solid var(--psl-border);
+  border-radius:var(--psl-radius);
+  margin-bottom:14px;
+  box-shadow: var(--psl-shadow);
+  overflow:hidden;
+
+  /* Para que el scroll anchor no quede oculto debajo del header sticky */
+  scroll-margin-top: 110px;
+}
+
+.psl-card__header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:12px 14px;
+  border-bottom:1px solid #eee;
+}
+
+.psl-card__title{
+  font-weight:700;
+  font-size:14px;
+  margin:0;
+}
+
+.psl-card__body{
+  padding:14px;
+}
+
+/* Estado colapsado (JS luego) */
+.psl-card.is-collapsed .psl-card__body{
+  display:none;
+}
+
+/* Botón toggle (cuando lo metamos en header) */
+.psl-card__toggle{
+  border:0;
+  background:transparent;
+  cursor:pointer;
+  padding:6px 8px;
+  border-radius:10px;
+  line-height:1;
+  transition: background .12s ease;
+}
+.psl-card__toggle:hover{ background:#f3f3f3; }
+
+.psl-card__chev{
+  display:inline-block;
+  transition: transform .15s ease;
+}
+.psl-card.is-collapsed .psl-card__chev{ transform: rotate(-90deg); }
+
+/* =========================
+   Tonos header (más “pro”)
+   ========================= */
+.psl-card--primary .psl-card__header{ background:#f2f7ff; }
+.psl-card--info    .psl-card__header{ background:#f3fbff; }
+.psl-card--success .psl-card__header{ background:#f3fff6; }
+.psl-card--warning .psl-card__header{ background:#fff9ef; }
+.psl-card--danger  .psl-card__header{ background:#fff3f3; }
+
+/* Borde sutil por tono (opcional, queda muy bien) */
+.psl-card--primary{ border-color:#d6e6ff; }
+.psl-card--info{    border-color:#d6f2ff; }
+.psl-card--success{ border-color:#d9f7e2; }
+.psl-card--warning{ border-color:#ffe8bf; }
+.psl-card--danger{  border-color:#ffd4d4; }
+
+/* =========================
+   Mejor integración con HelperForm / Bootstrap BO
+   ========================= */
+
+/* En el BO, los .form-group ya tienen flex/row raro. Forzamos espaciado consistente */
+.psl-card .form-group{
+  margin-bottom:14px;
+}
+
+/* Alineado de labels y inputs para que no “floten raro” */
+.psl-card .form-group .control-label{
+  font-weight:600;
+}
+
+/* Ayudas */
+.psl-card .help-block{
+  margin-top:6px;
+  color:var(--psl-muted);
+}
+
+/* Inputs dentro de cards: redondeo suave */
+.psl-card input.form-control,
+.psl-card textarea.form-control,
+.psl-card select.form-control{
+  border-radius:10px;
+}
+
+/* Preview media: que no quede enano */
+.psl-card video,
+.psl-card img{
+  border-radius:10px;
+}
+
+/* Cuando dentro tengas bloques custom (slides, hero2 product, etc.) */
+.psl-card [data-action="hero2-product-results"] .list-group-item,
+.psl-card [data-action="results-product"] .list-group-item,
+.psl-card [data-action="results-category"] .list-group-item{
+  cursor:pointer;
+}
+
+/* =========================
+   Opcional: compactar en móvil
+   ========================= */
+@media (max-width: 768px){
+  .psl-card__header{ padding:10px 12px; }
+  .psl-card__body{ padding:12px; }
+}

@@ -102,7 +102,7 @@
                     {assign var="conversionRate" value=1}
                     {assign var="otherMaterialsArray" value=[81, 82, 88]}
                     {assign var="isByPiece" value=false}
-                    {assign var="showDays" value=true}
+                    
                     {assign var="customerShowTax" value=customer::getCustomerShowTax($customer.id)}
 
                     {foreach from=$product.features item='feature'}
@@ -139,9 +139,6 @@
                         {/if}
 
                         {if $FEATURE_DIAS_PLAZO_ENTREGA_ID === $feature.id_feature}
-                            {if in_array($feature.id_feature_value, ['110413', '130590'])}
-                                {assign var="showDays" value=false}
-                            {/if}
 
                             {assign var="dias_plazo" value="{$feature.value}"}
 
@@ -332,7 +329,7 @@
                         <i class="fa-regular fa-clock" style="font-size: 14px; padding-left: 2px; color:orange"></i> 
                         <span style="font-size:14px; padding-left:3px;">
                             <span style="text-transform: uppercase">{l s='estimated delivery' d='Shop.Theme.Catalog'}:</span>
-                            <strong>{$dias_plazo nofilter}{if $showDays} {l s='laborable days' d='Shop.Theme.Catalog'}{/if}</strong>
+                            <strong>{$dias_plazo nofilter}</strong>
                         </span>
                     </div>
                    
