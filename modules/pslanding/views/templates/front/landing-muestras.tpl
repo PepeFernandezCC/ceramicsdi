@@ -178,7 +178,7 @@
             </div>
           </div>
 
-          <div class="presentation-landing-image">
+          <div id="samples-end-block"class="presentation-landing-image">
             {if $landing.block4_media_type == 'video' && $landing.block4_media_url}
               <video class="landing-media"
                     src="{$landing.block4_media_url|escape:'html':'UTF-8'}"
@@ -219,7 +219,7 @@
         <div class="clearfix"></div>
       </div>
     </div>
-
+    {*
     <div class="block-landing">
       <div id="faq-landing-box" class="faq-landing-block">
         <div class="faq-title">
@@ -228,6 +228,7 @@
         {include file='module:pslanding/views/templates/front/_partials/faq.tpl'}
       </div>
     </div>
+    *}
 
   </div>
 {/block}

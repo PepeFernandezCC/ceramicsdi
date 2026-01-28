@@ -13,9 +13,10 @@
   <div id="landing-template" class="landing landing-default">
 
     <div id="landing-slider" class="block-landing landing-hero {if $landing.hero_media_type == 'video'} has-video{/if}"
+        style="border: 0; 
         {if $landing.hero_media_type == 'image' && $landing.hero_media_url}
-          style="background-image:url('{$landing.hero_media_url|escape:'html':'UTF-8'}')"
-        {/if}>
+          background-image:url('{$landing.hero_media_url|escape:'html':'UTF-8'}')
+        {/if}">
 
       {if $landing.hero_media_type == 'video' && $landing.hero_media_url}
         <video class="landing-hero-video"
@@ -43,7 +44,7 @@
       </div>
     </div>
 
-    <div class="block-landing">
+    <div class="block-landing" style="border-top:0">
       <div class="carousel-landing-block">
         <div class="carousel-landing-title">
           <h2>
@@ -76,7 +77,7 @@
                             {assign var=slideImgUrl value=$productItem.image_url}
                           {/if}
 
-                        <a class="landing-carousel-slide" href="{$productItem.category_url|escape:'html':'UTF-8'}">
+                        <a class="landing-carousel-slide" href="{$productItem.product_url|escape:'html':'UTF-8'}">
                           {if $slideImgUrl}
                             <img
                               class="collage-landing-img"
@@ -186,7 +187,7 @@
 
             {if $landing.block4_media_type == 'video' && $landing.block4_media_url}
               <video class="landing-media"
-                    src="{$landing.block3_media_url|escape:'html':'UTF-8'}"
+                    src="{$landing.block4_media_url|escape:'html':'UTF-8'}"
                     playsinline
                     muted
                     loop
@@ -252,7 +253,7 @@
                       {assign var=slideImgUrl value=$productItem.image_url}
                     {/if}
 
-                    <a class="landing-collage-slide" href="{$productItem.category_url|escape:'html':'UTF-8'}">
+                    <a class="landing-collage-slide" href="{$productItem.product_url|escape:'html':'UTF-8'}">
                       {if $slideImgUrl}
                         <img
                           class="collage-landing-img"
@@ -271,7 +272,7 @@
       </div>
 
       <div class="landing-piedras-category-button">
-        <a href="#" class="btn btn-landing-piedras"> {l s='Ver todas las piedras naturales' d='Shop.Theme.Catalog'} </a>
+        <a href="{$landing.stones_category_url}" class="btn btn-landing-piedras"> {l s='Ver todas las piedras naturales' d='Shop.Theme.Catalog'} </a>
       </div>
 
 
@@ -299,7 +300,7 @@
             {$end_title nofilter}
             {if $landing.hero2_button}
               <p class="end-slide-button">
-                  <a href="#" class="btn btn-landing-piedras"> {$landing.hero2_button} </a>
+                  <a href="{$landing.hero2_product_url}" class="btn btn-landing-piedras"> {$landing.hero2_button} </a>
               </p>
             {/if}
         </div>
@@ -310,3 +311,5 @@
   </div>
 </div>
 {/block}
+
+ 

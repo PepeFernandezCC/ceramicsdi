@@ -279,37 +279,7 @@ class Dispatcher extends DispatcherCore
                     $this->addRoute($this->empty_route['routeID'], $this->empty_route['rule'], $this->empty_route['controller'], Context::getContext()->language->id, array(), array(), $id_shop);
                 }
                 list($uri) = explode('?', $this->request_uri);
-				/*
-				// --- FIX pslanding: /landing/{slug} ---
-				$uriTrim = trim($uri, '/');
-				$parts = explode('/', $uriTrim);
 
-				// con idioma: /es/landing/slug  -> parts[0]=es, parts[1]=landing, parts[2]=slug
-				if (isset($parts[1]) && $parts[1] === 'landing' && !empty($parts[2])) {
-					$_GET['fc'] = 'module';
-					$_GET['module'] = 'pslanding';
-					$_GET['controller'] = 'landing';
-					$_GET['slug'] = $parts[2];
-
-					$this->front_controller = self::FC_MODULE;
-					$this->controller = 'landing';
-					return 'landing';
-				}
-
-				// sin idioma: /landing/slug
-				if (isset($parts[0]) && $parts[0] === 'landing' && !empty($parts[1])) {
-					$_GET['fc'] = 'module';
-					$_GET['module'] = 'pslanding';
-					$_GET['controller'] = 'landing';
-					$_GET['slug'] = $parts[1];
-
-					$this->front_controller = self::FC_MODULE;
-					$this->controller = 'landing';
-					return 'landing';
-				}
-				// --- /FIX ---
-				*/
-				
 				// --- FIX GENÉRICO: forzar rutas de módulos tipo /base/param(s) ---
 				$uriTrim = trim($uri, '/');
 				$parts = array_values(array_filter(explode('/', $uriTrim)));

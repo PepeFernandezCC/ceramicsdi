@@ -3360,12 +3360,14 @@ body.noscroll .ets_mm_megamenu::before {
   font-size: 50px;
   background-color: white;
 }
+/*
 .custom-featured-products .owl-carousel .owl-nav .owl-prev:hover,
 .custom-featured-products .owl-carousel .owl-nav .owl-next:hover,
 #recipeCarousel .owl-carousel .owl-nav .owl-prev:hover,
 #recipeCarousel .owl-carousel .owl-nav .owl-next:hover {
   background-color: #aaaaaa;
 }
+*/
 .custom-featured-products .owl-carousel .owl-nav .owl-prev,
 #recipeCarousel .owl-carousel .owl-nav .owl-prev {
   left: 0;
@@ -6367,7 +6369,7 @@ span.at-contact {
 
 .logo-adwards {
   width:auto;
-  padding-top:90px;
+  padding:10px 0;
 }
 
 .mw-img-color {
@@ -7092,7 +7094,6 @@ body#checkout section.checkout-step .address-item.selected {
     font-weight: 600 !important;
 }
 
-
 /* banner generalitat */
 div#generalitat-ayudas {
     display: flex;
@@ -7100,6 +7101,8 @@ div#generalitat-ayudas {
     flex-wrap: wrap;
     justify-content: space-around;
     align-items: center;
+    width: 24%;
+    margin-top: 10px;
 }
 
 .generalitat-ayudas {
@@ -7131,12 +7134,12 @@ span.manage-addresses {
 @media (max-width:769px) {
 
   .gva-banner-img {
-      width: 75% !important;
+      width: 100% !important;
   }
 
   .generalitat-banner-box {
     margin-bottom: 5px;
-    width: 95%;
+    width: 70%;
   }
 
   .generalitat-help-description {
@@ -7150,5 +7153,6 @@ span.manage-addresses {
 
   div#generalitat-ayudas {
     flex-direction: column-reverse;
+    width: 100%;
   }
 }

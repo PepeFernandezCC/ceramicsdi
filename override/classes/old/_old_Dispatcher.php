@@ -174,6 +174,21 @@ class Dispatcher extends DispatcherCore
                 }
             }
         }
+
+		// --- PRIORIDAD a rutas de módulos (escalable) ---
+		$moduleOnly = [];
+		$others = [];
+
+		foreach ($this->default_routes as $rid => $route) {
+			if (strpos($rid, 'module-') === 0) {
+				$moduleOnly[$rid] = $route;
+			} else {
+				$others[$rid] = $route;
+			}
+		}
+		$this->default_routes = $moduleOnly + $others;
+		// --- /PRIORIDAD ---
+
 		
 		foreach (Language::getLanguages() as $lang)
 			foreach ($this->default_routes as $id => $route)
@@ -264,6 +279,141 @@ class Dispatcher extends DispatcherCore
                     $this->addRoute($this->empty_route['routeID'], $this->empty_route['rule'], $this->empty_route['controller'], Context::getContext()->language->id, array(), array(), $id_shop);
                 }
                 list($uri) = explode('?', $this->request_uri);
+				/*
+				// --- FIX pslanding: /landing/{slug} ---
+				$uriTrim = trim($uri, '/');
+				$parts = explode('/', $uriTrim);
+
+				// con idioma: /es/landing/slug  -> parts[0]=es, parts[1]=landing, parts[2]=slug
+				if (isset($parts[1]) && $parts[1] === 'landing' && !empty($parts[2])) {
+					$_GET['fc'] = 'module';
+					$_GET['module'] = 'pslanding';
+					$_GET['controller'] = 'landing';
+					$_GET['slug'] = $parts[2];
+
+					$this->front_controller = self::FC_MODULE;
+					$this->controller = 'landing';
+					return 'landing';
+				}
+
+				// sin idioma: /landing/slug
+				if (isset($parts[0]) && $parts[0] === 'landing' && !empty($parts[1])) {
+					$_GET['fc'] = 'module';
+					$_GET['module'] = 'pslanding';
+					$_GET['controller'] = 'landing';
+					$_GET['slug'] = $parts[1];
+
+					$this->front_controller = self::FC_MODULE;
+					$this->controller = 'landing';
+					return 'landing';
+				}
+				// --- /FIX ---
+				*/
+				
+				// --- FIX GENÉRICO: forzar rutas de módulos tipo /base/param(s) ---
+				$uriTrim = trim($uri, '/');
+				$parts = array_values(array_filter(explode('/', $uriTrim)));
+
+				// quita prefijo de idioma si existe (es/fr/en...)
+				$iso = Context::getContext()->language->iso_code;
+				if (isset($parts[0]) && $parts[0] === $iso) {
+					array_shift($parts);
+				}
+
+				// si no hay nada, fuera
+				if (!empty($parts)) {
+
+					// routes de módulos desde hookModuleRoutes
+					$modules_routes = Hook::exec('moduleRoutes', ['id_shop' => $id_shop], null, true, false);
+
+					// helper: extrae {vars} de una regla
+					$extractVars = function ($rule) {
+						preg_match_all('/\{([a-zA-Z0-9_]+)\}/', $rule, $mm);
+						return isset($mm[1]) ? $mm[1] : [];
+					};
+
+					if (is_array($modules_routes) && count($modules_routes)) {
+						foreach ($modules_routes as $moduleRoutePack) {
+							if (!is_array($moduleRoutePack)) {
+								continue;
+							}
+
+							foreach ($moduleRoutePack as $rid => $r) {
+								if (empty($r['rule']) || empty($r['controller']) || empty($r['params']['module'])) {
+									continue;
+								}
+
+								$rule = trim($r['rule'], '/');
+								$ruleParts = array_values(array_filter(explode('/', $rule)));
+								$vars = $extractVars($rule);
+
+								// Queremos casar por segmentos (sin regex): misma cantidad de segmentos
+								if (count($ruleParts) !== count($parts)) {
+									continue;
+								}
+
+								// primer segmento literal debe coincidir (landing / blog / etc)
+								if (!isset($ruleParts[0]) || strpos($ruleParts[0], '{') !== false || $ruleParts[0] !== $parts[0]) {
+									continue;
+								}
+
+								// comprobamos segmento a segmento
+								$ok = true;
+								$captured = [];
+
+								for ($i = 0; $i < count($ruleParts); $i++) {
+									$rp = $ruleParts[$i];
+									$up = $parts[$i];
+
+									if (preg_match('/^\{([a-zA-Z0-9_]+)\}$/', $rp, $mvar)) {
+										$varName = $mvar[1];
+
+										// si hay regexp en keywords, lo respetamos
+										if (!empty($r['keywords'][$varName]['regexp'])) {
+											$re = '#^' . $r['keywords'][$varName]['regexp'] . '$#u';
+											if (!preg_match($re, $up)) {
+												$ok = false;
+												break;
+											}
+										}
+										$captured[$varName] = $up;
+									} else {
+										if ($rp !== $up) {
+											$ok = false;
+											break;
+										}
+									}
+								}
+
+								if ($ok) {
+									// params capturados
+									foreach ($captured as $k => $v) {
+										$_GET[$k] = $v;
+									}
+
+									// params fijos de la ruta (module, fc, etc)
+									if (!empty($r['params']) && is_array($r['params'])) {
+										foreach ($r['params'] as $k => $v) {
+											$_GET[$k] = $v;
+										}
+									}
+
+									// fuerza módulo
+									$_GET['fc'] = 'module';
+									$_GET['module'] = $r['params']['module'];
+									$_GET['controller'] = $r['controller'];
+
+									$this->front_controller = self::FC_MODULE;
+									$this->controller = $r['controller'];
+
+									return $r['controller'];
+								}
+							}
+						}
+					}
+				}
+				// --- /FIX GENÉRICO ---
+
                 if (isset($this->routes[$id_shop][Context::getContext()->language->id])) {
                     foreach ($this->routes[$id_shop][Context::getContext()->language->id] as $route) {
                         if (preg_match($route['regexp'], $uri, $m)) {
@@ -553,7 +703,9 @@ class Dispatcher extends DispatcherCore
 					else {
 						$disperseuri = explode('?', $this->request_uri);
 						$disperseuri = $disperseuri[0];
-						$_mod_uri = end(array_values(array_filter(explode('/', $disperseuri))));
+						$parts = array_values(array_filter(explode('/', $disperseuri)));
+						$_mod_uri = !empty($parts) ? end($parts) : '';
+
 					}
 					$modules_routes = $this->getFriendlyModRoute($_mod_uri);
 					if ($modules_routes) {
@@ -1542,4 +1694,29 @@ class Dispatcher extends DispatcherCore
 		FROM '._DB_PREFIX_.'wk_mp_seller
 		WHERE `link_rewrite` = "'.pSQL($url).'"');
 	}
+    /*
+    * module: dbredirects
+    * date: 2023-10-30 11:21:22
+    * version: 1.2.0
+    */
+    public function dispatch()
+    {
+        $module = Module::getInstanceByName('dbredirects');
+        if ( is_object($module) && $module->active ) {
+            $uri_var = $_SERVER['REQUEST_URI'];
+            $redirect = DbRedirect::isRedirect($uri_var);
+            if (isset($redirect['url_antigua']) && $uri_var == $redirect['url_antigua']) {
+                switch ($redirect['type']) {
+                    case '1':
+                        Tools::redirect($redirect['url_nueva'], __PS_BASE_URI__, null, 'HTTP/1.1 301 Moved Permanently');
+                        break;
+                    case '2':
+                        header("HTTP/1.1 410 Gone");
+                        exit;
+                        break;
+                }
+            }
+        }
+        parent::dispatch();
+    }
 }

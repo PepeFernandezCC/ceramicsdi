@@ -678,9 +678,6 @@ class Link extends LinkCore
 				$request['seo_url'] = $_GET['seo_url'];
 			}
 		}
-		if ($controller === 'module-pslanding-landing' && !empty($request['slug'])) { 
-			$request['slug'] = $this->getRealPsLandingSlug($request['slug'], $idLang);
-		}
 
 		if ($controller === 'module-pslanding-landing' && empty($request['slug'])) { 
 			return '';
@@ -689,20 +686,6 @@ class Link extends LinkCore
         $uriPath = Dispatcher::getInstance()->createUrl($controller, $idLang, $request, false, '', $idShop);
         return $this->getBaseLink($idShop, $ssl, $relativeProtocol).$this->getLangLink($idLang, null, $idShop).ltrim($uriPath, '/');
     }
-
-	private function getRealPsLandingSlug($slug, $idLang) {
-		$idLanding =  (int)Db::getInstance()->getValue('
-                SELECT id_pslanding
-                FROM `'._DB_PREFIX_.'pslanding_lang`
-                WHERE slug LIKE "'.pSQL($slug).'"');
-
-		$new_slug = (string)Db::getInstance()->getValue('
-                    SELECT slug
-                    FROM `'._DB_PREFIX_.'pslanding_lang`
-                    WHERE id_pslanding = '.(int)$idLanding.'
-                      AND id_lang = '.(int)$idLang);
-		return (string)$new_slug;
-	}
 	
 	/*
     * module: prettyurls

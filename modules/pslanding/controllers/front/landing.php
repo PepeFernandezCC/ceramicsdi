@@ -46,6 +46,9 @@ class PslandingLandingModuleFrontController extends ModuleFrontController
         $hero2Media = $this->buildMedia($landing, 'hero2_media', $uploadBase);
         $landing['hero2_media_url']  = $hero2Media['url'];
         $landing['hero2_media_type'] = $hero2Media['type'];
+        if ((int)$landing['hero2_product'] != 0 ) {
+            $landing['hero2_product_url'] = $this->context->link->getProductLink((int)$landing['hero2_product']);
+        }
 
         // Block2
         $block2Media = $this->buildMedia($landing, 'block2_image', $uploadBase);
@@ -86,7 +89,7 @@ class PslandingLandingModuleFrontController extends ModuleFrontController
         if (!empty($landing['id_feature_value_collection'])) {
             $relatedProducts = $this->getRelatedProductsByFeatureValue((int)$landing['id_feature_value_collection']);
         }
-
+        $landing['stones_category_url'] = $this->context->link->getCategoryLink((int)82);
         $this->context->smarty->assign([
             'landing' => $landing,
             'landing_slides' => $slides,

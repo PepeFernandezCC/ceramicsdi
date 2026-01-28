@@ -8,6 +8,12 @@ body#module-pslanding-landing #content {
     font-weight: 600;
 }
 
+#landing-template button.owl-prev, #landing-template button.owl-next {
+    outline: none !important;
+}
+#carousel-landings .owl-nav .owl-prev, #carousel-landings .owl-nav .owl-next {
+    height: 100% !important;
+}
 /* BLOQUE SLIDE */
 
 .block-landing {
@@ -56,23 +62,6 @@ body#module-pslanding-landing #content {
     font-size: 25px;
 }
 
-/* excepciones morocco
-#ml-slide-title {
-    align-items: flex-start;
-    justify-content: flex-start;
-    margin-top:50px;
-}
-#ml-slide-title .landing-slide-subtitle p {
-    margin-bottom: 20px;
-    color: rgb(255, 255, 255);
-}
-#ml-slide-title .landing-slide-title h1 {
-    font-size: 60px;
-    color: rgb(255, 255, 255);
-    margin-bottom:20px;
-}
-
-*/
 #ml-slide-title .landing-slide-title {
     margin-left: 0px;
     width: 70%;
@@ -194,6 +183,10 @@ body#module-pslanding-landing #content {
 video.landing-media {
     height: 505px;
     margin-left: 150px;
+}
+
+#samples-end-block video.landing-media {
+    margin: auto;
 }
 
 video.landing-media-reverse {
@@ -320,9 +313,11 @@ video.landing-media-reverse {
 }
 
 /* Reducir espacio entre elementos */
+/*
 .inspiration-owl .owl-stage-outer {
   padding: 10px 0;
 }
+*/
 
 .inspiration-owl .owl-item {
   margin-right: 6px !important;  /* 🔥 menos espacio lateral */
@@ -555,6 +550,7 @@ div#collageBox-landing {
     padding: 10px 15px;
     font-weight: 600;
     margin-top: 0;
+        text-shadow: none;
 }
 
 p.end-slide-button {
@@ -619,10 +615,24 @@ p.end-slide-button {
         margin: 0;
     }
 
+    .landing-piedras-category-button {
+        padding-top: 0;
+        padding-bottom: 40px;
+
+    }
     .landing-slide-title {
         margin: 0;
         margin-top: 65%;
         width: 80%;
+    }
+
+    .block-double-image {
+        display: flex;
+        justify-content: center;
+    }
+
+    #landing-piedras .landing-slide-title {
+        width: 75%;
     }
 
     .landing-slide-subtitle {
@@ -784,7 +794,14 @@ p.end-slide-button {
         text-transform: uppercase;
         /*padding: 30px 0;*/
     }
-
+    #landing-stone-green-block .presentation-landing-data {
+        text-align: center;
+    }
+    .block-double-image .landing-media {
+        height: auto;
+        margin-left: 0;
+        width: 100%;
+    }
     #faq-landing-box .faq-title {
         text-align: center;
         font-size: 22px;
@@ -843,10 +860,14 @@ p.end-slide-button {
         margin-top: 30px;
         margin-left: 10%;
     }
+
+    #landing-piedras .btn {
+        padding: 10px 15px;
+    }
+
     .landing-piedras-category-button .btn {
         width: 80%;
-        padding: 10px 15px;
-        font-size: 17px !important;
+        font-size: 15px !important;
     }
 
     #landing-stone-green-block .presentation-landing-title h2 {
@@ -854,7 +875,7 @@ p.end-slide-button {
         text-align: center;
     }
 
-    .presentation-landing-data {
+    #bloque-3-data .presentation-landing-data {
         width: 90%;
         margin: auto;
     }
@@ -869,10 +890,14 @@ p.end-slide-button {
     }
 
     .end-slide-title p {
-        font-size: 45px;
+        font-size: 40px;
         margin-bottom: 30px;
     }
-
+    #samples-end-block video.landing-media {
+        width: 100%;
+        height: auto;
+        margin-left: auto;
+    }
     #landing-piedras .feature-landing-title h2, 
     #landing-piedras .carousel-landing-title h2, 
     #landing-piedras .related-landing-title h2 {
@@ -881,6 +906,46 @@ p.end-slide-button {
         font-weight: 600;
     }
 
+    #landing-piedras .carousel-landing-block {
+        width: 100%;
+    }
+
+    #landing-piedras .presentation-landing-data p:last-child {
+        text-align: center;
+        margin-bottom: 0
+    }
+
+    #landing-piedras .presentation-landing-title {
+        width: auto;
+        margin-bottom: 0px;
+    }
+
+    #landing-stone-green-block .btn {
+        display: inline-block;
+        font-weight: 600;
+        line-height: 1.25;
+        margin-top: 10%;
+        color: #000000;
+        border: 0;
+        background: white;
+        font-size: 15px !important;
+        text-transform: uppercase;
+    }
+
+    #landing-piedras .owl-carousel .owl-item img {
+        display: block;
+        width: 100%;
+        padding: 5px;
+    }
+    #carousel-landings .owl-carousel .owl-item img {
+        display: block;
+        width: 100%;
+        padding: 5px;
+    }
+
+    #landing-piedras .owl-stage-outer {
+        padding: 0;
+    }
 
 
 }

@@ -134,7 +134,7 @@
                             {assign var=slideImgUrl value=$productItem.image_url}
                           {/if}
 
-                        <a class="landing-carousel-slide" href="{$productItem.category_url|escape:'html':'UTF-8'}">
+                        <a class="landing-carousel-slide" href="{$productItem.product_url|escape:'html':'UTF-8'}">
                           {if $slideImgUrl}
                             <img
                               class="collage-landing-img"
@@ -172,7 +172,7 @@
       <div class="clearfix"></div>
     </div>
   </div>
-
+    {*
     <div class="block-landing">
       <div id="faq-landing-box" class="faq-landing-block">
         <div class="faq-title">
@@ -181,6 +181,7 @@
         {include file='module:pslanding/views/templates/front/_partials/faq.tpl'}
       </div>
     </div>
-
+    *}
   </div>
 {/block}
+ 

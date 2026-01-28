@@ -153,13 +153,15 @@ document.addEventListener('DOMContentLoaded', function () {
     // landing-muestras: 1 carrusel, categoría
     if (tpl === 'landing-muestras') return 'category';
 
-    // landing-piedras: carrusel 1 categoría, carrusel 2 producto
+    /* landing-piedras: carrusel 1 categoría, carrusel 2 producto
     if (tpl === 'landing-piedras') {
       if (slot === 'carousel_2') {
         return 'product';
       }
       return 'category'; // por defecto carousel_1
     }
+    */
+    if (tpl === 'landing-piedras') return 'product';
 
     // fallback sensato: producto
     return 'product';
@@ -560,23 +562,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const applyVisibility = () => {
     const tpl = templateSelect.value;
-    const isDefault = tpl === 'landing-morocco';
-    const isSimple  = tpl === 'landing-muestras';
-    const isStone   = tpl === 'landing-piedras';
-
+    
     document.querySelectorAll('.js-tpl').forEach(el => {
-      if (el.classList.contains('tpl-default')) {
-        el.style.display = isDefault ? '' : 'none';
-      } 
+      // Determinar si el elemento debe mostrarse
+      const shouldShow = 
+        (el.classList.contains('tpl-default') && tpl === 'landing-morocco') ||
+        (el.classList.contains('tpl-simple') && tpl === 'landing-muestras') ||
+        (el.classList.contains('tpl-stone') && tpl === 'landing-piedras');
       
-      if (el.classList.contains('tpl-simple')) {
-        el.style.display = isSimple ? '' : 'none';
-      }
-
-      if (el.classList.contains('tpl-stone')) {
-        el.style.display = isStone ? '' : 'none';
-      }
-
+      // Mostrar u ocultar según corresponda
+      el.style.display = shouldShow ? '' : 'none';
     });
   };
 
@@ -656,61 +651,3 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 
-/*
-//details
-document.addEventListener('DOMContentLoaded', function () {
-  // Accordion toggle
-  document.querySelectorAll('[data-psl-toggle]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id = btn.getAttribute('data-psl-toggle');
-      const card = document.querySelector(`[data-psl-card="${id}"]`);
-      if (!card) return;
-
-      const collapsed = card.classList.toggle('is-collapsed');
-      btn.setAttribute('aria-expanded', String(!collapsed));
-      try { localStorage.setItem('psl_last_card', id); } catch(e){}
-    });
-  });
-
-  // Jump navigation
-  document.querySelectorAll('[data-psl-jump]').forEach(a => {
-    a.addEventListener('click', (e) => {
-      const href = a.getAttribute('href');
-      if (!href || !href.startsWith('#')) return;
-      const el = document.querySelector(href);
-      if (!el) return;
-      e.preventDefault();
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-  });
-
-  // Active nav on scroll (simple)
-  const sections = Array.from(document.querySelectorAll('.psl-card[id]'));
-  const navItems = Array.from(document.querySelectorAll('.psl-nav__item[data-psl-jump]'));
-
-  const setActive = (hash) => {
-    navItems.forEach(x => x.classList.toggle('is-active', x.getAttribute('href') === hash));
-  };
-
-  const onScroll = () => {
-    let current = null;
-    const y = window.scrollY + 120;
-    for (const s of sections) {
-      if (s.offsetTop <= y) current = '#'+s.id;
-    }
-    if (current) setActive(current);
-  };
-
-  window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
-
-  // Restore last opened card (optional)
-  try {
-    const last = localStorage.getItem('psl_last_card');
-    if (last) {
-      const card = document.querySelector(`[data-psl-card="${last}"]`);
-      if (card) card.classList.remove('is-collapsed'); // lo dejamos abierto
-    }
-  } catch(e){}
-});
-*/
