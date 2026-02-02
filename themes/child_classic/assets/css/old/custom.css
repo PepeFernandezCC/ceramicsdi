@@ -3389,7 +3389,7 @@ body.noscroll .ets_mm_megamenu::before {
 }
 #recipeCarousel .owl-nav .owl-prev,
 #recipeCarousel .owl-nav .owl-next {
-  height: 99.9% !important;
+  height: 100% !important;
 }
 #recipeCarousel .owl-dots {
   display: none !important;

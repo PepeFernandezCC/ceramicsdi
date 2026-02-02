@@ -696,6 +696,12 @@ body:not(#category):not(#search) #wrapper #content-wrapper {
   }*/
 }
 @media (min-width: 1400px) {
+  .mt-125-desktop {
+    margin-top: 125px;
+  }
+  .mt-90-desktop{
+    margin-top: 90px;
+  }
   #products #js-product-list .products .product,
   #products .custom-product-accessories .products .product {
     border-right: 1px solid black;
