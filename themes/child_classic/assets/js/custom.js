@@ -2705,7 +2705,7 @@ $( document ).ready( function () {
                            console.log('ERRORES CON DNI...');
                            const errorSpan = document.getElementById("dni-error");
                            errorSpan.style.display = "block";
-                           errorSpan.innerText = "Formato incorrecto. Introduzca un DNI, NIE o CIF válido.";
+                           errorSpan.innerText = "Formato incorrecto. Introduzca un DNI o NIE válido.";
                         }else{
                            if(document.getElementById("dni-error")) {
                               document.getElementById("dni-error").style.display = "none";// error cif/dni vacío
@@ -2726,9 +2726,15 @@ $( document ).ready( function () {
                         document.getElementById("dni-error").style.display = "block";// error cif/dni vacío
                         console.log('Error: validation cif empresa vacio | check off');
                         validation = false;
+                     }else if(!validarDNI()) {
+                        validation = false;
+                        console.log('ERRORES CON DNI...');
+                        const errorSpan = document.getElementById("dni-error");
+                        errorSpan.style.display = "block";
+                        errorSpan.innerText = "Formato incorrecto. Introduzca un CIF válido.";
                      }else{
                         if(document.getElementById("dni-error")) {
-                           document.getElementById("dni-error").style.display = "none";// error cif/dni vacío
+                           document.getElementById("dni-error").style.display = "none";
                         }  
                      }   
 
