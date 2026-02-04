@@ -56,16 +56,20 @@ class AdminPsLandingController extends ModuleAdminController
             ['id' => 'landing-morocco', 'name' => 'Landing Morocco'],
             ['id' => 'landing-muestras', 'name' => 'Landing Muestras'],
             ['id' => 'landing-piedras',  'name' => 'Landing Piedras'],
+            ['id' => 'landing-color',  'name' => 'Landing Colores'],
         ];
 
         // Para previews: al editar, el objeto está cargado.
         $heroFilename  = (Validate::isLoadedObject($this->object) && is_string($this->object->hero_media)) ? (string)$this->object->hero_media : '';
+        $heroMobileFilename = (Validate::isLoadedObject($this->object) && is_string($this->object->hero_media_mobile)) ? (string)$this->object->hero_media_mobile : '';
         $hero2Filename = (Validate::isLoadedObject($this->object) && is_string($this->object->hero2_media)) ? (string)$this->object->hero2_media : '';
 
         $b2Filename = (Validate::isLoadedObject($this->object) && is_string($this->object->block2_image)) ? (string)$this->object->block2_image : '';
         $b3Filename = (Validate::isLoadedObject($this->object) && is_string($this->object->block3_image)) ? (string)$this->object->block3_image : '';
         $b4Filename = (Validate::isLoadedObject($this->object) && is_string($this->object->block4_image)) ? (string)$this->object->block4_image : '';
-
+        $b5Filename = (Validate::isLoadedObject($this->object) && is_string($this->object->block5_image)) ? (string)$this->object->block5_image : '';
+        $b6Filename = (Validate::isLoadedObject($this->object) && is_string($this->object->block6_image)) ? (string)$this->object->block6_image : '';
+        $b7Filename = (Validate::isLoadedObject($this->object) && is_string($this->object->block7_image)) ? (string)$this->object->block7_image : '';
         // HERO2 product (id + name)
         $hero2ProductId = (Validate::isLoadedObject($this->object) && (int)$this->object->hero2_product > 0) ? (int)$this->object->hero2_product : NULL;
 
@@ -88,11 +92,14 @@ class AdminPsLandingController extends ModuleAdminController
 
         $inputs = array_merge(
             $this->addBlockBasics($templates),
-            $this->addBlockMainHero($heroFilename),
+            $this->addBlockMainHero($heroFilename, $heroMobileFilename),
             $this->addBlockCarousel2(),
             $this->addBlock1($b2Filename),
             $this->addBlock2($b3Filename),
             $this->addBlock3($b4Filename),
+            $this->addBlock4($b5Filename),
+            $this->addBlock5($b6Filename),
+            $this->addBlock6($b7Filename),
             $this->addBlockCarousel(),
             $this->addBlockCharacteristicks(),
             $this->addBlockHero2($adminLink, $hero2ProductName, $hero2Filename)
@@ -533,29 +540,41 @@ class AdminPsLandingController extends ModuleAdminController
         if (!Validate::isLoadedObject($obj)) {
             // Defaults para switches de delete incluso en "add"
             $fields['hero_media_delete'] = 0;
+            $fields['hero_media_mobile_delete'] = 0;
             $fields['hero2_media_delete'] = 0;
             $fields['hero2_product'] = 0;
             $fields['block2_image_delete'] = 0;
             $fields['block3_image_delete'] = 0;
             $fields['block4_image_delete'] = 0;
+            $fields['block5_image_delete'] = 0;
+            $fields['block6_image_delete'] = 0;
+            $fields['block7_image_delete'] = 0;
             return $fields;
         }
 
         $id_lang = (int)$this->context->language->id;
 
         $fields['hero_media']   = $this->normalizeFileValue($obj->hero_media, $id_lang);
+        $fields['hero_media_mobile']   = $this->normalizeFileValue($obj->hero_media_mobile, $id_lang);
         $fields['hero2_media']   = $this->normalizeFileValue($obj->hero2_media, $id_lang);
         $fields['hero2_product'] = (int)$obj->hero2_product;
 
         $fields['block2_image'] = $this->normalizeFileValue($obj->block2_image, $id_lang);
         $fields['block3_image'] = $this->normalizeFileValue($obj->block3_image, $id_lang);
         $fields['block4_image'] = $this->normalizeFileValue($obj->block4_image, $id_lang);
+        $fields['block5_image'] = $this->normalizeFileValue($obj->block5_image, $id_lang);
+        $fields['block6_image'] = $this->normalizeFileValue($obj->block6_image, $id_lang);
+        $fields['block7_image'] = $this->normalizeFileValue($obj->block7_image, $id_lang);
 
         $fields['hero_media_old']   = $fields['hero_media'];
+        $fields['hero_media_mobile_old']   = $fields['hero_media_mobile'];
         $fields['hero2_media_old']   = $fields['hero2_media'];
         $fields['block2_image_old'] = $fields['block2_image'];
         $fields['block3_image_old'] = $fields['block3_image'];
         $fields['block4_image_old'] = $fields['block4_image'];
+        $fields['block5_image_old'] = $fields['block5_image'];
+        $fields['block6_image_old'] = $fields['block6_image'];
+        $fields['block7_image_old'] = $fields['block7_image'];
 
         // Defaults delete (desmarcado)
         $fields['hero_media_delete'] = 0;
@@ -563,6 +582,9 @@ class AdminPsLandingController extends ModuleAdminController
         $fields['block2_image_delete'] = 0;
         $fields['block3_image_delete'] = 0;
         $fields['block4_image_delete'] = 0;
+        $fields['block5_image_delete'] = 0;
+        $fields['block6_image_delete'] = 0;
+        $fields['block7_image_delete'] = 0;
 
         return $fields;
     }
@@ -711,9 +733,13 @@ class AdminPsLandingController extends ModuleAdminController
     {
         // Mantener media actuales si no se sube nada nuevo (pero NO si hay delete marcado)
         $this->keepOldFileIfNoUpload('hero_media');
+        $this->keepOldFileIfNoUpload('hero_media_mobile');
         $this->keepOldFileIfNoUpload('block2_image');
         $this->keepOldFileIfNoUpload('block3_image');
         $this->keepOldFileIfNoUpload('block4_image');
+        $this->keepOldFileIfNoUpload('block5_image');
+        $this->keepOldFileIfNoUpload('block6_image');
+        $this->keepOldFileIfNoUpload('block7_image');
 
         $res = parent::processSave();
         if (!$res) {
@@ -728,24 +754,36 @@ class AdminPsLandingController extends ModuleAdminController
         if ($idLanding) {
             // Si core lo vació, restaurar (salvo delete)
             $this->restoreOldFileIfCleared($idLanding, 'hero_media');
+            $this->restoreOldFileIfCleared($idLanding, 'hero_media_mobile');
             $this->restoreOldFileIfCleared($idLanding, 'hero2_media');
             $this->restoreOldFileIfCleared($idLanding, 'block2_image');
             $this->restoreOldFileIfCleared($idLanding, 'block3_image');
             $this->restoreOldFileIfCleared($idLanding, 'block4_image');
+            $this->restoreOldFileIfCleared($idLanding, 'block5_image');
+            $this->restoreOldFileIfCleared($idLanding, 'block6_image');
+            $this->restoreOldFileIfCleared($idLanding, 'block7_image');
 
             // Borrado explícito (prioridad)
             $this->applyDeleteIfRequested($idLanding, 'hero_media');
+            $this->applyDeleteIfRequested($idLanding, 'hero_media_mobile');
             $this->applyDeleteIfRequested($idLanding, 'hero2_media');
             $this->applyDeleteIfRequested($idLanding, 'block2_image');
             $this->applyDeleteIfRequested($idLanding, 'block3_image');
             $this->applyDeleteIfRequested($idLanding, 'block4_image');
+            $this->applyDeleteIfRequested($idLanding, 'block5_image');
+            $this->applyDeleteIfRequested($idLanding, 'block6_image');
+            $this->applyDeleteIfRequested($idLanding, 'block7_image');
 
             // Subidas nuevas
             $this->handleUploadGlobal($idLanding, 'hero_media', ['jpg', 'jpeg', 'png', 'webp', 'mp4', 'webm']);
+            $this->handleUploadGlobal($idLanding, 'hero_media_mobile', ['jpg', 'jpeg', 'png', 'webp', 'mp4', 'webm']);
             $this->handleUploadGlobal($idLanding, 'hero2_media', ['jpg', 'jpeg', 'png', 'webp', 'mp4', 'webm']);
             $this->handleUploadGlobal($idLanding, 'block2_image', ['jpg', 'jpeg', 'png', 'webp', 'mp4', 'webm']);
             $this->handleUploadGlobal($idLanding, 'block3_image', ['jpg', 'jpeg', 'png', 'webp', 'mp4', 'webm']);
             $this->handleUploadGlobal($idLanding, 'block4_image', ['jpg', 'jpeg', 'png', 'webp', 'mp4', 'webm']);
+            $this->handleUploadGlobal($idLanding, 'block5_image', ['jpg', 'jpeg', 'png', 'webp', 'mp4', 'webm']);
+            $this->handleUploadGlobal($idLanding, 'block6_image', ['jpg', 'jpeg', 'png', 'webp', 'mp4', 'webm']);
+            $this->handleUploadGlobal($idLanding, 'block7_image', ['jpg', 'jpeg', 'png', 'webp', 'mp4', 'webm']);
 
             $this->saveCharacteristicsFromJson($idLanding);
             $this->saveSlidesFromJson($idLanding, 'carousel_1', 'slides_json_carousel_1');
@@ -973,7 +1011,7 @@ class AdminPsLandingController extends ModuleAdminController
 
     }
 
-    protected function addBlockMainHero($heroFilename): array {
+    protected function addBlockMainHero($heroFilename, $heroMobileFilename): array {
         return [
                 // =========================
                 // CARD: Hero principal
@@ -1023,6 +1061,35 @@ class AdminPsLandingController extends ModuleAdminController
                 [
                     'type' => 'hidden',
                     'name' => 'hero_media_old',
+                ],
+                [
+                    'type' => 'html',
+                    'label' => $this->l('Archivo actual (Slider)'),
+                    'name' => 'hero_media_mobile_preview',
+                    'html_content' => $this->renderMediaPreviewHtml((string)$heroMobileFilename),
+                    'form_group_class' => 'psl-field psl-field--hero',
+                ],
+                [
+                    'type'  => 'file',
+                    'label' => $this->l('Archivo Slider Móvil (image/video)'),
+                    'name'  => 'hero_media_mobile',
+                    'desc'  => $this->l('Sube una imagen o un video para versión móvil (mp4/webm) o imagen (jpg/png/webp). Si no subes nada, se mantiene el actual.'),
+                    'form_group_class' => 'psl-field psl-field--hero',
+                ],
+                [
+                    'type' => 'switch',
+                    'label' => $this->l('Eliminar archivo actual (Slider)'),
+                    'name' => 'hero_media_mobile_delete',
+                    'is_bool' => true,
+                    'values' => [
+                        ['id' => 'hero_media_mobile_delete_on', 'value' => 1, 'label' => $this->l('Sí')],
+                        ['id' => 'hero_media_mobile_delete_off', 'value' => 0, 'label' => $this->l('No')],
+                    ],
+                    'form_group_class' => 'psl-field psl-field--hero',
+                ],
+                [
+                    'type' => 'hidden',
+                    'name' => 'hero_media_mobile_old',
                 ],
 
                 $this->cardEndInput('hero'),
@@ -1091,7 +1158,7 @@ class AdminPsLandingController extends ModuleAdminController
                 // =========================
                 // CARD: Bloque 2 (tpl-simple)
                 // =========================
-                $this->cardStartInput('block2', 'Bloque 2', 'default', 'landing-admin-card js-tpl tpl-simple tpl-stone'),
+                $this->cardStartInput('block2', 'Bloque 2', 'default', 'landing-admin-card js-tpl tpl-simple tpl-stone tpl-color'),
 
                 [
                     'type' => 'text',
@@ -1148,7 +1215,7 @@ class AdminPsLandingController extends ModuleAdminController
                 // =========================
                 // CARD: Bloque 3 (tpl-simple)
                 // =========================
-                $this->cardStartInput('block3', 'Bloque 3', 'default', 'landing-admin-card js-tpl tpl-simple tpl-stone'),
+                $this->cardStartInput('block3', 'Bloque 3', 'default', 'landing-admin-card js-tpl tpl-simple tpl-stone tpl-color'),
 
                 [
                     'type' => 'text',
@@ -1200,6 +1267,178 @@ class AdminPsLandingController extends ModuleAdminController
         ];
     }
 
+    protected function addBlock4($b4Filename): array {
+        return [
+                // =========================
+                // CARD: Bloque 4 (tpl-color)
+                // =========================
+                $this->cardStartInput('block4', 'Bloque 4', 'default', 'landing-admin-card js-tpl tpl-color'),
+
+                [
+                    'type' => 'text',
+                    'label' => $this->l('Titulo Bloque 4'),
+                    'name' => 'block5_title',
+                    'lang' => true,
+                    'form_group_class' => 'psl-field psl-field--block4 ',
+                ],
+                [
+                    'type' => 'textarea',
+                    'label' => $this->l('Texto Bloque 4'),
+                    'name' => 'block5_text',
+                    'lang' => true,
+                    'autoload_rte' => true,
+                    'form_group_class' => 'psl-field psl-field--block4 ',
+                ],
+                [
+                    'type' => 'html',
+                    'label' => $this->l('Archivo actual (Bloque 4)'),
+                    'name' => 'block5_image_preview',
+                    'html_content' => $this->renderMediaPreviewHtml((string)$b4Filename),
+                    'form_group_class' => 'psl-field psl-field--block4 ',
+                ],
+                [
+                    'type' => 'file',
+                    'label' => $this->l('Archivo Bloque 4'),
+                    'name' => 'block5_image',
+                    'desc' => $this->l('Sube una imagen o un video (mp4/webm) o imagen (jpg/png/webp). Si no subes nada, se mantiene el actual.'),
+                    'form_group_class' => 'psl-field psl-field--block4 ',
+                ],
+                [
+                    'type' => 'switch',
+                    'label' => $this->l('Eliminar archivo actual (Bloque 4)'),
+                    'name' => 'block5_image_delete',
+                    'is_bool' => true,
+                    'values' => [
+                        ['id' => 'block5_image_delete_on', 'value' => 1, 'label' => $this->l('Sí')],
+                        ['id' => 'block5_image_delete_off', 'value' => 0, 'label' => $this->l('No')],
+                    ],
+                    'form_group_class' => 'psl-field psl-field--block3 ',
+                ],
+                [
+                    'type' => 'hidden',
+                    'name' => 'block4_image_old',
+                ],
+
+                $this->cardEndInput('block4', 'js-tpl tpl-color'),
+
+        ];
+    }
+
+    protected function addBlock5($b4Filename): array {
+        return [
+                // =========================
+                // CARD: Bloque 5 (tpl-color)
+                // =========================
+                $this->cardStartInput('block5', 'Bloque 5', 'default', 'landing-admin-card js-tpl tpl-color'),
+
+                [
+                    'type' => 'text',
+                    'label' => $this->l('Titulo Bloque 5'),
+                    'name' => 'block6_title',
+                    'lang' => true,
+                    'form_group_class' => 'psl-field psl-field--block5 ',
+                ],
+                [
+                    'type' => 'textarea',
+                    'label' => $this->l('Texto Bloque 5'),
+                    'name' => 'block6_text',
+                    'lang' => true,
+                    'autoload_rte' => true,
+                    'form_group_class' => 'psl-field psl-field--block5 ',
+                ],
+                [
+                    'type' => 'html',
+                    'label' => $this->l('Archivo actual (Bloque 5)'),
+                    'name' => 'block6_image_preview',
+                    'html_content' => $this->renderMediaPreviewHtml((string)$b4Filename),
+                    'form_group_class' => 'psl-field psl-field--block5 ',
+                ],
+                [
+                    'type' => 'file',
+                    'label' => $this->l('Archivo Bloque 5'),
+                    'name' => 'block6_image',
+                    'desc' => $this->l('Sube una imagen o un video (mp4/webm) o imagen (jpg/png/webp). Si no subes nada, se mantiene el actual.'),
+                    'form_group_class' => 'psl-field psl-field--block5 ',
+                ],
+                [
+                    'type' => 'switch',
+                    'label' => $this->l('Eliminar archivo actual (Bloque 5)'),
+                    'name' => 'block6_image_delete',
+                    'is_bool' => true,
+                    'values' => [
+                        ['id' => 'block6_image_delete_on', 'value' => 1, 'label' => $this->l('Sí')],
+                        ['id' => 'block6_image_delete_off', 'value' => 0, 'label' => $this->l('No')],
+                    ],
+                    'form_group_class' => 'psl-field psl-field--block5 ',
+                ],
+                [
+                    'type' => 'hidden',
+                    'name' => 'block6_image_old',
+                ],
+
+                $this->cardEndInput('block5', 'js-tpl tpl-color'),
+
+        ];
+    }
+
+    protected function addBlock6($b4Filename): array {
+        return [
+                // =========================
+                // CARD: Bloque 6 (tpl-color)
+                // =========================
+                $this->cardStartInput('block6', 'Bloque 6', 'default', 'landing-admin-card js-tpl tpl-color'),
+
+                [
+                    'type' => 'text',
+                    'label' => $this->l('Titulo Bloque 6'),
+                    'name' => 'block7_title',
+                    'lang' => true,
+                    'form_group_class' => 'psl-field psl-field--block6 ',
+                ],
+                [
+                    'type' => 'textarea',
+                    'label' => $this->l('Texto Bloque 6'),
+                    'name' => 'block7_text',
+                    'lang' => true,
+                    'autoload_rte' => true,
+                    'form_group_class' => 'psl-field psl-field--block6 ',
+                ],
+                [
+                    'type' => 'html',
+                    'label' => $this->l('Archivo actual (Bloque 6)'),
+                    'name' => 'block7_image_preview',
+                    'html_content' => $this->renderMediaPreviewHtml((string)$b4Filename),
+                    'form_group_class' => 'psl-field psl-field--block6 ',
+                ],
+                [
+                    'type' => 'file',
+                    'label' => $this->l('Archivo Bloque 6'),
+                    'name' => 'block7_image',
+                    'desc' => $this->l('Sube una imagen o un video (mp4/webm) o imagen (jpg/png/webp). Si no subes nada, se mantiene el actual.'),
+                    'form_group_class' => 'psl-field psl-field--block6 ',
+                ],
+                [
+                    'type' => 'switch',
+                    'label' => $this->l('Eliminar archivo actual (Bloque 6)'),
+                    'name' => 'block7_image_delete',
+                    'is_bool' => true,
+                    'values' => [
+                        ['id' => 'block7_image_delete_on', 'value' => 1, 'label' => $this->l('Sí')],
+                        ['id' => 'block7_image_delete_off', 'value' => 0, 'label' => $this->l('No')],
+                    ],
+                    'form_group_class' => 'psl-field psl-field--block6 ',
+                ],
+                [
+                    'type' => 'hidden',
+                    'name' => 'block7_image_old',
+                ],
+
+                $this->cardEndInput('block6', 'js-tpl tpl-color'),
+
+        ];
+    }
+
+
     protected function addBlockCharacteristicks(): array {
         return [
                 // =========================
@@ -1231,7 +1470,7 @@ class AdminPsLandingController extends ModuleAdminController
                 // =========================
                 // CARD: Carrusel
                 // =========================
-                $this->cardStartInput('carousel', 'Carrusel', 'success', 'landing-admin-card'),
+                $this->cardStartInput('carousel', 'Carrusel', 'success', 'js-tpl tpl-simple tpl-stone tpl-default landing-admin-card'),
 
                 [
                     'type' => 'html',
@@ -1284,7 +1523,7 @@ class AdminPsLandingController extends ModuleAdminController
                 // =========================
                 // CARD: Hero 2
                 // =========================
-                $this->cardStartInput('hero2', 'Hero 2', 'info', 'landing-admin-card js-tpl tpl-stone'),
+                $this->cardStartInput('hero2', 'Hero 2', 'info', 'landing-admin-card js-tpl tpl-stone tpl-color'),
 
                 [
                     'type' => 'textarea',

@@ -77,6 +77,7 @@
     {assign var="esMuestra" value=(int)Product::isSample($product.id)}
 
     {if $esMuestra}
+    
         
          {assign var="sampleText" value="SAMPLE"}
 
@@ -809,4 +810,3 @@
     <div class="clearfix"></div>
 
 </div>
-

@@ -468,7 +468,7 @@ div#collageBox-landing {
 
 .end-slide-title p {
     color: white;
-    font-size: 65px;
+    font-size: 60px;
     margin-bottom: 50px;
     text-shadow: 0 2px 15px rgba(0, 0, 0, .45);
 }
@@ -488,7 +488,7 @@ div#collageBox-landing {
 }
 
 #landing-piedras .slide-landing {
-    width: 33%;
+    width: 35%;
 }
 
 #landing-piedras .presentation-landing-info {
@@ -542,7 +542,8 @@ div#collageBox-landing {
     text-transform: uppercase;
 }
 
-#end-hero-slide-landing .btn {
+#end-hero-slide-landing .btn,
+#bloque-color-2 .btn {
     font-weight: 500;
     color: #000000;
     background: white;
@@ -601,6 +602,71 @@ p.end-slide-button {
     padding: 40px 0;
     /* align-content: center; */
 }
+
+/* LANDING COLORES */
+.w25 {
+    width: 25%;
+}
+#bloque-color-2 .presentation-landing-info {
+    padding: 0;
+} 
+
+#bloque-color-2, 
+#bloque-color-3, 
+#bloque-color-4 {
+    padding: 40px;
+}
+
+#bloque-color-2 .presentation-landing-title,
+#bloque-color-3 .presentation-landing-title,
+#bloque-color-4 .presentation-landing-title {
+    width: 100%;
+    text-align: center;
+}
+div#bloque-color-2 {
+    background-color: #303d55;
+    color: white;
+}
+#bloque-color-2 p {
+    color: white;
+}
+
+#bloque-color-2 .presentation-landing-data p:has(strong) {
+    margin: 45px 0 !important;
+}
+
+
+#bloque-color-3 .presentation-landing-triple {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+.block-triple-image img {
+    height: auto;
+    width: 100%;
+    margin-bottom: 30px;
+}
+
+#end-slider-color .end-slide-title p {
+    line-height: 65px;
+    text-shadow: 0 2px 30px rgba(0, 0, 0, .45);
+}
+
+
+#bloque-color-3 .presentation-landing-title h2 {
+    margin-bottom: 30px;
+}
+#bloque-color-3 .presentation-landing-title p {
+    font-size: 20px;
+    margin-bottom: 40px;
+}
+.display-mobile{
+    display: none;
+}
+.display-desktop{
+    display: block;
+}
+
 @media (max-width: 768px) {
     .inspiration-owl .inspiration-thumb img {
         height: 200px;  /* un poco más grande en móvil */
@@ -848,11 +914,13 @@ p.end-slide-button {
         flex-direction: column;
         align-items: flex-start;
     }
-    .presentation-block-left,
+    .presentation-block-left, 
+    .presentation-block-middle, 
     .presentation-block-right {
         width: 100%;
     }
-    .presentation-block-left{
+    .presentation-block-left,
+    .presentation-block-middle {
         margin-bottom: 40px;
     }
 
@@ -946,6 +1014,45 @@ p.end-slide-button {
     #landing-piedras .owl-stage-outer {
         padding: 0;
     }
+
+    #bloque-color-2 .presentation-landing-image {
+        padding-bottom: 40px;
+    }
+
+    #bloque-color-2 .presentation-landing-data {
+        width: 100%;
+    }
+
+    #bloque-color-3 .presentation-landing-triple {
+        flex-direction: column;
+    }
+
+    #bloque-color-4 .presentation-landing-info {
+        padding: 0;
+        
+    }
+
+    #landing-color p:has(.btn) {
+        text-align: center;
+    }
+
+    .display-mobile{
+        display: block;
+    }
+    .display-desktop{
+        display: none;
+    }
+    /* Contenedor hero */
+
+    #landing-slider.landing-hero-mobile {
+        position: relative;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        overflow: hidden;
+        min-height: 537px; 
+    }
+
 
 
 }

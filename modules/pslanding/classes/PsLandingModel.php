@@ -18,6 +18,7 @@ class PsLandingModel extends ObjectModel
     public $hero_title;
     public $hero_subtitle;
     public $hero_media;
+    public $hero_media_mobile;
 
     public $block2_title;
     public $block2_text;
@@ -38,6 +39,18 @@ class PsLandingModel extends ObjectModel
     public $block4_text;
     public $block4_image;
 
+    public $block5_title;
+    public $block5_text;
+    public $block5_image;
+
+    public $block6_title;
+    public $block6_text;
+    public $block6_image;
+
+    public $block7_title;
+    public $block7_text;
+    public $block7_image;
+
 
     public static $definition = [
         'table' => 'pslanding',
@@ -57,6 +70,7 @@ class PsLandingModel extends ObjectModel
             'hero_title' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isCleanHtml', 'size' => 255],
             'hero_subtitle' => ['type' => self::TYPE_HTML, 'lang' => true, 'validate' => 'isCleanHtml'],
             'hero_media'   => ['type' => self::TYPE_STRING, 'validate' => 'isFileName', 'size' => 255],
+            'hero_media_mobile'   => ['type' => self::TYPE_STRING, 'validate' => 'isFileName', 'size' => 255],
     
             'hero2_button' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isCleanHtml', 'size' => 255],
             'hero2_title' => ['type' => self::TYPE_HTML, 'lang' => true, 'validate' => 'isCleanHtml'],
@@ -74,6 +88,18 @@ class PsLandingModel extends ObjectModel
             'block4_title' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isCleanHtml', 'size' => 255],
             'block4_text'  => ['type' => self::TYPE_HTML,   'lang' => true, 'validate' => 'isCleanHtml'],
             'block4_image' => ['type' => self::TYPE_STRING, 'validate' => 'isFileName', 'size' => 255],
+
+            'block5_title' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isCleanHtml', 'size' => 255],
+            'block5_text' => ['type' => self::TYPE_HTML,    'lang' => true, 'validate' => 'isCleanHtml'],
+            'block5_image' => ['type' => self::TYPE_STRING, 'validate' => 'isFileName', 'size' => 255],
+
+            'block6_title' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isCleanHtml', 'size' => 255],
+            'block6_text'  => ['type' => self::TYPE_HTML,   'lang' => true, 'validate' => 'isCleanHtml'],
+            'block6_image' => ['type' => self::TYPE_STRING, 'validate' => 'isFileName', 'size' => 255],
+
+            'block7_title' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isCleanHtml', 'size' => 255],
+            'block7_text'  => ['type' => self::TYPE_HTML,   'lang' => true, 'validate' => 'isCleanHtml'],
+            'block7_image' => ['type' => self::TYPE_STRING, 'validate' => 'isFileName', 'size' => 255],
 
 
             'products_title' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isCleanHtml', 'size' => 255],
