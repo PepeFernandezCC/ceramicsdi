@@ -3,6 +3,58 @@
 
 class CartController extends CartControllerCore
 {
+    public const MUESTRAS_CATEGORY_ID = '1751';
+
+    public function initContent()
+    {
+        $this->sanitizeMuestrasCart($this->context->cart);
+        parent::initContent();
+    }
+    
+    protected function sanitizeMuestrasCart(Cart $cart)
+    {
+        if (!(int)$cart->id) {
+            return;
+        }
+
+        $products = $cart->getProducts();
+        if (empty($products)) {
+            return;
+        }
+
+        foreach ($products as $p) {
+            $qty = (int)$p['cart_quantity'];
+            if ($qty <= 1) {
+                continue;
+            }
+
+            $idProduct = (int)$p['id_product'];
+
+            // comprobar si pertenece a la categoría "muestras"
+            $cats = Product::getProductCategories($idProduct);
+            if (empty($cats) || !in_array(self::MUESTRAS_CATEGORY_ID, $cats)) {
+                continue;
+            }
+
+            $idProductAttribute = (int)$p['id_product_attribute'];
+            $idCustomization = isset($p['id_customization']) ? (int)$p['id_customization'] : 0;
+            $idAddressDelivery = isset($p['id_address_delivery']) ? (int)$p['id_address_delivery'] : 0;
+
+            // bajar a 1 => resta (qty - 1)
+            $diff = $qty - 1;
+
+            $cart->updateQty(
+                $diff,
+                $idProduct,
+                $idProductAttribute,
+                $idCustomization,
+                'down',
+                $idAddressDelivery
+            );
+        }
+
+        $cart->save();
+    }
 
     public function displayAjaxRefresh()
     {

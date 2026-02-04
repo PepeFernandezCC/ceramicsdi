@@ -25,7 +25,7 @@
 
  {assign var="videoProductRoute" value=Product::videoProductRoute($product.reference, $product.description_short)}
 
-<div class="owl-carousel-image-products-mobile owl-carousel owl-theme hidden-sm-up">
+<div id="mobile-product-images"class="owl-carousel-image-products-mobile owl-carousel owl-theme hidden-sm-up">
     {foreach from=$product.images item=image name=productImages}
 
         {if $smarty.foreach.productImages.iteration == 2 and $videoProductRoute != false}
@@ -63,7 +63,7 @@
     {/foreach}
 </div>
 
-<div class="images-container js-images-container hidden-xs-down">
+<div id="desktop-product-images" class="images-container js-images-container hidden-xs-down">
     {block name='product_cover'}
         {* PLANATEC *}
         {assign var="withVideo" value=false}
@@ -92,9 +92,10 @@
                     {$withVideo = true}
                 {/if}
             {/if}
+            {assign var="isCover" value=($smarty.foreach.productImages.iteration == 1)}
             <div class="product-cover {if $smarty.foreach.productImages.iteration == 2 && $withVideo}border-video-one-column{/if} {if $smarty.foreach.productImages.iteration == 3 && $withVideo}border-video-two-columns{/if} {if $smarty.foreach.productImages.last}product-cover-last{elseif $smarty.foreach.productImages.total - $smarty.foreach.productImages.iteration == 1}product-cover-penultimate{/if}">
                 <img
-                        class="js-qv-product-cover img-fluid"
+                        class="{if $isCover}js-qv-product-cover{else}js-thumb{/if} img-fluid"
                         src="{$image.bySize.medium_default.url}"
                         {if !empty($image.legend)}
                             alt="{$image.legend}"

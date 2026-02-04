@@ -3,6 +3,22 @@ $( document ).ready( function () {
    let myGlobal = [];
    
    let initializeCustom = function () {
+      if(document.getElementById('desktop-product-images')) {
+         $(document).on('click', '.images-container .layer', function () {
+            const idx = parseInt($(this).data('iteration'), 10) - 1;
+
+            $('#product-modal').one('shown.bs.modal', function () {
+               const $m = $(this);
+
+               // Espera a que el carrusel/galería termine de inicializar
+               setTimeout(function () {
+                  // Ajusta este selector al de las miniaturas dentro del modal
+                  const $thumbs = $m.find('.js-modal-thumb, .js-thumb'); 
+                  $thumbs.eq(idx).trigger('click');
+               }, 0);
+            });
+         });
+      }
       /* ocultar images large */
       $(function () {
          var $productModal = $('#product-modal');
