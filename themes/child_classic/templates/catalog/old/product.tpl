@@ -102,6 +102,13 @@
                     {assign var="conversionRate" value=1}
                     {assign var="otherMaterialsArray" value=[81, 82, 88]}
                     {assign var="isByPiece" value=false}
+                    {assign var="categoriasProducto" value=Product::getProductCategories($product.id)}
+                    {if $CATEGORY_INSTALACION_ID|in_array:$categoriasProducto || $CATEGORY_MANTENIMIENTO_ID|in_array:$categoriasProducto || $CATEGORY_ARTICULATIONS|in_array:$categoriasProducto}
+                        {assign var="normalSell" value=true}
+                    {else}
+                        {assign var="normalSell" value=false}
+                    {/if}
+
                     
                     {assign var="customerShowTax" value=customer::getCustomerShowTax($customer.id)}
 
@@ -588,7 +595,7 @@
 
                 </div>
 
-                <div class="productExtraContent no-padding-desktop">
+                <div class="productExtraContent no-padding-desktop {if $normalSell}mt-125-desktop{else}mt-90-desktop{/if}">
                     {assign var="dias_plazo" value=""}
                     {assign var="texto_muestra" value=""}
                     {assign var="junta_recomendada" value="0"}

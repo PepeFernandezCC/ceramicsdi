@@ -63,6 +63,8 @@ class FrontController extends FrontControllerCore {
 	public const FEATURE_DESCRIPTION_NL		   = '68';
 	public const FEATURE_TOP_PRODUCT		   = '69';
 	public const FEATURE_EAN_COPY			   = '70';
+	public const FEATURE_CUSTOM_STOCK		   = '76';
+	public const FEATURE_CUSTOM_OUT_OF_STOCK   = '77';
 	public const FEATURE_MUESTRA_DE_PAGO_ID = '43'; // En la demo es el 31
 	public const FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2       = 'Por m2';
 	public const FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2_FR    = 'Par m2';
@@ -169,6 +171,8 @@ class FrontController extends FrontControllerCore {
 		$this->context->smarty->assign( 'CATEGORY_OTROS_MATERIALES_ID', self::CATEGORY_OTROS_MATERIALES_ID );
 		
 		$this->context->smarty->assign('FEATURE_SHOW_STOCK', self::FEATURE_SHOW_STOCK);
+		$this->context->smarty->assign('FEATURE_CUSTOM_STOCK', self::FEATURE_CUSTOM_STOCK);
+		$this->context->smarty->assign('FEATURE_CUSTOM_OUT_OF_STOCK', self::FEATURE_CUSTOM_OUT_OF_STOCK);
 		$this->context->smarty->assign('FEATURE_SAMPLE_AVAILABLE', self::FEATURE_SAMPLE_AVAILABLE);
 		$this->context->smarty->assign('FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2', self::FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2);
 		$this->context->smarty->assign('FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2_FR',self::FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2_FR);
@@ -257,6 +261,8 @@ class FrontController extends FrontControllerCore {
 				self::FEATURE_DESCRIPTION_PT,
 				self::FEATURE_DESCRIPTION_NL,
 				self::FEATURE_EAN_COPY,
+				self::FEATURE_CUSTOM_STOCK,
+				self::FEATURE_CUSTOM_OUT_OF_STOCK,
 				self::FEATURE_TOP_PRODUCT
 			]
 		);

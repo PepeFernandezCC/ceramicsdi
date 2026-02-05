@@ -7162,3 +7162,22 @@ span.manage-addresses {
     width: 100%;
   }
 }
+
+.no-sample-btn-box {
+    padding: .25rem .75rem;
+    height: 65px !important;
+    width: 100%;
+    color: red;
+    font-weight: 500;
+    border: 1px solid black;
+    white-space: normal;
+    min-height: 40px;
+    margin-top: 5%;
+    font-size: 15px;
+    text-transform: uppercase;
+    vertical-align: middle;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}

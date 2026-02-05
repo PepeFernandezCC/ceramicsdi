@@ -614,6 +614,36 @@ class Product extends ProductCore {
         return false;
     }
 
+    public static function checkSampleStock($productId) {
+    
+		$sampleId = Self::checkSampleVinculation($productId);
+
+        $stock = Self::getProductStock($sampleId);
+
+        if($stock > 0) {
+            return true;
+        }
+
+        return false;
+
+    }
+
+    public static function getProductStock($productId) {
+
+        $id_product = (int)$productId;
+        $id_product_attribute = 0; // 0 = producto sin combinación
+        $id_shop = (int)Context::getContext()->shop->id;
+
+        $quantity = StockAvailable::getQuantityAvailableByProduct(
+            $id_product,
+            $id_product_attribute,
+            $id_shop
+        );
+
+        return $quantity;
+
+    }
+
     public static function checkSampleVinculation($productId) {
         $featureVinculation = '73';
 
