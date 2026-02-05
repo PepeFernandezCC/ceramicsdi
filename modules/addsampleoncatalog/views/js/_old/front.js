@@ -594,6 +594,7 @@ $( document ).ready( function () {
             // ==== MENÚ MÓVIL ==== 
             var burgerInnerDiv = document.querySelector('#openMenuButton + div'); 
             var originalBurgerPadding = null; 
+            console.log('buscando resolución...');
             if (window.innerWidth < 1224) { 
 
                 var bodyId = document.body.id;
@@ -620,9 +621,24 @@ $( document ).ready( function () {
                 if (burgerInnerDiv) { 
                     var csBurger = window.getComputedStyle(burgerInnerDiv); 
                     originalBurgerPadding = csBurger.paddingTop; // ej. "5px" 
-                    //var currentPadding = parseFloat(csBurger.paddingTop) || 5; 
                     burgerInnerDiv.style.paddingTop = closeIconPadding + 'px'; 
                 } 
+            }else{
+                var bodyId = document.body.id;
+                
+                if (bodyId === 'category') {
+                    var section = document.getElementById('wrapper');
+                    if (section) {
+                        section.style.paddingTop = '78px';
+                    }
+                }
+
+                if (bodyId === 'product' || bodyId === 'contact') {
+                    var section = document.getElementById('main');
+                    if (section) {
+                        section.style.paddingTop = '30px';
+                    }
+                }
             }
 
             var h = bannerHeight() + extraHeigt;

@@ -139,7 +139,7 @@
                     <div>{l s='amount received' d='Shop.Theme.Global'}: 20.596,97 €</div>
                 </div>
                 <div class="generalitat-banner-box">
-                    <img src="/themes/child_classic/assets/img/web/gva-banner-color-logo-cut.png" class="gva-banner-img" alt="banner gva"/>
+                    <img loading="lazy" src="/themes/child_classic/assets/img/web/gva-banner-color-logo-cut.png" class="gva-banner-img" alt="banner gva"/>
                 </div>
             </div>
 
