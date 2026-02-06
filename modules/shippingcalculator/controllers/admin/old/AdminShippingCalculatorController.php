@@ -13,7 +13,6 @@ class AdminShippingCalculatorController extends ModuleAdminController
     protected $selected_products = [];
     protected $selected_province = '';
     protected $selected_country_id = null;
-    protected $selected_postal_code = null;
     protected $product_quantities = [];
     public function __construct()
     {
@@ -40,7 +39,6 @@ class AdminShippingCalculatorController extends ModuleAdminController
     {
         $selected_products = Tools::getValue('selected_products', []);
         $province_code = Tools::getValue('province_code');
-        $postal_code = Tools::getValue('postal_code') != '' ? Tools::getValue('postal_code') : '1000';
         $country_id = (int)Tools::getValue('id_country', Configuration::get('PS_COUNTRY_DEFAULT'));
 
         if (empty($selected_products) || empty($province_code)) {
@@ -88,7 +86,7 @@ class AdminShippingCalculatorController extends ModuleAdminController
         }
         
         if (!$country->active) {
-            //$country_name = $country->name[$this->context->language->id] ?? $country->name[1] ?? 'el país';
+            $country_name = $country->name[$this->context->language->id] ?? $country->name[1] ?? 'el país';
             $this->errors[] = $this->l('El país seleccionado está inactivo. Por favor, actívalo en Internacional > Países.');
             $temp_cart->delete();
             return;
@@ -103,7 +101,7 @@ class AdminShippingCalculatorController extends ModuleAdminController
         }
         
         // Actualizar la dirección ID 1 directamente en la base de datos (igual que getDeliveryPrice.php)
-        
+        $postal_code = '1000'; // Código postal por defecto
         $sql = 'UPDATE `' . _DB_PREFIX_ . 'address`
                 SET `id_country` = ' . (int)$country_id . ',
                 `id_state` = ' . (int)$state_id . ',
@@ -141,7 +139,6 @@ class AdminShippingCalculatorController extends ModuleAdminController
 
         // Guardar país seleccionado para mantenerlo en el formulario
         $this->selected_country_id = $country_id;
-        $this->selected_postal_code = $postal_code;
 
         // Calcular plazos usando el método del módulo
         $prep_mode = (int)Configuration::get('SHIPPING_CALCULATOR_PREP_MODE');
@@ -235,25 +232,111 @@ class AdminShippingCalculatorController extends ModuleAdminController
         $module = Module::getInstanceByName('shippingcalculator');
         $delays = Tools::getValue('delays', []);
 
+        // Obtener valores actuales de la base de datos para comparar
+        $current_delays = $module->getAllShippingDelays();
+        $current_delays_by_code = [];
+        foreach ($current_delays as $delay) {
+            $current_delays_by_code[$delay['province_code']] = $delay;
+        }
+
+        $saved_count = 0;
+        $skipped_count = 0;
+
         foreach ($delays as $province_code => $data) {
-            if (isset($data['name'])) {
-                $days_min = isset($data['days_min']) && $data['days_min'] !== '' ? (int)$data['days_min'] : null;
-                $days_max = isset($data['days_max']) && $data['days_max'] !== '' ? (int)$data['days_max'] : null;
+            if (isset($data['name']) && !empty($province_code)) {
+                // Limpiar y validar valores - convertir cadenas vacías a null
+                $days_min_raw = isset($data['days_min']) ? trim($data['days_min']) : '';
+                $days_max_raw = isset($data['days_max']) ? trim($data['days_max']) : '';
                 
-                // Si no hay horquilla, usar el valor mínimo como días de envío (compatibilidad)
-                $delivery_days = $days_min !== null ? $days_min : ($days_max !== null ? $days_max : 5);
+                // Validar que sean numéricos antes de convertir
+                $days_min = ($days_min_raw !== '' && $days_min_raw !== null && is_numeric($days_min_raw) && $days_min_raw >= 0) ? (int)$days_min_raw : null;
+                $days_max = ($days_max_raw !== '' && $days_max_raw !== null && is_numeric($days_max_raw) && $days_max_raw >= 0) ? (int)$days_max_raw : null;
                 
-                $module->saveShippingDaysByProvince(
-                    $province_code,
-                    $data['name'],
-                    $delivery_days,
-                    $days_min,
-                    $days_max
-                );
+                // Obtener valores actuales de la base de datos (si la provincia existe)
+                $current_min = null;
+                $current_max = null;
+                $province_exists = isset($current_delays_by_code[$province_code]);
+                
+                if ($province_exists) {
+                    $current = $current_delays_by_code[$province_code];
+                    $current_min = isset($current['delivery_days_min']) && $current['delivery_days_min'] !== null && $current['delivery_days_min'] !== '' ? (int)$current['delivery_days_min'] : null;
+                    $current_max = isset($current['delivery_days_max']) && $current['delivery_days_max'] !== null && $current['delivery_days_max'] !== '' ? (int)$current['delivery_days_max'] : null;
+                }
+                
+                // Solo guardar si al menos uno de los valores está definido
+                $has_new_value = ($days_min !== null || $days_max !== null);
+                
+                if ($has_new_value) {
+                    // Si la provincia no existe en la BD, siempre guardar (es un INSERT nuevo)
+                    // Si la provincia existe, solo guardar si los valores han cambiado
+                    $should_save = false;
+                    if (!$province_exists) {
+                        // Provincia nueva: siempre guardar si tiene valores
+                        $should_save = true;
+                    } else {
+                        // Provincia existente: guardar solo si los valores han cambiado
+                        $has_changed = ($days_min !== $current_min || $days_max !== $current_max);
+                        $should_save = $has_changed;
+                    }
+                    
+                    if ($should_save) {
+                        // Validar que min <= max si ambos están definidos
+                        if ($days_min !== null && $days_max !== null && $days_min > $days_max) {
+                            $this->errors[] = $this->l('Provincia') . ' ' . $data['name'] . ': ' . $this->l('Los días mínimos no pueden ser mayores que los días máximos');
+                            continue;
+                        }
+                        
+                        // Si no hay horquilla, usar el valor disponible como días de envío (compatibilidad)
+                        $delivery_days = $days_min !== null ? $days_min : ($days_max !== null ? $days_max : 5);
+                        
+                        // Limpiar código de provincia para evitar problemas de codificación
+                        $province_code_clean = pSQL(trim($province_code));
+                        $province_name_clean = pSQL(trim($data['name']));
+                        
+                        if (empty($province_code_clean)) {
+                            $this->errors[] = $this->l('Código de provincia vacío para') . ': ' . $data['name'];
+                            continue;
+                        }
+                        
+                        if ($module->saveShippingDaysByProvince(
+                            $province_code_clean,
+                            $province_name_clean,
+                            $delivery_days,
+                            $days_min,
+                            $days_max
+                        )) {
+                            $saved_count++;
+                        } else {
+                            $error_msg = $this->l('Error al guardar provincia') . ': ' . $data['name'];
+                            // Añadir información de debug en modo desarrollo
+                            if (_PS_MODE_DEV_) {
+                                $error_msg .= ' (Código: ' . $province_code_clean . ')';
+                            }
+                            $this->errors[] = $error_msg;
+                        }
+                    } else {
+                        // Valores no han cambiado, saltar
+                        $skipped_count++;
+                    }
+                } else {
+                    // Si ambos están vacíos, no guardar (saltar esta provincia)
+                    $skipped_count++;
+                }
             }
         }
 
-        $this->confirmations[] = $this->l('Plazos y costes de envío guardados correctamente');
+        if ($saved_count > 0) {
+            $this->confirmations[] = $this->l('Plazos y costes de envío guardados correctamente') . ' (' . $saved_count . ' ' . $this->l('provincias') . ')';
+        }
+        
+        if ($skipped_count > 0 && $saved_count == 0) {
+            $this->errors[] = $this->l('No se guardaron provincias.') . ' ' . 
+                              $this->l('Posibles razones:') . ' ' . 
+                              $this->l('(1) No se introdujeron días mínimos o máximos,') . ' ' .
+                              $this->l('(2) Los valores ya están guardados y no han cambiado,') . ' ' .
+                              $this->l('(3) Los campos están vacíos.') . ' ' .
+                              $this->l('Por favor, verifica que los valores sean diferentes a los actuales.');
+        }
     }
 
     public function postProcess()
@@ -285,6 +368,23 @@ class AdminShippingCalculatorController extends ModuleAdminController
                 die('No hay datos para exportar');
             }
 
+            // Filtrar solo provincias que tienen datos configurados (min o max)
+            $filtered_delays = [];
+            foreach ($delays as $row) {
+                $has_min = isset($row['delivery_days_min']) && $row['delivery_days_min'] !== null && $row['delivery_days_min'] !== '';
+                $has_max = isset($row['delivery_days_max']) && $row['delivery_days_max'] !== null && $row['delivery_days_max'] !== '';
+                $has_days = isset($row['delivery_days']) && $row['delivery_days'] !== null && $row['delivery_days'] > 0;
+                
+                // Solo incluir si tiene al menos uno de los valores configurados
+                if ($has_min || $has_max || $has_days) {
+                    $filtered_delays[] = $row;
+                }
+            }
+            
+            if (empty($filtered_delays)) {
+                die('No hay datos configurados para exportar. Por favor, configura al menos días mínimos o máximos para algunas provincias.');
+            }
+
             // Limpiar cualquier salida previa
             if (ob_get_level()) {
                 ob_end_clean();
@@ -312,17 +412,17 @@ class AdminShippingCalculatorController extends ModuleAdminController
                 'delivery_days_min',
                 'delivery_days_max'
             ];
-            fputcsv($output, $headers, ';');
+            fputcsv($output, $headers, ',');
             
-            // Datos
-            foreach ($delays as $row) {
+            // Datos filtrados
+            foreach ($filtered_delays as $row) {
                 $csv_row = [
                     $row['province_code'],
                     $row['province_name'],
                     isset($row['delivery_days_min']) && $row['delivery_days_min'] !== null ? (int)$row['delivery_days_min'] : '',
                     isset($row['delivery_days_max']) && $row['delivery_days_max'] !== null ? (int)$row['delivery_days_max'] : ''
                 ];
-                fputcsv($output, $csv_row, ';');
+                fputcsv($output, $csv_row, ',');
             }
 
             fclose($output);
@@ -352,7 +452,7 @@ class AdminShippingCalculatorController extends ModuleAdminController
         }
 
         // Leer y validar header
-        $header = fgetcsv($handle, 1000, ';');
+        $header = fgetcsv($handle, 1000, ',');
         if (!$header || count($header) < 3) {
             $this->errors[] = $this->l('Formato de archivo inválido. Debe contener al menos: province_code, province_name, delivery_days_min, delivery_days_max');
             fclose($handle);
@@ -390,7 +490,7 @@ class AdminShippingCalculatorController extends ModuleAdminController
         $error_details = [];
         $line_number = 1; // Empezar en 1 porque ya leímos el header
 
-        while (($data = fgetcsv($handle, 1000, ';')) !== false) {
+        while (($data = fgetcsv($handle, 1000, ',')) !== false) {
             $line_number++;
             
             // Limpiar datos
@@ -557,7 +657,6 @@ class AdminShippingCalculatorController extends ModuleAdminController
             'states' => $states,
             'states_by_country' => $states_by_country,
             'selected_country_id' => $selected_country_id,
-            'selected_postal_code' => $this->selected_postal_code,
             'shipping_delays' => $delays_by_province,
             'module_dir' => __PS_BASE_URI__ . 'modules/' . $module->name . '/',
             'prep_mode' => $prep_mode,
@@ -570,73 +669,6 @@ class AdminShippingCalculatorController extends ModuleAdminController
         // Usar ruta directa del template (mismo método que productfeaturesmanager)
         $template_path = _PS_MODULE_DIR_ . $module->name . '/views/templates/admin/calculator.tpl';
         return $this->context->smarty->fetch($template_path);
-    }
-
-    private function calculateCarrier($id_country, $id_state, $weight, $id_zone) {
-     
-        $international=false;
-        // IDs de transportistas (del servidor según getDeliveryPrice.php)
-        $correos = 320;
-        $correos_internacional = 327;
-        $camion = 287;
-        $camion_internacional = 322;
-        $seur = 311;
-        $gc_international = 325;
-        $gc_spain = 319;
-        
-        // Excepciones por zona
-        $transaher = 294;
-        $transaher_zones = ['65', '66', '67', '68'];
-        $gc_spain_states = ['357', '365', '375', '372', '384', '376'];
-
-        if ($id_country != 6) {
-            $international = true;
-        }
-
-        
-        if ($international) {
-
-            // LOGICA TRANSPORTISTAS INTERNACIONAL
-
-            $id_carrier = $correos_internacional;
-
-            if($id_country == 13) { //Envíos a Paises Bajos
-                $id_carrier = $seur;
-            }
-
-            if($weight > 8) {
-                $id_carrier = $gc_international;
-            }
-
-            if($weight > 60) {
-                $id_carrier = $camion_internacional;
-            }
-
-        }else{
-
-            // LOGICA TRANSPORTISTAS ESPAÑA
-
-            $id_carrier = $correos;
-
-            if($weight > 8) {
-
-                $id_carrier = $camion;
-
-                if (in_array($id_state, $gc_spain_states)) {
-                    $id_carrier = $gc_spain;
-                }               
-
-            }
-
-        } 
-
-        //EXCEPCIÓN TRANSAHER
-        
-        if (in_array($id_zone, $transaher_zones) && $weight > 8) {
-            $id_carrier = $transaher;
-        }
-
-        return $id_carrier;
     }
     
     /**
@@ -653,11 +685,31 @@ class AdminShippingCalculatorController extends ModuleAdminController
         if ($weight === null) {
             $weight = $cart->getTotalWeight();
         }
-
+        $delivery_by_truck = $weight >= 13 ? true : false;
+        
+        // IDs de transportistas (del servidor según getDeliveryPrice.php)
+        $correos = 235;
+        $correos_internacional = 243;
+        $camion = 199;
+        $camion_internacional = 195;
+        $seur = 229;
+        
+        // Excepciones por zona
+        $transaher = 242;
+        $transaher_zones = ['65', '66', '67', '68'];
+        
+        $id_carrier = $delivery_by_truck ? $camion_internacional : $correos_internacional;
+        
         // Calcular id_zone
         $id_zone = State::getIdZone((int)$id_state);
         
-        $id_carrier = $this->calculateCarrier($id_country, $id_state, $weight, $id_zone);
+        if ($id_country == 6) { // Envío en España
+            $id_carrier = $delivery_by_truck ? $camion : $correos;
+        }
+        
+        if (in_array($id_zone, $transaher_zones)) {
+            $id_carrier = $delivery_by_truck ? $transaher : $correos_internacional;
+        }
         
         // Configurar carrito (exactamente como getDeliveryPrice.php)
         $cart->id_carrier = (string)$id_carrier;
