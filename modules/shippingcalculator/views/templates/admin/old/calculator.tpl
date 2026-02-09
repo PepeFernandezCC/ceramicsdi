@@ -106,6 +106,18 @@
             </div>
 
             <div class="form-group">
+                <label class="control-label col-lg-3">
+                    {l s='Código Postal' mod='shippingcalculator'}
+                </label>
+                <div class="col-lg-9">
+                    <input type="text" name="postal_code" id="postal_code" class="form-control" style="width: 300px;" {if isset($selected_postal_code)}value="{$selected_postal_code}"{/if}/>
+                    <p class="help-block">
+                        {l s='Inserta un Código Postal' mod='shippingcalculator'}
+                    </p>
+                </div>
+            </div>
+
+            <div class="form-group">
                 <div class="col-lg-9 col-lg-offset-3">
                     <button type="submit" class="btn btn-primary">
                         <i class="icon-calculator"></i>

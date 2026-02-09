@@ -73,6 +73,7 @@
                         <option value="">{l s='-- Selecciona un país --' mod='shippingcalculator'}</option>
                         {foreach from=$countries item=country}
                             <option value="{$country.id_country|intval}" 
+                                    data-iso="{$country.iso_code|escape:'html':'UTF-8'}"
                                     {if isset($selected_country_id) && $selected_country_id == $country.id_country}selected="selected"{/if}>
                                 {$country.name|escape:'html':'UTF-8'}
                             </option>
@@ -373,8 +374,7 @@
                                            max="365"
                                            class="form-control"
                                            placeholder="{l s='Mín.' mod='shippingcalculator'}"
-                                           style="width: 100px;" 
-                                           required />
+                                           style="width: 100px;" />
                                 </td>
                                 <td>
                                     {assign var="delay_max" value=""}
@@ -390,8 +390,7 @@
                                            max="365"
                                            class="form-control"
                                            placeholder="{l s='Máx.' mod='shippingcalculator'}"
-                                           style="width: 100px;" 
-                                           required />
+                                           style="width: 100px;" />
                                 </td>
                             </tr>
                     {/foreach}
@@ -440,25 +439,7 @@ window.statesByCountry[{$country_data.country.id_country|intval}] = [
 ];
 {/foreach}
 
-// Debug: mostrar en consola el objeto construido
-console.log('=== CONSTRUCCIÓN DE statesByCountry ===');
-console.log('statesByCountry construido (global):', window.statesByCountry);
-console.log('Tipo:', typeof window.statesByCountry);
-console.log('Es objeto:', window.statesByCountry instanceof Object);
-console.log('Claves disponibles:', Object.keys(window.statesByCountry));
-console.log('Total países:', Object.keys(window.statesByCountry).length);
 
-// Verificar algunos países específicos
-var testCountries = [6, 13, 14]; // España, Alemania, Francia
-testCountries.forEach(function(countryId) {
-    if (window.statesByCountry[countryId]) {
-        console.log('País ' + countryId + ' tiene', window.statesByCountry[countryId].length, 'provincias');
-    } else if (window.statesByCountry[countryId.toString()]) {
-        console.log('País "' + countryId + '" (string) tiene', window.statesByCountry[countryId.toString()].length, 'provincias');
-    } else {
-        console.log('País ' + countryId + ' NO encontrado en statesByCountry');
-    }
-});
 
 // Productos disponibles para JavaScript
 window.productsData = {};
@@ -480,18 +461,20 @@ window.serverQuantities[{$prod_id|intval}] = {$qty|intval};
 
 // Función para actualizar campos de cantidad
 function updateProductQuantities() {
-    var selectedProducts = $('#selected_products').val() || [];
-    var container = $('#product-quantities-container');
-    var list = $('#product-quantities-list');
+    if (typeof jQuery === 'undefined') return;
+    
+    var selectedProducts = jQuery('#selected_products').val() || [];
+    var container = jQuery('#product-quantities-container');
+    var list = jQuery('#product-quantities-list');
     
     // Guardar valores actuales antes de limpiar
     var savedQuantities = {};
     list.find('input[name^="product_quantities"]').each(function() {
-        var name = $(this).attr('name');
+        var name = jQuery(this).attr('name');
         var match = name.match(/product_quantities\[(\d+)\]/);
         if (match) {
             var productId = match[1];
-            savedQuantities[productId] = $(this).val() || 1;
+            savedQuantities[productId] = jQuery(this).val() || 1;
         }
     });
     
@@ -515,7 +498,7 @@ function updateProductQuantities() {
                 quantity = window.serverQuantities[productId];
             }
             
-            var row = $('<div class="form-group product-quantity-row" data-product-id="' + productId + '" style="margin-bottom: 10px;"></div>');
+            var row = jQuery('<div class="form-group product-quantity-row" data-product-id="' + productId + '" style="margin-bottom: 10px;"></div>');
             row.append('<label style="display: inline-block; width: 300px; margin-right: 10px;">' + product.name + '</label>');
             row.append('<input type="number" name="product_quantities[' + productId + ']" value="' + quantity + '" min="1" class="form-control" style="display: inline-block; width: 100px;" />');
             list.append(row);
@@ -525,7 +508,14 @@ function updateProductQuantities() {
     container.show();
 }
 
-$(document).ready(function() {
+// Envolver todo el código jQuery
+(function initShippingCalculatorUI() {
+    if (typeof jQuery === 'undefined') {
+        setTimeout(initShippingCalculatorUI, 100);
+        return;
+    }
+    
+jQuery(document).ready(function($) {
     // Inicializar select2 solo si está disponible
     if (typeof $.fn.select2 !== 'undefined') {
         $('#selected_products').select2({
@@ -544,7 +534,7 @@ $(document).ready(function() {
             updateProductQuantities();
         });
     } else {
-        console.warn('Select2 no está disponible, usando select normal');
+
         // Si Select2 no está disponible, el select funciona normalmente
         // Asegurar que los valores seleccionados se mantengan después del POST
         {if isset($selected_products) && is_array($selected_products) && count($selected_products) > 0}
@@ -568,16 +558,14 @@ $(document).ready(function() {
     
     // Función para actualizar provincias - disponible globalmente
     window.updateProvinceSelectWithCountry = function(countryIdNum, preserveSelectedValue) {
-        console.log('=== updateProvinceSelectWithCountry INICIADO ===');
-        console.log('País recibido:', countryIdNum, 'Tipo:', typeof countryIdNum);
-        console.log('Preservar valor seleccionado:', preserveSelectedValue);
+
         
         var provinceSelect = $('#province_code');
         var provinceHelp = $('#province-help');
         
-        console.log('Selector de provincias encontrado:', provinceSelect.length > 0);
+
         if (provinceSelect.length === 0) {
-            console.error('ERROR: Selector #province_code no encontrado en el DOM');
+
             return;
         }
         
@@ -592,15 +580,15 @@ $(document).ready(function() {
                 selectedProvinceValue = '{$selected_province|escape:'javascript':'UTF-8'}';
                 {/if}
             }
-            console.log('Valor seleccionado a preservar:', selectedProvinceValue);
+
         }
         
         // Limpiar selector
         provinceSelect.html('<option value="">{l s='-- Selecciona una provincia/estado --' mod='shippingcalculator'|escape:'javascript':'UTF-8'}</option>');
-        console.log('Selector limpiado');
+
         
         if (!countryIdNum || isNaN(countryIdNum) || countryIdNum <= 0) {
-            console.warn('País no válido:', countryIdNum);
+
             if (provinceHelp.length) {
                 provinceHelp.show();
             }
@@ -612,29 +600,24 @@ $(document).ready(function() {
         var statesObj = window.statesByCountry;
         
         if (!statesObj) {
-            console.error('ERROR: window.statesByCountry no está definido');
-            console.error('Tipo de window.statesByCountry:', typeof window.statesByCountry);
+
             return;
         }
         
-        console.log('Buscando estados para país ID:', countryIdNum);
-        console.log('Claves disponibles en statesByCountry:', Object.keys(statesObj));
-        console.log('¿Existe como número?', countryIdNum in statesObj);
-        console.log('¿Existe como string?', countryIdNum.toString() in statesObj);
+
         
         // Intentar con número primero
         states = statesObj[countryIdNum];
-        console.log('Estados encontrados con número [' + countryIdNum + ']:', states ? (states.length + ' provincias') : 'null');
+
         
         // Si no funciona, intentar con string
         if (!states || !Array.isArray(states) || states.length === 0) {
             states = statesObj[countryIdNum.toString()];
-            console.log('Estados encontrados con string ["' + countryIdNum + '"]:', states ? (states.length + ' provincias') : 'null');
+
         }
         
-        // Agregar provincias
-        if (states && Array.isArray(states) && states.length > 0) {
-            console.log('✓ Agregando', states.length, 'provincias para país', countryIdNum);
+        if (states && Array.isArray(states) &&states.length > 0) {
+
             var addedCount = 0;
             $.each(states, function(index, state) {
                 if (state && state.iso_code && state.name) {
@@ -645,20 +628,17 @@ $(document).ready(function() {
                     // Si el valor coincide con el seleccionado, marcarlo
                     if (selectedProvinceValue && selectedProvinceValue === state.iso_code) {
                         option.attr('selected', 'selected');
-                        console.log('✓ Provincia seleccionada restaurada:', state.iso_code, state.name);
                     }
                     
                     provinceSelect.append(option);
                     addedCount++;
                 }
             });
-            console.log('✓ Provincias agregadas correctamente:', addedCount, 'de', states.length);
-            console.log('Total opciones en selector:', provinceSelect.find('option').length);
+
             
             // Restaurar el valor seleccionado si existe y está disponible
             if (selectedProvinceValue && provinceSelect.find('option[value="' + selectedProvinceValue + '"]').length > 0) {
                 provinceSelect.val(selectedProvinceValue);
-                console.log('✓ Valor seleccionado restaurado:', selectedProvinceValue);
             }
             
             // Forzar actualización visual del selector
@@ -668,14 +648,38 @@ $(document).ready(function() {
                 provinceHelp.hide();
             }
         } else {
-            console.warn('✗ No se encontraron provincias para el país', countryIdNum);
-            console.warn('Estados encontrados:', states);
+            // País sin provincias: usar el código ISO del país directamente
+            var countrySelect = $('#id_country');
+            if (countrySelect.length > 0) {
+                var selectedCountryOption = countrySelect.find('option:selected');
+                if (selectedCountryOption.length > 0) {
+                    var countryName = selectedCountryOption.text();
+                    var countryIsoCode = selectedCountryOption.data('iso') || 'COUNTRY_' + countryIdNum;
+                    
+                    // Agregar una opción con el código del país
+                    var countryOption = $('<option></option>')
+                        .attr('value', countryIsoCode)
+                        .text(countryName)
+                        .attr('selected', 'selected');
+                    
+                    provinceSelect.append(countryOption);
+                    provinceSelect.val(countryIsoCode);
+                    provinceSelect.trigger('change');
+                    
+                    if (provinceHelp.length) {
+                        provinceHelp.hide();
+                    }
+                    
+                    return;
+                }
+            }
+
             if (provinceHelp.length) {
                 provinceHelp.show();
             }
         }
         
-        console.log('=== updateProvinceSelectWithCountry FINALIZADO ===');
+
     };
     
     // SOLUCIÓN SIMPLE Y DIRECTA: Usar delegación de eventos en document
@@ -687,19 +691,14 @@ $(document).ready(function() {
         var selectedValue = $(this).val();
         var selectedValueNum = parseInt(selectedValue);
         
-        console.log('=== CAMBIO DE PAÍS DETECTADO ===');
-        console.log('País seleccionado:', selectedValue, 'ID numérico:', selectedValueNum);
-        console.log('Elemento:', this);
-        console.log('updateProvinceSelectWithCountry disponible:', typeof window.updateProvinceSelectWithCountry !== 'undefined');
-        console.log('statesByCountry disponible:', typeof window.statesByCountry !== 'undefined');
+
         
         if (window.updateProvinceSelectWithCountry && selectedValueNum > 0) {
             // Si el país cambió, no preservar el valor (porque las provincias serán diferentes)
             window.updateProvinceSelectWithCountry(selectedValueNum, false);
         } else {
-            console.error('ERROR: No se puede actualizar provincias');
-            console.error('  - updateProvinceSelectWithCountry:', typeof window.updateProvinceSelectWithCountry);
-            console.error('  - selectedValueNum:', selectedValueNum);
+
+
         }
     });
     
@@ -707,15 +706,14 @@ $(document).ready(function() {
     setTimeout(function() {
         var countrySelect = document.getElementById('id_country');
         if (countrySelect) {
-            console.log('✓ Agregando listener directo a #id_country');
+
             
             // Agregar listener con JavaScript vanilla
             countrySelect.addEventListener('change', function(e) {
                 var selectedValue = this.value;
                 var selectedValueNum = parseInt(selectedValue);
                 
-                console.log('=== CAMBIO DE PAÍS DETECTADO (Listener directo Vanilla JS) ===');
-                console.log('País seleccionado:', selectedValue, 'ID:', selectedValueNum);
+
                 
                 if (window.updateProvinceSelectWithCountry && selectedValueNum > 0) {
                     window.updateProvinceSelectWithCountry(selectedValueNum);
@@ -727,63 +725,42 @@ $(document).ready(function() {
                 var selectedValue = $(this).val();
                 var selectedValueNum = parseInt(selectedValue);
                 
-                console.log('=== CAMBIO DE PAÍS DETECTADO (jQuery directo) ===');
-                console.log('País seleccionado:', selectedValue, 'ID:', selectedValueNum);
+
                 
                 if (window.updateProvinceSelectWithCountry && selectedValueNum > 0) {
                     window.updateProvinceSelectWithCountry(selectedValueNum);
                 }
             });
         } else {
-            console.warn('Selector #id_country no encontrado para listener directo');
+
         }
     }, 300);
     
     
     // Función de prueba accesible desde la consola
     window.testProvinceUpdate = function(countryId) {
-        console.log('=== TEST MANUAL DE ACTUALIZACIÓN DE PROVINCIAS ===');
-        console.log('País ID a probar:', countryId);
-        console.log('window.statesByCountry:', window.statesByCountry);
-        console.log('window.updateProvinceSelectWithCountry:', typeof window.updateProvinceSelectWithCountry);
         
         if (window.updateProvinceSelectWithCountry) {
             window.updateProvinceSelectWithCountry(countryId);
-        } else {
-            console.error('ERROR: updateProvinceSelectWithCountry no está disponible');
         }
     };
     
     // Test automático al cargar la página
     setTimeout(function() {
-        console.log('=== TEST AUTOMÁTICO AL CARGAR ===');
-        console.log('window.statesByCountry disponible:', typeof window.statesByCountry !== 'undefined');
-        console.log('window.updateProvinceSelectWithCountry disponible:', typeof window.updateProvinceSelectWithCountry !== 'undefined');
-        console.log('Selector #id_country existe:', document.getElementById('id_country') !== null);
-        console.log('Selector #province_code existe:', document.getElementById('province_code') !== null);
-        
-        if (window.statesByCountry) {
-            var keys = Object.keys(window.statesByCountry);
-            console.log('Países disponibles en statesByCountry:', keys.length);
-            if (keys.length > 0) {
-                console.log('Primeros 5 países:', keys.slice(0, 5));
-                var firstCountry = parseInt(keys[0]);
-                console.log('Estados del primer país (' + firstCountry + '):', window.statesByCountry[firstCountry] ? window.statesByCountry[firstCountry].length : 0);
-            }
-        }
+
         
         // Si hay un país seleccionado, cargar sus provincias al inicio
         // PERO preservar el valor de provincia seleccionado si existe
         {if isset($selected_country_id) && $selected_country_id}
         var defaultCountry = document.getElementById('id_country');
-        if (defaultCountry && defaultCountry.value) {
-            var defaultCountryNum = parseInt(defaultCountry.value);
-            console.log('Inicializando provincias para país por defecto:', defaultCountry.value, 'ID:', defaultCountryNum);
+            if (defaultCountry && defaultCountry.value) {
+                var defaultCountryNum = parseInt(defaultCountry.value);
+
             if (!isNaN(defaultCountryNum) && defaultCountryNum > 0) {
                 if (window.updateProvinceSelectWithCountry) {
                     // Preservar el valor seleccionado de provincia al inicializar
                     var selectedProvince = {if isset($selected_province) && $selected_province}'{$selected_province|escape:'javascript':'UTF-8'}'{else}''{/if};
-                    console.log('Provincia seleccionada a preservar:', selectedProvince);
+
                     window.updateProvinceSelectWithCountry(defaultCountryNum, true);
                 }
             }
@@ -792,6 +769,7 @@ $(document).ready(function() {
     }, 1000);
     
 });
+})(); // Cierre de initShippingCalculatorUI
 </script>
 
 <script>
@@ -825,17 +803,30 @@ $(document).ready(function() {
             var row = rows[i];
             var rowCountryIdAttr = row.getAttribute('data-country-id');
             var rowCountryId = parseInt(rowCountryIdAttr);
+            var inputs = row.querySelectorAll('input[type="number"]');
             
             // Si no hay país seleccionado, ocultar todas
             if (!selectedValue || selectedValue === '' || isNaN(selectedCountryId) || selectedCountryId === 0) {
                 row.style.display = 'none';
+                // Desactivar inputs para que no se envíen con el formulario
+                for (var j = 0; j < inputs.length; j++) {
+                    inputs[j].disabled = true;
+                }
             } else {
                 // Comparar IDs numéricos - usar comparación estricta
                 if (!isNaN(rowCountryId) && rowCountryId === selectedCountryId) {
                     row.style.display = '';
                     visibleCount++;
+                    // Activar inputs de filas visibles
+                    for (var j = 0; j < inputs.length; j++) {
+                        inputs[j].disabled = false;
+                    }
                 } else {
                     row.style.display = 'none';
+                    // Desactivar inputs para que no se envíen con el formulario
+                    for (var j = 0; j < inputs.length; j++) {
+                        inputs[j].disabled = true;
+                    }
                 }
             }
         }
@@ -899,38 +890,63 @@ $(document).ready(function() {
 
 <script>
 // Función para aplicar los valores min/max globales a las filas visibles (provincias del país filtrado)
-function applyGlobalMinMaxToVisibleProvinces() {
-    var minVal = $('#apply_days_min').val();
-    var maxVal = $('#apply_days_max').val();
+(function() {
+    'use strict';
+    
+    function applyGlobalMinMaxToVisibleProvinces() {
+        // Verificar que jQuery esté disponible
+        if (typeof jQuery === 'undefined') {
+            console.error('jQuery no está disponible');
+            return;
+        }
+        
+        var minVal = jQuery('#apply_days_min').val();
+        var maxVal = jQuery('#apply_days_max').val();
 
-    // Validar entradas
-    if ((minVal === null || minVal === '') && (maxVal === null || maxVal === '')) {
-        alert('Por favor, introduce al menos un valor en Días mín. o Días máx.');
-        return;
+        // Validar entradas
+        if ((minVal === null || minVal === '') && (maxVal === null || maxVal === '')) {
+            alert('Por favor, introduce al menos un valor en Días mín. o Días máx.');
+            return;
+        }
+
+        // Recorrer filas visibles y aplicar valores
+        jQuery('#shipping-delays-table tbody tr.province-row:visible').each(function() {
+            var $row = jQuery(this);
+            // Encontrar inputs y setear valores si se proporcionaron
+            var $minInput = $row.find('input[name$="[days_min]"]');
+            var $maxInput = $row.find('input[name$="[days_max]"]');
+            if (minVal !== null && minVal !== '') {
+                $minInput.val(minVal);
+            }
+            if (maxVal !== null && maxVal !== '') {
+                $maxInput.val(maxVal);
+            }
+        });
+
+        // Mensaje de confirmación eliminado (operación silenciosa)
     }
-
-    // Recorrer filas visibles y aplicar valores
-    $('#shipping-delays-table tbody tr.province-row:visible').each(function() {
-        var $row = $(this);
-        // Encontrar inputs y setear valores si se proporcionaron
-        var $minInput = $row.find('input[name$="[days_min]"]');
-        var $maxInput = $row.find('input[name$="[days_max]"]');
-        if (minVal !== null && minVal !== '') {
-            $minInput.val(minVal);
+    
+    // Inicializar cuando jQuery y el DOM estén listos
+    function initApplyButton() {
+        if (typeof jQuery === 'undefined') {
+            setTimeout(initApplyButton, 100);
+            return;
         }
-        if (maxVal !== null && maxVal !== '') {
-            $maxInput.val(maxVal);
-        }
-    });
-
-    // Mensaje de confirmación eliminado (operación silenciosa)
-}
-
-$(document).ready(function() {
-    $('#apply_min_max_btn').on('click', function() {
-        applyGlobalMinMaxToVisibleProvinces();
-    });
-});
+        
+        jQuery(document).ready(function() {
+            jQuery('#apply_min_max_btn').off('click').on('click', function() {
+                applyGlobalMinMaxToVisibleProvinces();
+            });
+        });
+    }
+    
+    // Iniciar
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initApplyButton);
+    } else {
+        initApplyButton();
+    }
+})();
 </script>
 
 <!-- Modal para importar CSV -->
@@ -952,7 +968,7 @@ $(document).ready(function() {
                         <p class="help-block">
                             {l s='Formato requerido: El CSV debe tener las columnas:' mod='shippingcalculator'}<br>
                             <strong>province_code, province_name, delivery_days_min, delivery_days_max</strong><br>
-                            {l s='El separador debe ser punto y coma (;)' mod='shippingcalculator'}
+                            {l s='El separador debe ser coma (,)' mod='shippingcalculator'}
                         </p>
                     </div>
                 </div>
@@ -967,29 +983,38 @@ $(document).ready(function() {
 
 <script>
 function exportToCSV() {
-    var form = $('<form>', {
+    if (typeof jQuery === 'undefined') {
+        console.error('jQuery no está disponible');
+        return;
+    }
+    
+    var form = jQuery('<form>', {
         method: 'POST',
         action: window.location.href
     });
     
-    form.append($('<input>', {
+    form.append(jQuery('<input>', {
         type: 'hidden',
         name: 'exportCSV',
         value: '1'
     }));
-    form.append($('<input>', {
+    form.append(jQuery('<input>', {
         type: 'hidden',
         name: 'token',
         value: '{$smarty.get.token|escape:'javascript':'UTF-8'}'
     }));
     
-    $('body').append(form);
+    jQuery('body').append(form);
     form.submit();
     form.remove();
 }
 
 function showImportModal() {
-    $('#importModal').modal('show');
+    if (typeof jQuery === 'undefined') {
+        console.error('jQuery no está disponible');
+        return;
+    }
+    jQuery('#importModal').modal('show');
 }
 </script>
 

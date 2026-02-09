@@ -511,7 +511,7 @@ div#collageBox-landing {
     width: 100%;
 }
 
-.btn {
+#landing-template .btn {
     display: inline-block;
     font-weight: 500;
     margin-top: 5%;

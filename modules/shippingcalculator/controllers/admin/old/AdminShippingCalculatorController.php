@@ -13,6 +13,7 @@ class AdminShippingCalculatorController extends ModuleAdminController
     protected $selected_products = [];
     protected $selected_province = '';
     protected $selected_country_id = null;
+    protected $selected_postal_code = null;
     protected $product_quantities = [];
     public function __construct()
     {
@@ -39,6 +40,7 @@ class AdminShippingCalculatorController extends ModuleAdminController
     {
         $selected_products = Tools::getValue('selected_products', []);
         $province_code = Tools::getValue('province_code');
+        $postal_code = Tools::getValue('postal_code') != '' ? Tools::getValue('postal_code') : '1000';
         $country_id = (int)Tools::getValue('id_country', Configuration::get('PS_COUNTRY_DEFAULT'));
 
         if (empty($selected_products) || empty($province_code)) {
@@ -86,7 +88,7 @@ class AdminShippingCalculatorController extends ModuleAdminController
         }
         
         if (!$country->active) {
-            $country_name = $country->name[$this->context->language->id] ?? $country->name[1] ?? 'el país';
+            //$country_name = $country->name[$this->context->language->id] ?? $country->name[1] ?? 'el país';
             $this->errors[] = $this->l('El país seleccionado está inactivo. Por favor, actívalo en Internacional > Países.');
             $temp_cart->delete();
             return;
@@ -139,6 +141,7 @@ class AdminShippingCalculatorController extends ModuleAdminController
 
         // Guardar país seleccionado para mantenerlo en el formulario
         $this->selected_country_id = $country_id;
+        $this->selected_postal_code = $postal_code;
 
         // Calcular plazos usando el método del módulo
         $prep_mode = (int)Configuration::get('SHIPPING_CALCULATOR_PREP_MODE');
@@ -657,6 +660,7 @@ class AdminShippingCalculatorController extends ModuleAdminController
             'states' => $states,
             'states_by_country' => $states_by_country,
             'selected_country_id' => $selected_country_id,
+            'selected_postal_code' => $this->selected_postal_code,
             'shipping_delays' => $delays_by_province,
             'module_dir' => __PS_BASE_URI__ . 'modules/' . $module->name . '/',
             'prep_mode' => $prep_mode,
@@ -669,6 +673,73 @@ class AdminShippingCalculatorController extends ModuleAdminController
         // Usar ruta directa del template (mismo método que productfeaturesmanager)
         $template_path = _PS_MODULE_DIR_ . $module->name . '/views/templates/admin/calculator.tpl';
         return $this->context->smarty->fetch($template_path);
+    }
+
+    private function calculateCarrier($id_country, $id_state, $weight, $id_zone) {
+     
+        $international=false;
+        // IDs de transportistas (del servidor según getDeliveryPrice.php)
+        $correos = 320;
+        $correos_internacional = 327;
+        $camion = 287;
+        $camion_internacional = 322;
+        $seur = 311;
+        $gc_international = 325;
+        $gc_spain = 319;
+        
+        // Excepciones por zona
+        $transaher = 294;
+        $transaher_zones = ['65', '66', '67', '68'];
+        $gc_spain_states = ['357', '365', '375', '372', '384', '376'];
+
+        if ($id_country != 6) {
+            $international = true;
+        }
+
+        
+        if ($international) {
+
+            // LOGICA TRANSPORTISTAS INTERNACIONAL
+
+            $id_carrier = $correos_internacional;
+
+            if($id_country == 13) { //Envíos a Paises Bajos
+                $id_carrier = $seur;
+            }
+
+            if($weight > 8) {
+                $id_carrier = $gc_international;
+            }
+
+            if($weight > 60) {
+                $id_carrier = $camion_internacional;
+            }
+
+        }else{
+
+            // LOGICA TRANSPORTISTAS ESPAÑA
+
+            $id_carrier = $correos;
+
+            if($weight > 8) {
+
+                $id_carrier = $camion;
+
+                if (in_array($id_state, $gc_spain_states)) {
+                    $id_carrier = $gc_spain;
+                }               
+
+            }
+
+        } 
+
+        //EXCEPCIÓN TRANSAHER
+        
+        if (in_array($id_zone, $transaher_zones) && $weight > 8) {
+            $id_carrier = $transaher;
+        }
+
+        return $id_carrier;
     }
     
     /**
@@ -685,31 +756,11 @@ class AdminShippingCalculatorController extends ModuleAdminController
         if ($weight === null) {
             $weight = $cart->getTotalWeight();
         }
-        $delivery_by_truck = $weight >= 13 ? true : false;
-        
-        // IDs de transportistas (del servidor según getDeliveryPrice.php)
-        $correos = 235;
-        $correos_internacional = 243;
-        $camion = 199;
-        $camion_internacional = 195;
-        $seur = 229;
-        
-        // Excepciones por zona
-        $transaher = 242;
-        $transaher_zones = ['65', '66', '67', '68'];
-        
-        $id_carrier = $delivery_by_truck ? $camion_internacional : $correos_internacional;
         
         // Calcular id_zone
         $id_zone = State::getIdZone((int)$id_state);
+        $id_carrier = $this->calculateCarrier($id_country, $id_state, $weight, $id_zone);
         
-        if ($id_country == 6) { // Envío en España
-            $id_carrier = $delivery_by_truck ? $camion : $correos;
-        }
-        
-        if (in_array($id_zone, $transaher_zones)) {
-            $id_carrier = $delivery_by_truck ? $transaher : $correos_internacional;
-        }
         
         // Configurar carrito (exactamente como getDeliveryPrice.php)
         $cart->id_carrier = (string)$id_carrier;

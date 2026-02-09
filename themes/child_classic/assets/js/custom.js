@@ -2742,8 +2742,7 @@ $( document ).ready( function () {
                         document.getElementById("dni-error").style.display = "block";// error cif/dni vacío
                         console.log('Error: validation cif empresa vacio | check off');
                         validation = false;
-                     }else if(!validarDNI() && $('#field-country') == 6) {
-                        console.log($('#field-country'));
+                     }else if(!validarDNI() && $('#field-id_country').val() == 6) {
                         validation = false;
                         console.log('ERRORES CON DNI...');
                         const errorSpan = document.getElementById("dni-error");
