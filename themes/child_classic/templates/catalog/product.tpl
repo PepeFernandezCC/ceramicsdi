@@ -336,15 +336,12 @@
                                         {assign var="display_custom_stock_msg" value="{$custom_out_of_stock_msg}"}
                                     {/if}
 
-                                    {if $show_stock}
-                                        {($product.availability_message|upper)}
+                                    {if $display_custom_stock_msg != "-" ||  $display_custom_stock_msg != ""}
+                                        {($display_custom_stock_msg|upper)}
                                     {else}
-                                        {if $display_custom_stock_msg != "-"}
-                                            {($display_custom_stock_msg|upper)}
-                                        {else}
-                                            {($product.availability_message|upper)}
-                                        {/if}
+                                        {($product.availability_message|upper)}
                                     {/if}
+                                    
                                     
                                 {/if}
                            
@@ -355,8 +352,7 @@
                                     - <strong>{$result} {$productUnit}</strong>
                                       
                                 {/if}
-
-                                
+                         
 
                             </span>
                         {/block}
@@ -449,8 +445,7 @@
                                      <h2 class="accordion-item-h2">{l s='Measurements' d='Shop.Theme.Catalog'}</h2>
 
                                 </button>
-
-                                <div class="panel">
+                               <div class="panel">
 
                                     
                                     {block name='product_measures'}
