@@ -4,6 +4,8 @@ class Address extends AddressCore
 {
     /** @var int */
     public $is_invoice;
+    public $dni_format;
+
 
     public function __construct($id = null, $idLang = null)
     {
@@ -15,6 +17,43 @@ class Address extends AddressCore
             'validate' => 'isUnsignedInt',
             'required' => false,
         ];
+        self::$definition['fields']['dni_format'] = [
+            'type'     => self::TYPE_STRING,
+            'validate' => 'isCleanHtml',
+            'required' => false,
+            'size'     => 18,
+        ];
+
+
+    }
+
+    protected function buildDniFormat() {
+        // OJO: si tu campo real no se llama "dni", cambia aquí.
+        $dni = (string) $this->dni;
+
+        // Limpieza básica (opcional pero recomendable)
+        $dni = trim($dni);
+        $dni = str_replace([' ', '-', '.'], '', $dni);
+
+        if ($dni === '') {
+            $this->dni_format = '';
+            return;
+        }
+
+        // Normaliza prefijo
+        $dniUpper = strtoupper($dni);
+
+        if ((int) $this->id_country === 6) {
+            // Si ya viene con ES, no duplicar
+            if (strpos($dniUpper, 'ES') === 0) {
+                $this->dni_format = $dniUpper;
+            } else {
+                $this->dni_format = 'ES' . $dniUpper;
+            }
+        } else {
+            // Para otros países, guardar tal cual (en mayúsculas y limpio)
+            $this->dni_format = $dniUpper;
+        }
     }
 
     public function add($autodate = true, $null_values = false)
@@ -26,6 +65,8 @@ class Address extends AddressCore
             $this->is_invoice = (int) $postIsInvoice;
         }
 
+        $this->buildDniFormat();
+
         return parent::add($autodate, $null_values);
     }
 
@@ -35,6 +76,8 @@ class Address extends AddressCore
         if ($postIsInvoice !== null) {
             $this->is_invoice = (int) $postIsInvoice;
         }
+
+        $this->buildDniFormat();
 
         return parent::update($null_values);
     }
