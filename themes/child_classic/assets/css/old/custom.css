@@ -696,6 +696,12 @@ body:not(#category):not(#search) #wrapper #content-wrapper {
   }*/
 }
 @media (min-width: 1400px) {
+  .mt-125-desktop {
+    margin-top: 125px;
+  }
+  .mt-90-desktop{
+    margin-top: 90px;
+  }
   #products #js-product-list .products .product,
   #products .custom-product-accessories .products .product {
     border-right: 1px solid black;
@@ -7101,12 +7107,15 @@ div#generalitat-ayudas {
     flex-wrap: wrap;
     justify-content: space-around;
     align-items: center;
-    width: 24%;
+    width: 20%;
     margin-top: 10px;
+    margin-left: 25px;
 }
 
-.generalitat-ayudas {
-  margin: 25px 0;
+
+#generalitat-subvencion {
+  margin: 25px 20px;
+  width: 30%;
 }
 .generalitat-banner-box {
     width: 54%;
@@ -7116,11 +7125,26 @@ div#generalitat-ayudas {
 }
 
 .generalitat-help-description {
-    font-size: 11px;
+    font-size: 9px;
     padding: 10px 0;
     text-transform: uppercase;
     width: 40%;
     font-weight: 500;
+}
+
+.generalitat-sub-help-description {
+    font-size: 9px;
+    padding: 10px 0;
+    text-transform: uppercase;
+    width: 100%;
+    font-weight: 500;
+}
+
+.generalitat-subvencion {
+  width: 30%
+}
+.gva-sub-banner-img {
+  width: 100%;
 }
 
 /* addresses account*/
@@ -7134,12 +7158,13 @@ span.manage-addresses {
 @media (max-width:769px) {
 
   .gva-banner-img {
-      width: 100% !important;
+      width: 70% !important;
   }
 
   .generalitat-banner-box {
     margin-bottom: 5px;
     width: 70%;
+    text-align: center;
   }
 
   .generalitat-help-description {
@@ -7147,7 +7172,7 @@ span.manage-addresses {
       text-align: left;
   }
 
-    div#generalitat-ayudas {
+  div#generalitat-ayudas {
       margin: 10px 0;
   }
 
@@ -7155,4 +7180,29 @@ span.manage-addresses {
     flex-direction: column-reverse;
     width: 100%;
   }
+  #generalitat-subvencion {
+    margin: 25px 0px;
+    width: 100%;
+  }
+  .generalitat-sub-help-description {
+    padding: 10px 10px;
+  }
+}
+
+.no-sample-btn-box {
+    padding: .25rem .75rem;
+    height: 65px !important;
+    width: 100%;
+    color: red;
+    font-weight: 500;
+    border: 1px solid black;
+    white-space: normal;
+    min-height: 40px;
+    font-size: 12px;
+    text-transform: uppercase;
+    vertical-align: middle;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }

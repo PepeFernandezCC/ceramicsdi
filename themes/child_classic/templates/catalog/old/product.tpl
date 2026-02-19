@@ -102,7 +102,11 @@
                     {assign var="conversionRate" value=1}
                     {assign var="otherMaterialsArray" value=[81, 82, 88]}
                     {assign var="isByPiece" value=false}
+                    {assign var="show_stock" value=false}
                     {assign var="categoriasProducto" value=Product::getProductCategories($product.id)}
+                    {assign var="display_custom_stock_msg" value="-"}
+                    {assign var="custom_stock_msg" value="-"}
+                    {assign var="custom_out_of_stock_msg" value="-"}
                     {if $CATEGORY_INSTALACION_ID|in_array:$categoriasProducto || $CATEGORY_MANTENIMIENTO_ID|in_array:$categoriasProducto || $CATEGORY_ARTICULATIONS|in_array:$categoriasProducto}
                         {assign var="normalSell" value=true}
                     {else}
@@ -149,6 +153,18 @@
 
                             {assign var="dias_plazo" value="{$feature.value}"}
 
+                        {/if}
+
+                        {if $feature.id_feature === $FEATURE_SHOW_STOCK && $feature.value == 1}
+                                                                               
+                            {assign var="show_stock" value=true}
+                                      
+                        {/if}
+                        {if $feature.id_feature === $FEATURE_CUSTOM_STOCK}
+                            {assign var="custom_stock_msg" value="{$feature.value}"}
+                        {/if}
+                        {if $feature.id_feature === $FEATURE_CUSTOM_OUT_OF_STOCK}
+                            {assign var="custom_out_of_stock_msg" value="{$feature.value}"}
                         {/if}
 
                     {/foreach} 
@@ -304,28 +320,39 @@
 
 
                         {block name='product_availability'}
+                            
                             <span id="product-availability" class="js-product-availability" style="font-size:14px;">
                             
                                 {if $product.show_availability && $product.availability_message}
+
                                     {if $product.availability == 'available' and $product.quantity > 0}
                                         <i class="material-icons rtl-no-flip product-available">&#xE5CA;</i> 
+                                        {assign var="display_custom_stock_msg" value="{$custom_stock_msg}"}
                                     {elseif $product.availability == 'last_remaining_items'}
                                         <i class="material-icons product-last-items">&#xE002;</i>
+                                        {assign var="display_custom_stock_msg" value="{$custom_stock_msg}"}
                                     {else}
                                         <i class="material-icons product-last-items">&#xE002;</i>
+                                        {assign var="display_custom_stock_msg" value="{$custom_out_of_stock_msg}"}
                                     {/if}
-                                    {($product.availability_message|upper)}
+
+                                    {if $display_custom_stock_msg != "-" && $display_custom_stock_msg != ""}
+                                        {($display_custom_stock_msg|upper)}
+                                    {else}
+                                        {($product.availability_message|upper)}
+                                    {/if}
+                                    
+                                    
                                 {/if}
                            
-                                {foreach from=$product.features item='feature'}
+                            
 
-                                    {if $feature.id_feature === $FEATURE_SHOW_STOCK && $feature.value == 1}
+                                {if $show_stock}
                                                                                
-                                         - <strong>{$result} {$productUnit}</strong>
+                                    - <strong>{$result} {$productUnit}</strong>
                                       
-                                    {/if}
-
-                                {/foreach}
+                                {/if}
+                         
 
                             </span>
                         {/block}
@@ -418,8 +445,7 @@
                                      <h2 class="accordion-item-h2">{l s='Measurements' d='Shop.Theme.Catalog'}</h2>
 
                                 </button>
-
-                                <div class="panel">
+                               <div class="panel">
 
                                     
                                     {block name='product_measures'}

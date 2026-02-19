@@ -19,6 +19,30 @@ $( document ).ready( function () {
             });
          });
       }
+
+      if (document.getElementById('board-section')) {
+         document.querySelectorAll('[data-cards-carousel]').forEach(root => {
+            const track = root.querySelector('.cards-track');
+            const slides = Array.from(root.querySelectorAll('.cards-slide'));
+            const prev = root.querySelector('[data-cards-prev]');
+            const next = root.querySelector('[data-cards-next]');
+
+            let i = 0;
+
+            function update() {
+               const w = root.querySelector('.cards-viewport').getBoundingClientRect().width;
+               track.style.transform = `translateX(-${i * w}px)`;
+               prev.disabled = (i === 0);
+               next.disabled = (i === slides.length - 1);
+            }
+
+            prev.addEventListener('click', () => { i = Math.max(0, i - 1); update(); });
+            next.addEventListener('click', () => { i = Math.min(slides.length - 1, i + 1); update(); });
+            window.addEventListener('resize', update);
+
+            update();
+         });
+      }      
       /* ocultar images large */
       $(function () {
          var $productModal = $('#product-modal');
@@ -119,6 +143,82 @@ $( document ).ready( function () {
 
       }
   
+      /* CAROUSEL PRODUCTOS COMPLEMENTARIOS */
+
+      if (document.getElementById('complement-products-box')) {
+         /* CARRUSEL IMÁGENES EN CADA BOARD-CARD (COMPLEMENTS) */
+
+         const carousels = document.querySelectorAll("[data-img-carousel]");
+
+         carousels.forEach((carousel) => {
+            const track = carousel.querySelector("[data-img-track]");
+            const images = track ? track.querySelectorAll("img") : [];
+            const prevBtn = carousel.querySelector("[data-img-prev]");
+            const nextBtn = carousel.querySelector("[data-img-next]");
+
+            // Si no hay suficientes imágenes, no hace falta carrusel
+            if (!track || images.length <= 1) {
+               if (prevBtn) prevBtn.style.display = "none";
+               if (nextBtn) nextBtn.style.display = "none";
+               return;
+            }
+
+            let index = 0;
+            let startX = 0;
+            let moveX = 0;
+
+            function getSlideWidth() {
+               // Mejor que images[0].clientWidth cuando hay imágenes lazy o tamaños variables
+               const first = images[0];
+               const w = first.getBoundingClientRect().width;
+               return w || first.clientWidth || carousel.clientWidth;
+            }
+
+            function updateCarousel() {
+               const width = getSlideWidth();
+               track.style.transform = `translateX(-${index * width}px)`;
+            }
+
+            function goNext() {
+               index = (index + 1) % images.length;
+               updateCarousel();
+            }
+
+            function goPrev() {
+               index = (index - 1 + images.length) % images.length;
+               updateCarousel();
+            }
+
+            nextBtn && nextBtn.addEventListener("click", goNext);
+            prevBtn && prevBtn.addEventListener("click", goPrev);
+
+            // Recalcular si cambia el tamaño
+            window.addEventListener("resize", updateCarousel);
+
+            // Si las imágenes cargan después (lazy), re-ajustar
+            images.forEach((img) => img.addEventListener("load", updateCarousel));
+
+            // Soporte táctil móvil (por carrusel)
+            track.addEventListener("touchstart", (e) => {
+               startX = e.touches[0].clientX;
+               moveX = 0;
+            });
+
+            track.addEventListener("touchmove", (e) => {
+               moveX = e.touches[0].clientX - startX;
+            });
+
+            track.addEventListener("touchend", () => {
+               if (moveX > 50) goPrev();        // swipe derecha
+               else if (moveX < -50) goNext();  // swipe izquierda
+               moveX = 0;
+            });
+
+            // Estado inicial
+            updateCarousel();
+         });
+
+      }
 
       /* BOTONES DE COMPRA FLOTANTES */
 

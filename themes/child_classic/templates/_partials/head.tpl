@@ -101,7 +101,8 @@
 {/block}
 
 {* PLANATEC *}
-
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
 
@@ -176,27 +177,3 @@
     {/literal}
 <!-- TikTok Pixel Code End -->
 
-<!-- Signals Gateway Pixel Code -->
-    {literal}
-        <script>
-            !function(a,h,e,v,n,t,s)
-                {if(a.cbq)return;n=a.cbq=function(){n.callMethod?
-                n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-                if(!a._cbq)a._cbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-                n.queue=[];t=h.createElement(e);t.async=!0;
-                t.src=v;s=h.getElementsByTagName(e)[0];
-                s.parentNode.insertBefore(t,s)}(window, document,'script',
-                'https://conversionsapimeta.ceramicconnection.es/sdk/1995950068885803330/events.js');
-                
-            cbq('setHost', 'https://conversionsapimeta.ceramicconnection.es/');
-            cbq('init', '1995950068885803330');
-            cbq('track', 'PageView');
-            cbq('track', 'AddPaymentInfo');
-            cbq('track', 'AddToCart');
-            cbq('track', 'FindLocation');
-            cbq('track', 'InitiateCheckout');
-            cbq('track', 'Purchase', {value: '0.00',currency: 'EUR'});
-
-        </script>
-    {/literal}
-<!-- End Signals Gateway Pixel Code -->

@@ -52,7 +52,7 @@
     {assign var="clean_url" value=$clean_url|regex_replace:"/\/[0-9]+/" : ""}  {* Eliminación de números al final *}
 {/if}
 
-{*<link rel="canonical" href="{$urls.current_url}">*}
+
 <link rel="canonical" href="{$clean_url}">
 
     {block name='head_hreflang'}
@@ -101,13 +101,16 @@
 {/block}
 
 {* PLANATEC *}
-
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" integrity="sha512-tS3S5qG0BlhnQROyJXvNjeEM4UpMXHrQfTGmbQ1gKmelCxlSEBUaxhRBj/EFTzpbP4RVSrpEikbmdJobCvhE3g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css"/>
-
+{if $page.page_name == 'product'}
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js" as="script"/>
+{/if}
 
 {* END PLANATEC *}
 
@@ -134,3 +137,42 @@
 <!-- CockieFirst Code -->
 <script src="https://consent.cookiefirst.com/sites/ceramicconnection.com-3b74c651-6ba5-4c11-bf9c-efea4461d982/consent.js"></script>
 <!-- End CookieFirst Code -->
+
+<!-- TikTok Pixel Code Start -->
+    {literal}
+        <script>
+            !function (w, d, t) {
+                w.TiktokAnalyticsObject=t;
+                var ttq=w[t]=w[t]||[];
+                ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"];
+                ttq.setAndDefer=function(t,e){
+                    t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}
+                };
+                for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);
+                ttq.instance=function(t){
+                    for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);
+                    return e
+                };
+                ttq.load=function(e,n){
+                    var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;
+                    ttq._i=ttq._i||{};
+                    ttq._i[e]=[];
+                    ttq._i[e]._u=r;
+                    ttq._t=ttq._t||{};
+                    ttq._t[e]=+new Date;
+                    ttq._o=ttq._o||{};
+                    ttq._o[e]=n||{};
+                    n=document.createElement("script");
+                    n.type="text/javascript";
+                    n.async=!0;
+                    n.src=r+"?sdkid="+e+"&lib="+t;
+                    e=document.getElementsByTagName("script")[0];
+                    e.parentNode.insertBefore(n,e)
+                };
+
+                ttq.load('D301J33C77U8I77F31PG');
+                ttq.page();
+            }(window, document, 'ttq');
+        </script>
+    {/literal}
+<!-- TikTok Pixel Code End -->
