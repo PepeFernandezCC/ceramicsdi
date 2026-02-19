@@ -40,59 +40,63 @@ $international=false;
 
 
 // IDs de transportistas (Cambiar a buscar id por búsqueda de nombre)
-$correos = 320;
-$correos_internacional = 327;
-$camion = 287;
-$camion_internacional = 322;
-$seur = 311;
-$gc_international = 325;
-$gc_spain = 319;
-$transaher = 294;
+        $correos = 333;
+        $correos_internacional = 327;
+        $camion = 331;
+        $camion_internacional = 322;
+        $seur = 311;
+        $gc_international = 325;
+        $camion_islas_baleares = 332;
 
-// Excepciones por zona
-$transaher_zones = ['65', '66', '67', '68'];
-$gc_spain_states = ['357', '365', '375', '372', '384', '376'];
-
-if ($id_country != 6) {
-    $international = true;
-}
 
         
-if ($international) {
+        // Excepciones por zona
+        $transaher = 294;
+        $transaher_zones = ['65', '66', '67', '68'];
+        $islas_baleares = ['10', '11', '12', '13'];
 
-    // LOGICA TRANSPORTISTAS INTERNACIONAL
 
-    $id_carrier = $correos_internacional;
+        if ($id_country != 6) {
+            $international = true;
+        }
 
-    if($id_country == 13) { //Envíos a Paises Bajos
-        $id_carrier = $seur;
-    }
+        
+        if ($international) {
 
-    if($weight > 8) {
-        $id_carrier = $gc_international;
-    }
+            // LOGICA TRANSPORTISTAS INTERNACIONAL
 
-    if($weight > 60) {
-        $id_carrier = $camion_internacional;
-    }
+            $id_carrier = $correos_internacional;
 
-}else{
+            if($id_country == 13) { //Envíos a Paises Bajos
+                $id_carrier = $seur;
+            }
 
-    // LOGICA TRANSPORTISTAS ESPAÑA
+            if($weight > 8) {
+                $id_carrier = $gc_international;
+            }
 
-    $id_carrier = $correos;
+            if($weight > 60) {
+                $id_carrier = $camion_internacional;
+            }
 
-    if($weight > 8) {
+        }else{
 
-        $id_carrier = $camion;
+            // LOGICA TRANSPORTISTAS ESPAÑA
 
-        if (in_array($id_state, $gc_spain_states)) {
-            $id_carrier = $gc_spain;
-        }               
+            $id_carrier = $correos;
 
-    }
+            if($weight > 8) {
 
-} 
+                $id_carrier = $camion;
+
+                if (in_array($id_state, $islas_baleares)) {
+                    $id_carrier = $camion_islas_baleares;
+                }  
+
+            }
+
+        } 
+
 
 //EXCEPCIÓN TRANSAHER
         

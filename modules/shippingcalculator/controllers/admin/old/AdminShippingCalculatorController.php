@@ -103,7 +103,7 @@ class AdminShippingCalculatorController extends ModuleAdminController
         }
         
         // Actualizar la dirección ID 1 directamente en la base de datos (igual que getDeliveryPrice.php)
-        $postal_code = '1000'; // Código postal por defecto
+       
         $sql = 'UPDATE `' . _DB_PREFIX_ . 'address`
                 SET `id_country` = ' . (int)$country_id . ',
                 `id_state` = ' . (int)$state_id . ',

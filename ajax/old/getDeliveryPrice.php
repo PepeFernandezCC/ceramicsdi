@@ -12,6 +12,7 @@ $id_state = Tools::getValue('id_state');
 $postal = Tools::getValue('postal');
 $id_cart = Tools::getValue('id_cart');
 $showTaxes = Tools::getValue('taxes') == "1"? true : false;
+$weight = Tools::getValue('weight');
 $delivery_by_truck = Tools::getValue('weight') >= 13 ? true : false ;
 
 if (!$id_country || !$id_state || !$postal || !$id_cart) {
@@ -34,40 +35,69 @@ $cart = new Cart((int) $id_cart);
 
 
 //Obtener carrier local
-
-/*LOCAL*/
-/*
-$correos = 167;
-$correos_internacional = 158;
-$camion = 168;
-$camion_internacional = 169;
-*/
-/*SERVIDOR*/
-
-$correos = 235;
-$correos_internacional = 243;
-$camion = 199;
-$camion_internacional = 195;
-$seur = 229;
-
-
-/* EXCEPCIONES POR ZONA */
-$transaher = 242;
-$transaher_zones = ['65', '66', '67', '68'];
-
-$delivery_by_truck = Tools::getValue('weight') >= 13 ? true : false ;
-$id_carrier = $delivery_by_truck ? $camion_internacional : $correos_internacional;
-
-//calcular id_zone
-
 $id_zone = State::getIdZone((int)$id_state);
+$international=false;
 
-if ($id_country == 6) {//Envío en españa
-    $id_carrier = $delivery_by_truck ? $camion : $correos;
+
+// IDs de transportistas (Cambiar a buscar id por búsqueda de nombre)
+$correos = 320;
+$correos_internacional = 327;
+$camion = 287;
+$camion_internacional = 322;
+$seur = 311;
+$gc_international = 325;
+$gc_spain = 319;
+$transaher = 294;
+
+// Excepciones por zona
+$transaher_zones = ['65', '66', '67', '68'];
+$gc_spain_states = ['357', '365', '375', '372', '384', '376'];
+
+if ($id_country != 6) {
+    $international = true;
 }
 
-if (in_array($id_zone, $transaher_zones)) {
-    $id_carrier = $delivery_by_truck ? $transaher : $correos_internacional;
+        
+if ($international) {
+
+    // LOGICA TRANSPORTISTAS INTERNACIONAL
+
+    $id_carrier = $correos_internacional;
+
+    if($id_country == 13) { //Envíos a Paises Bajos
+        $id_carrier = $seur;
+    }
+
+    if($weight > 8) {
+        $id_carrier = $gc_international;
+    }
+
+    if($weight > 60) {
+        $id_carrier = $camion_internacional;
+    }
+
+}else{
+
+    // LOGICA TRANSPORTISTAS ESPAÑA
+
+    $id_carrier = $correos;
+
+    if($weight > 8) {
+
+        $id_carrier = $camion;
+
+        if (in_array($id_state, $gc_spain_states)) {
+            $id_carrier = $gc_spain;
+        }               
+
+    }
+
+} 
+
+//EXCEPCIÓN TRANSAHER
+        
+if (in_array($id_zone, $transaher_zones) && $weight > 8) {
+    $id_carrier = $transaher;
 }
 
 //falsear Carrito
@@ -76,7 +106,6 @@ $cart->id_address_delivery = '1';
 $cart->id_address_invoice = '1';
 $cart->id_customer = '2';
 $cart->delivery_option = '{"1":"'.$id_carrier.'"}';
-
 
 /* CONSTRUIR PARAMETROS */
 static $cache = [];

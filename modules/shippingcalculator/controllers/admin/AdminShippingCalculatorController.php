@@ -679,18 +679,21 @@ class AdminShippingCalculatorController extends ModuleAdminController
      
         $international=false;
         // IDs de transportistas (del servidor según getDeliveryPrice.php)
-        $correos = 320;
+        $correos = 333;
         $correos_internacional = 327;
-        $camion = 287;
+        $camion = 331;
         $camion_internacional = 322;
         $seur = 311;
         $gc_international = 325;
-        $gc_spain = 319;
+        $camion_islas_baleares = 332;
+
+
         
         // Excepciones por zona
         $transaher = 294;
         $transaher_zones = ['65', '66', '67', '68'];
-        $gc_spain_states = ['357', '365', '375', '372', '384', '376'];
+        $islas_baleares = ['10', '11', '12', '13'];
+
 
         if ($id_country != 6) {
             $international = true;
@@ -725,9 +728,9 @@ class AdminShippingCalculatorController extends ModuleAdminController
 
                 $id_carrier = $camion;
 
-                if (in_array($id_state, $gc_spain_states)) {
-                    $id_carrier = $gc_spain;
-                }               
+                if (in_array($id_state, $islas_baleares)) {
+                    $id_carrier = $camion_islas_baleares;
+                }  
 
             }
 
