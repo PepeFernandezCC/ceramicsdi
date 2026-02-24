@@ -489,7 +489,7 @@ $( document ).ready( function () {
 
       if ( m2Caja !== undefined ) {
 
-         m2Caja = parseFloat( m2Caja);
+         m2Caja = parseFloat( m2Caja.replace( ',', '.' ) );
 
       }
 
@@ -502,7 +502,7 @@ $( document ).ready( function () {
 
             piezasCaja = '1';
 
-            piezasCaja = parseFloat( piezasCaja );
+            piezasCaja = parseFloat( piezasCaja.replace( ',', '.' ) );
 
          }
 
