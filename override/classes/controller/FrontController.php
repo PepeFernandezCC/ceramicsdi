@@ -67,6 +67,7 @@ class FrontController extends FrontControllerCore {
 	public const FEATURE_CUSTOM_OUT_OF_STOCK   = '77';
 	public const FEATURE_ESQUINA			   = '79';
 	public const FEATURE_PRODUCTO_COMPLEMENTARIO = '80';
+	public const FEATURE_METROS_LINEALES = '82';
 	public const FEATURE_MUESTRA_DE_PAGO_ID = '43'; // En la demo es el 31
 	public const FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2       = 'Por m2';
 	public const FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2_FR    = 'Par m2';
@@ -162,7 +163,31 @@ class FrontController extends FrontControllerCore {
 		$this->context->smarty->assign( 'FEATURE_M2_CAJA_ID', self::FEATURE_M2_CAJA_ID );
 		$this->context->smarty->assign( 'FEATURE_M2_PIEZA_ID', self::FEATURE_M2_PIEZA_ID );
 		$this->context->smarty->assign( 'FEATURE_PIEZAS_CAJA_ID', self::FEATURE_PIEZAS_CAJA_ID );
-		$this->context->smarty->assign( 'FEATURE_JUNTA_RECOMENDADA_ID', self::FEATURE_JUNTA_RECOMENDADA_ID );
+		$this->context->smarty->assign( 'FEATURE_JUNTA_RECOMENDADA_ID', self::FEATURE_JUNTA_RECOMENDADA_ID );	
+		$this->context->smarty->assign('FEATURE_SHOW_STOCK', self::FEATURE_SHOW_STOCK);
+		$this->context->smarty->assign('FEATURE_CUSTOM_STOCK', self::FEATURE_CUSTOM_STOCK);
+		$this->context->smarty->assign('FEATURE_CUSTOM_OUT_OF_STOCK', self::FEATURE_CUSTOM_OUT_OF_STOCK);
+		$this->context->smarty->assign('FEATURE_SAMPLE_AVAILABLE', self::FEATURE_SAMPLE_AVAILABLE);
+		$this->context->smarty->assign('FEATURE_METROS_LINEALES', self::FEATURE_METROS_LINEALES);
+		$this->context->smarty->assign('FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2', self::FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2);
+		$this->context->smarty->assign('FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2_FR',self::FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2_FR);
+		$this->context->smarty->assign('FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2_EN',self::FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2_EN);
+		$this->context->smarty->assign('FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2_DE',self::FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2_DE);
+		$this->context->smarty->assign('FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2_PT',self::FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2_PT);
+		$this->context->smarty->assign('FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2_NL',self::FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2_NL);
+		$this->context->smarty->assign('FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_PIEZA',self::FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_PIEZA);
+		$this->context->smarty->assign('FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_PIEZA_FR',self::FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_PIEZA_FR);
+		$this->context->smarty->assign('FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_PIEZA_EN',self::FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_PIEZA_EN);
+		$this->context->smarty->assign('FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_PIEZA_DE',self::FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_PIEZA_DE);
+		$this->context->smarty->assign('FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_PIEZA_DE_NAN',self::FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_PIEZA_DE_NAN);
+		$this->context->smarty->assign('FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_PIEZA_PT',self::FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_PIEZA_PT);
+		$this->context->smarty->assign('FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_PIEZA_NL',self::FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_PIEZA_NL);
+		$this->context->smarty->assign('FEATURE_ESQUINA',self::FEATURE_ESQUINA);
+		$this->context->smarty->assign('FEATURE_PRODUCTO_COMPLEMENTARIO',self::FEATURE_PRODUCTO_COMPLEMENTARIO);
+
+		$this->context->smarty->assign('ID_FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2',self::ID_FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2);
+		$this->context->smarty->assign('ID_FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_PIEZA',self::ID_FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_PIEZA);
+		
 		$this->context->smarty->assign( 'CATEGORY_CERAMICA_ID', self::CATEGORY_CERAMICA );
 		$this->context->smarty->assign( 'CATEGORY_INSTALACION_Y_MONTAJE_ID', self::CATEGORY_INSTALACION_Y_MONTAJE_ID );
 		$this->context->smarty->assign( 'CATEGORY_AZULEJOS', self::CATEGORY_AZULEJOS );
@@ -171,50 +196,25 @@ class FrontController extends FrontControllerCore {
 		$this->context->smarty->assign( 'CATEGORY_INSTALACION_ID', self::CATEGORY_INSTALACION_ID );
 		$this->context->smarty->assign( 'CATEGORY_MANTENIMIENTO_ID', self::CATEGORY_MANTENIMIENTO_ID );
 		$this->context->smarty->assign( 'CATEGORY_OTROS_MATERIALES_ID', self::CATEGORY_OTROS_MATERIALES_ID );
-		
-		$this->context->smarty->assign('FEATURE_SHOW_STOCK', self::FEATURE_SHOW_STOCK);
-		$this->context->smarty->assign('FEATURE_CUSTOM_STOCK', self::FEATURE_CUSTOM_STOCK);
-		$this->context->smarty->assign('FEATURE_CUSTOM_OUT_OF_STOCK', self::FEATURE_CUSTOM_OUT_OF_STOCK);
-		$this->context->smarty->assign('FEATURE_SAMPLE_AVAILABLE', self::FEATURE_SAMPLE_AVAILABLE);
-		$this->context->smarty->assign('FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2', self::FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2);
-		$this->context->smarty->assign('FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2_FR',self::FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2_FR);
-		$this->context->smarty->assign('FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2_EN',self::FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2_EN);
-		$this->context->smarty->assign('FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2_DE',self::FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2_DE);
-		$this->context->smarty->assign('FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2_PT',self::FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2_PT);
-		$this->context->smarty->assign('FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2_NL',self::FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2_NL);
 
-		$this->context->smarty->assign('FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_PIEZA',self::FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_PIEZA);
-		$this->context->smarty->assign('FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_PIEZA_FR',self::FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_PIEZA_FR);
-		$this->context->smarty->assign('FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_PIEZA_EN',self::FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_PIEZA_EN);
-		$this->context->smarty->assign('FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_PIEZA_DE',self::FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_PIEZA_DE);
-		$this->context->smarty->assign('FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_PIEZA_DE_NAN',self::FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_PIEZA_DE_NAN);
-		$this->context->smarty->assign('FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_PIEZA_PT',self::FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_PIEZA_PT);
-		$this->context->smarty->assign('FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_PIEZA_NL',self::FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_PIEZA_NL);
-
-		$this->context->smarty->assign('FEATURE_ESQUINA',self::FEATURE_ESQUINA);
-		$this->context->smarty->assign('FEATURE_PRODUCTO_COMPLEMENTARIO',self::FEATURE_PRODUCTO_COMPLEMENTARIO);
-
-		$this->context->smarty->assign('ID_FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2',self::ID_FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2);
-		$this->context->smarty->assign('ID_FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_PIEZA',self::ID_FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_PIEZA);
-		
 		$this->context->smarty->assign('ATTRIBUTE_MUESTRA_ID',self::ATTRIBUTE_MUESTRA_ID);
-		$this->context->smarty->assign( 'SUBCATEGORY_CERAMICA__MADERA_ID', self::SUBCATEGORY_CERAMICA__MADERA_ID );
+		$this->context->smarty->assign('SUBCATEGORY_CERAMICA__MADERA_ID', self::SUBCATEGORY_CERAMICA__MADERA_ID );
 		$this->context->smarty->assign('SUBCATEGORY_CERAMICA__HIDRAULICOS_ID',self::SUBCATEGORY_CERAMICA__HIDRAULICOS_ID);
-		$this->context->smarty->assign( 'SUBCATEGORY_CERAMICA__MONOCOLOR_ID', self::SUBCATEGORY_CERAMICA__MONOCOLOR_ID );
-		$this->context->smarty->assign( 'SUBCATEGORY_CERAMICA__PIEDRA_ID', self::SUBCATEGORY_CERAMICA__PIEDRA_ID );
-		$this->context->smarty->assign( 'SUBCATEGORY_CERAMICA__CEMENTO_ID', self::SUBCATEGORY_CERAMICA__CEMENTO_ID );
-		$this->context->smarty->assign( 'SUBCATEGORY_CERAMICA__TERRAZO_ID', self::SUBCATEGORY_CERAMICA__TERRAZO_ID );
-		$this->context->smarty->assign( 'SUBCATEGORY_CERAMICA__METRO_ID', self::SUBCATEGORY_CERAMICA__METRO_ID );
-		$this->context->smarty->assign( 'SUBCATEGORY_CERAMICA__MARMOL_ID', self::SUBCATEGORY_CERAMICA__MARMOL_ID );
-		$this->context->smarty->assign( 'SUBCATEGORY_CERAMICA__MANUAL_ID', self::SUBCATEGORY_CERAMICA__MANUAL_ID );
+		$this->context->smarty->assign('SUBCATEGORY_CERAMICA__MONOCOLOR_ID', self::SUBCATEGORY_CERAMICA__MONOCOLOR_ID );
+		$this->context->smarty->assign('SUBCATEGORY_CERAMICA__PIEDRA_ID', self::SUBCATEGORY_CERAMICA__PIEDRA_ID );
+		$this->context->smarty->assign('SUBCATEGORY_CERAMICA__CEMENTO_ID', self::SUBCATEGORY_CERAMICA__CEMENTO_ID );
+		$this->context->smarty->assign('SUBCATEGORY_CERAMICA__TERRAZO_ID', self::SUBCATEGORY_CERAMICA__TERRAZO_ID );
+		$this->context->smarty->assign('SUBCATEGORY_CERAMICA__METRO_ID', self::SUBCATEGORY_CERAMICA__METRO_ID );
+		$this->context->smarty->assign('SUBCATEGORY_CERAMICA__MARMOL_ID', self::SUBCATEGORY_CERAMICA__MARMOL_ID );
+		$this->context->smarty->assign('SUBCATEGORY_CERAMICA__MANUAL_ID', self::SUBCATEGORY_CERAMICA__MANUAL_ID );
 		$this->context->smarty->assign('SUBCATEGORY_CERAMICA__TRADICIONAL_ID',self::SUBCATEGORY_CERAMICA__TRADICIONAL_ID);
 		$this->context->smarty->assign('SUBCATEGORY_CERAMICA__ESTILO_MODERNO_ID',self::SUBCATEGORY_CERAMICA__ESTILO_MODERNO_ID);
 		$this->context->smarty->assign('SUBCATEGORY_CERAMICA__PORCELANICO_ID',self::SUBCATEGORY_CERAMICA__PORCELANICO_ID);
 		$this->context->smarty->assign('SUBCATEGORY_CERAMICA__DECORATIVOS_ID',self::SUBCATEGORY_CERAMICA__DECORATIVOS_ID);
-		$this->context->smarty->assign( 'SUBCATEGORY_CERAMICA__BARRO_ID', self::SUBCATEGORY_CERAMICA__BARRO_ID );
+		$this->context->smarty->assign('SUBCATEGORY_CERAMICA__BARRO_ID', self::SUBCATEGORY_CERAMICA__BARRO_ID );
 		$this->context->smarty->assign('SUBCATEGORY_CERAMICA__INDUSTRIAL_ID',self::SUBCATEGORY_CERAMICA__INDUSTRIAL_ID);
-		$this->context->smarty->assign( 'SUBCATEGORY_CERAMICA__MOSAICOS_ID', self::SUBCATEGORY_CERAMICA__MOSAICOS_ID );
-		$this->context->smarty->assign( 'SUBCATEGORY_CERAMICA__FRESCO_ID', self::SUBCATEGORY_CERAMICA__FRESCO_ID );
+		$this->context->smarty->assign('SUBCATEGORY_CERAMICA__MOSAICOS_ID', self::SUBCATEGORY_CERAMICA__MOSAICOS_ID );
+		$this->context->smarty->assign('SUBCATEGORY_CERAMICA__FRESCO_ID', self::SUBCATEGORY_CERAMICA__FRESCO_ID );
 		
 
 		
@@ -236,6 +236,7 @@ class FrontController extends FrontControllerCore {
 		$this->context->smarty->assign(
 			'DONT_SHOW_THIS_FEATURES', 
 			[
+				self::FEATURE_METROS_LINEALES,
 				self::FEATURE_ESQUINA,
 				self::FEATURE_PRODUCTO_COMPLEMENTARIO,
 				self::FEATURE_M2_CAJA_ID,

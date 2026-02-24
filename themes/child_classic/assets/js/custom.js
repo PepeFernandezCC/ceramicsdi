@@ -489,11 +489,12 @@ $( document ).ready( function () {
 
       if ( m2Caja !== undefined ) {
 
-         m2Caja = parseFloat( m2Caja.replace( ',', '.' ) );
+         m2Caja = parseFloat( m2Caja);
 
       }
 
       let piezasCaja = $piecesInput.attr( 'data-piezas-caja' );
+      let linealMeters = $piecesInput.attr( 'data-lineal-meters' );
 
       if ( piezasCaja !== undefined ) {
 
@@ -501,7 +502,19 @@ $( document ).ready( function () {
 
             piezasCaja = '1';
 
-            piezasCaja = parseFloat( piezasCaja.replace( ',', '.' ) );
+            piezasCaja = parseFloat( piezasCaja );
+
+         }
+
+      }
+
+      if ( linealMeters !== undefined ) {
+
+         linealMeters = linealMeters/100;
+
+         if(linealMeters < 1) {
+
+            linealMeters = parseFloat( linealMeters );
 
          }
 
@@ -1282,7 +1295,7 @@ $( document ).ready( function () {
          })
       }
 
-          //JOINT CALCULATOR
+      //JOINT CALCULATOR
    
       if (document.getElementById('jointCalculatorProcess')){
          
@@ -1367,21 +1380,18 @@ $( document ).ready( function () {
    
                calculatepiecesbybox(piezasCaja, inputPiecesBox, document.getElementById('pieces-input'));
 
-               //updateButtonStateByPiece();
-   
             }
          });
    
          $('#pieces-input').keyup( function() {
-   
+
             calculatePiecesOnChangeEvent(document.getElementById('pieces-input').value, inputPiecesBox);
-    
+   
          })
    
          $('#inputPiecesBox').keyup ( function() {
             calculatepiecesbybox(piezasCaja, document.getElementById('inputPiecesBox'), document.getElementById('pieces-input'));
 
-            //updateButtonStateByPiece();
          })
    
          //FUNCIONES
@@ -1389,8 +1399,14 @@ $( document ).ready( function () {
          let calculatepiecesbybox = function(piezasCaja, inputPieces, piecesNeeded) {
    
             let totalPieces = (inputPieces.value * piezasCaja).toFixed( 2 );
-   
-            piecesNeeded.value = totalPieces;
+
+            if (linealMeters > 0 ) {
+
+               piecesNeeded.value = Math.floor(inputPieces.value * linealMeters);
+
+            }else{
+               piecesNeeded.value = totalPieces;
+            }
    
             pieceSubtotalBoxes.textContent = inputPiecesBox.value;
             $piecesInputReal.val( totalPieces );
@@ -1416,12 +1432,20 @@ $( document ).ready( function () {
    
          let calculatePiecesOnChangeEvent = function(piecesRequired, inputPieces) {
    
-            let quantity = Math.ceil(piecesRequired / piezasCaja);
+            let necessaryBox = piezasCaja;
+            if (linealMeters > 0) {
+               necessaryBox = linealMeters
+            }
+            let quantity = Math.ceil(piecesRequired / necessaryBox);
    
             inputPieces.value = quantity;
             pieceSubtotalBoxes.textContent = quantity;
-   
+
             let totalPieces = (inputPieces.value * piezasCaja).toFixed( 2 );
+
+            if (linealMeters > 0) {
+               totalPieces = quantity.toFixed( 2 );
+            }
    
             $piecesInputReal.val( totalPieces );
             $pieceTotalMeters.text(totalPieces);
@@ -1442,7 +1466,7 @@ $( document ).ready( function () {
             $m2TotalPrice.text( ( inputPiecesBox.value * price ).toFixed( 2 ) );
    
          }
-   
+
          let setPiecesQuantitiesValue = function(quantity) {
    
             let piecesValue = Math.ceil( quantity * piezasCaja );

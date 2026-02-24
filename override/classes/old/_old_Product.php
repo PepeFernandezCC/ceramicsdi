@@ -11,13 +11,19 @@ class Product extends ProductCore {
              FROM `' . _DB_PREFIX_ . 'image`
              WHERE `position` = ' . (int)$position . ' AND `id_product` = ' . (int)$id_product
         );
-        
-       // $id_image = $id_image[0]['id_image'];
 
-        $image_url = 'no-hay-cover';
+        $image_url = self::getImageUrl($id_image);
 
-        if ((int)$id_image > 0) {
-            $image = new Image($id_image);
+        return $image_url != '' ? $image_url : 'no-hay-cover';
+
+    }
+
+    private function getImageUrl($idImage) {
+
+        $image_url = '';
+
+        if ((int)$idImage > 0) {
+            $image = new Image($idImage);
             $image_url = _PS_BASE_URL_SSL_._THEME_PROD_DIR_.$image->getExistingImgPath().".jpg";
         }
 
@@ -628,6 +634,44 @@ class Product extends ProductCore {
 
     }
 
+    public static function getComplementProducts($productId) {
+        $lang = (int)Context::getContext()->language->id;
+        $query = 'SELECT `value` FROM ps_feature_product fp JOIN ps_feature_value_lang fv ON fp.id_feature_value = fv.id_feature_value WHERE id_product = '.$productId.' AND (id_feature = 79 OR id_feature = 80) AND id_lang = '. $lang ;
+        $products = Db::getInstance()->executeS($query);
+        $complements_array = [];
+        foreach ($products as $product) {
+            $id_product = (int)$product['value'];
+            $complementProduct = self::getComplementProductArray($id_product);
+            $item = [
+                'id' => $id_product,
+                'name' => $complementProduct['name'],
+                'reference' => $complementProduct['reference'],
+                'images' => $complementProduct['images']
+            ];
+            $complements_array[] = $item;
+        }
+
+        return $complements_array;
+
+    }
+
+    private function getComplementProductArray($idProduct){
+        $lang = (int)Context::getContext()->language->id;
+        $query = 'SELECT `name`, p.`reference` FROM ps_product_lang pl JOIN ps_product p ON p.id_product = pl.id_product WHERE pl.`id_product` = '.$idProduct.' AND id_lang = '.$lang;
+        $img_query = 'SELECT i.id_image, cover, legend FROM ps_image i JOIN ps_image_lang l ON i.id_image = l.id_image WHERE id_product = '.$idProduct.' AND id_lang = '.$lang.' ORDER BY position ASC';
+        $images =  $data = Db::getInstance()->executeS($img_query);
+        $image_array = [];
+        foreach ($images as $image) {
+            $image_array[] = [
+                'url' => self::getImageUrl($image['id_image']),
+                'legend' => $image['legend'],
+                'cover' => $image['cover']
+            ];
+        }
+        $data = Db::getInstance()->getRow($query);
+        return ['name' => $data['name'], 'reference' => $data['reference'], 'images' => $image_array];
+    }
+
     public static function getProductStock($productId) {
 
         $id_product = (int)$productId;
@@ -695,7 +739,6 @@ class Product extends ProductCore {
             $unitysText = [1 => 'Unidad', 2 => "Unité", 3 => "Unit", 4 => "Einheit", 5 => "Unidade", 6=>"Eenheid"];
         }
 
-
         if (self::getIfNormalSell($productId)) {
             return $quantity . ' ' . $unitysText[$lang];
         } 
@@ -705,7 +748,6 @@ class Product extends ProductCore {
         if ($pieceTypology) {
             return $quantity . ' ' . $piecesText[$lang];  
         } 
-
 
         return self::getM2CajaValue($productId) * $quantity . ' m²';
 

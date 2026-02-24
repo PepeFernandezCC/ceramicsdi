@@ -30,6 +30,8 @@
 {assign var="samplesInCart" value=0}
 {assign var="samplesInCart" value=Cart::getSamplesNumberInCartStatic($id_cart)}
 {assign var="maxProductsInCart" value=false}
+{assign var="boxPrice" value=Product::getMinimalPriceTemplate($product.id, $customer.id)}
+{assign var="sampleHasStock" value=Product::checkSampleStock($product.id)}
 {if $samplesInCart >= 8}
     {$maxProductsInCart = true}
 {/if}
@@ -401,7 +403,7 @@
                                     class="input-group boxInput cc-background-color-secondary"
                                     aria-label="{l s='Total' d='Shop.Theme.Actions'}"
                                     readonly="readonly"
-                                    data-price="{$product.price_amount}"
+                                    data-price="{$boxPrice}"
                                     style="font-weight: bold;"
                                     >
                                 </div>
@@ -438,12 +440,13 @@
                             <div class="col-xl-6 col-xs-6" style="padding: 0">
                                 {if $hasSample}
                                     <div class="add-sample">
+                                        {if $sampleHasStock}
                                         <button 
                                                 id="add-sample-to-cart-button"
                                                 class="btn btn-primary add-to-cart add-to-cart-sample add-sample-to-cart"
                                                 data-button-action="add-to-cart-sample"
                                                 type="button"
-                                                {if !$product.add_to_cart_url || $muestraEnCarrito || $maxProductsInCart || $productoEnCarrito}
+                                                {if $muestraEnCarrito || $maxProductsInCart || $productoEnCarrito}
                                                     disabled
                                                 {/if}
                                         >
@@ -453,10 +456,25 @@
                                                 {l s='Request free sample' d='Shop.Theme.Actions'}
                                             {/if}
                                         </button>
+                                        {else}
+
+                                            <div class="no-sample-btn-box">
+                                                {l s='Sample out of stock' d='Shop.Theme.Actions'}
+                                            </div>
+
+                                        {/if}
                                     </div>
-                                    <div id="sample-in-cart" {if !$muestraEnCarrito}style="display:none"{/if}>
-                                        {* l s='sample in cart' d='Shop.Theme.Actions' *}
-                                        <img class="sample-in-cart-img" src="/themes/child_classic/assets/img/cc_cart.png" loading="lazy" alt="shopping cart icon">
+                                    {if $sampleHasStock}
+                                        <div id="sample-in-cart" {if !$muestraEnCarrito}style="display:none"{/if}>
+                                            {* l s='sample in cart' d='Shop.Theme.Actions' *}
+                                            <img class="sample-in-cart-img" src="/themes/child_classic/assets/img/cc_cart.png" loading="lazy" alt="shopping cart icon">
+                                        </div>
+                                    {/if}
+                                {else}
+                                    <div class="add-sample">
+                                        <div class="no-sample-btn-box">
+                                            {l s='No Samples for this product' d='Shop.Theme.Actions'}
+                                        </div>
                                     </div>
                                 {/if}
 
@@ -596,7 +614,7 @@
                                     class="input-group boxInput cc-background-color-secondary"
                                     aria-label="{l s='Total' d='Shop.Theme.Actions'}"
                                     readonly="readonly"
-                                    data-price="{$product.price_amount}"
+                                    data-price="{$boxPrice}"
                                     style="font-weight: bold;"
                                     >
                                 </div>
