@@ -483,12 +483,19 @@ class Product extends ProductCore {
         return $price;
     }
 
-    public static function calculateCustomPrice($productId, $iva, $id_lang = null): array
+    public static function calculateCustomPrice($productId, $customer = null, $id_lang = null): array
     {
         $id_lang = $id_lang ? $id_lang : (int) Context::getContext()->language->id;
         $product = new Product($productId);
         $price = (float) $product->price;
         $tipology = '';
+        $iva = true;
+        
+        if ($customer != null) {
+            if (!Customer::getCustomerShowTax($customer)) {
+                $iva = false;
+            }
+        }
 
         if ($iva) {
             $price = self::getDefaultTaxByLang($id_lang, $price);
