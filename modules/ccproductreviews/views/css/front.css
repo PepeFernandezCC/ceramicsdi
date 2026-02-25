@@ -1,0 +1,18 @@
+.ccpr-block {
+  margin-top: 40px;
+}
+
+.ccpr-review {
+  border-bottom: 1px solid #eee;
+  padding: 15px 0;
+}
+
+.ccpr-stars {
+  color: #f5b301;
+}
+
+.ccpr-images img {
+  max-width: 90px;
+  margin-right: 8px;
+  border-radius: 4px;
+}
