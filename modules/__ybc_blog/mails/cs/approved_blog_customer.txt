@@ -1,3 +1,0 @@
-Ahoj {customer_name}
-Gratulujeme! Váš příspěvek {post_title} byl schválen.
-Zobrazit příspěvek

@@ -1,4 +1,0 @@
-Hallo {customer_name},
-Je reactie op {post_title} is goedgekeurd.
-Bekijk bericht
-

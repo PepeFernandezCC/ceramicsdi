@@ -1,1 +1,0 @@
-ALTER TABLE `PREFIX_gmcp_feeds` ADD `feed_is_default` int NOT NULL DEFAULT 1;

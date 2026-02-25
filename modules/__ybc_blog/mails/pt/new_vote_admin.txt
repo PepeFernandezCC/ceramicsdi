@@ -1,3 +1,0 @@
-Postagem do blog: {post_title}
-Comentários: {feedback}
-A postagem do blog é útil para o cliente: {polls_helpful}

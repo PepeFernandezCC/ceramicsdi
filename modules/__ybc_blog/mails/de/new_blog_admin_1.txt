@@ -1,4 +1,0 @@
-Ein neuer Beitrag wurde an {shop_name} gesendet und automatisch genehmigt
-Autor: {customer_name}
-Beitragstitel: {post_title}
-Beitrag ansehen

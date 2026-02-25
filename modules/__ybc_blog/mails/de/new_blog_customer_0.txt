@@ -1,3 +1,0 @@
-Hallo {customer_name},
-Ihr Beitrag {post_title} wurde erfolgreich an {shop_name} übermittelt und wartet auf die Genehmigung
-Beitrag überprüfen

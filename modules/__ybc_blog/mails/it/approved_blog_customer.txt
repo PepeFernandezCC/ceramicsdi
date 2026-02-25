@@ -1,3 +1,0 @@
-Ciao {customer_name}
-Congratulazioni! Il tuo post {post_title} è stato approvato.
-Visualizza il post

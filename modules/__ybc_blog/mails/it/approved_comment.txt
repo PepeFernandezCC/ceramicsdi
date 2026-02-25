@@ -1,4 +1,0 @@
-Ciao {customer_name},
-Il tuo commento su {post_title} è stato approvato.
-Visualizza il post
-

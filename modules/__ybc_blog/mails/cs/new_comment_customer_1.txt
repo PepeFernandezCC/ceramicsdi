@@ -1,4 +1,0 @@
-Ahoj {customer_name}
-Váš komentář byl úspěšně odeslán dne {post_title} a byl schválen
-Zkontrolovat příspěvek
-

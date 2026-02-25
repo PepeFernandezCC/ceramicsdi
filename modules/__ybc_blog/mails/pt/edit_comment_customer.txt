@@ -1,6 +1,0 @@
-Olá {customer},
-Seu comentário foi atualizado
-Assunto: {subject}
-Comentário: {comment}
-Classificação: {rating}
-Ver postagem
