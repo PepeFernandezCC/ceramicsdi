@@ -50,14 +50,22 @@
     <p><strong>{l s='Images' mod='ccproductreviews'}:</strong></p>
     <div style="display:flex;gap:10px;flex-wrap:wrap;">
       {foreach from=$images item=img}
-        <a href="{$img_base}{$img.file_name|escape:'url':'UTF-8'}"
-           target="_blank" rel="noopener">
-          <img src="{$img_base}{$img.file_name|escape:'url':'UTF-8'}"
-               style="max-width:160px;border:1px solid #ddd;border-radius:4px;">
+        <a href="{$img_base}{$img.file_name|escape:'url':'UTF-8'}" class="ccpr-admin-photo js-ccpr-admin-lightbox" 
+          data-full="{$img_base}{$img.file_name|escape:'url':'UTF-8'}"target="_blank" rel="noopener">
+            <img src="{$img_base}thumb_{$img.file_name|escape:'url':'UTF-8'}" style="max-width:160px;">
         </a>
       {/foreach}
     </div>
   {/if}
+</div>
+
+<div class="ccpr-admin-lightbox" id="ccpr_admin_lightbox" aria-hidden="true">
+  <div class="ccpr-admin-lightbox__backdrop" data-ccpr-close></div>
+
+  <div class="ccpr-admin-lightbox__dialog" role="dialog" aria-modal="true" aria-label="Imagen ampliada">
+    <button type="button" class="ccpr-admin-lightbox__close" aria-label="Cerrar" data-ccpr-close>×</button>
+    <img class="ccpr-admin-lightbox__img" id="ccpr_admin_lightbox_img" alt="">
+  </div>
 </div>
 
 <div class="panel">

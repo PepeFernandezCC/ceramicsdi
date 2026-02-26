@@ -1,18 +1,391 @@
-.ccpr-block {
-  margin-top: 40px;
+/* Card */
+.ccpr-card{
+  border:1px solid #e9e9e9;
+  background:#fff;
+  box-shadow:0 6px 20px rgba(0,0,0,.05);
+  margin-top:24px;
+  overflow:hidden;
 }
 
-.ccpr-review {
-  border-bottom: 1px solid #eee;
-  padding: 15px 0;
+.ccpr-card__header{
+  padding:18px 20px;
+  border-bottom:1px solid #f0f0f0;
+  background:linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
 }
 
-.ccpr-stars {
-  color: #f5b301;
+.ccpr-title{
+  margin:0 0 4px 0;
+  font-size:18px;
+  font-weight:700;
 }
 
-.ccpr-images img {
-  max-width: 90px;
-  margin-right: 8px;
-  border-radius: 4px;
+.ccpr-subtitle{
+  margin:0;
+  color:#666;
+  font-size:13px;
+}
+
+.ccpr-card__body{
+  padding:20px;
+}
+
+/* Fields */
+.ccpr-field{
+  margin-bottom:16px;
+}
+
+.ccpr-label{
+  display:block;
+  font-weight:700;
+  margin-bottom:8px;
+  font-size:13px;
+  color:#222;
+}
+
+.ccpr-help{
+  display:block;
+  margin-top:6px;
+  font-size:12px;
+  color:#777;
+}
+
+.ccpr-meta{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:6px;
+}
+
+.ccpr-counter{
+  font-size:12px;
+  color:#777;
+}
+
+/* Textarea */
+.ccpr-textarea{
+  width:100%;
+  border:1px solid #ddd;
+  padding:12px 12px;
+  font-size:14px;
+  line-height:1.4;
+  transition:border-color .15s ease, box-shadow .15s ease;
+  resize:vertical;
+  min-height:110px;
+}
+
+.ccpr-textarea:focus{
+  outline:none;
+  border-color:#b7b7b7;
+  box-shadow:0 0 0 3px rgba(0,0,0,.06);
+}
+
+
+/* Upload */
+.ccpr-upload{
+  display:flex;
+  justify-content: space-between;
+  gap:12px;
+  align-items:center;
+  border:1px dashed #d8d8d8;
+  padding:12px;
+  background:#fcfcfc;
+}
+
+.ccpr-file{
+  max-width:320px;
+}
+
+.ccpr-upload__hint{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  font-size:12px;
+  color:#555;
+}
+
+/* Actions + message */
+.ccpr-actions{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-top:6px;
+}
+
+.ccpr-btn{
+  align-self:flex-start;
+  padding:10px 16px;
+  background-color: black !important;
+  color: white !important;
+}
+.ccpr-btn:hover{
+  background-color: rgb(160, 160, 160) !important;
+  color: rgb(0, 0, 0) !important;
+}
+
+.ccpr-btn.is-loading{
+  pointer-events:none;
+}
+
+.ccpr-msg{
+  font-size:13px;
+  padding:10px 12px;
+  display:none;
+}
+
+.ccpr-msg.is-success,
+.ccpr-msg.is-error,
+.ccpr-msg.is-info{
+  display:block;
+}
+
+.ccpr-msg.is-success{
+  background:#ecf8f0;
+  border:1px solid #bfe6cb;
+  color:#1f6b39;
+}
+
+.ccpr-msg.is-error{
+  background:#fff1f1;
+  border:1px solid #f0bcbc;
+  color:#8a1f1f;
+}
+
+.ccpr-msg.is-info{
+  background:#f3f6ff;
+  border:1px solid #c9d6ff;
+  color:#243a7a;
+}
+
+/* Rating stars (sin JS) */
+.ccpr-rating{
+  display:inline-flex;
+  flex-direction:row-reverse;
+  gap:6px;
+  padding:10px 12px;
+  background:#fff;
+  align-items:center;
+}
+
+.ccpr-rating input{
+  position:absolute;
+  left:-9999px;
+}
+
+.ccpr-rating label{
+  margin:0;
+  cursor:pointer;
+  font-size:26px;
+  line-height:1;
+  color:#d6d6d6 !important;
+  transition:transform .08s ease, color .15s ease;
+  user-select:none;
+}
+/*
+.ccpr-rating label:hover{
+  transform:translateY(-1px);
+}
+*/
+.ccpr-rating label:hover,
+.ccpr-rating label:hover ~ label{
+  color:#f5b301 !important;
+}
+
+.ccpr-rating input:checked ~ label{
+  color:#f5b301 !important;
+}
+#product-review-block label {
+  text-align: left;
+}
+
+/* Review cards */
+.ccpr-list{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  margin-top:14px;
+}
+
+.ccpr-review-card{
+  border:1px solid #e9e9e9;
+
+  background:#fff;
+  box-shadow:0 6px 20px rgba(0,0,0,.04);
+  overflow:hidden;
+}
+
+.ccpr-review-card__header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:14px 16px;
+  border-bottom:1px solid #f1f1f1;
+  background:linear-gradient(180deg,#fff 0%,#fafafa 100%);
+}
+
+.ccpr-review-card__user{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+}
+
+.ccpr-avatar{
+  width:36px;
+  height:36px;
+  border-radius: 90px;
+  background:#111;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:700;
+  font-size:14px;
+  flex:0 0 auto;
+}
+
+.ccpr-user-meta{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  min-width:0;
+}
+
+.ccpr-user-name{
+  font-weight:700;
+  font-size:14px;
+  color:#222;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:260px;
+}
+
+.ccpr-user-date{
+  font-size:12px;
+  color:#777;
+}
+
+.ccpr-rating-badge{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 10px;
+  border:1px solid #eee;
+
+  background:#fff;
+  flex:0 0 auto;
+}
+
+.ccpr-stars{
+  color:#f5b301;
+  font-size:14px;
+  letter-spacing:1px;
+  line-height:1;
+}
+
+.ccpr-rating-num{
+  font-size:12px;
+  color:#444;
+  border-left:1px solid #eee;
+  padding-left:8px;
+}
+
+.ccpr-review-card__body{
+  padding:14px 16px;
+}
+
+.ccpr-comment{
+  margin:0;
+  font-size:14px;
+  line-height:1.5;
+  color:#333;
+}
+
+/* Photos grid */
+.ccpr-review-card__images{
+    display: flex;
+    gap: 10px;
+    padding: 0 16px 16px 16px;
+    justify-content: flex-start;
+}
+
+.ccpr-photo{
+  overflow:hidden;
+}
+
+.ccpr-photo img{
+  width:100px;
+  height:100px;
+  object-fit:cover;
+  display:block;
+  transition:transform .15s ease;
+}
+
+.ccpr-photo:hover img{
+  transform:scale(1.03);
+}
+
+.ccpr-empty{
+  padding:14px 16px;
+  border:1px dashed #ddd;
+
+  background:#fcfcfc;
+  color:#666;
+}
+
+/* Lightbox */
+.ccpr-lightbox{
+  position:fixed;
+  inset:0;
+  display:none;
+  z-index:9999;
+}
+
+.ccpr-lightbox.is-open{
+  display:block;
+}
+
+.ccpr-lightbox__backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.65);
+}
+
+.ccpr-lightbox__dialog {
+    position: relative;
+    max-width: min(92vw, 750px);
+    max-height: 88vh;
+    margin: 6vh auto 0 auto;
+    background: #ffffff;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .45);
+}
+
+.ccpr-lightbox__img{
+  display:block;
+  width:100%;
+  height:auto;
+  max-height:88vh;
+  object-fit:contain;
+  background:#ffffff4f;
+}
+
+.ccpr-lightbox__close{
+  position:absolute;
+  top:10px;
+  right:10px;
+  width:36px;
+  height:36px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.2);
+  background:rgba(0,0,0,.4);
+  color:#fff;
+  font-size:22px;
+  line-height:1;
+  cursor:pointer;
+}
+
+.ccpr-lightbox__close:hover{
+  background:rgba(0,0,0,.65);
 }

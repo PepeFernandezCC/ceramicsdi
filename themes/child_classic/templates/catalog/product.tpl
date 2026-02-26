@@ -849,6 +849,10 @@
                     {block name='product_refresh'}{/block}
                 </div>
 
+                <div id="product-review-block">
+                    {hook h='displayCcProductReviews' product=$product}
+                </div>
+
             </div>
 
 

@@ -714,40 +714,90 @@
                                             {/if}
 
                                         
-                                          <hr>
-
+                                            <hr>
+                                            {assign var="complements" value=Product::getComplementProducts($product.id)}
                                             <div id="board-section" style="padding:25px 0">
-                                                <h2 class="product_H2">{l s='Recommended board' d='Shop.Theme.Catalog'}</h2> 
+                                                <div class="recomendation-board {if empty($complements)}w100{/if}">
+                                                    <div class="cards-slide">
+                                                        <div class="pc-carousel-card">
+                                                            <h2 class="product_H2">{l s='Recommended board' d='Shop.Theme.Catalog'}</h2>
+                                                            <div class="board-card">
+                                                                <div class="board-img-carousel" data-img-carousel>
+                                                                    <button type="button" class="carousel-btn prev" data-img-prev aria-label="Previous">‹</button>
 
-                                                <div class="board-card">
-                                                    <div class="board-img-carousel">
-                                                        <button class="carousel-btn prev"><span aria-label="Previous">‹</span></button>
-                                                        <div class="carousel-track">
-                                                            {if $hasCover}
-                                                                <img loading="lazy" src="{$imageCoverUrl}" style="max-width:155px" alt="{$cardBoard.name} - cover"/>
-                                                            {/if}
-                                                            {if $hasDust}
-                                                                <img loading="lazy" src="{$imageDustUrl}" style="max-width:155px" alt="{$cardBoard.name} - sample"/>
-                                                            {/if}
+                                                                    <div class="carousel-track" data-img-track>
+                                                                        {if $hasCover}
+                                                                            <img loading="lazy" src="{$imageCoverUrl}" alt="{$cardBoard.name} - cover"/>
+                                                                        {/if}
+                                                                        {if $hasDust}
+                                                                            <img loading="lazy" src="{$imageDustUrl}"  alt="{$cardBoard.name} - sample"/>
+                                                                        {/if}
+                                                                    </div>
+
+                                                                    <button type="button" class="carousel-btn next" data-img-next aria-label="Next">›</button>
+                                                                </div>
+
+                                                                <div class="board-info">
+                                                                    
+                                                                    <div class="board-title">{$cardBoard.name}</div>
+                                                                    <div class="product-reference"><span class="board-reference">Ref: {$cardBoard.ref}</span></div>
+                                                                    <div>
+                                                                        <a href="{Context::getContext()->link->getProductLink($junta_recomendada)}" style="font-size:.92rem;">
+                                                                            <button class="board-button">{l s='View Product' d='Shop.Theme.Catalog'}</button>
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                        <button class="carousel-btn next"><span aria-label="Next">›</span></button>
-                                                    </div>
-                                                    
-                                                    <div id="board-info">
-
-                                                        <div class="product-reference"><span class="board-reference">Ref: {$cardBoard.ref}</span></div>
-                                                        <div class="board-title">{$cardBoard.name}</div>
-                                                        <div class="board-format">{$cardBoard.feature_format}</div>
-                                                        <div>
-                                                            <a href="{Context::getContext()->link->getProductLink($junta_recomendada)}" style="font-size:.92rem;">
-                                                                <button class="board-button">{l s='View Product' d='Shop.Theme.Catalog'}</button>
-                                                            </a>
-                                                        </div>
-                                                        
-
-                                                    </div>
+                                                    </div>                                            
                                                 </div>
+                                                
+                                                {if !empty($complements)}
+                                                    <div id="complement-products-box" class="pc-cards-carousel" data-cards-carousel>
+                                                        <button type="button" class="cards-btn prev" data-cards-prev aria-label="Previous">⟨</button>
+                                                        <div class="cards-viewport">
+                                                            <div><h2 class="product_H2">{l s='Producto Complementario' d='Shop.Theme.Catalog'}</h2></div>
+                                                            <div class="cards-track">
+                                                                
+                                                                {foreach from=$complements item='complement'}  
 
+                                                                    <div class="cards-slide">
+                                                                        <div class="pc-carousel-card">
+                                                                            <div class="board-card">
+                                                                                <div class="esquina-img-carousel" data-img-carousel>
+                                                                                    <button type="button" class="carousel-btn prev" data-img-prev aria-label="Previous">‹</button>
+
+                                                                                    <div class="carousel-track" data-img-track>
+                                                                                    {foreach from=$complement.images item='imageItem'}
+                                                                                        <img loading="lazy" src="{$imageItem.url}"  alt="{$imageItem.legend}"/>
+                                                                                    {/foreach}
+                                                                                    </div>
+
+                                                                                    <button type="button" class="carousel-btn next" data-img-next aria-label="Next">›</button>
+                                                                                </div>
+
+                                                                            
+                                                                                <div class="board-info">
+                                                                                    
+                                                                                    <div class="board-title">{$complement.name}</div>
+                                                                                    <div class="product-reference"><span class="board-reference">Ref: {$complement.reference}</span></div>
+                                                                                    <div>
+                                                                                    <a href="{Context::getContext()->link->getProductLink($complement.id)}" style="font-size:.92rem;">
+                                                                                        <button class="board-button">{l s='View Product' d='Shop.Theme.Catalog'}</button>
+                                                                                    </a>
+                                                                                    </div>
+                                                                                </div>
+
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                {/foreach}
+                                                            </div>
+                                                        </div>
+                                                        <button type="button" class="cards-btn next" data-cards-next aria-label="Next">⟩</button>
+                                                    </div>
+                                                {/if}
                                             </div>
                                             
                                             <hr>

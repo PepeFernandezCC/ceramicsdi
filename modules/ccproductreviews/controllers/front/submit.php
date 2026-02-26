@@ -1,5 +1,5 @@
 <?php
-class ProductReviewsSubmitModuleFrontController extends ModuleFrontController
+class CcProductReviewsSubmitModuleFrontController extends ModuleFrontController
 {
     public function postProcess()
     {
@@ -20,15 +20,15 @@ class ProductReviewsSubmitModuleFrontController extends ModuleFrontController
         require_once _PS_MODULE_DIR_.$this->module->name.'/classes/Review.php';
 
         $idCustomer = (int)$this->context->customer->id;
-
+        /* para debug quitar después
         if (!Review::customerCanReview($idCustomer, $idProduct)) {
             die(json_encode(['ok'=>false,'error'=>'Solo puedes reseñar si has recibido este producto.']));
         }
-
+        */
         // Guardar reseña
         $name = $this->context->customer->firstname.' '.$this->context->customer->lastname;
 
-        Db::getInstance()->insert('ccpr_review', [
+        Db::getInstance()->insert('product_review', [
             'id_product' => $idProduct,
             'id_customer' => $idCustomer,
             'customer_name' => pSQL($name),
@@ -72,9 +72,17 @@ class ProductReviewsSubmitModuleFrontController extends ModuleFrontController
                 $dest = $dir.$filename;
 
                 if (@move_uploaded_file($tmp['tmp_name'], $dest)) {
-                    Db::getInstance()->insert('ccpr_image', [
+
+                    // ✅ Generar thumbnail
+                    $thumbName = 'thumb_'.$filename;
+                    $thumbPath = $dir.$thumbName;
+
+                    // 420x420 va bien para grid; ajusta si quieres
+                    $this->createThumb($dest, $thumbPath, 420, 420);
+
+                    Db::getInstance()->insert('product_review_image', [
                         'id_review' => $idReview,
-                        'file_name' => pSQL($filename),
+                        'file_name' => pSQL($filename), // guardamos el original
                         'date_add' => date('Y-m-d H:i:s'),
                     ]);
                 }
@@ -82,5 +90,11 @@ class ProductReviewsSubmitModuleFrontController extends ModuleFrontController
         }
 
         die(json_encode(['ok'=>true,'message'=>'¡Gracias! Tu reseña queda pendiente de revisión.']));
+    }
+
+    private function createThumb($sourcePath, $destPath, $maxW = 420, $maxH = 420)
+    {
+
+        return ImageManager::resize($sourcePath, $destPath, (int)$maxW, (int)$maxH);
     }
 }

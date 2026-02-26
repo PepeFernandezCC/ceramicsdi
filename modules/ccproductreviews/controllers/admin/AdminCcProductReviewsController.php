@@ -192,7 +192,7 @@ class AdminCcProductReviewsController extends ModuleAdminController
 
         $images = Db::getInstance()->executeS('
             SELECT file_name
-            FROM `'._DB_PREFIX_.'ccpr_image`
+            FROM `'._DB_PREFIX_.'product_review_image`
             WHERE id_review='.(int) $idReview.'
             ORDER BY id_image ASC
         ');
@@ -215,7 +215,7 @@ class AdminCcProductReviewsController extends ModuleAdminController
 
     private function deleteReviewAssets($idReview)
     {
-        Db::getInstance()->delete('ccpr_image', '`id_review`='.(int) $idReview);
+        Db::getInstance()->delete('product_review_image', '`id_review`='.(int) $idReview);
 
         $dir = _PS_IMG_DIR_.'ccproductreviews/uploads/'.(int) $idReview.'/';
         if (is_dir($dir)) {

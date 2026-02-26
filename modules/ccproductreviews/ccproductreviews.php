@@ -54,7 +54,12 @@ class CcProductReviews extends Module
         require_once __DIR__.'/classes/Review.php';
 
         $idCustomer = (int)$this->context->customer->id;
-        $canReview = $idCustomer ? Review::customerCanReview($idCustomer, $idProduct) : false;
+        
+
+        /** para debug */
+        //$canReview = $idCustomer ? Review::customerCanReview($idCustomer, $idProduct) : false;
+        $canReview = true;
+        /**************/
 
         $reviews = Review::getByProduct($idProduct);
         $avg = Review::getAverageByProduct($idProduct);
@@ -62,19 +67,21 @@ class CcProductReviews extends Module
 
         Media::addJsDef([
             'ccpr' => [
-                'id_product' => (int)$idProduct,
-                'submit_url' => $this->context->link->getModuleLink($this->name, 'submit', [], true),
                 'max_files' => 3,
                 'token' => Tools::getToken(false),
             ]
          ]);
 
         $this->context->smarty->assign([
+            'clientId' => $idCustomer,
             'ccpr_id_product' => $idProduct,
             'ccpr_reviews' => $reviews,
+            'ccpr_img_base' => $this->context->link->getMediaLink(_PS_IMG_).'ccproductreviews/uploads/',
             'ccpr_avg' => $avg,
             'ccpr_count' => $count,
             'ccpr_can_review' => $canReview,
+            'ccpr_max_files' => 3,
+            'ccpr_token' => Tools::getToken(false),
             'ccpr_submit_url' => $this->context->link->getModuleLink($this->name, 'submit', [], true),
         ]);
 
