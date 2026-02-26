@@ -47,7 +47,7 @@
         <div class="item product-cover">
             <img
                     class="js-qv-product-cover img-fluid img-custom-lightbox"
-                    src="{$image.bySize.medium_default.url}"
+                    src="{$image.bySize.large_default.url}"
                     {if !empty($image.legend)}
                         alt="{$image.legend}"
                         title="{$image.legend}"
@@ -57,7 +57,7 @@
                      {if $smarty.foreach.productImages.iteration != 1}loading="lazy"{/if}
                     width="{$image.bySize.medium_default.width}"
                     height="{$image.bySize.medium_default.height}"
-                    data-lightbox="{$image.bySize.medium_default.url}"
+                    data-lightbox="{$image.bySize.large_default.url}"
             >
         </div>
     {/foreach}
@@ -72,14 +72,6 @@
             {if $smarty.foreach.productImages.iteration == 2 and $videoProductRoute != false}
                 <div class="product-cover product-video">
                     <video id="productVideo" autoplay loop muted playsinline preload="auto" style="max-width: 100%; height: 99.7%;">
-                        {*
-                            {if $videoProductRoute.webm}
-                                <source src="{$videoProductRoute.sourceWebm}" type="{$videoProductRoute.typeWebm}">
-                                <source src="{$videoProductRoute.sourceMp4}" type="{$videoProductRoute.typeMp4}">
-                            {else}
-                                <source src="{$videoProductRoute.sourceMp4}" type="{$videoProductRoute.typeMp4}">
-                            {/if}
-                        *}
                         <source src="{$videoProductRoute.sourceMp4}" type="{$videoProductRoute.typeMp4}">
                         Tu navegador no soporta la etiqueta de video.
                     </video>
@@ -96,7 +88,7 @@
             <div class="product-cover {if $smarty.foreach.productImages.iteration == 2 && $withVideo}border-video-one-column{/if} {if $smarty.foreach.productImages.iteration == 3 && $withVideo}border-video-two-columns{/if} {if $smarty.foreach.productImages.last}product-cover-last{elseif $smarty.foreach.productImages.total - $smarty.foreach.productImages.iteration == 1}product-cover-penultimate{/if}">
                 <img
                         class="{if $isCover}js-qv-product-cover{else}js-thumb{/if} img-fluid"
-                        src="{$image.bySize.medium_default.url}"
+                        src="{$image.bySize.large_default.url}"
                         {if !empty($image.legend)}
                             alt="{$image.legend}"
                             title="{$image.legend}"

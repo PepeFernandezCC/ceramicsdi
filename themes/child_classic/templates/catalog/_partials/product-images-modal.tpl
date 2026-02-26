@@ -32,7 +32,7 @@
             <img
               class="js-modal-product-cover product-cover-modal"
               width="{$product.default_image.bySize.large_default.width}"
-              src="{$product.default_image.bySize.medium_default.url}"
+              src="{$product.default_image.bySize.large_default.url}"
               data-large-src="{$product.default_image.bySize.large_default.url}"
               {if !empty($product.default_image.legend)}
                 alt="{$product.default_image.legend}"
@@ -43,7 +43,11 @@
               height="{$product.default_image.bySize.large_default.height}"
             >
           {else}
-            <img src="{$urls.no_picture_image.bySize.large_default.url}" loading="lazy" alt="default image" width="{$urls.no_picture_image.bySize.large_default.width}" height="{$urls.no_picture_image.bySize.large_default.height}" />
+            <img 
+              src="{$urls.no_picture_image.bySize.large_default.url}" 
+              loading="lazy" alt="default image" 
+              width="{$urls.no_picture_image.bySize.large_default.width}" 
+              height="{$urls.no_picture_image.bySize.large_default.height}" />
           {/if}
           <figcaption class="image-caption">
           {block name='product_description_short'}
@@ -58,9 +62,9 @@
                 {foreach from=$product.images item=image}
                   <li class="thumb-container js-thumb-container">
                     <img
-                      data-image-large-src="{$image.large.url}"
+                      data-image-large-src="{$image.bySize.large_default.url}"
                       class="thumb js-modal-thumb"
-                      src="{$image.medium.url}"
+                      src="{$image.bySize.large_default.url}"
                       {if !empty($image.legend)}
                         alt="{$image.legend}"
                         title="{$image.legend}"

@@ -95,7 +95,7 @@
                                                 loading="lazy"
                                             {/if}
                                                 
-                                            src="{$product.cover.bySize.home_default.url}"
+                                            src="{$product.cover.bySize.large_default.url}"
                                             alt="{if !empty($product.cover.legend)}{$product.cover.legend}{else}{$product.name|truncate:30:'...'}{/if}"
                                             data-full-size-image-url="{$product.cover.large.url}"
 
@@ -107,7 +107,7 @@
                                                         loading="lazy"
                                                     {/if}
                                                         
-                                                    src="{$product.images[1].bySize.home_default.url}"
+                                                    src="{$product.images[1].bySize.large_default.url}"
                                                     alt="{if !empty($product.cover.legend)}{$product.cover.legend}{else}{$product.name|truncate:30:'...'}{/if}"
                                                     data-full-size-image-url="{$product.images[1].large.url}"
                                                 />
@@ -118,7 +118,7 @@
                                     <span class="thumbnail product-thumbnail">
                                         <img
                                             class="image-wh"
-                                            src="{$urls.no_picture_image.bySize.home_default.url}"
+                                            src="{$urls.no_picture_image.bySize.large_default.url}"
                                             alt="default image"
                                         />
                                     </span>

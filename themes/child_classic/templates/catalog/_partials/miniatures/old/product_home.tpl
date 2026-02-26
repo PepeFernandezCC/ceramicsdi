@@ -65,7 +65,7 @@
                         {/if}
                     {/foreach}
 
-                    {assign var="imageUrl" value=$product.cover.bySize.large_default.url}
+                    {assign var="imageUrl" value=$product.cover.bySize.home_default.url}
                     {if $newImageId != "0"}
                         {$imageUrl = $imageUrl|replace:"/$firstImageId-":"/$newImageId-"}
                     {/if}

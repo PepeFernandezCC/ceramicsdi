@@ -33,6 +33,8 @@
               class="js-modal-product-cover product-cover-modal"
               width="{$product.default_image.bySize.large_default.width}"
               src="{$product.default_image.bySize.large_default.url}"
+              data-large-src="{$product.default_image.bySize.large_default.url}"
+              data-pepecheck="1"
               {if !empty($product.default_image.legend)}
                 alt="{$product.default_image.legend}"
                 title="{$product.default_image.legend}"
