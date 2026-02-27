@@ -1,7 +1,31 @@
 <?php
 
-class Review
+class Review extends ObjectModel
 {
+
+    public $id_review;
+    public $id_product;
+    public $id_customer;
+    public $customer_name;
+    public $rating;
+    public $comment;
+    public $active;
+    public $date_add;
+
+    public static $definition = [
+        'table' => 'product_review',
+        'primary' => 'id_review',
+        'fields' => [
+            'id_product' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
+            'id_customer' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
+            'customer_name' => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml'],
+            'rating' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'],
+            'comment' => ['type' => self::TYPE_HTML, 'validate' => 'isCleanHtml'],
+            'active' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
+            'date_add' => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
+        ],
+    ];
+
     public static function customerCanReview($idCustomer, $idProduct)
     {
         $delivered = (int)Configuration::get('CCPR_DELIVERED_STATE');
@@ -56,5 +80,35 @@ class Review
             WHERE id_product='.(int)$idProduct.' AND active=1
         ';
         return (int)Db::getInstance()->getValue($sql);
+    }
+
+    public static function bulkDelete(array $ids)
+    {
+        $ids = array_map('intval', $ids);
+        $ids = array_filter($ids, function ($v) { return $v > 0; });
+
+        if (empty($ids)) {
+            return false;
+        }
+
+        $in = implode(',', $ids);
+
+        // 1) Borrar imágenes (BD) en bloque
+        Db::getInstance()->execute('
+            DELETE FROM `'._DB_PREFIX_.'product_review_image`
+            WHERE `id_review` IN ('.$in.')
+        ');
+
+        // 2) Borrar email log (si aplica) en bloque
+        Db::getInstance()->execute('
+            DELETE FROM `'._DB_PREFIX_.'product_review_email_log`
+            WHERE `id_review` IN ('.$in.')
+        ');
+
+        // 3) Borrar reviews en bloque
+        return Db::getInstance()->execute('
+            DELETE FROM `'._DB_PREFIX_.'product_review`
+            WHERE `id_review` IN ('.$in.')
+        ');
     }
 }

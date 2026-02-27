@@ -1,0 +1,10 @@
+Hola {firstname} {lastname},
+
+Te escribimos desde {shop_name} en relación con tu reseña del producto:
+{product_name}
+
+Mensaje:
+{message}
+
+Gracias,
+{shop_name}

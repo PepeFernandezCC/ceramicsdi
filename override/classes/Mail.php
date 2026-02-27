@@ -21,7 +21,7 @@ class Mail extends MailCore
         $replyToName = null
     ) {
 
-        $block_templates = ['order_conf', 'cheque'];
+        $block_templates = ['bankwire', 'order_conf', 'cheque'];
         // Bloquear solo confirmación de pedido
         if (in_array($template, $block_templates)) {
             return true; // "simula" enviado para no romper flujos
