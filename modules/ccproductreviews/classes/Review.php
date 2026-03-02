@@ -31,7 +31,7 @@ class Review extends ObjectModel
         $delivered = (int)Configuration::get('CCPR_DELIVERED_STATE');
 
         // ¿Ha comprado ese producto en un pedido en estado "entregado"?
-        $sql = '
+        $sql_orders = '
             SELECT 1
             FROM `'._DB_PREFIX_.'orders` o
             INNER JOIN `'._DB_PREFIX_.'order_detail` od ON od.id_order = o.id_order
@@ -39,7 +39,21 @@ class Review extends ObjectModel
               AND od.product_id = '.(int)$idProduct.'
               AND o.current_state = '.(int)$delivered.'
         ';
-        return (bool)Db::getInstance()->getValue($sql);
+
+        $sql_review = '
+            SELECT 1
+            FROM `'._DB_PREFIX_.'product_review`
+            WHERE id_customer = '.(int)$idCustomer.'
+              AND id_product = '.(int)$idProduct.'
+        ';
+        $customerHaveThisProduct = (bool)Db::getInstance()->getValue($sql_orders);
+        $customerHaveThisReview = (bool)Db::getInstance()->getValue($sql_review);
+
+        if($customerHaveThisProduct && !$customerHaveThisReview) {
+            return true;
+        }
+
+        return false;
     }
 
     public static function getByProduct($idProduct)

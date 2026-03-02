@@ -1,0 +1,4 @@
+/log/*
+config_es.xml
+.idea/
+.DS_Store

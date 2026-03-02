@@ -389,3 +389,58 @@
 .ccpr-lightbox__close:hover{
   background:rgba(0,0,0,.65);
 }
+
+/* media estrellas */
+.ccpr-summary{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:12px;
+  flex-direction: column;
+}
+
+/* Amazon-like rating */
+.ccpr-avg{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+}
+
+.ccpr-avg__stars{
+  position:relative;
+  display:inline-block;
+  font-size:30px;
+  line-height:1;
+  letter-spacing:2px;
+}
+
+/* Base (gris) */
+.ccpr-avg__stars::before{
+  content:"★★★★★";
+  color:#d6d6d6 !important;
+}
+
+/* Fill (dorado), recortado por width% */
+.ccpr-avg__fill{
+  position:absolute;
+  top:0;
+  left:0;
+  height:100%;
+  overflow:hidden;
+  white-space:nowrap;
+}
+
+.ccpr-avg__fill::before{
+  content:"★★★★★";
+  color:#f5b301 !important;
+}
+
+.ccpr-avg__num{
+  font-size:13px;
+  color:#444;
+}
+
+.ccpr-avg__count{
+  font-size:13px;
+  color:#666;
+}

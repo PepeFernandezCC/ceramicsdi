@@ -20,11 +20,11 @@ class CcProductReviewsSubmitModuleFrontController extends ModuleFrontController
         require_once _PS_MODULE_DIR_.$this->module->name.'/classes/Review.php';
 
         $idCustomer = (int)$this->context->customer->id;
-        /* para debug quitar después
+
         if (!Review::customerCanReview($idCustomer, $idProduct)) {
             die(json_encode(['ok'=>false,'error'=>'Solo puedes reseñar si has recibido este producto.']));
         }
-        */
+        
         // Guardar reseña
         $name = $this->context->customer->firstname.' '.$this->context->customer->lastname;
 

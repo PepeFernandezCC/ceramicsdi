@@ -55,11 +55,7 @@ class CcProductReviews extends Module
 
         $idCustomer = (int)$this->context->customer->id;
         
-
-        /** para debug */
-        //$canReview = $idCustomer ? Review::customerCanReview($idCustomer, $idProduct) : false;
-        $canReview = true;
-        /**************/
+        $canReview = $idCustomer ? Review::customerCanReview($idCustomer, $idProduct) : false;
 
         $reviews = Review::getByProduct($idProduct);
         $avg = Review::getAverageByProduct($idProduct);

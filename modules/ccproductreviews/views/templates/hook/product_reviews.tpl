@@ -1,9 +1,20 @@
 <div class="ccpr-block" data-client="{$clientId}">
-  <div class="ccpr-summary">
-    <strong>Valoración media:</strong> {$ccpr_avg|escape:'html':'UTF-8'} / 5
-    <span>({$ccpr_count|intval} reseñas)</span>
-  </div>
+  {if $ccpr_count > 0}
+    <div class="ccpr-summary">
+      <strong>Valoración media:</strong>
 
+      {assign var=avg value=$ccpr_avg|floatval}
+      {assign var=pct value=($avg*20)} {* 0..100 *}
+
+      <span class="ccpr-avg" aria-label="{$ccpr_avg|escape:'html':'UTF-8'} de 5">
+        <span class="ccpr-avg__stars">
+          <span class="ccpr-avg__fill" style="width: {$pct}%"></span>
+        </span>
+        <span class="ccpr-avg__num">{$ccpr_avg|escape:'html':'UTF-8'} de 5</span>
+        <span class="ccpr-avg__count">({$ccpr_count|intval} reseñas)</span>
+      </span>
+    </div>
+  {/if}
   <hr>
 
   <div class="ccpr-list">
