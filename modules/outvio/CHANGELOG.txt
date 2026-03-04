@@ -1,0 +1,48 @@
+2.0.11 - first version after shipping
+2.0.12 - rc1
+2.0.14 - rc2 ps 1.7 version
+2.0.15 - ps 1.6 support
+2.0.16 - rc3
+2.0.17 - fix zoom in map
+2.0.19 - rc4, edit api key in back-office, delete hardcoded parameters
+2.0.20 - rc5, remove edit api key in back-office
+2.0.21 - version before multi carriers
+2.0.22 - multi carriers, and other minor features
+2.0.23 - map search box
+2.0.24 - new version ps 1.6 support
+2.0.25 - bug fix js
+2.0.26 - rc6
+2.0.27 - center map on search, clear code
+2.0.28 - use correct Url and API key
+2.0.29 - add gift option and preloader on shipping
+2.0.30 - change shipping address on order, pickups drop-down 1.7
+2.0.31 - last changes support 1.6
+2.0.32 -
+2.0.33 - clean point address if other method selected
+2.0.34 - send COD options as available payment method
+2.0.35 - add map preloader
+2.0.36 - not load maps if we're on payment step
+2.0.37 - remove missing files, remove deleting point on payment step
+2.0.38 - add icons for couriers
+2.1.1 - Multi-store and ui fixes finished
+2.1.2 - Fix product description flow
+2.1.3 - Fix discountPrice (send null, if empty)
+2.1.4 - Add checking is_array, remove redundant slashes after constant
+2.1.5 - Add Seur Atlas + default icons
+2.1.6 - Add fix to js script
+2.1.9 - Add fix for pack products
+2.1.10 - Add DPD_PORTUGAL
+2.1.11 - add getCarrierId js function
+2.1.12 - fix warning with use_map
+2.1.13 - Pass location for product (small fix for sites where tags disabled)
+2.1.14 - Select only customer comments not system
+2.1.15 - Added logo for new SmartPost
+2.1.16 - Pass secondary ID + added updated order hook implemented
+2.1.17 - Hide map API key, small improvements to render map flow
+2.1.18 - Cluster map update
+2.2.1 - Added support for version 8.1+
+2.2.2 - Remove GeoCode
+2.2.3 - Unify search request
+2.2.4 - Import old orders
+2.2.5 - Fix warehouse location for versions 8+
+2.2.6 - Fix tax and VAT rate data

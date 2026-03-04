@@ -1,0 +1,262 @@
+Carrier Object
+(
+    [id_reference] => 3
+    [name] => Correos
+    [url] => https://www.correos.es/es/es/herramientas/localizador/envios/detalle?tracking-number=@
+    [delay] => De 48 a 72 horas hábiles.
+    [active] => 1
+    [deleted] => 0
+    [shipping_handling] => 0
+    [range_behavior] => 1
+    [is_module] => 0
+    [is_free] => 0
+    [shipping_method] => 1
+    [shipping_external] => 0
+    [external_module_name] => 
+    [need_range] => 0
+    [position] => 3
+    [max_width] => 0
+    [max_height] => 0
+    [max_depth] => 0
+    [max_weight] => 0.000000
+    [grade] => 0
+    [webserviceParameters:protected] => Array
+        (
+            [fields] => Array
+                (
+                    [deleted] => Array
+                        (
+                        )
+
+                    [is_module] => Array
+                        (
+                        )
+
+                    [id_tax_rules_group] => Array
+                        (
+                            [getter] => getIdTaxRulesGroup
+                            [setter] => setTaxRulesGroup
+                            [xlink_resource] => Array
+                                (
+                                    [resourceName] => tax_rule_groups
+                                )
+
+                        )
+
+                )
+
+        )
+
+    [id] => 334
+    [id_lang:protected] => 1
+    [id_shop:protected] => 1
+    [id_shop_list] => Array
+        (
+        )
+
+    [get_shop_from_context:protected] => 1
+    [table:protected] => carrier
+    [identifier:protected] => id_carrier
+    [fieldsRequired:protected] => Array
+        (
+            [0] => name
+            [1] => active
+        )
+
+    [fieldsSize:protected] => Array
+        (
+            [name] => 64
+            [grade] => 1
+            [external_module_name] => 64
+        )
+
+    [fieldsValidate:protected] => Array
+        (
+            [name] => isCarrierName
+            [active] => isBool
+            [is_free] => isBool
+            [url] => isAbsoluteUrl
+            [shipping_handling] => isBool
+            [range_behavior] => isBool
+            [shipping_method] => isUnsignedInt
+            [max_width] => isUnsignedInt
+            [max_height] => isUnsignedInt
+            [max_depth] => isUnsignedInt
+            [max_weight] => isFloat
+            [grade] => isUnsignedInt
+            [is_module] => isBool
+            [deleted] => isBool
+        )
+
+    [fieldsRequiredLang:protected] => Array
+        (
+            [0] => delay
+        )
+
+    [fieldsSizeLang:protected] => Array
+        (
+            [delay] => 512
+        )
+
+    [fieldsValidateLang:protected] => Array
+        (
+            [delay] => isGenericName
+        )
+
+    [tables:protected] => Array
+        (
+        )
+
+    [image_dir:protected] => /var/www/html/img/s/
+    [image_format:protected] => jpg
+    [translator:protected] => 
+    [def:protected] => Array
+        (
+            [table] => carrier
+            [primary] => id_carrier
+            [multilang] => 1
+            [multilang_shop] => 1
+            [fields] => Array
+                (
+                    [id_reference] => Array
+                        (
+                            [type] => 1
+                        )
+
+                    [name] => Array
+                        (
+                            [type] => 3
+                            [validate] => isCarrierName
+                            [required] => 1
+                            [size] => 64
+                        )
+
+                    [active] => Array
+                        (
+                            [type] => 2
+                            [validate] => isBool
+                            [required] => 1
+                        )
+
+                    [is_free] => Array
+                        (
+                            [type] => 2
+                            [validate] => isBool
+                        )
+
+                    [url] => Array
+                        (
+                            [type] => 3
+                            [validate] => isAbsoluteUrl
+                        )
+
+                    [shipping_handling] => Array
+                        (
+                            [type] => 2
+                            [validate] => isBool
+                        )
+
+                    [shipping_external] => Array
+                        (
+                            [type] => 2
+                        )
+
+                    [range_behavior] => Array
+                        (
+                            [type] => 2
+                            [validate] => isBool
+                        )
+
+                    [shipping_method] => Array
+                        (
+                            [type] => 1
+                            [validate] => isUnsignedInt
+                        )
+
+                    [max_width] => Array
+                        (
+                            [type] => 1
+                            [validate] => isUnsignedInt
+                        )
+
+                    [max_height] => Array
+                        (
+                            [type] => 1
+                            [validate] => isUnsignedInt
+                        )
+
+                    [max_depth] => Array
+                        (
+                            [type] => 1
+                            [validate] => isUnsignedInt
+                        )
+
+                    [max_weight] => Array
+                        (
+                            [type] => 4
+                            [validate] => isFloat
+                        )
+
+                    [grade] => Array
+                        (
+                            [type] => 1
+                            [validate] => isUnsignedInt
+                            [size] => 1
+                        )
+
+                    [external_module_name] => Array
+                        (
+                            [type] => 3
+                            [size] => 64
+                        )
+
+                    [is_module] => Array
+                        (
+                            [type] => 2
+                            [validate] => isBool
+                        )
+
+                    [need_range] => Array
+                        (
+                            [type] => 2
+                        )
+
+                    [position] => Array
+                        (
+                            [type] => 1
+                        )
+
+                    [deleted] => Array
+                        (
+                            [type] => 2
+                            [validate] => isBool
+                        )
+
+                    [delay] => Array
+                        (
+                            [type] => 3
+                            [lang] => 1
+                            [validate] => isGenericName
+                            [required] => 1
+                            [size] => 512
+                        )
+
+                )
+
+            [classname] => Carrier
+            [associations] => Array
+                (
+                    [l] => Array
+                        (
+                            [type] => 2
+                            [field] => id_carrier
+                            [foreign_field] => id_carrier
+                        )
+
+                )
+
+        )
+
+    [update_fields:protected] => 
+    [force_id] => 
+)

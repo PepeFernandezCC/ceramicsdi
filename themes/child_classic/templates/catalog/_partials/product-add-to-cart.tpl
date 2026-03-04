@@ -27,7 +27,6 @@
 {assign var="id_cart" value=Context::getContext()->cart->id} 
 {assign var="muestraEnCarrito" value=Cart::checkProductInCartStatic($id_cart, $product.id, true)}
 {assign var="productoEnCarrito" value=Cart::checkProductInCartStatic($id_cart, $product.id, false)}
-{assign var="samplesInCart" value=0}
 {assign var="samplesInCart" value=Cart::getSamplesNumberInCartStatic($id_cart)}
 {assign var="maxProductsInCart" value=false}
 {assign var="boxPrice" value=Product::getMinimalPriceTemplate($product.id, $customer.id)}

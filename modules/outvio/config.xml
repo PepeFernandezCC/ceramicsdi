@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+	<name>outvio</name>
+	<displayName><![CDATA[Outvio]]></displayName>
+	<version><![CDATA[2.2.6]]></version>
+	<description><![CDATA[Outvio shipping integration.]]></description>
+	<author><![CDATA[Outvio]]></author>
+	<tab><![CDATA[shipping_logistics]]></tab>
+	<confirmUninstall><![CDATA[Are you sure you want to uninstall?]]></confirmUninstall>
+	<is_configurable>1</is_configurable>
+	<need_instance>0</need_instance>
+	<limited_countries></limited_countries>
+</module>

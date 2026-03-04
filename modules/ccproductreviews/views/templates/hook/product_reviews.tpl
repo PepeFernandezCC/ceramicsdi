@@ -15,81 +15,77 @@
       </span>
     </div>
   {/if}
-  <hr>
+  {if $ccpr_reviews|count}
+    <hr>
 
-  <div class="ccpr-list">
-    {if $ccpr_reviews|count}
-      {foreach from=$ccpr_reviews item=r}
-        <article class="ccpr-review-card">
-          <header class="ccpr-review-card__header">
-            <div class="ccpr-review-card__user">
-              <div class="ccpr-avatar" aria-hidden="true">
-                {$r.customer_name|escape:'html':'UTF-8'|truncate:1:"":true}
-              </div>
-              <div class="ccpr-user-meta">
-                <div class="ccpr-user-name">
-                  {$r.customer_name|escape:'html':'UTF-8'}
+    <div class="ccpr-list">
+        {foreach from=$ccpr_reviews item=r}
+          <article class="ccpr-review-card">
+            <header class="ccpr-review-card__header">
+              <div class="ccpr-review-card__user">
+                <div class="ccpr-avatar" aria-hidden="true">
+                  {$r.customer_name|escape:'html':'UTF-8'|truncate:1:"":true}
                 </div>
-                <div class="ccpr-user-date">
-                  {$r.date_add|escape:'html':'UTF-8'}
+                <div class="ccpr-user-meta">
+                  <div class="ccpr-user-name">
+                    {$r.customer_name|escape:'html':'UTF-8'}
+                  </div>
+                  <div class="ccpr-user-date">
+                    {$r.date_add|escape:'html':'UTF-8'}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div class="ccpr-rating-badge" aria-label="{$r.rating|intval} de 5">
-              <span class="ccpr-stars">
-                {for $i=1 to 5}{if $i <= $r.rating}★{else}☆{/if}{/for}
-              </span>
-              <span class="ccpr-rating-num">{$r.rating|intval}/5</span>
-            </div>
-          </header>
+              <div class="ccpr-rating-badge" aria-label="{$r.rating|intval} de 5">
+                <span class="ccpr-stars">
+                  {for $i=1 to 5}{if $i <= $r.rating}★{else}☆{/if}{/for}
+                </span>
+                <span class="ccpr-rating-num">{$r.rating|intval}/5</span>
+              </div>
+            </header>
 
-          {if $r.comment}
-            <div class="ccpr-review-card__body">
-              <p class="ccpr-comment">
-                {$r.comment|escape:'html':'UTF-8'|nl2br nofilter}
-              </p>
-            </div>
-          {/if}
+            {if $r.comment}
+              <div class="ccpr-review-card__body">
+                <p class="ccpr-comment">
+                  {$r.comment|escape:'html':'UTF-8'|nl2br nofilter}
+                </p>
+              </div>
+            {/if}
 
-          {if $r.images|count}
-            <div class="ccpr-review-card__images">
-              {foreach from=$r.images item=img}
-                {assign var=orig value="{$ccpr_img_base}{$r.id_review|intval}/{$img|escape:'url':'UTF-8'}"}
-                {assign var=thumb value="{$ccpr_img_base}{$r.id_review|intval}/thumb_{$img|escape:'url':'UTF-8'}"}
+            {if $r.images|count}
+              <div class="ccpr-review-card__images">
+                {foreach from=$r.images item=img}
+                  {assign var=orig value="{$ccpr_img_base}{$r.id_review|intval}/{$img|escape:'url':'UTF-8'}"}
+                  {assign var=thumb value="{$ccpr_img_base}{$r.id_review|intval}/thumb_{$img|escape:'url':'UTF-8'}"}
 
-                <a class="ccpr-photo js-ccpr-lightbox"
-                  href="{$orig}"
-                  data-full="{$orig}">
-                  <img loading="lazy"
-                      src="{$thumb}"
-                      alt="Foto reseña"
-                      onerror="this.onerror=null;this.src='{$orig}';" />
-                </a>
-              {/foreach}
-            </div>
-          {/if}
-        </article>
-      {/foreach}
-    {else}
-      <div class="ccpr-empty">
-        Aún no hay reseñas.
-      </div>
-    {/if}
-  </div>
-
-  <div class="ccpr-lightbox" id="ccpr_lightbox" aria-hidden="true">
-    <div class="ccpr-lightbox__backdrop" data-ccpr-close></div>
-
-    <div class="ccpr-lightbox__dialog" role="dialog" aria-modal="true" aria-label="Imagen ampliada">
-      <button type="button" class="ccpr-lightbox__close" aria-label="Cerrar" data-ccpr-close>×</button>
-      <img class="ccpr-lightbox__img" id="ccpr_lightbox_img" alt="">
+                  <a class="ccpr-photo js-ccpr-lightbox"
+                    href="{$orig}"
+                    data-full="{$orig}">
+                    <img loading="lazy"
+                        src="{$thumb}"
+                        alt="Foto reseña"
+                        onerror="this.onerror=null;this.src='{$orig}';" />
+                  </a>
+                {/foreach}
+              </div>
+            {/if}
+          </article>
+        {/foreach}
     </div>
-  </div>
 
-  <hr>
+    <div class="ccpr-lightbox" id="ccpr_lightbox" aria-hidden="true">
+      <div class="ccpr-lightbox__backdrop" data-ccpr-close></div>
+
+      <div class="ccpr-lightbox__dialog" role="dialog" aria-modal="true" aria-label="Imagen ampliada">
+        <button type="button" class="ccpr-lightbox__close" aria-label="Cerrar" data-ccpr-close>×</button>
+        <img class="ccpr-lightbox__img" id="ccpr_lightbox_img" alt="">
+      </div>
+    </div>
+  {/if}
+
 
   {*if $ccpr_can_review*}
+    <hr>
     <div class="ccpr-card ccpr-form">
       <div class="ccpr-card__header">
         <h4 class="ccpr-title">Escribe tu reseña</h4>
