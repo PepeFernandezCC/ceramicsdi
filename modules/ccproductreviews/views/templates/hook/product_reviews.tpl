@@ -1,7 +1,7 @@
 <div class="ccpr-block" data-client="{$clientId}">
   {if $ccpr_count > 0}
     <div class="ccpr-summary">
-      <strong>Valoración media:</strong>
+      <strong>{l s='Como lo puntúan otros clientes' d='Shop.Theme.Catalog'}: </strong>
 
       {assign var=avg value=$ccpr_avg|floatval}
       {assign var=pct value=($avg*20)} {* 0..100 *}
@@ -89,7 +89,7 @@
 
   <hr>
 
-  {if $ccpr_can_review}
+  {*if $ccpr_can_review*}
     <div class="ccpr-card ccpr-form">
       <div class="ccpr-card__header">
         <h4 class="ccpr-title">Escribe tu reseña</h4>
@@ -169,5 +169,5 @@
         </div>
       </div>
     </div>
-  {/if}
+  {*/if*}
 </div>

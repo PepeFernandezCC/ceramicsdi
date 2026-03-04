@@ -22,6 +22,7 @@ class CcProductReviews extends Module
         return parent::install()
             && $this->installDb()
             && $this->registerHook('header')
+            && $this->registerHook('displayProductAdditionalInfo')
             && $this->registerHook('displayCcProductReviews')
             && $this->registerHook('actionOrderStatusPostUpdate')
             && $this->installTab()
@@ -46,6 +47,25 @@ class CcProductReviews extends Module
         return Db::getInstance()->execute(file_get_contents(__DIR__.'/config/uninstall.sql'));
     }
 
+    public function hookDisplayProductAdditionalInfo($params)
+    {
+        $idProduct = (int)($params['product']['id_product'] ?? 0);
+        if (!$idProduct) {
+            return '';
+        }
+
+        require_once __DIR__.'/classes/Review.php';
+
+        $avg = Review::getAverageByProduct($idProduct);
+        $count = Review::getCountByProduct($idProduct);
+
+        $this->context->smarty->assign([
+            'ccpr_avg' => $avg,
+            'ccpr_count' => $count,
+        ]);
+
+        return $this->fetch('module:'.$this->name.'/views/templates/hook/product_rating.tpl');
+    }
     public function hookDisplayCcProductReviews($params)
     {
         $idProduct = (int)($params['product']['id_product'] ?? 0);

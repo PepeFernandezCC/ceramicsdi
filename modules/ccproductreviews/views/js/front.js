@@ -1,4 +1,66 @@
 document.addEventListener('DOMContentLoaded', function () {
+  function showMessage(msg, type) {
+    var box = document.getElementById('ccpr_msg');
+    if (!box) return;
+
+    box.textContent = msg || '';
+    box.classList.remove('is-success', 'is-error', 'is-info');
+
+    if (!msg) {
+      box.style.display = 'none';
+      return;
+    }
+
+    box.style.display = 'block';
+    if (type) box.classList.add('is-' + type);
+  }
+
+  // Lightbox
+  (function () {
+    var lb = document.getElementById('ccpr_lightbox');
+    var lbImg = document.getElementById('ccpr_lightbox_img');
+    if (!lb || !lbImg) return;
+
+    function openLightbox(src, alt) {
+      lbImg.src = src;
+      lbImg.alt = alt || '';
+      lb.classList.add('is-open');
+      lb.setAttribute('aria-hidden', 'false');
+      document.documentElement.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+      lb.classList.remove('is-open');
+      lb.setAttribute('aria-hidden', 'true');
+      lbImg.src = '';
+      document.documentElement.style.overflow = '';
+    }
+
+    // Delegación: cualquier click en una foto
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('.js-ccpr-lightbox');
+      if (!a) return;
+
+      e.preventDefault();
+      var src = a.getAttribute('data-full') || a.getAttribute('href');
+      var img = a.querySelector('img');
+      openLightbox(src, img ? img.alt : '');
+    });
+
+    // Cerrar por click en backdrop o botón
+    lb.addEventListener('click', function (e) {
+      if (e.target && e.target.hasAttribute('data-ccpr-close')) {
+        closeLightbox();
+      }
+    });
+
+    // Cerrar con ESC
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && lb.classList.contains('is-open')) {
+        closeLightbox();
+      }
+    });
+  })();
 
   var btn = document.getElementById('ccpr_submit');
   if (!btn) return;
@@ -64,67 +126,5 @@ document.addEventListener('DOMContentLoaded', function () {
 
   });
 
-  function showMessage(msg, type) {
-    var box = document.getElementById('ccpr_msg');
-    if (!box) return;
-
-    box.textContent = msg || '';
-    box.classList.remove('is-success', 'is-error', 'is-info');
-
-    if (!msg) {
-      box.style.display = 'none';
-      return;
-    }
-
-    box.style.display = 'block';
-    if (type) box.classList.add('is-' + type);
-  }
-
-  // Lightbox
-  (function () {
-    var lb = document.getElementById('ccpr_lightbox');
-    var lbImg = document.getElementById('ccpr_lightbox_img');
-    if (!lb || !lbImg) return;
-
-    function openLightbox(src, alt) {
-      lbImg.src = src;
-      lbImg.alt = alt || '';
-      lb.classList.add('is-open');
-      lb.setAttribute('aria-hidden', 'false');
-      document.documentElement.style.overflow = 'hidden';
-    }
-
-    function closeLightbox() {
-      lb.classList.remove('is-open');
-      lb.setAttribute('aria-hidden', 'true');
-      lbImg.src = '';
-      document.documentElement.style.overflow = '';
-    }
-
-    // Delegación: cualquier click en una foto
-    document.addEventListener('click', function (e) {
-      var a = e.target.closest && e.target.closest('.js-ccpr-lightbox');
-      if (!a) return;
-
-      e.preventDefault();
-      var src = a.getAttribute('data-full') || a.getAttribute('href');
-      var img = a.querySelector('img');
-      openLightbox(src, img ? img.alt : '');
-    });
-
-    // Cerrar por click en backdrop o botón
-    lb.addEventListener('click', function (e) {
-      if (e.target && e.target.hasAttribute('data-ccpr-close')) {
-        closeLightbox();
-      }
-    });
-
-    // Cerrar con ESC
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && lb.classList.contains('is-open')) {
-        closeLightbox();
-      }
-    });
-  })();
 
 });
