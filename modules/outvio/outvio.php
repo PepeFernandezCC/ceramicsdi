@@ -1077,8 +1077,13 @@ class Outvio extends Module
             $discountedPrice = null;
         }
         $product_name = (string)$p->name;
+        $product_weight = (float)Tools::ps_round($product['product_weight'], 2);
+        $product_description = $this->getProductDescription($p->id, $id_lang);
         if ((string)$product['product_reference'] == 'PPWF'){
+            $paypal_weight = 1/100;
             $product_name = 'Recargo Paypal';
+            $product_weight = (float)Tools::ps_round($paypal_weight, 2);
+            $product_description = 'Paypal Tax';
         }
 
         return array(
@@ -1092,17 +1097,16 @@ class Outvio extends Module
             "barcode" => $this->getBarcode($p->id, $product['product_attribute_id'], $product['ean13']),
             "locationInWarehouse" => $this->getLocation($p->id, $product['product_attribute_id'], $product['location']),
             "sku" => (string)$product['product_reference'],
-            //"variant" => $this->getProductVariantName($p->id, $product['product_attribute_id'], $id_lang),
             "variant" => $product_name,
             "hsCode" => $this->getHSCode($p->id, $id_lang),
-            "weight" => (float)Tools::ps_round($product['product_weight'], 2),
+            "weight" => $product_weight,
             "pictureUrl" => ($product['image']
                 ? is_object($product['image']) ?
                     $base_dir__ssl . 'img/p/' . $product['image']->getExistingImgPath() . '.' . $product['image']->image_format
                     : $product['image']
                 : $base_dir__ssl . 'img/p/' . $this->context->language->iso_code . '.jpg'),
             "tags" => $this->getProductOutvioTags($p->id),
-            "description" => $this->getProductDescription($p->id, $id_lang),
+            "description" => $product_description,
             "no_return" => $this->getProductReturnable($p->id, $id_lang)
         );
     }
