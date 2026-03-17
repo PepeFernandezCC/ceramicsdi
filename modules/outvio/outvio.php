@@ -906,8 +906,8 @@ class Outvio extends Module
 //	      var_dump('Test', $carrier, '------------------------', $order); exit(0);
         $order_carrier = new OrderCarrier((int)$order->getIdOrderCarrier());
         $total_products_price = Tools::ps_round($order->total_paid_tax_incl, 2);
-        if (($order_carrier->carrier_name == 'Correos' || $order_carrier->carrier_name == 'Internal Postal Service') && $total_products_price == 0 ) {
-            $total_products_price = 1;
+        if (($order_carrier->carrier_name == 'Correos' || $order_carrier->carrier_name == 'International Postal Service') && $total_products_price < 1 ) {
+            $total_products_price =  Tools::ps_round(1, 2);
         }
         $result = array(
             'id' => (int)$order->id,
@@ -1073,6 +1073,7 @@ class Outvio extends Module
         $price = (float)Tools::ps_round((float)$product['product_price_wt'], 2);
         $discountedPrice = (float)Tools::ps_round($product['unit_price_tax_incl'], 2);
         $discountedPrice = $discountedPrice < $price ? $discountedPrice : '';
+        $hsCode = $this->getHSCode($p->id, $id_lang);
         if(empty($discountedPrice)){
             $discountedPrice = null;
         }
@@ -1084,6 +1085,7 @@ class Outvio extends Module
             $product_name = 'Recargo Paypal';
             $product_weight = (float)Tools::ps_round($paypal_weight, 2);
             $product_description = 'Paypal Tax';
+            $hsCode = 'PP102030';
         }
 
         return array(
@@ -1098,7 +1100,7 @@ class Outvio extends Module
             "locationInWarehouse" => $this->getLocation($p->id, $product['product_attribute_id'], $product['location']),
             "sku" => (string)$product['product_reference'],
             "variant" => $product_name,
-            "hsCode" => $this->getHSCode($p->id, $id_lang),
+            "hsCode" => $hsCode,
             "weight" => $product_weight,
             "pictureUrl" => ($product['image']
                 ? is_object($product['image']) ?
