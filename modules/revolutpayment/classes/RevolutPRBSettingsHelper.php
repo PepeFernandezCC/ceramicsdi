@@ -56,11 +56,8 @@ class RevolutPRBSettingsHelper
         foreach (array_keys($form_values) as $key) {
             $value = Tools::getValue($key);
             if ($key == 'REVOLUT_PRB_LOCATIONS') {
-                if (empty($value)) {
-                    $value = [];
-                }
-
-                $value = implode(',', $value);
+                $value = (array) Tools::getValue($key);
+                $value = implode(',', array_filter($value));
                 Configuration::updateValue('REVOLUT_PRB_LOCATION_VALUES', $value);
                 continue;
             }
