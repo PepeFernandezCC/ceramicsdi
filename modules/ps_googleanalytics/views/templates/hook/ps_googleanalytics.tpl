@@ -16,7 +16,7 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  * International Registered Trademark & Property of PrestaShop SA
  *}
-{*
+
 {if $isV4Enabled}
   <script async src="https://www.googletagmanager.com/gtag/js?id={$gaAccountId|escape:'htmlall':'UTF-8'}"></script>
   <script>
@@ -70,4 +70,4 @@
     ga('require', 'ec');
   </script>
 {/if}
-*}
+

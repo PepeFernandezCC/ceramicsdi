@@ -1071,6 +1071,10 @@ class Outvio extends Module
     {
         $p = new Product($product['product_id'], false, $id_lang);
         $price = (float)Tools::ps_round((float)$product['product_price_wt'], 2);
+        if($price < 1){
+            $centimo = 1/100;
+            $price = (float)Tools::ps_round((float)$centimo, 2);
+        }
         $discountedPrice = (float)Tools::ps_round($product['unit_price_tax_incl'], 2);
         $discountedPrice = $discountedPrice < $price ? $discountedPrice : '';
         $hsCode = $this->getHSCode($p->id, $id_lang);
@@ -1085,7 +1089,7 @@ class Outvio extends Module
             $product_name = 'Recargo Paypal';
             $product_weight = (float)Tools::ps_round($paypal_weight, 2);
             $product_description = 'Paypal Tax';
-            $hsCode = 'PP102030';
+            $hsCode = 'HS 10.20.30';
         }
 
         return array(
@@ -1120,6 +1124,7 @@ class Outvio extends Module
      */
     private function getHSCode($id_product, $id_lang)
     {
+        $hsCode = '';
         $res = Db::getInstance()->executeS("SELECT DISTINCT t.name FROM " . _DB_PREFIX_ . "product_tag AS pt
             LEFT JOIN " . _DB_PREFIX_ . "tag AS t ON (t.id_tag=pt.id_tag AND t.id_lang=" . (int)$id_lang . ")
             WHERE (t.name LIKE 'HS %' OR t.name LIKE 'HS%') AND pt.id_product=" . (int)$id_product .
@@ -1128,7 +1133,10 @@ class Outvio extends Module
         foreach ($res as $row) {
             $codes[] = $row['name'];
         }
-        return isset($codes[0]) ? $codes[0] : '';
+        if (isset($codes[0])) {
+            $hsCode = preg_replace('/^hs\s?/i', '', $codes[0]);
+        }
+        return $hsCode;
     }
 
     /**
