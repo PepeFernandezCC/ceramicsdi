@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<phpunit
+	backupGlobals="false"
+	colors="true"
+	convertErrorsToExceptions="false"
+	convertNoticesToExceptions="true"
+	convertWarningsToExceptions="true"
+	>
+	<testsuites>
+		<testsuite name="RevolutPaymentGateway">
+			<directory prefix="Test" suffix=".php">./tests</directory>
+		</testsuite>
+	</testsuites>
+</phpunit>

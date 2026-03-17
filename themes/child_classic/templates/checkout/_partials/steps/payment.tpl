@@ -27,19 +27,20 @@
     </div>
 
     <div class="payment-options {if $is_free}hidden-xs-up{/if}">
+
         {foreach from=$payment_options item="module_options"}
             {foreach from=$module_options item="option"}
                 <div>
                     <div id="{$option.id}-container" class="payment-option clearfix">
                         {* This is the way an option should be selected when Javascript is enabled *}
                         <span class="custom-radio float-xs-left">
-              <input
-                      class="ps-shown-by-js {if $option.binary} binary {/if}"
-                      id="{$option.id}"
-                      data-module-name="{$option.module_name}"
-                      name="payment-option"
-                      type="radio"
-                      required
+                        <input
+                            class="ps-shown-by-js {if $option.binary} binary {/if}"
+                            id="{$option.id}"
+                            data-module-name="{$option.module_name}"
+                            name="payment-option"
+                            type="radio"
+                            required
                 {if ($selected_payment_option == $option.id || $is_free) || ($payment_options|@count === 1 && $module_options|@count === 1)} checked {/if}
               >
               <span></span>
@@ -97,8 +98,6 @@
             {foreachelse}
             <p class="alert alert-danger">{l s='Unfortunately, there are no payment method available.' d='Shop.Theme.Checkout'}</p>
         {/foreach}
-
-
 
     </div>
 
