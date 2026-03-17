@@ -61,7 +61,9 @@
     "aggregateRating": {
       "@type": "AggregateRating",
       "ratingValue": "{$ratingValue|round:1|escape:'html':'UTF-8'}",
-      "reviewCount": "{$ratingReviewCount|escape:'html':'UTF-8'}"
+      "reviewCount": "{$ratingReviewCount|escape:'html':'UTF-8'}",
+      "bestRating": "5",
+      "worstRating": "1"
     }
     {/if}
     {if $hasWeight},

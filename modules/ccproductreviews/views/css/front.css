@@ -132,6 +132,18 @@
   display:none;
 }
 
+.ccpr-form.is-submitted .ccpr-form__content{
+  display:none;
+}
+
+.ccpr-form.is-submitted .ccpr-msg{
+  display:block;
+}
+
+#ccpr_form_card.is-submitted .ccpr-card__body{
+  display:none !important;
+}
+
 .ccpr-msg.is-success,
 .ccpr-msg.is-error,
 .ccpr-msg.is-info{
@@ -443,4 +455,66 @@
 .ccpr-avg__count{
   font-size:13px;
   color:#666;
+}
+/* Accordion (details/summary) */
+.ccpr-accordion{
+  overflow:hidden;
+  margin:14px 0;
+}
+
+.ccpr-accordion__summary{
+  list-style:none;
+  cursor:pointer;
+}
+
+.ccpr-accordion__summary::-webkit-details-marker{ display:none; }
+
+.ccpr-accordion__summary .ccpr-summary{
+  margin:0;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.ccpr-accordion__cta{
+  font-size:16px;
+  color:#000000;
+  text-decoration:underline;
+  display:inline-flex;
+  align-items:center;
+}
+
+.ccpr-accordion__cta::after{
+  content:"▾";
+  text-decoration:none;
+}
+
+.ccpr-accordion[open] .ccpr-accordion__cta::after{
+  content:"▴";
+}
+
+.ccpr-accordion__content{
+  padding:16px;
+}
+
+.ccpr-accordion__content .ccpr-list{
+  margin-top:0;
+}
+
+.ccpr-form.is-hidden{
+  display:none;
+}
+
+@media (max-width: 769px) {
+
+  .ccpr-review-container {
+    padding: 15px;
+    margin-bottom: 50px;
+  }
+
+  .ccpr-upload {
+    flex-direction: column;
+  }
+
 }

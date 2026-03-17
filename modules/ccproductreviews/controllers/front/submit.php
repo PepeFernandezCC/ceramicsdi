@@ -6,7 +6,7 @@ class CcProductReviewsSubmitModuleFrontController extends ModuleFrontController
         header('Content-Type: application/json');
 
         if (!$this->context->customer->isLogged()) {
-            die(json_encode(['ok'=>false,'error'=>'Debes iniciar sesión.']));
+            $this->jsonResponse(['ok'=>false,'error'=>$this->module->l('Debes iniciar sesión.', 'submit')]);
         }
 
         $idProduct = (int)Tools::getValue('id_product');
@@ -14,15 +14,16 @@ class CcProductReviewsSubmitModuleFrontController extends ModuleFrontController
         $comment = trim((string)Tools::getValue('comment'));
 
         if ($idProduct <= 0 || $rating < 1 || $rating > 5) {
-            die(json_encode(['ok'=>false,'error'=>'Datos inválidos.']));
+            $this->jsonResponse(['ok'=>false,'error'=>$this->module->l('Datos inválidos.', 'submit')]);
         }
 
         require_once _PS_MODULE_DIR_.$this->module->name.'/classes/Review.php';
 
         $idCustomer = (int)$this->context->customer->id;
-
+        
+        //cambiar negación para poder hacer el submit
         if (!Review::customerCanReview($idCustomer, $idProduct)) {
-            die(json_encode(['ok'=>false,'error'=>'Solo puedes reseñar si has recibido este producto.']));
+            $this->jsonResponse(['ok'=>false,'error'=>$this->module->l('Solo puedes reseñar si has recibido este producto.', 'submit')]);
         }
         
         // Guardar reseña
@@ -44,7 +45,7 @@ class CcProductReviewsSubmitModuleFrontController extends ModuleFrontController
         if ($files && is_array($files['name'])) {
             $count = count($files['name']);
             if ($count > 3) {
-                die(json_encode(['ok'=>false,'error'=>'Máximo 3 fotos.']));
+                $this->jsonResponse(['ok'=>false,'error'=>$this->module->l('Máximo 3 fotos.', 'submit')]);
             }
 
             $dir = _PS_IMG_DIR_.'ccproductreviews/uploads/'.$idReview.'/';
@@ -89,12 +90,19 @@ class CcProductReviewsSubmitModuleFrontController extends ModuleFrontController
             }
         }
 
-        die(json_encode(['ok'=>true,'message'=>'¡Gracias! Tu reseña queda pendiente de revisión.']));
+        $this->jsonResponse(['ok'=>true,'message'=>$this->module->l('¡Gracias! Tu reseña queda pendiente de revisión.', 'submit')]);
     }
 
     private function createThumb($sourcePath, $destPath, $maxW = 420, $maxH = 420)
     {
 
         return ImageManager::resize($sourcePath, $destPath, (int)$maxW, (int)$maxH);
+    }
+
+    private function jsonResponse(array $payload)
+    {
+        header('Content-Type: application/json; charset=utf-8');
+        header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+        die(json_encode($payload));
     }
 }

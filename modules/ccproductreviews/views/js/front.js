@@ -81,50 +81,60 @@ document.addEventListener('DOMContentLoaded', function () {
   var maxFiles  = parseInt(maxFilesEl ? maxFilesEl.value : '3', 10) || 3;
   var token     = tokenEl ? tokenEl.value : '';
 
-  btn.addEventListener('click', function () {
+    btn.addEventListener('click', function () {
 
-    showMessage('', '');
+      showMessage('', '');
 
-    var fd = new FormData();
-    fd.append('id_product', idProduct);
+      var fd = new FormData();
+      fd.append('id_product', idProduct);
 
-    // rating radios (estrellas)
-    var ratingEl = document.querySelector('input[name="ccpr_rating"]:checked');
-    fd.append('rating', ratingEl ? ratingEl.value : '1');
+      // rating radios (estrellas)
+      var ratingEl = document.querySelector('input[name="ccpr_rating"]:checked');
+      fd.append('rating', ratingEl ? ratingEl.value : '1');
 
-    // comment
-    var commentEl = document.querySelector('[name=ccpr_comment]');
-    fd.append('comment', commentEl ? commentEl.value : '');
+      // comment
+      var commentEl = document.querySelector('[name=ccpr_comment]');
+      fd.append('comment', commentEl ? commentEl.value : '');
 
-    // token
-    if (token) fd.append('token', token);
+      // token
+      if (token) fd.append('token', token);
 
-    // photos
-    var input = document.querySelector('[name=ccpr_photos]');
-    var files = input ? input.files : null;
+      // photos
+      var input = document.querySelector('[name=ccpr_photos]');
+      var files = input ? input.files : null;
 
-    if (files && files.length > maxFiles) {
-      showMessage('Máximo ' + maxFiles + ' fotos.', 'error');
-      return;
-    }
-
-    if (files) {
-      for (var i = 0; i < files.length; i++) {
-        fd.append('photos[]', files[i]);
+      if (files && files.length > maxFiles) {
+        showMessage('Máximo ' + maxFiles + ' fotos.', 'error');
+        return;
       }
-    }
 
-    fetch(submitUrl, { method: 'POST', body: fd })
-      .then(function (r) { return r.json(); })
-      .then(function (json) {
-        if (json && json.ok) showMessage(json.message || 'Reseña enviada.', 'success');
-        else showMessage((json && json.error) ? json.error : 'Error enviando reseña.', 'error');
-      })
-      .catch(function () {
-        showMessage('Error enviando reseña.', 'error');
-      });
+      if (files) {
+        for (var i = 0; i < files.length; i++) {
+          fd.append('photos[]', files[i]);
+        }
+      }
 
-  });
+      fetch(submitUrl, { method: 'POST', body: fd })
+        .then(function (r) { return r.json(); })
+        .then(function (json) {
+
+        if (json && json.ok) {
+          showMessage(json.message || 'Reseña enviada.', 'success');
+
+          var formCard = document.getElementById('ccpr_form_card');
+          if (formCard) {
+            formCard.classList.add('is-submitted');
+          }
+        } else {
+          showMessage((json && json.error) ? json.error : 'Error enviando reseña.', 'error');
+        }
+
+        })
+        .catch(function () {
+          showMessage('Error enviando reseña.', 'error');
+        });
+
+    });
 
 
 });

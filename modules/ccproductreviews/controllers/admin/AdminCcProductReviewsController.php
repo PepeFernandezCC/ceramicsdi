@@ -191,6 +191,10 @@ class AdminCcProductReviewsController extends ModuleAdminController
             return parent::renderView();
         }
 
+        if ((int)Tools::getValue('ccpr_mail_sent')) {
+            $this->confirmations[] = $this->l('Email Enviado correctamente.');
+        }
+
         // ✅ Nombre de producto sin SQL manual
         $productName = Product::getProductName((int)$review->id_product, null, (int)$this->context->language->id);
         if (!$productName) {
@@ -274,7 +278,7 @@ class AdminCcProductReviewsController extends ModuleAdminController
     private function processSendEmailFromView()
     {
         $idReview = (int)Tools::getValue($this->identifier);
-        $message  = trim((string)Tools::getValue('product_review_email_message'));
+        $message  = trim((string)Tools::getValue('ccpr_email_message'));
 
         if ($idReview <= 0) {
             $this->errors[] = 'Invalid review ID.';
@@ -350,7 +354,7 @@ class AdminCcProductReviewsController extends ModuleAdminController
         }
 
         Tools::redirectAdmin(
-            self::$currentIndex.'&token='.$this->token.'&view'.$this->table.'=&'.$this->identifier.'='.(int)$idReview.'&conf=1'
+            self::$currentIndex.'&token='.$this->token.'&view'.$this->table.'=&'.$this->identifier.'='.(int)$idReview.'&ccpr_mail_sent=1'
         );
     }
 

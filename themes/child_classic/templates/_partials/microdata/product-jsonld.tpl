@@ -48,6 +48,8 @@
 
 {assign var=productColor value=Product::getProductAttribute($product.id, 46)}
 {assign var=productMaterial value=Product::getProductAttribute($product.id, 45)}
+{assign var=ccpr value=Product::getProductRating($product.id)}
+
 <script type="application/ld+json">
   {
     "@context": "https://schema.org/",
@@ -71,26 +73,42 @@
       "name": "{if $product_manufacturer->name}{$product_manufacturer->name|escape:'html':'UTF-8'}{else}{$shop.name}{/if}"
     }
     {/if}
-    {if $language.id == 1},
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.9",
-      "reviewCount": "68"
-    }
-    {/if}
-    {if $language.id == 2},
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.8",
-      "reviewCount": "29"
-    }
-    {/if}
-    {if $language.id == 3},
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "5",
-      "reviewCount": "2"
-    }
+    {if isset($ccpr.ccpr_micro_count) && $ccpr.ccpr_micro_count|intval > 0},
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "{$ccpr.ccpr_micro_avg|floatval}",
+        "reviewCount": "{$ccpr.ccpr_micro_count|intval}",
+        "bestRating": "5",
+        "worstRating": "1"
+      }
+    {else}
+      {if $language.id == 1},
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "reviewCount": "68",
+        "bestRating": "5",
+        "worstRating": "1"
+      }
+      {/if}
+      {if $language.id == 2},
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "reviewCount": "29",
+        "bestRating": "5",
+        "worstRating": "1"
+      }
+      {/if}
+      {if $language.id == 3},
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "5",
+        "reviewCount": "2",
+        "bestRating": "5",
+        "worstRating": "1"
+      }
+      {/if}
     {/if}
     {if $hasWeight},
     "weight": {

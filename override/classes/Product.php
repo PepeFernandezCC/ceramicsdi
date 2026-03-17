@@ -340,11 +340,20 @@ class Product extends ProductCore {
     }
 
     private static function getTipologyString(bool $pieceTypology) {
+        $language = (int) Context::getContext()->language->id;
+        $pieceTranslation = [
+            1 => '/Pieza',
+            2 => '/Piece',
+            3 => '/Piece',
+            4 => '/Stück',
+            5 => '/Peça',
+            6 => '/Stuk'
+        ];
 
         $tipologia = '/m<sup>2</sup>';
 
         if ($pieceTypology) {
-            $tipologia = '/piece';
+            $tipologia = $pieceTranslation[$language];
         }
 
         return $tipologia;
@@ -793,6 +802,38 @@ class Product extends ProductCore {
 
         return self::getM2CajaValue($productId) * $quantity . ' m²';
 
+    }
+
+    public static function getProductRating($idProduct)
+    {
+        $avg = self::getAverageByProduct($idProduct);
+        $count = self::getCountByProduct($idProduct);
+
+        return [
+            'ccpr_micro_avg' => $avg,
+            'ccpr_micro_count' => $count,
+        ];
+    }
+
+    private static function getAverageByProduct($idProduct)
+    {
+        $sql = '
+            SELECT AVG(rating)
+            FROM `'._DB_PREFIX_.'product_review`
+            WHERE id_product='.(int)$idProduct.' AND active=1
+        ';
+        $avg = (float)Db::getInstance()->getValue($sql);
+        return round($avg, 1);
+    }
+
+    private static function getCountByProduct($idProduct)
+    {
+        $sql = '
+            SELECT COUNT(*)
+            FROM `'._DB_PREFIX_.'product_review`
+            WHERE id_product='.(int)$idProduct.' AND active=1
+        ';
+        return (int)Db::getInstance()->getValue($sql);
     }
 
 
