@@ -11,7 +11,14 @@ $link = new Link();
 $db = Db::getInstance();
 
 // Consulta SQL
-$sql = 'SELECT id_product, id_lang, description, meta_title, name FROM ps_product_lang';
+//$sql = 'SELECT id_product, id_lang, description, meta_title, name FROM ps_product_lang';
+$sql = 'SELECT DISTINCT pl.id_product, pl.id_lang, pl.description, pl.meta_title, pl.name
+            FROM ps_product_lang pl
+            JOIN ps_product p ON pl.id_product = p.id_product
+            JOIN ps_category_product cp ON pl.id_product = cp.id_product
+            WHERE pl.id_lang = 1
+            AND p.active = 1
+            AND cp.id_category != 1751';
 $results = $db->executeS($sql);
 
 // Mostrar resultados en tabla HTML
