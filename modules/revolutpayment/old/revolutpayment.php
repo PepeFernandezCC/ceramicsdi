@@ -973,8 +973,7 @@ class RevolutPayment extends PaymentModule
 
         if ($this->context->controller->php_self == 'order' || Tools::getValue('module') == 'revolutpayment') {
             $logoPath = _MODULE_DIR_ . $this->name . '/views/img/';
-            //$revpay_logo = $logoPath . 'revolut.svg';
-             $revpay_logo = $logoPath . 'revolut_logo.png';
+            $revpay_logo = $logoPath . 'revolut.svg';
             $id_cart = $this->context->cart->id;
             $revolut_order = $this->getRevolutOrderByIdCart($id_cart);
             $public_id = isset($revolut_order['public_id']) ? $revolut_order['public_id'] : null;
@@ -1446,8 +1445,7 @@ class RevolutPayment extends PaymentModule
         $revolutPayPaymentOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
         $revolutPayPaymentOption->setModuleName($this->revolutpay_tittle)
             ->setCallToActionText($this->revolutpay_tittle)
-            //->setLogo(_MODULE_DIR_ . $this->name . '/views/img/revolut.svg')
-            ->setLogo(_MODULE_DIR_ . $this->name . '/views/img/revolut_logo.png')
+            ->setLogo(_MODULE_DIR_ . $this->name . '/views/img/revolut.svg')
             ->setAction($formActionValidation)
             ->setForm($revolutPayPaymentForm);
 

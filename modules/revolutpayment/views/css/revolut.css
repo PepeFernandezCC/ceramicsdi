@@ -109,7 +109,7 @@
 .mastercard-logo,
 .amex-logo {
   margin-left: 5px;
-  height: 24px;
+  /*height: 24px;*/
   width: 30px;
 }
 @media (max-width: 1199px) {
