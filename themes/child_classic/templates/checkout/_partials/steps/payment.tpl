@@ -58,6 +58,7 @@
 
                         <label for="{$option.id}" style="text-align: left">
                             <span>{$option.call_to_action_text nofilter}</span>
+                            <div>
                             {if $option.logo}
                                 <img src="{$option.logo}" loading="lazy" alt="logo number {$option.id}">
                             {elseif $option.id == "payment-option-1"}
@@ -65,6 +66,7 @@
                             {elseif $option.id == "payment-option-3"}
                                 <img src="/themes/child_classic/assets/img/web/icons/cards-icon-visa-mc.png" loading="lazy" alt="logo number {$option.id}">
                             {/if}
+                            </div>
                         </label>
                         {if $option.additionalInformation}
                             <div

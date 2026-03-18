@@ -60,9 +60,9 @@
                             {if $option.logo}
                                 <img src="{$option.logo}" loading="lazy" alt="logo number {$option.id}">
                             {elseif $option.id == "payment-option-1"}
-                                <img src="/modules/redsyspur/assets/bank_transfer_icon.png" style="width:25px" loading="lazy" alt="logo number {$option.id}">
+                                <img src="/themes/child_classic/assets/img/web/icons/bank_transfer_icon.png" style="width:25px" loading="lazy" alt="logo number {$option.id}">
                             {elseif $option.id == "payment-option-3"}
-                                <img src="/modules/redsyspur/assets/cards-icon-visa-mc.png" loading="lazy" alt="logo number {$option.id}">
+                                <img src="/themes/child_classic/assets/img/web/icons/cards-icon-visa-mc.png" loading="lazy" alt="logo number {$option.id}">
                             {/if}
                         </label>
                         {if $option.additionalInformation}
