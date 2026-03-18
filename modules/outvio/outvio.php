@@ -1089,7 +1089,7 @@ class Outvio extends Module
             $product_name = 'Recargo Paypal';
             $product_weight = (float)Tools::ps_round($paypal_weight, 2);
             $product_description = 'Paypal Tax';
-            $hsCode = 'HS 10.20.30';
+            $hsCode = '68.02.10';
         }
 
         return array(
