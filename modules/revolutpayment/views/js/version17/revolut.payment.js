@@ -70,10 +70,11 @@ $(document).ready(function () {
     $(`img[src="${logo_path}visa-logo.svg"]`)
       .after(`${visa_logo}${mastercard_logo}`)
       .remove()
+    /*
     $(`img[src="${revpay_logo}"]`)
       .after(`${visa_logo}${mastercard_logo}`)
       .css({ 'margin-left': '5px', height: '24px', width: '30px' })
-
+    */
     if (amex_availability) {
       $(`img[src="${logo_path}master-card-logo.svg"]`).after(`${amex_logo}`)
     }

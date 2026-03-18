@@ -140,8 +140,8 @@ jQuery(function ($) {
     mountCardGatewaySignUpBanner();
 
     if (revolutPayOption) {
-      mountRevolutBenefitsBanner();
-      injectRevolutPayInformationalIcon();
+      //mountRevolutBenefitsBanner();
+      //injectRevolutPayInformationalIcon();
       mountRevolutPayInformationalIcon();
     }
   }

@@ -16,5 +16,4 @@
  * @copyright Since 2020 Revolut
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  *}
-
-<div id="revolut-benefits-banner"></div>
+{* <div id="revolut-benefits-banner"></div> *}

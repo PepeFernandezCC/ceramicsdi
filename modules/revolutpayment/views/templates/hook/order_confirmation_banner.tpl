@@ -18,7 +18,7 @@
  *}
 
 
-
+{*
 <div id="OrderConfirmationBanner" 
 
 data-banner-public-token={$merchant_public_key|escape:'htmlall':'UTF-8'}
@@ -31,3 +31,4 @@ data-banner-customer-email="{$customer_email|escape:'htmlall':'UTF-8'}"
 data-banner-customer-phone="{$customer_phone|escape:'htmlall':'UTF-8'}">
 
 </div>
+*}

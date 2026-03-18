@@ -61,10 +61,13 @@
 		{if $cardholderNameFieldEnabled}
 			<div id="CARD_HOLDER_FILED_CONTAINER" class="form-group"></div>
 		{/if}
-
+        
+        {*
         {if $is_revolut_signup_banner_enabled }
         <div id="revolut-gateway-signup-banner" data-banner-order-token="{$public_id|escape:'htmlall':'UTF-8'}"></div>
         {/if}
+        *}
+
         <input type="hidden" name="email" value="{$customer_email|escape:'htmlall':'UTF-8'}"/>
         <input type="hidden" name="customer_name" value="{$customer_name|escape:'htmlall':'UTF-8'}"/>
         <input type="hidden" name="country" value="{$country->iso_code|escape:'htmlall':'UTF-8'}"/>
