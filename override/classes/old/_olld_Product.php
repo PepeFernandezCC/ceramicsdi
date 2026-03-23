@@ -340,11 +340,20 @@ class Product extends ProductCore {
     }
 
     private static function getTipologyString(bool $pieceTypology) {
+        $language = (int) Context::getContext()->language->id;
+        $pieceTranslation = [
+            1 => '/Pieza',
+            2 => '/Piece',
+            3 => '/Piece',
+            4 => '/Stück',
+            5 => '/Peça',
+            6 => '/Stuk'
+        ];
 
         $tipologia = '/m<sup>2</sup>';
 
         if ($pieceTypology) {
-            $tipologia = '/piece';
+            $tipologia = $pieceTranslation[$language];
         }
 
         return $tipologia;
@@ -483,47 +492,89 @@ class Product extends ProductCore {
         return $price;
     }
 
-    public static function calculateCustomPrice($productId, $iva, $id_lang = 1): array
+    public static function calculateCustomPrice($productId, $customer = null, $id_lang = null): array
     {
-        
+        $id_lang = $id_lang ? $id_lang : (int) Context::getContext()->language->id;
         $product = new Product($productId);
         $price = (float) $product->price;
+        $tipology = '';
+        $iva = true;
+        
+        if ($customer != null) {
+            if (!Customer::getCustomerShowTax($customer)) {
+                $iva = false;
+            }
+        }
 
         if ($iva) {
             $price = self::getDefaultTaxByLang($id_lang, $price);
         }
 
         $discountPrice = self::getPriceWithDiscount($productId, $price);
-        $price = $discountPrice['discount_price'];
+        $original_price = $discountPrice['price']; // precio sin descuento
+        $price = $discountPrice['discount_price']; //precio con descuento (el mismo si no hay descuento)
+        $discount = $discountPrice['discount'];     //porcentaje de descuento
 
         // Calcular precio
-        if (self::getIfNormalSell($productId)) {
-            
-            return [
-                'price' => number_format($price, 2, ',', ''),
-                'original_price' => number_format($discountPrice['price'], 2, ',', ''),
-                'discount' => $discountPrice['discount'],
-                'tipologia' => ''
-            ];
+        if (!self::getIfNormalSell($productId)) {
+
+            if (self::isLinealProduct($productId)){
+                $long = self::getLinealValue($productId);
+                $price = ($price / $long) * 100;
+                $original_price = ($original_price/$long)*100;
+                $tipology = '/m';          
+            }else{
+                $pieceTypology = self::getTipology($productId);
+                $tipology = self::getTipologyString($pieceTypology);
+                if (!$pieceTypology) {
+                    $m2Caja = self::getM2CajaValue($productId);
+                    $price = $price / $m2Caja;
+                    $original_price = $original_price/$m2Caja;
+                } 
+            }
         } 
-        
-        $pieceTypology = self::getTipology($productId);
-       
-        if (!$pieceTypology) {
-            $m2Caja = self::getM2CajaValue($productId);
-            $price = $price / $m2Caja;
-        } 
-            
+
         return [
             'price' => number_format($price, 2, ',', ''),
-            'original_price' => number_format($discountPrice['price'], 2, ',', ''),
-            'discount' => $discountPrice['discount'],
-            'tipologia' => self::getTipologyString($pieceTypology)
+            'original_price' => number_format($original_price, 2, ',', ''),
+            'discount' => $discount,
+            'tipologia' => $tipology
         ];
         
     }
 
-        public static function getProductUnit($productId) {
+
+    public static function isLinealProduct($productId)
+    {
+        $sql = 'SELECT COUNT(*) 
+                FROM '._DB_PREFIX_.'feature_product 
+                WHERE id_feature = 82 
+                AND id_product = '.(int)$productId;
+
+        return (bool)Db::getInstance()->getValue($sql);
+    }
+
+    public static function getLinealValue($productId) {
+
+        if (!self::isLinealProduct($productId)) {
+            return false;
+        }
+        
+        $idLang = (int)Context::getContext()->language->id;
+        
+        $sql = 'SELECT fvl.value
+                FROM '._DB_PREFIX_.'feature_product fp
+                INNER JOIN '._DB_PREFIX_.'feature_value_lang fvl 
+                    ON (fp.id_feature_value = fvl.id_feature_value)
+                WHERE fp.id_feature = 82
+                AND fp.id_product = '.(int)$productId.'
+                AND fvl.id_lang = '.(int)$idLang;
+
+        return Db::getInstance()->getValue($sql);
+
+    }
+
+    public static function getProductUnit($productId) {
 
         if (self::getIfNormalSell($productId)) {
             return 'UNIT';
@@ -751,6 +802,38 @@ class Product extends ProductCore {
 
         return self::getM2CajaValue($productId) * $quantity . ' m²';
 
+    }
+
+    public static function getProductRating($idProduct)
+    {
+        $avg = self::getAverageByProduct($idProduct);
+        $count = self::getCountByProduct($idProduct);
+
+        return [
+            'ccpr_micro_avg' => $avg,
+            'ccpr_micro_count' => $count,
+        ];
+    }
+
+    private static function getAverageByProduct($idProduct)
+    {
+        $sql = '
+            SELECT AVG(rating)
+            FROM `'._DB_PREFIX_.'product_review`
+            WHERE id_product='.(int)$idProduct.' AND active=1
+        ';
+        $avg = (float)Db::getInstance()->getValue($sql);
+        return round($avg, 1);
+    }
+
+    private static function getCountByProduct($idProduct)
+    {
+        $sql = '
+            SELECT COUNT(*)
+            FROM `'._DB_PREFIX_.'product_review`
+            WHERE id_product='.(int)$idProduct.' AND active=1
+        ';
+        return (int)Db::getInstance()->getValue($sql);
     }
 
 

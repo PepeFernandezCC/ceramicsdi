@@ -1,4 +1,8 @@
 
+<!-- CockieFirst Code -->
+<script src="https://consent.cookiefirst.com/sites/ceramicconnection.com-3b74c651-6ba5-4c11-bf9c-efea4461d982/consent.js"></script>
+<!-- End CookieFirst Code -->
+
 {block name='head_charset'}
     <meta charset="utf-8">
 {/block}
@@ -132,11 +136,3 @@
 {/block}
 
 {block name='hook_extra'}{/block}
-
-
-<!-- CockieFirst Code -->
-<script src="https://consent.cookiefirst.com/sites/ceramicconnection.com-3b74c651-6ba5-4c11-bf9c-efea4461d982/consent.js"></script>
-<!-- End CookieFirst Code -->
-
-
-

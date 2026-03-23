@@ -815,6 +815,28 @@ class Product extends ProductCore {
         ];
     }
 
+    public static function getProductReviews($idProduct)
+    {
+        $query = 'SELECT customer_name, rating, comment, date_add
+                FROM `'._DB_PREFIX_.'product_review`
+                WHERE id_product='.(int)$idProduct.' AND active=1';
+        $reviews = Db::getInstance()->executeS($query);
+
+        $review_array = [];
+
+        foreach ($reviews as $review) {
+            $review_array[] = [
+                'name' => $review['customer_name'],
+                'rating' => $review['rating'],
+                'text' => $review['comment'],
+                'date' => date("Y-m-d", strtotime($review['date_add']))
+            ];
+        }
+
+        return $review_array;
+        
+    }
+
     private static function getAverageByProduct($idProduct)
     {
         $sql = '

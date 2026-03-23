@@ -49,7 +49,7 @@
 {assign var=productColor value=Product::getProductAttribute($product.id, 46)}
 {assign var=productMaterial value=Product::getProductAttribute($product.id, 45)}
 {assign var=ccpr value=Product::getProductRating($product.id)}
-
+{assign var=reviews value=Product::getProductReviews($product.id)}
 <script type="application/ld+json">
   {
     "@context": "https://schema.org/",
@@ -80,7 +80,22 @@
         "reviewCount": "{$ccpr.ccpr_micro_count|intval}",
         "bestRating": "5",
         "worstRating": "1"
-      }
+      },
+      "review": [
+        {foreach from=$reviews item=$review name=reviewLoop}{
+          "@type": "Review",
+          "author": "{$review.name}",
+          "datePublished": "{$review.date}",
+          "reviewBody": "{$review.text}",
+          "reviewRating": {
+            "@type": "Rating",
+            "bestRating": "5",
+            "ratingValue": "{$review.rating}",
+            "worstRating": "1"
+          }
+        }{if not $smarty.foreach.reviewLoop.last},{/if}
+
+      {/foreach}],
     {else}
       {if $language.id == 1},
       "aggregateRating": {
@@ -89,7 +104,7 @@
         "reviewCount": "68",
         "bestRating": "5",
         "worstRating": "1"
-      }
+      },
       {/if}
       {if $language.id == 2},
       "aggregateRating": {
@@ -98,7 +113,7 @@
         "reviewCount": "29",
         "bestRating": "5",
         "worstRating": "1"
-      }
+      },
       {/if}
       {if $language.id == 3},
       "aggregateRating": {
@@ -107,19 +122,19 @@
         "reviewCount": "2",
         "bestRating": "5",
         "worstRating": "1"
-      }
+      },
       {/if}
     {/if}
-    {if $hasWeight},
-    "weight": {
+
+    {if $hasWeight}"weight": {
         "@context": "https://schema.org",
         "@type": "QuantitativeValue",
         "value": "{$product.weight}",
         "unitCode": "{$product.weight_unit}"
-    }
+    },
     {/if}
-    {if $hasOffers},
-    "offers": {
+
+    {if $hasOffers}"offers": {
       "@type": "Offer",
       "priceCurrency": "{$currency.iso_code}",
       "name": "{$product.name|strip_tags:false}",
