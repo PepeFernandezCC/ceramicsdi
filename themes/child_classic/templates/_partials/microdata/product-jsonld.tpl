@@ -71,9 +71,9 @@
     "brand": {
       "@type": "Thing",
       "name": "{if $product_manufacturer->name}{$product_manufacturer->name|escape:'html':'UTF-8'}{else}{$shop.name}{/if}"
-    }
+    },
     {/if}
-    {if isset($ccpr.ccpr_micro_count) && $ccpr.ccpr_micro_count|intval > 0},
+    {if isset($ccpr.ccpr_micro_count) && $ccpr.ccpr_micro_count|intval > 0}
       "aggregateRating": {
         "@type": "AggregateRating",
         "ratingValue": "{$ccpr.ccpr_micro_avg|floatval}",
@@ -115,7 +115,7 @@
         "worstRating": "1"
       },
       {/if}
-      {if $language.id == 3},
+      {if $language.id == 3}
       "aggregateRating": {
         "@type": "AggregateRating",
         "ratingValue": "5",
