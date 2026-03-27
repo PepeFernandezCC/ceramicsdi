@@ -39,9 +39,17 @@
               {if $address.id == $selected}checked{/if}
             >
             <span></span>
+            
           </span>
-          {* <span class="address-alias h4">{$address.alias}</span> *}
-          <div class="address" style="margin-top:-15px">{$address.formatted nofilter}</div>
+          {*<div class="address" style="margin-top:-15px">{$address.formatted nofilter}</div>*}
+          <div class="address" style="margin-top:-15px">
+            {if $type == "invoice" && $address.alias == 'COMPANY'}
+              <div class="company-info"><strong>{$address.company}</strong> - {$address.dni}</div>
+            {else}
+              <div class="customer-info"><strong>{$address.firstname} {$address.lastname}</strong>{if $address.is_invoice != '0'} - {$address.dni}{/if}</div>
+            {/if}
+            <div class="address-info">{$address.address1}, {$address.postcode}, {$address.city}, {$address.state}, {$address.country}</div>
+          </div>
         </label>
       </header>
       <hr>
@@ -50,7 +58,7 @@
           <a
             class="edit-address text-muted"
             data-link-action="edit-address"
-            href="{url entity='order' params=['id_address' => $address.id, 'editAddress' => $type, 'token' => $token]}"
+            href="{url entity='order' params=['id_address' => $address.id, 'editAddress' => $type, 'address_toggle' => $address.is_invoice, 'token' => $token]}"
           >
             <i class="material-icons edit">&#xE254;</i>{l s='Edit' d='Shop.Theme.Actions'}
           </a>

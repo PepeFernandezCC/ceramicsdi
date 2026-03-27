@@ -24,54 +24,58 @@
  *}
 {block name='address_selector_blocks'}
   {foreach $addresses as $address}
-    <article
-      class="js-address-item address-item{if $address.id == $selected} selected{/if}"
-      id="{$name|classname}-address-{$address.id}"
-      data-address="{$address.id}"
-    >
-      <header class="h4">
-        <label class="radio-block">
-          <span class="custom-radio">
-            <input
-              type="radio"
-              name="{$name}"
-              value="{$address.id}"
-              {if $address.id == $selected}checked{/if}
+    {assign var="isValidAddress" value=Address::isValidAddressCard($address, $cart)}
+    {if $isValidAddress}
+      <article
+        class="js-address-item address-item{if $address.id == $selected} selected{/if}"
+        id="{$name|classname}-address-{$address.id}"
+        data-address="{$address.id}"
+        data-valid-address="{$isValidAddress}"
+      >
+        <header class="h4">
+          <label class="radio-block">
+            <span class="custom-radio">
+              <input
+                type="radio"
+                name="{$name}"
+                value="{$address.id}"
+                {if $address.id == $selected}checked{/if}
+              >
+              <span></span>
+              
+            </span>
+            {*<div class="address" style="margin-top:-15px">{$address.formatted nofilter}</div>*}
+            <div class="address" style="margin-top:-15px">
+              {if $type == "invoice" && $address.alias == 'COMPANY'}
+                <div class="company-info"><strong>{$address.company}</strong> - {$address.dni}</div>
+              {else}
+                <div class="customer-info"><strong>{$address.firstname} {$address.lastname}</strong>{if $address.is_invoice != '0'} - {$address.dni}{/if}</div>
+              {/if}
+              <div class="address-info">{$address.address1}, {$address.postcode}, {$address.city}, {$address.state}, {$address.country}</div>
+            </div>
+          </label>
+        </header>
+        <hr>
+        <footer class="address-footer">
+          {if $interactive}
+            <a
+              class="edit-address text-muted"
+              data-link-action="edit-address"
+              href="{url entity='order' params=['id_address' => $address.id, 'editAddress' => $type, 'address_toggle' => $address.is_invoice, 'token' => $token]}"
             >
-            <span></span>
-            
-          </span>
-          {*<div class="address" style="margin-top:-15px">{$address.formatted nofilter}</div>*}
-          <div class="address" style="margin-top:-15px">
-            {if $type == "invoice" && $address.alias == 'COMPANY'}
-              <div class="company-info"><strong>{$address.company}</strong> - {$address.dni}</div>
-            {else}
-              <div class="customer-info"><strong>{$address.firstname} {$address.lastname}</strong>{if $address.is_invoice != '0'} - {$address.dni}{/if}</div>
-            {/if}
-            <div class="address-info">{$address.address1}, {$address.postcode}, {$address.city}, {$address.state}, {$address.country}</div>
-          </div>
-        </label>
-      </header>
-      <hr>
-      <footer class="address-footer">
-        {if $interactive}
-          <a
-            class="edit-address text-muted"
-            data-link-action="edit-address"
-            href="{url entity='order' params=['id_address' => $address.id, 'editAddress' => $type, 'address_toggle' => $address.is_invoice, 'token' => $token]}"
-          >
-            <i class="material-icons edit">&#xE254;</i>{l s='Edit' d='Shop.Theme.Actions'}
-          </a>
-          <a
-            class="delete-address text-muted"
-            data-link-action="delete-address"
-            href="{url entity='order' params=['id_address' => $address.id, 'deleteAddress' => true, 'token' => $token]}"
-          >
-            <i class="material-icons delete">&#xE872;</i>{l s='Delete' d='Shop.Theme.Actions'}
-          </a>
-        {/if}
-      </footer>
-    </article>
+              <i class="material-icons edit">&#xE254;</i>{l s='Edit' d='Shop.Theme.Actions'}
+            </a>
+            <a
+              class="delete-address text-muted"
+              data-link-action="delete-address"
+              href="{url entity='order' params=['id_address' => $address.id, 'deleteAddress' => true, 'token' => $token]}"
+            >
+              <i class="material-icons delete">&#xE872;</i>{l s='Delete' d='Shop.Theme.Actions'}
+            </a>
+          {/if}
+        </footer>
+      </article>
+    {/if}
   {/foreach}
   {if $interactive}
     <p>

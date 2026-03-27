@@ -97,7 +97,7 @@
 
       {/foreach}],
     {else}
-      {if $language.id == 1},
+      {if $language.id == 1}
       "aggregateRating": {
         "@type": "AggregateRating",
         "ratingValue": "4.9",
@@ -106,7 +106,7 @@
         "worstRating": "1"
       },
       {/if}
-      {if $language.id == 2},
+      {if $language.id == 2}
       "aggregateRating": {
         "@type": "AggregateRating",
         "ratingValue": "4.8",

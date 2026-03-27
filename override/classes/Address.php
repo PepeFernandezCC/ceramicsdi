@@ -169,4 +169,20 @@ class Address extends AddressCore
             'error'         => $error
         ];
     }
+
+    public static function isValidAddressCard($address, $cart) {
+        
+        $isInvoice = (int)$address['is_invoice'] !== 0;
+        $isSpanish = (int)$address['id_country'] === 6;
+        $totalNeedsID = $cart['subtotals']['products']['amount'] >= 2200;
+        $hasDni = !empty(trim((string) $address['dni']));
+
+        $requiresForeignID = $isInvoice && !$isSpanish && $totalNeedsID;
+        
+        if(!$requiresForeignID) {
+            return true;
+        }
+
+        return $hasDni;
+    }
 }
