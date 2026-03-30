@@ -1,0 +1,81 @@
+.inspiration-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.inspiration-top-filters {
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+  margin-bottom: 24px;
+}
+
+.filter-group {
+  flex: 1;
+}
+
+.filter-title {
+  margin-bottom: 12px;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.filter-options {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.filter-card {
+  min-width: 100px;
+  min-height: 80px;
+  border: 1px solid #d9d9d9;
+  background: #f3f3f3;
+  cursor: pointer;
+}
+
+.filter-card__label {
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.inspiration-attribute-filters {
+  display: flex;
+  gap: 20px;
+  padding: 14px 0;
+  border-top: 1px solid #222;
+  border-bottom: 1px solid #222;
+  margin-bottom: 20px;
+}
+
+.attribute-filter {
+  background: none;
+  border: 0;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.inspiration-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px;
+}
+
+.inspiration-card__image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.inspiration-more {
+  text-align: center;
+  margin-top: 24px;
+}
+
+.inspiration-more__btn {
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font-size: 12px;
+}

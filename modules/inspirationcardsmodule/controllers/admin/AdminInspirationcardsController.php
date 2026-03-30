@@ -1,0 +1,417 @@
+<?php
+
+class AdminInspirationcardsController extends ModuleAdminController
+{
+    public function __construct()
+    {
+        $this->table = 'inspirationcards';
+        $this->identifier = 'id_inspiration';
+        $this->className = 'InspirationCards';
+        $this->bootstrap = true;
+        $this->lang = true;
+
+        parent::__construct();
+    }
+
+    public function setMedia($isNewTheme = false)
+    {
+        parent::setMedia($isNewTheme);
+
+        $this->addJS($this->module->getPathUri().'views/js/admin.js');
+        $this->addCSS($this->module->getPathUri().'views/css/admin.css');
+
+    }
+
+    public function renderList()
+    {
+        $this->fields_list = [
+            'id_inspiration' => ['title' => 'ID'],
+            'name' => ['title' => 'Nombre'],
+        ];
+
+        $this->_join = 'LEFT JOIN '._DB_PREFIX_.'inspirationcards_lang il 
+            ON (a.id_inspiration = il.id_inspiration AND il.id_lang='.(int)$this->context->language->id.')';
+        $this->_select = 'il.name';
+
+        return parent::renderList();
+    }
+
+    public function renderForm()
+    {
+        $this->fields_form = [
+            'legend' => [
+                'title' => 'Inspiración',
+                'icon' => 'icon-cogs',
+            ],
+            'input' => [
+                [
+                    'type' => 'text',
+                    'label' => 'Nombre',
+                    'name' => 'name',
+                    'required' => true,
+                    'lang' => true,
+                    'form_group_class' => 'ic-row ic-row-name',
+                ],
+                [
+                    'type' => 'file',
+                    'label' => 'Imagen',
+                    'name' => 'image',
+                    'display_image' => true,
+                    'image' => $this->getPreviewImage(),
+                    'form_group_class' => 'ic-row ic-col ic-col-left',
+                ],
+                [
+                    'type' => 'checkbox',
+                    'label' => 'Espacio',
+                    'name' => 'espacio',
+                    'values' => [
+                        'query' => [
+                            ['id' => 13, 'label' => 'Baño'],
+                            ['id' => 12, 'label' => 'Cocina'],
+                            ['id' => 14, 'label' => 'Salón'],
+                            ['id' => 15, 'label' => 'Dormitorio'],
+                            ['id' => 16, 'label' => 'Exterior'],
+                            ['id' => 37, 'label' => 'Piscina'],
+                        ],
+                        'id' => 'id',
+                        'name' => 'label',
+                        
+                    ],
+                    'form_group_class' => 'ic-row ic-col ic-col-right',
+                ],
+                [
+                    'type' => 'checkbox',
+                    'label' => 'Uso',
+                    'name' => 'uso',
+                    'values' => [
+                        'query' => [
+                            ['id' => 1770, 'label' => 'Suelo'],
+                            ['id' => 1771, 'label' => 'Pared'],
+                            ['id' => 9999, 'label' => 'Moodboards'],
+                        ],
+                        'id' => 'id',
+                        'name' => 'label',
+                    ],
+                    'form_group_class' => 'ic-row ic-col ic-col-right ic-col-right-second',
+                ],
+                [
+                    'type' => 'html',
+                    'label' => 'Productos relacionados',
+                    'name' => 'products_block',
+                    'html_content' => $this->renderProductsBlock(),
+                    'form_group_class' => 'ic-row ic-row-products',
+                ],
+                
+                [
+                    'type' => 'html',
+                    'label' => $this->l('Características'),
+                    'name' => 'features_block',
+                    'html_content' => $this->renderFeaturesBlock(),
+                    'form_group_class' => 'ic-row ic-row-features',
+                ],
+            ],
+            'submit' => [
+                'title' => 'Guardar',
+            ],
+            'enctype' => 'multipart/form-data',
+        ];
+
+        return parent::renderForm();
+    }
+
+    public function getFieldsValue($obj)
+    {
+        $fields = parent::getFieldsValue($obj);
+
+        if (!Validate::isLoadedObject($obj)) {
+            return $fields;
+        }
+
+        $categories = Db::getInstance()->executeS('
+            SELECT id_category
+            FROM '._DB_PREFIX_.'inspirationcards_category
+            WHERE id_inspiration = '.(int) $obj->id
+        );
+
+        foreach ($categories as $cat) {
+            $fields['espacio_'.$cat['id_category']] = 1;
+            $fields['uso_'.$cat['id_category']] = 1;
+        }
+
+        return $fields;
+    }
+
+    public function processSave()
+    {
+        $id = (int)Tools::getValue('id_inspiration');
+
+        if ($id > 0 && empty($_FILES['image']['tmp_name'])) {
+            $currentImage = Db::getInstance()->getValue('
+                SELECT image
+                FROM '._DB_PREFIX_.'inspirationcards
+                WHERE id_inspiration = '.(int)$id
+            );
+
+            if ($currentImage) {
+                $_POST['image'] = $currentImage;
+            }
+        }
+
+        parent::processSave();
+
+        $id = (int)$this->object->id;
+
+        if (
+            isset($_FILES['image']) &&
+            isset($_FILES['image']['tmp_name']) &&
+            !empty($_FILES['image']['tmp_name'])
+        ) {
+            $this->saveImageInspiration($id);
+        }
+
+        $this->saveProductInspiration($id);
+        $this->saveFeatureInspiration($id);
+       
+    }
+
+    protected function saveImageInspiration($id) {
+        $uploadDir = _PS_MODULE_DIR_.$this->module->name.'/uploads/';
+
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
+        $destination = $uploadDir.$id.'.jpg';
+
+        if (move_uploaded_file($_FILES['image']['tmp_name'], $destination)) {
+            Db::getInstance()->update(
+                'inspirationcards',
+                ['image' => pSQL($id.'.jpg')],
+                'id_inspiration = '.(int)$id
+            );
+        }
+    }
+
+    protected function saveProductInspiration ($id) {
+
+        // PRODUCTOS RELACIONADOS
+        $productsJson = Tools::getValue('products_json');
+        $products = json_decode($productsJson, true);
+
+        Db::getInstance()->delete('inspirationcards_product', 'id_inspiration = '.(int)$id);
+
+        if (is_array($products)) {
+            $position = 0;
+
+            foreach ($products as $product) {
+                $idProduct = (int)($product['id_product'] ?? 0);
+                if ($idProduct <= 0) {
+                    continue;
+                }
+
+                $position++;
+
+                Db::getInstance()->insert('inspirationcards_product', [
+                    'id_inspiration' => (int)$id,
+                    'id_product' => (int)$idProduct,
+                    'position' => (int)$position,
+                ]);
+            }
+        }
+        
+    }
+
+    protected function saveFeatureInspiration($id) {
+        
+        $featuresJson = Tools::getValue('features_json');
+        $features = json_decode($featuresJson, true);
+
+        Db::getInstance()->delete('inspirationcards_feature', 'id_inspiration = '.(int)$id);
+
+        if (is_array($features)) {
+            $position = 0;
+
+            foreach ($features as $feature) {
+                $idFeature = (int)($feature['id_feature'] ?? 0);
+                $idFeatureValue = (int)($feature['id_feature_value'] ?? 0);
+                $customValue = trim((string)($feature['custom_value'] ?? ''));
+
+                if ($idFeature <= 0) {
+                    continue;
+                }
+
+                $position++;
+
+                Db::getInstance()->insert('inspirationcards_feature', [
+                    'id_inspiration' => (int)$id,
+                    'id_feature' => (int)$idFeature,
+                    'id_feature_value' => $idFeatureValue ?: null,
+                    'custom_value' => pSQL($customValue),
+                    'position' => (int)$position,
+                ]);
+            }
+        }
+
+    }
+
+    protected function getPreviewImage()
+    {
+        if (!$this->object || empty($this->object->image)) {
+            return '';
+        }
+
+        $url = $this->module->getPathUri().'uploads/'.$this->object->image;
+
+        return '<img src="'.$url.'" style="max-width:400px; height:auto;" />';
+    }
+
+    protected function renderProductsBlock()
+    {
+        $idInspiration = (int)Tools::getValue('id_inspiration');
+        $products = [];
+
+        if ($idInspiration) {
+            $products = Db::getInstance()->executeS('
+                SELECT ip.id_product, ip.position, pl.name
+                FROM '._DB_PREFIX_.'inspirationcards_product ip
+                INNER JOIN '._DB_PREFIX_.'product_lang pl
+                    ON (pl.id_product = ip.id_product AND pl.id_lang='.(int)$this->context->language->id.')
+                WHERE ip.id_inspiration='.(int)$idInspiration.'
+                ORDER BY ip.position ASC, ip.id_product ASC
+            ');
+        }
+
+        $adminLink = $this->context->link->getAdminLink($this->controller_name, true);
+        if (is_array($adminLink)) {
+            $adminLink = $adminLink['url'] ?? (reset($adminLink) ?: '');
+        }
+        $adminLink = (string)$adminLink;
+
+        $json = json_encode([
+            'items' => $products,
+            'ajax_url' => $adminLink,
+        ]);
+
+        return '
+        <div id="inspiration-products-block"
+            data-config="'.htmlspecialchars($json, ENT_QUOTES, 'UTF-8').'">
+
+            <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
+                <input type="text"
+                    id="inspiration-product-search"
+                    class="form-control"
+                    placeholder="'.$this->l('Buscar producto...').'">
+            </div>
+
+            <div id="inspiration-product-results" style="margin-bottom:15px;"></div>
+
+            <div id="inspiration-products-list"></div>
+
+            <input type="hidden" name="products_json" id="products_json" value="'.htmlspecialchars(json_encode($products), ENT_QUOTES, 'UTF-8').'">
+
+            <p class="help-block">
+                '.$this->l('Busca productos y añádelos a la inspiración.').'
+            </p>
+        </div>';
+    }
+
+    public function ajaxProcessSearchProducts()
+    {
+        $q = trim(Tools::getValue('q', ''));
+        $id_lang = (int)$this->context->language->id;
+
+        if ($q === '' || Tools::strlen($q) < 2) {
+            header('Content-Type: application/json');
+            die(json_encode([]));
+        }
+
+        $like = '%'.pSQL($q).'%';
+
+        $rows = Db::getInstance()->executeS('
+            SELECT p.id_product, pl.name
+            FROM '._DB_PREFIX_.'product p
+            INNER JOIN '._DB_PREFIX_.'product_lang pl
+                ON (pl.id_product = p.id_product AND pl.id_lang='.(int)$id_lang.')
+            WHERE pl.name LIKE "'.$like.'"
+            ORDER BY pl.name ASC
+            LIMIT 20
+        ');
+
+        $out = [];
+        foreach ($rows as $r) {
+            $out[] = [
+                'id_product' => (int)$r['id_product'],
+                'name' => $r['name'],
+            ];
+        }
+
+        header('Content-Type: application/json');
+        die(json_encode($out));
+    }
+
+    protected function renderFeaturesBlock()
+    {
+        $idInspiration = (int)Tools::getValue('id_inspiration');
+        $idLang = (int)$this->context->language->id;
+
+        $items = [];
+        if ($idInspiration) {
+            $items = Db::getInstance()->executeS('
+                SELECT ife.id_feature, ife.id_feature_value, ife.custom_value, ife.position,
+                    fl.name AS feature_name,
+                    fvl.value AS feature_value_name
+                FROM '._DB_PREFIX_.'inspirationcards_feature ife
+                LEFT JOIN '._DB_PREFIX_.'feature_lang fl
+                    ON (fl.id_feature = ife.id_feature AND fl.id_lang='.(int)$idLang.')
+                LEFT JOIN '._DB_PREFIX_.'feature_value_lang fvl
+                    ON (fvl.id_feature_value = ife.id_feature_value AND fvl.id_lang='.(int)$idLang.')
+                WHERE ife.id_inspiration='.(int)$idInspiration.'
+                ORDER BY ife.position ASC, ife.id_inspiration_feature ASC
+            ');
+        }
+
+        $features = Db::getInstance()->executeS('
+            SELECT f.id_feature, fl.name
+            FROM '._DB_PREFIX_.'feature f
+            INNER JOIN '._DB_PREFIX_.'feature_lang fl
+                ON (fl.id_feature = f.id_feature AND fl.id_lang='.(int)$idLang.')
+            ORDER BY fl.name ASC
+        ');
+
+        $featureValues = [];
+        foreach ($features as $feature) {
+            $values = Db::getInstance()->executeS('
+                SELECT fv.id_feature_value, fvl.value
+                FROM '._DB_PREFIX_.'feature_value fv
+                INNER JOIN '._DB_PREFIX_.'feature_value_lang fvl
+                    ON (fvl.id_feature_value = fv.id_feature_value AND fvl.id_lang='.(int)$idLang.')
+                WHERE fv.id_feature='.(int)$feature['id_feature'].'
+                ORDER BY fvl.value ASC
+            ');
+
+            $featureValues[(int)$feature['id_feature']] = $values;
+        }
+
+        $json = json_encode([
+            'items' => $items,
+            'features' => $features,
+            'feature_values' => $featureValues,
+        ]);
+
+        return '
+        <div id="inspiration-features-block"
+            data-config="'.htmlspecialchars($json, ENT_QUOTES, 'UTF-8').'">
+
+            <div id="inspiration-features-list"></div>
+
+            <div style="margin-top:15px;">
+                <button type="button" class="btn btn-primary" id="inspiration-add-feature">
+                    '.$this->l('Añadir característica').'
+                </button>
+            </div>
+
+            <input type="hidden" name="features_json" id="features_json"
+                value="'.htmlspecialchars(json_encode($items), ENT_QUOTES, 'UTF-8').'">
+        </div>';
+    }
+}
