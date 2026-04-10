@@ -392,15 +392,21 @@
 }
 
 .inspiration-product__content {
-  flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 180px;
+    justify-content: space-around;
+}
+
+.floor_products {
+    margin-bottom: 60px;
 }
 
 .inspiration-product__category {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   text-transform: uppercase;
   color: #111;
-  margin-bottom: 10px;
 }
 
 .inspiration-product__reference {

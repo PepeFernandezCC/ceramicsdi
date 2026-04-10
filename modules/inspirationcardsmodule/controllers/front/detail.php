@@ -41,10 +41,14 @@ class InspirationcardsmoduleDetailModuleFrontController extends Inspirationcards
    
         $currentBaseUrl = isset($languageUrls[$idLang]) ? $languageUrls[$idLang] : '';
 
+        $related_products = $this->getRelatedProducts($inspiration);
+        $inspirationCarousel = $this->getMoreInspirations($inspiration);
         $this->context->smarty->assign([
             'inspiration' => $inspiration,
-            'related_products' => $this->getRelatedProducts($inspiration),
-            'more_inspirations' => $this->getMoreInspirations($inspiration),
+            'floor_related_products' => $related_products['FLOOR'],
+            'wall_related_products' => $related_products['WALL'],
+            'more_inspirations' => $inspirationCarousel['CARDS'],
+            'related_inspiration' => $inspirationCarousel['LABEL'],
             'back_url' => rtrim($currentBaseUrl, '/'),
         ]);
 
@@ -61,8 +65,6 @@ class InspirationcardsmoduleDetailModuleFrontController extends Inspirationcards
             WHERE id_inspiration = '.(int)$inspiration['id_inspiration'].'
             ORDER BY position ASC, id_product ASC
         ');
-
-        $products = [];
 
         foreach ($rows as $row) {
             $idProduct = (int)$row['id_product'];
@@ -85,13 +87,24 @@ class InspirationcardsmoduleDetailModuleFrontController extends Inspirationcards
                 );
             }
 
-            $products[] = [
-                'name' => $product->name,
-                'reference' => $product->reference,
-                'url' => $this->context->link->getProductLink($product),
-                'image' => $imageUrl,
-                'product_type' => $productType,
-            ];
+            if($productType == 'suelo'){
+                $products['FLOOR'][] = [
+                    'name' => $product->name,
+                    'reference' => $product->reference,
+                    'url' => $this->context->link->getProductLink($product),
+                    'image' => $imageUrl,
+                    'dimensions' => Product::getProductAttribute($product->id, '4'),
+                ];
+            }else{
+                $products['WALL'][] = [
+                    'name' => $product->name,
+                    'reference' => $product->reference,
+                    'url' => $this->context->link->getProductLink($product),
+                    'image' => $imageUrl,
+                    'dimensions' => Product::getProductAttribute($product->id, '4'),
+                ];
+            }
+
         }
 
         return $products;
@@ -109,7 +122,30 @@ class InspirationcardsmoduleDetailModuleFrontController extends Inspirationcards
 
         $categoryIds = array_column($categoryIds, 'id_category');
 
+        $categoryLabels =  [
+            'Baño' => '13',
+            'Cocina' => '12', 
+            'Salón' => '14', 
+            'Dormitorio' => '15',
+            'Exterior' => '16',
+            'Piscina' => '37', 
+            'Suelo' => '1770', 
+            'Pared' => '1771', 
+            'Moodboards' => '9999',
+        ];
+
+        // Primer ID
+        $firstId = $categoryIds[0] ?? null;
+
+        // Buscar el nombre
+        $label = array_search($firstId, $categoryLabels);
+
+        // Opcional: evitar false si no encuentra nada
+        $label = $label !== false ? $label : null;
+
         $moreInspirations = [];
+        $moreInspirations['LABEL'] = $label;
+
 
         if (!empty($categoryIds)) {
             $rows = Db::getInstance()->executeS('
@@ -131,7 +167,7 @@ class InspirationcardsmoduleDetailModuleFrontController extends Inspirationcards
             $currentBaseUrl = isset($languageUrls[$currentLangId]) ? $languageUrls[$currentLangId] : '';
 
             foreach ($rows as $row) {
-                $moreInspirations[] = [
+                $moreInspirations['CARDS'][] = [
                     'id_inspiration' => $row['id_inspiration'],
                     'name' => $row['name'],
                     'image' => $row['image'],

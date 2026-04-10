@@ -3,7 +3,7 @@
 {block name='page_title'}{/block}
 
 {block name='page_content'}
-<div class="inspirations-page">
+<div class="inspirations-page" data-ajax-url="{$filter_ajax_url|escape:'html':'UTF-8'}">
 
   <section class="insp-top">
     <div class="insp-top__group">
@@ -188,18 +188,8 @@
 
   <section class="insp-active-filters" id="insp-active-filters"></section>
 
-  <section class="insp-grid">
-    {foreach from=$inspirations item=inspiration}
-      <article class="insp-grid__item">
-        <a href="{$inspiration.url|escape:'html':'UTF-8'}" class="insp-grid__link">
-          <img
-            src="{$urls.base_url}modules/inspirationcardsmodule/uploads/{$inspiration.image|escape:'html':'UTF-8'}"
-            alt="{$inspiration.name|escape:'html':'UTF-8'}"
-            class="insp-grid__image"
-          >
-        </a>
-      </article>
-    {/foreach}
+  <section id="insp-grid" class="insp-grid">
+    {include file='module:inspirationcardsmodule/views/templates/front/_grid.tpl'}
   </section>
 
   <div class="insp-more">

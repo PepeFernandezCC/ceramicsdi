@@ -85,21 +85,6 @@
                             {l s='Search here' d='Shop.Theme.Catalog'}
                         </span>
                         </div>
-                        {*
-                        <div class="search-overlay">
-                            <div id="search_widget" class="search-widgets"
-                                 data-search-controller-url="search_controller_url">
-                               
-                                    <input type="hidden" name="controller" value="search">
-                                    <i class="material-icons search" aria-hidden="true">search</i>
-                                    <input id="custom-search" type="text" name="s" value="devmode"
-                                           placeholder="{l s='Search our catalog' d='Shop.Theme.Catalog'}"
-                                           aria-label="{l s='Search' d='Shop.Theme.Catalog'}">
-                                    <i class="material-icons clear" aria-hidden="true">clear</i>
-                          
-                            </div>
-                        </div>
-                        *}
                     </div>
 
                     {*

@@ -32,6 +32,7 @@ class InspirationcardsmoduleListModuleFrontController extends Inspirationcardsmo
 
         $this->context->smarty->assign([
             'inspirations' => $inspirations,
+            'filter_ajax_url' => $this->context->link->getModuleLink( 'inspirationcardsmodule', 'filter'),
             'espacios' => [
                 ['id' => 13, 'name' => 'Salón'],
                 ['id' => 12, 'name' => 'Cocina'],

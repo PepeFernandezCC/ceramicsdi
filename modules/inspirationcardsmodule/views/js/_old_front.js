@@ -1,62 +1,13 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const page = document.querySelector('.inspirations-page');
-    if (!page) {
-        return;
-    }
 
-    const ajaxUrl = page.dataset.ajaxUrl || '';
+    //LOGICA DE AGREGAR  O QUITAR LOS TAGS DE LOS FILTROS Y FUNCIONALIDAD PESTAÑAS
     const tabs = document.querySelectorAll('.insp-filter-tab');
     const panels = document.querySelectorAll('.insp-filter-panel');
     const chipsContainer = document.getElementById('insp-active-filters');
+
     const topImages = document.querySelectorAll('.insp-card__image[role="button"]');
     const textFilters = document.querySelectorAll('.insp-filter-values--text > div[role="button"]');
     const colorFilters = document.querySelectorAll('.insp-color[role="button"]');
-    const grid = document.getElementById('insp-grid');
-
-    function getActiveFilters() {
-        const filters = {
-            space: [],
-            usage: [],
-            aspecto: [],
-            color: [],
-            tamano: [],
-            estilo: []
-        };
-
-        document.querySelectorAll('.insp-card .insp-card__image.is-active').forEach(function (img) {
-            const card = img.closest('.insp-card');
-            if (!card) {
-                return;
-            }
-
-            const group = card.dataset.group || '';
-            const value = card.dataset.value || '';
-
-            if (group && value && Array.isArray(filters[group])) {
-                filters[group].push(value);
-            }
-        });
-
-        document.querySelectorAll('.insp-filter-values--text > div.is-active').forEach(function (item) {
-            const group = item.dataset.group || '';
-            const value = item.dataset.value || '';
-
-            if (group && value && Array.isArray(filters[group])) {
-                filters[group].push(value);
-            }
-        });
-
-        document.querySelectorAll('.insp-color.is-active').forEach(function (item) {
-            const group = item.dataset.group || '';
-            const value = item.dataset.value || '';
-
-            if (group && value && Array.isArray(filters[group])) {
-                filters[group].push(value);
-            }
-        });
-
-        return filters;
-    }
 
     function renderChips() {
         if (!chipsContainer) {
@@ -73,13 +24,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
+            const value = card.dataset.value || '';
+            const group = card.dataset.group || '';
             const labelEl = card.querySelector('.insp-card__label');
+            const label = labelEl ? labelEl.textContent.trim() : value;
 
             activeItems.push({
                 type: 'top-card',
-                group: card.dataset.group || '',
-                value: card.dataset.value || '',
-                label: labelEl ? labelEl.textContent.trim() : ''
+                group: group,
+                value: value,
+                label: label
             });
         });
 
@@ -105,9 +59,9 @@ document.addEventListener('DOMContentLoaded', function () {
             const chip = document.createElement('div');
             chip.className = 'insp-chip';
             chip.setAttribute('role', 'button');
-            chip.dataset.type = item.type;
             chip.dataset.group = item.group;
             chip.dataset.value = item.value;
+            chip.dataset.type = item.type;
             chip.textContent = item.label + ' ×';
             chipsContainer.appendChild(chip);
         });
@@ -123,9 +77,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function clearTopGroup(group) {
-        document.querySelectorAll('.insp-card[data-group="' + group + '"] .insp-card__image').forEach(function (img) {
-            img.classList.remove('is-active');
-        });
+        document.querySelectorAll('.insp-card[data-group="' + group + '"] .insp-card__image')
+            .forEach(function (img) {
+                img.classList.remove('is-active');
+            });
     }
 
     function clearAllFilters() {
@@ -142,47 +97,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    function sendFiltersAjax() {
-        if (!ajaxUrl || !grid) {
-            return;
-        }
-
-        const filters = getActiveFilters();
-
-        const formData = new FormData();
-        formData.append('ajax', '1');
-        formData.append('action', 'FilterInspirations');
-        formData.append('space', JSON.stringify(filters.space));
-        formData.append('usage', JSON.stringify(filters.usage));
-        formData.append('aspecto', JSON.stringify(filters.aspecto));
-        formData.append('color', JSON.stringify(filters.color));
-        formData.append('tamano', JSON.stringify(filters.tamano));
-        formData.append('estilo', JSON.stringify(filters.estilo));
-
-        fetch(ajaxUrl, {
-            method: 'POST',
-            body: formData,
-            credentials: 'same-origin'
-        })
-            .then(function (response) {
-                return response.json();
-            })
-            .then(function (data) {
-                if (data && typeof data.html !== 'undefined') {
-                    grid.innerHTML = data.html;
-                }
-            })
-            .catch(function (error) {
-                console.error('Error filtering inspirations:', error);
-            });
-    }
-
-    function updateFilters() {
-        renderChips();
-        sendFiltersAjax();
-    }
-
-    // Tabs
+    // Tabs inferiores: abrir/cerrar
     tabs.forEach(function (tab) {
         tab.addEventListener('click', function () {
             const tabName = this.getAttribute('data-tab');
@@ -221,33 +136,33 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (isActive) {
                 this.classList.remove('is-active');
-                updateFilters();
+                renderChips();
                 return;
             }
 
             clearTopGroup(opposite);
             this.classList.add('is-active');
-            updateFilters();
+            renderChips();
         });
     });
 
-    // Filtros texto
+    // Filtros inferiores texto
     textFilters.forEach(function (item) {
         item.addEventListener('click', function () {
             this.classList.toggle('is-active');
-            updateFilters();
+            renderChips();
         });
     });
 
-    // Filtros color
+    // Filtros inferiores color
     colorFilters.forEach(function (item) {
         item.addEventListener('click', function () {
             this.classList.toggle('is-active');
-            updateFilters();
+            renderChips();
         });
     });
 
-    // Chips
+    // Chips: eliminar uno o borrar todo
     if (chipsContainer) {
         chipsContainer.addEventListener('click', function (e) {
             const chip = e.target.closest('.insp-chip');
@@ -257,7 +172,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (chip.dataset.action === 'clear-all') {
                 clearAllFilters();
-                updateFilters();
+                renderChips();
                 return;
             }
 
@@ -266,27 +181,33 @@ document.addEventListener('DOMContentLoaded', function () {
             const value = chip.dataset.value;
 
             if (type === 'top-card') {
-                const target = document.querySelector('.insp-card[data-group="' + group + '"][data-value="' + value + '"] .insp-card__image');
+                const target = document.querySelector(
+                    '.insp-card[data-group="' + group + '"][data-value="' + value + '"] .insp-card__image'
+                );
                 if (target) {
                     target.classList.remove('is-active');
                 }
             }
 
             if (type === 'filter-text') {
-                const target = document.querySelector('.insp-filter-values--text > div[data-group="' + group + '"][data-value="' + value + '"]');
+                const target = document.querySelector(
+                    '.insp-filter-values--text > div[data-group="' + group + '"][data-value="' + value + '"]'
+                );
                 if (target) {
                     target.classList.remove('is-active');
                 }
             }
 
             if (type === 'filter-color') {
-                const target = document.querySelector('.insp-color[data-group="' + group + '"][data-value="' + value + '"]');
+                const target = document.querySelector(
+                    '.insp-color[data-group="' + group + '"][data-value="' + value + '"]'
+                );
                 if (target) {
                     target.classList.remove('is-active');
                 }
             }
 
-            updateFilters();
+            renderChips();
         });
     }
 
