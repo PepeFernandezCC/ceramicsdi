@@ -25,15 +25,48 @@ class AdminInspirationcardsController extends ModuleAdminController
     public function renderList()
     {
         $this->fields_list = [
-            'id_inspiration' => ['title' => 'ID'],
-            'name' => ['title' => 'Nombre'],
+            'image' => [
+                'title' => $this->l('Foto'),
+                'align' => 'center',
+                'callback' => 'renderImageColumn',
+                'orderby' => false,
+                'search' => false,
+            ],
+            'name' => [
+                'title' => $this->l('Nombre'),
+            ],
+            'slug' => [
+                'title' => $this->l('slug'),
+            ],
+            'active' => [
+                'title' => $this->l('Activo'),
+                'active' => 'status',
+                'type' => 'bool',
+                'align' => 'center',
+                'class' => 'fixed-width-sm',
+            ],
         ];
 
         $this->_join = 'LEFT JOIN '._DB_PREFIX_.'inspirationcards_lang il 
             ON (a.id_inspiration = il.id_inspiration AND il.id_lang='.(int)$this->context->language->id.')';
+
         $this->_select = 'il.name';
 
+        $this->addRowAction('edit');
+        $this->addRowAction('delete');
+
         return parent::renderList();
+    }
+
+    public function renderImageColumn($value, $row)
+    {
+        if (empty($value)) {
+            return '-';
+        }
+
+        $url = $this->module->getPathUri().'uploads/'.rawurlencode($value);
+
+        return '<img src="'.$url.'" style="max-width:60px; max-height:60px;" />';
     }
 
     public function renderForm()
@@ -45,9 +78,35 @@ class AdminInspirationcardsController extends ModuleAdminController
             ],
             'input' => [
                 [
+                    'type' => 'switch',
+                    'label' => $this->l('Activo'),
+                    'name' => 'active',
+                    'is_bool' => true,
+                    'values' => [
+                        [
+                            'id' => 'active_on',
+                            'value' => 1,
+                            'label' => $this->l('Sí'),
+                        ],
+                        [
+                            'id' => 'active_off',
+                            'value' => 0,
+                            'label' => $this->l('No'),
+                        ],
+                    ],
+                ],
+                [
                     'type' => 'text',
                     'label' => 'Nombre',
                     'name' => 'name',
+                    'required' => true,
+                    'lang' => true,
+                    'form_group_class' => 'ic-row ic-row-name',
+                ],
+                [
+                    'type' => 'text',
+                    'label' => 'Slug',
+                    'name' => 'slug',
                     'required' => true,
                     'lang' => true,
                     'form_group_class' => 'ic-row ic-row-name',
@@ -124,6 +183,7 @@ class AdminInspirationcardsController extends ModuleAdminController
         $fields = parent::getFieldsValue($obj);
 
         if (!Validate::isLoadedObject($obj)) {
+            $fields['active'] = 1;
             return $fields;
         }
 
@@ -169,9 +229,35 @@ class AdminInspirationcardsController extends ModuleAdminController
             $this->saveImageInspiration($id);
         }
 
+        $this->saveCategoryInspiration($id);
         $this->saveProductInspiration($id);
         $this->saveFeatureInspiration($id);
        
+    }
+
+    protected function saveCategoryInspiration($id)
+    {
+        Db::getInstance()->delete('inspirationcards_category', 'id_inspiration = '.(int)$id);
+
+        $espacios = [13, 12, 14, 15, 16, 37];
+        foreach ($espacios as $cat) {
+            if (Tools::getValue('espacio_'.$cat)) {
+                Db::getInstance()->insert('inspirationcards_category', [
+                    'id_inspiration' => (int)$id,
+                    'id_category' => (int)$cat,
+                ]);
+            }
+        }
+
+        $usos = [1770, 1771, 9999];
+        foreach ($usos as $cat) {
+            if (Tools::getValue('uso_'.$cat)) {
+                Db::getInstance()->insert('inspirationcards_category', [
+                    'id_inspiration' => (int)$id,
+                    'id_category' => (int)$cat,
+                ]);
+            }
+        }
     }
 
     protected function saveImageInspiration($id) {
@@ -205,8 +291,14 @@ class AdminInspirationcardsController extends ModuleAdminController
 
             foreach ($products as $product) {
                 $idProduct = (int)($product['id_product'] ?? 0);
+                $productType = trim((string)($product['product_type'] ?? 'suelo'));
+                
                 if ($idProduct <= 0) {
                     continue;
+                }
+
+                if (!in_array($productType, ['suelo', 'pared'])) {
+                    $productType = 'suelo';
                 }
 
                 $position++;
@@ -215,6 +307,7 @@ class AdminInspirationcardsController extends ModuleAdminController
                     'id_inspiration' => (int)$id,
                     'id_product' => (int)$idProduct,
                     'position' => (int)$position,
+                    'product_type' => $productType,
                 ]);
             }
         }
@@ -272,7 +365,7 @@ class AdminInspirationcardsController extends ModuleAdminController
 
         if ($idInspiration) {
             $products = Db::getInstance()->executeS('
-                SELECT ip.id_product, ip.position, pl.name
+                SELECT ip.id_product, ip.position, ip.product_type, pl.name
                 FROM '._DB_PREFIX_.'inspirationcards_product ip
                 INNER JOIN '._DB_PREFIX_.'product_lang pl
                     ON (pl.id_product = ip.id_product AND pl.id_lang='.(int)$this->context->language->id.')

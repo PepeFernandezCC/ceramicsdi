@@ -39,8 +39,6 @@
 
 {/if}
 
-
-
 {block name='header_banner'}
     <div class="header-banner">
         {hook h='displayBanner'}
@@ -104,17 +102,51 @@
                         *}
                     </div>
 
+                    {*
                     <div id="_desktop_language_selector">
                         <div class="language-selector-wrapper">
                             <div class="language-selector dropdown js-dropdown">
                                 <select class="link" aria-labelledby="language-selector-label">
                                     {foreach from=Language::getLanguages(true) item=lang}
-                                        <option value="{url entity='language' id=$lang.id_lang}"{if $lang.id_lang == $language.id} selected="selected"{/if}
-                                                data-iso-code="{$lang.iso_code}">
+                                        <option
+                                            value="{if isset($is_inspirations_page) && $is_inspirations_page && isset($inspiration_language_urls[$lang.id_lang])}{$inspiration_language_urls[$lang.id_lang]|escape:'html':'UTF-8'}{else}{url entity='language' id=$lang.id_lang}{/if}"
+                                            {if $lang.id_lang == $language.id} selected="selected"{/if}
+                                            data-iso-code="{$lang.iso_code}">
                                             {assign var="lang_position" value=$lang.name|strpos:" ("}
                                             {$lang.name|substr:0:$lang_position}
                                         </option>
                                     {/foreach}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    *}
+
+                    <div id="_desktop_language_selector">
+                        <div class="language-selector-wrapper">
+                            <div class="language-selector dropdown js-dropdown">
+                                <select class="link" aria-labelledby="language-selector-label">
+                                    {if isset($header_languages) && $header_languages|@count}
+                                        {foreach from=$header_languages item=lang}
+                                            <option
+                                                value="{$lang.url|escape:'html':'UTF-8'}"
+                                                {if $lang.id_lang == $language.id} selected="selected"{/if}
+                                                data-iso-code="{$lang.iso_code}">
+                                                {assign var="lang_position" value=$lang.name|strpos:" ("}
+                                                {$lang.name|substr:0:$lang_position}
+                                            </option>
+                                        {/foreach}
+                                    {else}
+                                        {foreach from=Language::getLanguages(true) item=lang}
+                                            <option
+                                                value="{url entity='language' id=$lang.id_lang}"
+                                                {if $lang.id_lang == $language.id} selected="selected"{/if}
+                                                data-iso-code="{$lang.iso_code}">
+                                                {assign var="lang_position" value=$lang.name|strpos:" ("}
+                                                {$lang.name|substr:0:$lang_position}
+                                            </option>
+                                        {/foreach}
+                                    {/if}
                                 </select>
                             </div>
                         </div>

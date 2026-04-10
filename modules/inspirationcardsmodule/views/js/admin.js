@@ -46,11 +46,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
         items.push({
             id_product: parseInt(product.id_product, 10),
-            name: product.name
+            name: product.name,
+            product_type: 'suelo'
         });
 
         renderList();
         syncHidden();
+    }
+
+    function bindProductTypeEvents() {
+        document.querySelectorAll('.related-product-type').forEach(function (select) {
+            select.addEventListener('change', function () {
+                var index = parseInt(this.getAttribute('data-index'), 10);
+                if (typeof items[index] !== 'undefined') {
+                    items[index].product_type = this.value;
+                    syncHidden();
+                }
+            });
+        });
     }
 
     function renderList() {
@@ -61,13 +74,24 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        items.forEach(function (item) {
+        items.forEach(function (item, index) {
+            if (!item.product_type) {
+                item.product_type = 'suelo';
+            }
+
             var row = document.createElement('div');
             row.className = 'panel';
             row.style.marginBottom = '8px';
+            
             row.innerHTML =
-                '<div class="panel-body" style="display:flex;justify-content:space-between;align-items:center;">' +
-                    '<span>#' + item.id_product + ' - ' + item.name + '</span>' +
+                '<div class="panel-body" style="display:flex;justify-content:space-between;align-items:center;gap:15px;">' +
+                    '<div style="flex:1;">#' + item.id_product + ' - ' + item.name + '</div>' +
+                    '<div style="width:140px;">' +
+                        '<select class="form-control related-product-type" data-index="' + index + '">' +
+                            '<option value="suelo"' + (item.product_type === 'suelo' ? ' selected' : '') + '>Suelo</option>' +
+                            '<option value="pared"' + (item.product_type === 'pared' ? ' selected' : '') + '>Pared</option>' +
+                        '</select>' +
+                    '</div>' +
                     '<button type="button" class="btn btn-default remove-related-product" data-id="' + item.id_product + '">' +
                         'Quitar' +
                     '</button>' +
@@ -75,6 +99,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
             list.appendChild(row);
         });
+
+        bindProductTypeEvents();
+        syncHidden();
     }
 
     input.addEventListener('keyup', function () {

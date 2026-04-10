@@ -10,6 +10,7 @@ class Inspirationcards extends ObjectModel
 
     // multilang
     public $name;
+    public $slug;
 
     public static $definition = [
         'table' => 'inspirationcards',
@@ -28,6 +29,13 @@ class Inspirationcards extends ObjectModel
                 'required' => true,
                 'size' => 255
             ],
+            'slug' => [
+                'type' => self::TYPE_STRING,
+                'lang' => true,
+                'required' => true,
+                'size' => 255
+            ],
+            //image
             'image' => [
                 'type' => self::TYPE_STRING,
                 'size' => 255,

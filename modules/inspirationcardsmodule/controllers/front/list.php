@@ -1,21 +1,34 @@
 <?php
 
-class InspirationcardsmoduleListModuleFrontController extends ModuleFrontController
+require_once dirname(__FILE__) . '/FrontBase.php';
+
+class InspirationcardsmoduleListModuleFrontController extends InspirationcardsmoduleFrontControllerBase
 {
     public function initContent()
     {
         parent::initContent();
 
+        $this->assignHeaderLanguages($this->getInspirationsLanguageUrls());
+
         $idLang = (int)$this->context->language->id;
 
         $inspirations = Db::getInstance()->executeS('
-            SELECT i.id_inspiration, i.image, il.name
+            SELECT i.id_inspiration, i.image, il.name, il.slug
             FROM '._DB_PREFIX_.'inspirationcards i
             LEFT JOIN '._DB_PREFIX_.'inspirationcards_lang il
                 ON (il.id_inspiration = i.id_inspiration AND il.id_lang = '.(int)$idLang.')
             WHERE i.active = 1
             ORDER BY i.id_inspiration DESC
         ');
+
+        $languageUrls = $this->getInspirationsLanguageUrls();
+        $currentLangId = (int)$this->context->language->id;
+        $currentBaseUrl = isset($languageUrls[$currentLangId]) ? $languageUrls[$currentLangId] : '';
+
+        foreach ($inspirations as &$inspiration) {
+            $inspiration['url'] = rtrim($currentBaseUrl, '/') . '/' . ltrim($inspiration['slug'], '/');
+        }
+        unset($inspiration);
 
         $this->context->smarty->assign([
             'inspirations' => $inspirations,
@@ -37,19 +50,48 @@ class InspirationcardsmoduleListModuleFrontController extends ModuleFrontControl
         $this->setTemplate('module:inspirationcardsmodule/views/templates/front/list.tpl');
     }
 
+    protected function getInspirationsLanguageUrls()
+    {
+        $languages = Language::getLanguages(true, $this->context->shop->id);
+        $urls = [];
+
+        $slugs = [
+            'es' => 'inspiraciones',
+            'fr' => 'inspirations',
+            'en' => 'inspirations',
+            'de' => 'inspirationen',
+            'pt' => 'inspiracoes',
+            'nl' => 'inspiraties',
+        ];
+
+        foreach ($languages as $lang) {
+            $iso = $lang['iso_code'];
+            $slug = isset($slugs[$iso]) ? $slugs[$iso] : 'inspirations';
+
+            $urls[(int)$lang['id_lang']] = $this->context->link->getBaseLink(
+                $this->context->shop->id,
+                null,
+                null,
+                false
+            ) . $iso . '/' . $slug;
+        }
+
+        return $urls;
+    }
+
     public function setMedia()
     {
         parent::setMedia();
 
         $this->registerStylesheet(
-            'module-inspirationcards-front',
-            'modules/'.$this->module->name.'/views/assets/css/front.css',
+            'module-inspirationcardsmodule-front',
+            'modules/'.$this->module->name.'/views/css/front.css',
             ['media' => 'all', 'priority' => 150]
         );
 
         $this->registerJavascript(
-            'module-inspirationcards-front',
-            'modules/'.$this->module->name.'/views/assets/js/front.js',
+            'module-inspirationcardsmodule-front-js',
+            'modules/'.$this->module->name.'/views/js/front.js',
             ['position' => 'bottom', 'priority' => 150]
         );
     }

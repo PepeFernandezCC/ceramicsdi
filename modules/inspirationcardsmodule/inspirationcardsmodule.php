@@ -47,42 +47,164 @@ class InspirationcardsModule extends Module
 
     public function hookModuleRoutes($params)
     {
-        $routes = [];
-
-        $languages = Language::getLanguages(false);
-
-        foreach ($languages as $lang) {
-            $iso = $lang['iso_code'];
-            $idLang = (int)$lang['id_lang'];
-
-            $slug = $this->getInspirationsSlugByLang($iso);
-
-            $routes['module-inspirationcardsmodule-list-'.$idLang] = [
+        return [
+            'module-inspirationcardsmodule-list-es' => [
                 'controller' => 'list',
-                'rule' => $slug,
-                'keywords' => [],
-                'params' => [
-                    'fc' => 'module',
-                    'module' => $this->name,
+                'rule'       => 'inspiraciones',
+                'keywords'   => [],
+                'params'     => [
+                    'fc'         => 'module',
+                    'module'     => $this->name,
                     'controller' => 'list',
                 ],
-            ];
-        }
-
-        return $routes;
-    }
-    
-    protected function getInspirationsSlugByLang($iso)
-    {
-        $map = [
-            'es' => 'inspiraciones',
-            'fr' => 'inspirations',
-            'en' => 'inspirations',
-            'de' => 'inspirationen',
-            'pt' => 'inspiracoes',
-            'nl' => 'inspiraties',
+            ],
+            'module-inspirationcardsmodule-list-fr' => [
+                'controller' => 'list',
+                'rule'       => 'inspirations',
+                'keywords'   => [],
+                'params'     => [
+                    'fc'         => 'module',
+                    'module'     => $this->name,
+                    'controller' => 'list',
+                    'id_lang'    => (int)Language::getIdByIso('fr'),
+                ],
+            ],
+            'module-inspirationcardsmodule-list-en' => [
+                'controller' => 'list',
+                'rule'       => 'inspirations',
+                'keywords'   => [],
+                'params'     => [
+                    'fc'         => 'module',
+                    'module'     => $this->name,
+                    'controller' => 'list',
+                    'id_lang'    => (int)Language::getIdByIso('en'),
+                ],
+            ],
+            'module-inspirationcardsmodule-list-de' => [
+                'controller' => 'list',
+                'rule'       => 'inspirationen',
+                'keywords'   => [],
+                'params'     => [
+                    'fc'         => 'module',
+                    'module'     => $this->name,
+                    'controller' => 'list',
+                    'id_lang'    => (int)Language::getIdByIso('de'),
+                ],
+            ],
+            'module-inspirationcardsmodule-list-pt' => [
+                'controller' => 'list',
+                'rule'       => 'inspiracoes',
+                'keywords'   => [],
+                'params'     => [
+                    'fc'         => 'module',
+                    'module'     => $this->name,
+                    'controller' => 'list',
+                    'id_lang'    => (int)Language::getIdByIso('pt'),
+                ],
+            ],
+            'module-inspirationcardsmodule-list-nl' => [
+                'controller' => 'list',
+                'rule'       => 'inspiraties',
+                'keywords'   => [],
+                'params'     => [
+                    'fc'         => 'module',
+                    'module'     => $this->name,
+                    'controller' => 'list',
+                    'id_lang'    => (int)Language::getIdByIso('nl'),
+                ],
+            ],
+            'module-inspirationcardsmodule-detail-es' => [
+                'controller' => 'detail',
+                'rule'       => 'inspiraciones/{slug}',
+                'keywords'   => [
+                    'slug' => ['regexp' => '[_a-zA-Z0-9\-]+', 'param' => 'slug'],
+                ],
+                'params'     => [
+                    'fc'         => 'module',
+                    'module'     => $this->name,
+                    'controller' => 'detail',
+                    'id_lang'    => (int)Language::getIdByIso('es'),
+                ],
+            ],
+            'module-inspirationcardsmodule-detail-fr' => [
+                'controller' => 'detail',
+                'rule'       => 'inspirations/{slug}',
+                'keywords'   => [
+                    'slug' => ['regexp' => '[_a-zA-Z0-9\-]+', 'param' => 'slug'],
+                ],
+                'params'     => [
+                    'fc'         => 'module',
+                    'module'     => $this->name,
+                    'controller' => 'detail',
+                    'id_lang'    => (int)Language::getIdByIso('fr'),
+                ],
+            ],
+            'module-inspirationcardsmodule-detail-en' => [
+                'controller' => 'detail',
+                'rule'       => 'inspirations/{slug}',
+                'keywords'   => [
+                    'slug' => ['regexp' => '[_a-zA-Z0-9\-]+', 'param' => 'slug'],
+                ],
+                'params'     => [
+                    'fc'         => 'module',
+                    'module'     => $this->name,
+                    'controller' => 'detail',
+                    'id_lang'    => (int)Language::getIdByIso('en'),
+                ],
+            ],
+            'module-inspirationcardsmodule-detail-de' => [
+                'controller' => 'detail',
+                'rule'       => 'inspirationen/{slug}',
+                'keywords'   => [
+                    'slug' => ['regexp' => '[_a-zA-Z0-9\-]+', 'param' => 'slug'],
+                ],
+                'params'     => [
+                    'fc'         => 'module',
+                    'module'     => $this->name,
+                    'controller' => 'detail',
+                    'id_lang'    => (int)Language::getIdByIso('de'),
+                ],
+            ],
+            'module-inspirationcardsmodule-detail-pt' => [
+                'controller' => 'detail',
+                'rule'       => 'inspiracoes/{slug}',
+                'keywords'   => [
+                    'slug' => ['regexp' => '[_a-zA-Z0-9\-]+', 'param' => 'slug'],
+                ],
+                'params'     => [
+                    'fc'         => 'module',
+                    'module'     => $this->name,
+                    'controller' => 'detail',
+                    'id_lang'    => (int)Language::getIdByIso('pt'),
+                ],
+            ],
+            'module-inspirationcardsmodule-detail-nl' => [
+                'controller' => 'detail',
+                'rule'       => 'inspiraties/{slug}',
+                'keywords'   => [
+                    'slug' => ['regexp' => '[_a-zA-Z0-9\-]+', 'param' => 'slug'],
+                ],
+                'params'     => [
+                    'fc'         => 'module',
+                    'module'     => $this->name,
+                    'controller' => 'detail',
+                    'id_lang'    => (int)Language::getIdByIso('nl'),
+                ],
+            ],
         ];
-
-        return isset($map[$iso]) ? $map[$iso] : 'inspirations';
     }
+
+    /**
+     * Add the CSS & JavaScript files you want to be added on the FO.
+     */
+    public function hookHeader()
+    {
+        $this->context->controller->addCSS($this->_path.'/views/css/front.css');
+        $this->context->controller->registerJavascript(
+            'landing-frontend',
+            'modules/'.$this->name.'/views/js/front.js',
+            ['position' => 'bottom', 'priority' => 150]
+        );;
+    }
+
 }
