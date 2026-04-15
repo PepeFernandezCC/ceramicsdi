@@ -90,6 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         '<select class="form-control related-product-type" data-index="' + index + '">' +
                             '<option value="suelo"' + (item.product_type === 'suelo' ? ' selected' : '') + '>Suelo</option>' +
                             '<option value="pared"' + (item.product_type === 'pared' ? ' selected' : '') + '>Pared</option>' +
+                            '<option value="ambas"' + (item.product_type === 'ambas' ? ' selected' : '') + '>Suelo y Pared</option>' +
                         '</select>' +
                     '</div>' +
                     '<button type="button" class="btn btn-default remove-related-product" data-id="' + item.id_product + '">' +

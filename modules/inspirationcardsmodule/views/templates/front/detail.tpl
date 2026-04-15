@@ -126,7 +126,59 @@
               </article>
             {/foreach}
           </div>
-        {/if}        
+        {/if} 
+
+        {if !empty($both_related_products)}
+          <div class="inspiration-detail__products both_products">
+            {foreach from=$both_related_products item=product}
+              <article class="inspiration-product">
+                <div class="inspiration-product__image-wrap">
+                  <img
+                    src="{$product.image|escape:'html':'UTF-8'}"
+                    alt="{$product.name|escape:'html':'UTF-8'}"
+                    class="inspiration-product__image"
+                  >
+                </div>
+
+                <div class="inspiration-product__content">
+                 
+                    <div class="inspiration-product__category">
+                      {l s='Suelo y Pared' d='Shop.Theme.Catalog'}
+                    </div>
+                  
+                    <div>
+
+                      {if !empty($product.reference)}
+                        <div class="inspiration-product__reference">
+                          {$product.reference|escape:'html':'UTF-8'}
+                        </div>
+                      {/if}
+
+                      <h3 class="inspiration-product__name">
+                          {$product.name|escape:'html':'UTF-8'}
+                      </h3>
+
+                      {if !empty($product.dimensions)}
+                        <div class="inspiration-product__dimensions">
+                          {$product.dimensions|escape:'html':'UTF-8'}
+                        </div>
+                      {/if}
+
+                    </div>
+
+                  {if !empty($product.url)}
+                    <div>
+                        <a href="{$product.url|escape:'html':'UTF-8'}" class="inspiration-product__button" target="_BLANK">
+                            {l s='Ver Producto' d='Shop.Theme.Actions'}
+                        </a>
+                    </div>
+                  {/if}
+                </div>
+              </article>
+            {/foreach}
+          </div>
+        {/if} 
+
       </div>
     </div>
 

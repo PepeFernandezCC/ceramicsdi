@@ -45,8 +45,9 @@ class InspirationcardsmoduleDetailModuleFrontController extends Inspirationcards
         $inspirationCarousel = $this->getMoreInspirations($inspiration);
         $this->context->smarty->assign([
             'inspiration' => $inspiration,
-            'floor_related_products' => $related_products['FLOOR'],
-            'wall_related_products' => $related_products['WALL'],
+            'floor_related_products' => isset($related_products['FLOOR'])?$related_products['FLOOR']:[],
+            'wall_related_products' => isset($related_products['WALL'])?$related_products['WALL']:[],
+            'both_related_products' => isset($related_products['BOTH'])?$related_products['BOTH']:[],
             'more_inspirations' => $inspirationCarousel['CARDS'],
             'related_inspiration' => $inspirationCarousel['LABEL'],
             'back_url' => rtrim($currentBaseUrl, '/'),
@@ -95,8 +96,16 @@ class InspirationcardsmoduleDetailModuleFrontController extends Inspirationcards
                     'image' => $imageUrl,
                     'dimensions' => Product::getProductAttribute($product->id, '4'),
                 ];
-            }else{
+            }elseif($productType == 'pared'){
                 $products['WALL'][] = [
+                    'name' => $product->name,
+                    'reference' => $product->reference,
+                    'url' => $this->context->link->getProductLink($product),
+                    'image' => $imageUrl,
+                    'dimensions' => Product::getProductAttribute($product->id, '4'),
+                ];
+            }else{
+                $products['BOTH'][] = [
                     'name' => $product->name,
                     'reference' => $product->reference,
                     'url' => $this->context->link->getProductLink($product),

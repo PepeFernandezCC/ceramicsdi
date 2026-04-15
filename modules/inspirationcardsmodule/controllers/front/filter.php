@@ -153,43 +153,6 @@ class InspirationcardsmoduleFilterModuleFrontController extends Inspirationcards
         return array_unique($ids);
     }
 
-    /*
-    protected function mapFeatureValuesToIds(array $values, $group)
-    {
-        if (empty($values)) {
-            return [];
-        }
-
-        $escaped = array_map('pSQL', $values);
-        $in = "'" . implode("','", $escaped) . "'";
-
-        $featureMap = [
-            'aspecto' => 52,
-            'color' => 46,
-            'tamano' => 22,
-            'estilo' => 83,
-        ];
-
-        if (empty($featureMap[$group])) {
-            return [];
-        }
-
-        $idLang = (int)$this->context->language->id;
-        $idFeature = (int)$featureMap[$group];
-
-        $rows = Db::getInstance()->executeS('
-            SELECT fv.id_feature_value
-            FROM '._DB_PREFIX_.'feature_value fv
-            INNER JOIN '._DB_PREFIX_.'feature_value_lang fvl
-                ON (fvl.id_feature_value = fv.id_feature_value AND fvl.id_lang = '.(int)$idLang.')
-            WHERE fv.id_feature = '.(int)$idFeature.'
-            AND fvl.value IN ('.$in.')
-        ');
-
-        return array_map('intval', array_column($rows, 'id_feature_value'));
-    }
-    */
-
     protected function mapFeatureValuesToIds(array $values, $group)
     {
         $maps = [

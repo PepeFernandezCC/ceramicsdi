@@ -297,7 +297,7 @@ class AdminInspirationcardsController extends ModuleAdminController
                     continue;
                 }
 
-                if (!in_array($productType, ['suelo', 'pared'])) {
+                if (!in_array($productType, ['suelo', 'pared', 'ambas'])) {
                     $productType = 'suelo';
                 }
 
