@@ -70,7 +70,9 @@ class Product extends ProductCore {
             'COLECCION_CRETA_13_BRILLO',
             'COLECCION_MAPEI_ULTRACOLOR',
             'COLECCION_FUGABELLA_COLOR',
-            'COLECCION_FIJI'
+            'COLECCION_BAHIA',
+            'COLECCION_FIJI',
+            'COLECCION_PURE_10_BRILLO_MATE'
         ];
 
         
