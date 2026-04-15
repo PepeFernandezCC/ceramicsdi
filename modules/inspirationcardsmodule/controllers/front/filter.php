@@ -153,6 +153,7 @@ class InspirationcardsmoduleFilterModuleFrontController extends Inspirationcards
         return array_unique($ids);
     }
 
+    /*
     protected function mapFeatureValuesToIds(array $values, $group)
     {
         if (empty($values)) {
@@ -166,6 +167,7 @@ class InspirationcardsmoduleFilterModuleFrontController extends Inspirationcards
             'aspecto' => 52,
             'color' => 46,
             'tamano' => 22,
+            'estilo' => 83,
         ];
 
         if (empty($featureMap[$group])) {
@@ -186,7 +188,67 @@ class InspirationcardsmoduleFilterModuleFrontController extends Inspirationcards
 
         return array_map('intval', array_column($rows, 'id_feature_value'));
     }
+    */
 
+    protected function mapFeatureValuesToIds(array $values, $group)
+    {
+        $maps = [
+            'aspecto' => [
+                'barro' => 112060,
+                'cemento' => 112061,
+                'hidraulico' => 112062,
+                'madera' => 112063,
+                'marmol' => 112066,
+                'metro' => 112064,
+                'monocolor' => 112065,
+                'piedra' => 112067,
+                'pizarra' => 112069,
+                'terrazo' => 112068,
+                'zellige' => 112070,
+            ],
+            'color' => [
+                'blanco' => 111962,
+                'gris' => 111963,
+                'beige' => 111964,
+                'marron' => 111965,
+                'amarillo' => 111966,
+                'rojo' => 111967,
+                'verde' => 111969,
+                'azul' => 111970,
+                'negro' => 111972,
+                'multicolor' => 111973,
+            ],
+            'tamano' => [
+                'Pequeño (hasta 30 cm)' => 756,
+                'Mediano (hasta 60 cm)' => 757,
+                'Grande (hasta 120 cm)' => 758,
+                'Mosaico enmallado' => 2514,
+            ],
+            'estilo' => [
+                'minimalista' => 165279,
+                'industrial' => 165280,
+                'vintage' => 165281,
+                'rustico' => 165282,
+                'nordico' => 165283,
+                'mediterraneo' => 165284,
+                'wabisabi' => 165285,
+                'contemporaneo' => 165286,
+            ],
+        ];
+
+        if (empty($maps[$group])) {
+            return [];
+        }
+
+        $ids = [];
+        foreach ($values as $value) {
+            if (isset($maps[$group][$value])) {
+                $ids[] = (int)$maps[$group][$value];
+            }
+        }
+
+        return array_unique($ids);
+    }
     protected function getInspirationsLanguageUrls()
     {
         $languages = Language::getLanguages(true, $this->context->shop->id);

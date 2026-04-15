@@ -34,6 +34,6 @@ CREATE TABLE IF NOT EXISTS `ps_inspirationcards_product` (
   `id_inspiration` INT NOT NULL,
   `id_product` INT NOT NULL,
   `position` INT NOT NULL DEFAULT 0,
-  `product_type` VARCHAR(10) NOT NULL DEFAULT 'suelo'
+  `product_type` VARCHAR(10) NOT NULL DEFAULT 'suelo',
   PRIMARY KEY (`id_inspiration`, `id_product`)
 );

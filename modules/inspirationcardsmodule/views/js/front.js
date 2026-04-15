@@ -1,8 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     const page = document.querySelector('.inspirations-page');
-    if (!page) {
-        return;
-    }
+    if (!page) return;
 
     const ajaxUrl = page.dataset.ajaxUrl || '';
     const tabs = document.querySelectorAll('.insp-filter-tab');
@@ -12,6 +10,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const textFilters = document.querySelectorAll('.insp-filter-values--text > div[role="button"]');
     const colorFilters = document.querySelectorAll('.insp-color[role="button"]');
     const grid = document.getElementById('insp-grid');
+
+    let activeRequest = null;
+    let lastFiltersKey = '';
 
     function getActiveFilters() {
         const filters = {
@@ -25,9 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         document.querySelectorAll('.insp-card .insp-card__image.is-active').forEach(function (img) {
             const card = img.closest('.insp-card');
-            if (!card) {
-                return;
-            }
+            if (!card) return;
 
             const group = card.dataset.group || '';
             const value = card.dataset.value || '';
@@ -59,19 +58,14 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function renderChips() {
-        if (!chipsContainer) {
-            return;
-        }
+        if (!chipsContainer) return;
 
         chipsContainer.innerHTML = '';
-
         const activeItems = [];
 
         document.querySelectorAll('.insp-card .insp-card__image.is-active').forEach(function (img) {
             const card = img.closest('.insp-card');
-            if (!card) {
-                return;
-            }
+            if (!card) return;
 
             const labelEl = card.querySelector('.insp-card__label');
 
@@ -101,6 +95,8 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
 
+        const frag = document.createDocumentFragment();
+
         activeItems.forEach(function (item) {
             const chip = document.createElement('div');
             chip.className = 'insp-chip';
@@ -109,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function () {
             chip.dataset.group = item.group;
             chip.dataset.value = item.value;
             chip.textContent = item.label + ' ×';
-            chipsContainer.appendChild(chip);
+            frag.appendChild(chip);
         });
 
         if (activeItems.length > 0) {
@@ -118,8 +114,10 @@ document.addEventListener('DOMContentLoaded', function () {
             clearAll.setAttribute('role', 'button');
             clearAll.dataset.action = 'clear-all';
             clearAll.textContent = 'BORRAR TODO';
-            chipsContainer.appendChild(clearAll);
+            frag.appendChild(clearAll);
         }
+
+        chipsContainer.appendChild(frag);
     }
 
     function clearTopGroup(group) {
@@ -143,11 +141,21 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function sendFiltersAjax() {
-        if (!ajaxUrl || !grid) {
-            return;
-        }
+        if (!ajaxUrl || !grid) return;
 
         const filters = getActiveFilters();
+        const filtersKey = JSON.stringify(filters);
+
+        if (filtersKey === lastFiltersKey) {
+            return;
+        }
+        lastFiltersKey = filtersKey;
+
+        if (activeRequest) {
+            activeRequest.abort();
+        }
+
+        activeRequest = new AbortController();
 
         const formData = new FormData();
         formData.append('ajax', '1');
@@ -159,10 +167,13 @@ document.addEventListener('DOMContentLoaded', function () {
         formData.append('tamano', JSON.stringify(filters.tamano));
         formData.append('estilo', JSON.stringify(filters.estilo));
 
+        grid.classList.add('is-loading');
+
         fetch(ajaxUrl, {
             method: 'POST',
             body: formData,
-            credentials: 'same-origin'
+            credentials: 'same-origin',
+            signal: activeRequest.signal
         })
             .then(function (response) {
                 return response.json();
@@ -173,16 +184,27 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             })
             .catch(function (error) {
-                console.error('Error filtering inspirations:', error);
+                if (error.name !== 'AbortError') {
+                    console.error('Error filtering inspirations:', error);
+                }
+            })
+            .finally(function () {
+                grid.classList.remove('is-loading');
+                activeRequest = null;
             });
     }
 
+    let updateTimer = null;
+
     function updateFilters() {
         renderChips();
-        sendFiltersAjax();
-    }
 
-    // Tabs
+        clearTimeout(updateTimer);
+        updateTimer = setTimeout(function () {
+            sendFiltersAjax();
+        }, 150);
+    }
+    
     tabs.forEach(function (tab) {
         tab.addEventListener('click', function () {
             const tabName = this.getAttribute('data-tab');
@@ -198,7 +220,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (!isAlreadyActive) {
                 this.classList.add('is-active');
-
                 const targetPanel = document.querySelector('.insp-filter-panel[data-panel="' + tabName + '"]');
                 if (targetPanel) {
                     targetPanel.classList.add('is-active');
@@ -207,13 +228,10 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Espacio / uso
     topImages.forEach(function (image) {
         image.addEventListener('click', function () {
             const card = this.closest('.insp-card');
-            if (!card) {
-                return;
-            }
+            if (!card) return;
 
             const group = card.dataset.group;
             const opposite = group === 'space' ? 'usage' : 'space';
@@ -231,7 +249,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Filtros texto
     textFilters.forEach(function (item) {
         item.addEventListener('click', function () {
             this.classList.toggle('is-active');
@@ -239,7 +256,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Filtros color
     colorFilters.forEach(function (item) {
         item.addEventListener('click', function () {
             this.classList.toggle('is-active');
@@ -247,13 +263,10 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Chips
     if (chipsContainer) {
         chipsContainer.addEventListener('click', function (e) {
             const chip = e.target.closest('.insp-chip');
-            if (!chip) {
-                return;
-            }
+            if (!chip) return;
 
             if (chip.dataset.action === 'clear-all') {
                 clearAllFilters();
@@ -267,23 +280,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (type === 'top-card') {
                 const target = document.querySelector('.insp-card[data-group="' + group + '"][data-value="' + value + '"] .insp-card__image');
-                if (target) {
-                    target.classList.remove('is-active');
-                }
+                if (target) target.classList.remove('is-active');
             }
 
             if (type === 'filter-text') {
                 const target = document.querySelector('.insp-filter-values--text > div[data-group="' + group + '"][data-value="' + value + '"]');
-                if (target) {
-                    target.classList.remove('is-active');
-                }
+                if (target) target.classList.remove('is-active');
             }
 
             if (type === 'filter-color') {
                 const target = document.querySelector('.insp-color[data-group="' + group + '"][data-value="' + value + '"]');
-                if (target) {
-                    target.classList.remove('is-active');
-                }
+                if (target) target.classList.remove('is-active');
             }
 
             updateFilters();

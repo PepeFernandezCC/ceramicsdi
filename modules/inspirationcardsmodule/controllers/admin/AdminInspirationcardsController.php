@@ -6,7 +6,7 @@ class AdminInspirationcardsController extends ModuleAdminController
     {
         $this->table = 'inspirationcards';
         $this->identifier = 'id_inspiration';
-        $this->className = 'InspirationCards';
+        $this->className = 'Inspirationcards';
         $this->bootstrap = true;
         $this->lang = true;
 

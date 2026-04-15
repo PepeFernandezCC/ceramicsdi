@@ -164,10 +164,10 @@
 
       <div class="insp-filter-panel" data-panel="tamano">
         <div class="insp-filter-values insp-filter-values--text">
-          <div role="button" data-group="tamano" data-value="pequeño" data-label="Pequeño (hasta 30cm)">Pequeño (hasta 30cm)</div>
-          <div role="button" data-group="tamano" data-value="mediano" data-label="Mediano (hasta 60cm)">Mediano (hasta 60cm)</div>
-          <div role="button" data-group="tamano" data-value="grande" data-label="Grande (hasta 120cm)">Grande (hasta 120cm)</div>
-          <div role="button" data-group="tamano" data-value="mosaico" data-label="Mosaico enmallado">Mosaico enmallado</div>
+          <div role="button" data-group="tamano" data-value="Pequeño (hasta 30 cm)" data-label="Pequeño (hasta 30cm)">Pequeño (hasta 30cm)</div>
+          <div role="button" data-group="tamano" data-value="Mediano (hasta 60 cm)" data-label="Mediano (hasta 60cm)">Mediano (hasta 60cm)</div>
+          <div role="button" data-group="tamano" data-value="Grande (hasta 120 cm)" data-label="Grande (hasta 120cm)">Grande (hasta 120cm)</div>
+          <div role="button" data-group="tamano" data-value="Mosaico enmallado" data-label="Mosaico enmallado">Mosaico enmallado</div>
         </div>
       </div>
 

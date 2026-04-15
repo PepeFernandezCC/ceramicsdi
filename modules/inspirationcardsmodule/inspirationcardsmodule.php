@@ -1,7 +1,7 @@
 <?php
 if (!defined('_PS_VERSION_')) { exit; }
 
-require_once dirname(__FILE__).'/classes/InspirationCards.php';
+require_once dirname(__FILE__).'/classes/Inspirationcards.php';
 
 class InspirationcardsModule extends Module
 {
