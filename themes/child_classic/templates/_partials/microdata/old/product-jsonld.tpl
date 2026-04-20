@@ -38,25 +38,11 @@
     {assign var=hasWeight value=true}
 {/if}
 {assign var=hasOffers value=$product.show_price}
-
-{assign var=priceWeb value=Product::getPriceWebIfExists($product.id)}
-{assign var=calculatedPrice value=Product::getMinimalQuantityPrice($product.id)}
-
-{if !$priceWeb }
-  {assign var=priceWeb value=$product.price_amount}
-{/if}
-
-{assign var=productColor value=Product::getProductAttribute($product.id, 46)}
-{assign var=productMaterial value=Product::getProductAttribute($product.id, 45)}
 <script type="application/ld+json">
   {
     "@context": "https://schema.org/",
     "@type": "Product",
     "name": "{$product.name}",
-    {if $productColor}"color": "{$productColor}",{/if}
-
-    {if $productMaterial}"material": "{$productMaterial}",{/if}
-
     "description": "{$page.meta.description|regex_replace:"/[\r\n]/" : " "}",
     "category": "{$product.category_name}",
     {if !empty($product.cover)}"image" :"{$product.cover.bySize.home_default.url}",{/if}
@@ -71,25 +57,11 @@
       "name": "{if $product_manufacturer->name}{$product_manufacturer->name|escape:'html':'UTF-8'}{else}{$shop.name}{/if}"
     }
     {/if}
-    {if $language.id == 1},
+    {if $hasAggregateRating},
     "aggregateRating": {
       "@type": "AggregateRating",
-      "ratingValue": "4.9",
-      "reviewCount": "68"
-    }
-    {/if}
-    {if $language.id == 2},
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.8",
-      "reviewCount": "29"
-    }
-    {/if}
-    {if $language.id == 3},
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "5",
-      "reviewCount": "2"
+      "ratingValue": "{$ratingValue|round:1|escape:'html':'UTF-8'}",
+      "reviewCount": "{$ratingReviewCount|escape:'html':'UTF-8'}"
     }
     {/if}
     {if $hasWeight},
@@ -105,12 +77,11 @@
       "@type": "Offer",
       "priceCurrency": "{$currency.iso_code}",
       "name": "{$product.name|strip_tags:false}",
-      "price": "{$calculatedPrice}",
-      "url":"{$product.url|regex_replace:"/#.*/":""}",
+      "price": "{$product.price_amount}",
+      "url": "{$product.url}",
       "priceValidUntil": "{($smarty.now + (int) (60*60*24*15))|date_format:"%Y-%m-%d"}",
       {if $product.images|count > 0}
         "image": {strip}[
-          {if !empty($product.cover)}"{$product.cover.bySize.home_default.url}",{/if}
           {foreach from=$product.images item=p_img name="p_img_list"}
             "{$p_img.large.url}"{if not $smarty.foreach.p_img_list.last},{/if}
           {/foreach}
