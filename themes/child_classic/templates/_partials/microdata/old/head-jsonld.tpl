@@ -22,34 +22,64 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
-<script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name" : "{$shop.name}",
-    "url" : "{$urls.pages.index}",
-    {if $shop.logo_details}
-      "logo": {
-        "@type": "ImageObject",
-        "url":"{$shop.logo_details.src}"
-      }
-    {/if}
-  }
-</script>
+ {if $page.page_name == 'index' || $page.page_name == 'cms' || $page.page_name == 'contact'}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name" : "{$shop.name}",
+      "url" : "{$urls.pages.index}",
+      {if $shop.logo_details}
+        "logo": {
+          "@type": "ImageObject",
+          "url":"{$shop.logo_details.src}"
+        }
+      {/if}
+    }
+  </script>
+{/if}
 
-<script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebPage",
-    "isPartOf": {
-      "@type": "WebSite",
-      "url":  "{$urls.pages.index}",
-      "name": "{$shop.name}"
-    },
-    "name": "{$page.meta.title}",
-    "url":  "{$urls.current_url}"
-  }
-</script>
+{if $page.page_name == 'category'}
+
+  {assign var="title_cleaned" value=$page.meta.title|replace:" | Ceramic Connection":""}
+  
+  <script type="application/ld+json">
+    {
+
+      "@context": "http://schema.org",
+      "@type": "Product",
+      "name": "{$title_cleaned}",
+      "image": "",
+      "url":  "{$urls.current_url}",
+      "offers": {
+        "@type": "AggregateOffer",
+        "offerCount": "{$schemaCategoryData.total_items}",
+        "priceCurrency": "EUR",
+        "lowPrice": "{$schemaCategoryData.min_price}",
+        "highPrice": "{$schemaCategoryData.max_price}"
+      }
+
+    }
+  </script>
+
+{else}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "isPartOf": {
+        "@type": "WebSite",
+        "url":  "{$urls.pages.index}",
+        "name": "{$shop.name}"
+      },
+      "page": "{$page.page_name}",
+      "name": "{$page.meta.title}",
+      "url":  "{$urls.current_url}"
+    }
+  </script>
+{/if}
+
+
 
 {if $page.page_name == 'index'}
   <script type="application/ld+json">

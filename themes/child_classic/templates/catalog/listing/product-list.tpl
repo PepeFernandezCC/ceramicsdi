@@ -165,7 +165,7 @@
                                             {if !in_array($showCategory[$cat.id_category]['name'], $notShowArray)}
 
                                                 {assign var="imageCat" value=$link->getCatImageLink($showCategory[$cat.id_category]['link_rewrite'], $cat.id_category)}
-                                                {assign var="normalized_title" value=$showCategory[$cat.id_category]['meta_title']|replace:" | Ceramic Connection":""}  
+                                                {assign var="normalized_title" value=$showCategory[$cat.id_category]['meta_title']|regex_replace:"/\|.*$/":""|trim}  
 
                                                 <div class="brotherCategory">
                                                     <a href="{$link->getCategoryLink($cat.id_category)|escape:'html':'UTF-8'}">
@@ -214,7 +214,7 @@
                                 {foreach from=$categories item=cat}
 
                                     {assign var="showCategory" value=Category::getCategoryInfoArray([$cat.id_category], $language.id)}
-                                    {assign var="normalized_title" value=$showCategory[$cat.id_category]['meta_title']|replace:" | Ceramic Connection":""} 
+                                    {assign var="normalized_title" value=$showCategory[$cat.id_category]['meta_title']|regex_replace:"/\|.*$/":""|trim} 
 
                                     {if !empty($showCategory)}
 
@@ -270,7 +270,7 @@
                                 {foreach from=$categories item=cat}
 
                                     {assign var="showCategory" value=Category::getCategoryInfoArray([$cat.id_category], $language.id)}
-                                    {assign var="normalized_title" value=$showCategory[$cat.id_category]['meta_title']|replace:" | Ceramic Connection":""} 
+                                    {assign var="normalized_title" value=$showCategory[$cat.id_category]['meta_title']|regex_replace:"/\|.*$/":""|trim} 
 
                                     {if !empty($showCategory)}
 

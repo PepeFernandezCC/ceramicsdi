@@ -10,13 +10,13 @@
                     {if $category.meta_title == ''}
                         {assign var="normalized_title" value=$category.name}
                     {else}
-                        {assign var="normalized_title" value=$category.meta_title|lower|replace:" | ceramic connection":""}        
+                        {assign var="normalized_title" value=$category.meta_title|lower|regex_replace:"/\|.*$/":""|trim}      
                     {/if}
 
                     {if $fatherCategory.meta_title == ''}
                         {assign var="normalized_father_title" value=$fatherCategory.name}
                     {else}
-                        {assign var="normalized_father_title" value=$fatherCategory.meta_title|lower|replace:" | ceramic connection":""}        
+                        {assign var="normalized_father_title" value=$fatherCategory.meta_title|lower|regex_replace:"/\|.*$/":""|trim}        
                     {/if}
 
                     <div>
@@ -68,7 +68,7 @@
                     <span class="read-less-btn" type="button" style="display: none;">{l s='Read less' d='Shop.Theme.Catalog'}</span>
 
                     <div class="subcategories">
-                        <h2 class="product-list-h2" style="text-transform:uppercase">{l s='list of' d='Shop.Theme.Catalog'}  {$normalized_title|replace:"| ceramic connection":""}</h2>
+                        <h2 class="product-list-h2" style="text-transform:uppercase">{l s='list of' d='Shop.Theme.Catalog'}  {$normalized_title|regex_replace:"/\|.*$/":""|trim}</h2>
                     </div>
 
                 </div>

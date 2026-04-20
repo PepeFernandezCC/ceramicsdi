@@ -50,7 +50,7 @@
                                         {if $subCategory.meta_title == ''}
                                             {$subCategory.name}
                                         {else}
-                                            {$normalized_title|replace:"| ceramic connection":""|capitalize}
+                                            {$normalized_title|regex_replace:"/\|.*$/":""|trim|capitalize}
                                         {/if}
                                     </a> 
                                 </li>

@@ -41,7 +41,7 @@
 
 {if $page.page_name == 'category'}
 
-  {assign var="title_cleaned" value=$page.meta.title|replace:" | Ceramic Connection":""}
+  {assign var="title_cleaned" value=$page.meta.title|regex_replace:"/\|.*$/":""|trim}
   
   <script type="application/ld+json">
     {

@@ -22,16 +22,18 @@
 
 
         {assign var="borderTop" value=false}
-        {assign var="areaArray" value=[12, 13, 16, 37, 38]}
+        {assign var="areaArray" value=[12, 13, 16, 37, 38, 1770, 1771]}
         {assign var="colorArray" value=[41, 42, 43, 47, 44, 77, 78, 79, 83, 84, 85, 86]} 
         {assign var="typeArray" value=[88, 1740]} 
-        {assign var="notShow" value=[91, 92, 93]}
+        {assign var="shapeArray" value=[103, 105]} 
+        {assign var="notShow" value=[9999]}
         {assign var="subCategories" value=Category::getSubCategoriesArray($category.id, $language.id)} 
 
         {if $subCategories|@count > 0}
             {if in_array($category.id, $areaArray) 
                 || in_array($category.id_parent, $areaArray)
                 || in_array($category.id, $colorArray) 
+                || in_array($category.id, $shapeArray) 
                 || in_array($category.id_parent, $colorArray)
                 || in_array($category.id, $typeArray)
                 || in_array($category.id_parent, $typeArray)}
