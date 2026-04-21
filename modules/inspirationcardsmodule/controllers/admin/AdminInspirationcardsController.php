@@ -97,14 +97,6 @@ class AdminInspirationcardsController extends ModuleAdminController
                 ],
                 [
                     'type' => 'text',
-                    'label' => 'Nombre',
-                    'name' => 'name',
-                    'required' => true,
-                    'lang' => true,
-                    'form_group_class' => 'ic-row ic-row-name',
-                ],
-                [
-                    'type' => 'text',
                     'label' => 'Slug',
                     'name' => 'slug',
                     'required' => true,
@@ -260,21 +252,70 @@ class AdminInspirationcardsController extends ModuleAdminController
         }
     }
 
-    protected function saveImageInspiration($id) {
+    protected function saveImageInspiration($id)
+    {
         $uploadDir = _PS_MODULE_DIR_.$this->module->name.'/uploads/';
 
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0755, true);
         }
 
-        $destination = $uploadDir.$id.'.jpg';
+        if (
+            !isset($_FILES['image']) ||
+            empty($_FILES['image']['tmp_name']) ||
+            !is_uploaded_file($_FILES['image']['tmp_name'])
+        ) {
+            return;
+        }
+
+        $originalName = $_FILES['image']['name'];
+        $extension = Tools::strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
+        $baseName = pathinfo($originalName, PATHINFO_FILENAME);
+
+        if (empty($extension)) {
+            $extension = 'jpg';
+        }
+
+        $safeBaseName = Tools::link_rewrite($baseName);
+        if (empty($safeBaseName)) {
+            $safeBaseName = 'imagen';
+        }
+
+        $fileName = (int)$id . '_' . $safeBaseName . '.' . $extension;
+        $destination = $uploadDir . $fileName;
+
+        // 🔥 Guardar nombre en todos los idiomas
+        $languages = Language::getLanguages(false);
+
+        foreach ($languages as $lang) {
+            Db::getInstance()->update(
+                'inspirationcards_lang',
+                [
+                    'name' => pSQL($fileName)
+                ],
+                'id_inspiration = '.(int)$id.' AND id_lang = '.(int)$lang['id_lang']
+            );
+        }
 
         if (move_uploaded_file($_FILES['image']['tmp_name'], $destination)) {
+            $oldImage = Db::getInstance()->getValue('
+                SELECT image
+                FROM '._DB_PREFIX_.'inspirationcards
+                WHERE id_inspiration = '.(int)$id
+            );
+
             Db::getInstance()->update(
                 'inspirationcards',
-                ['image' => pSQL($id.'.jpg')],
+                ['image' => pSQL($fileName)],
                 'id_inspiration = '.(int)$id
             );
+
+            if (!empty($oldImage) && $oldImage !== $fileName) {
+                $oldPath = $uploadDir . $oldImage;
+                if (is_file($oldPath)) {
+                    @unlink($oldPath);
+                }
+            }
         }
     }
 

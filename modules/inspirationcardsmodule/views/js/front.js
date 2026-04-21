@@ -10,9 +10,15 @@ document.addEventListener('DOMContentLoaded', function () {
     const textFilters = document.querySelectorAll('.insp-filter-values--text > div[role="button"]');
     const colorFilters = document.querySelectorAll('.insp-color[role="button"]');
     const grid = document.getElementById('insp-grid');
+    const button = document.getElementById('viewMoreButton');
+
+    if (!grid) return;
 
     let activeRequest = null;
     let lastFiltersKey = '';
+    let updateTimer = null;
+
+    const pageSize = button ? (parseInt(button.getAttribute('data-limit'), 10) || 12) : 12;
 
     function getActiveFilters() {
         const filters = {
@@ -140,24 +146,36 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    function sendFiltersAjax() {
-        if (!ajaxUrl || !grid) return;
+    function showButton() {
+        if (button) {
+            button.style.display = '';
+        }
+    }
 
+    function hideButton() {
+        if (button) {
+            button.style.display = 'none';
+        }
+    }
+
+    function setButtonOffset(value) {
+        if (button) {
+            button.setAttribute('data-offset', value);
+        }
+    }
+
+    function getButtonOffset() {
+        if (!button) {
+            return 0;
+        }
+
+        return parseInt(button.getAttribute('data-offset'), 10) || 0;
+    }
+
+    function buildFilterRequestData(offset, limit) {
         const filters = getActiveFilters();
-        const filtersKey = JSON.stringify(filters);
-
-        if (filtersKey === lastFiltersKey) {
-            return;
-        }
-        lastFiltersKey = filtersKey;
-
-        if (activeRequest) {
-            activeRequest.abort();
-        }
-
-        activeRequest = new AbortController();
-
         const formData = new FormData();
+
         formData.append('ajax', '1');
         formData.append('action', 'FilterInspirations');
         formData.append('space', JSON.stringify(filters.space));
@@ -166,8 +184,31 @@ document.addEventListener('DOMContentLoaded', function () {
         formData.append('color', JSON.stringify(filters.color));
         formData.append('tamano', JSON.stringify(filters.tamano));
         formData.append('estilo', JSON.stringify(filters.estilo));
+        formData.append('offset', offset);
+        formData.append('limit', limit);
+
+        return formData;
+    }
+
+    function requestInspirations(options) {
+        if (!ajaxUrl || !grid) return;
+
+        const offset = typeof options.offset !== 'undefined' ? options.offset : 0;
+        const limit = typeof options.limit !== 'undefined' ? options.limit : pageSize;
+        const append = !!options.append;
+
+        if (activeRequest) {
+            activeRequest.abort();
+        }
+
+        activeRequest = new AbortController();
+
+        const formData = buildFilterRequestData(offset, limit);
 
         grid.classList.add('is-loading');
+        if (button) {
+            button.classList.add('is-loading');
+        }
 
         fetch(ajaxUrl, {
             method: 'POST',
@@ -179,8 +220,22 @@ document.addEventListener('DOMContentLoaded', function () {
                 return response.json();
             })
             .then(function (data) {
-                if (data && typeof data.html !== 'undefined') {
+                if (!data || typeof data.html === 'undefined') {
+                    return;
+                }
+
+                if (append) {
+                    grid.insertAdjacentHTML('beforeend', data.html);
+                } else {
                     grid.innerHTML = data.html;
+                }
+
+                setButtonOffset(data.loaded || (offset + (data.count || 0)));
+
+                if (data.has_more) {
+                    showButton();
+                } else {
+                    hideButton();
                 }
             })
             .catch(function (error) {
@@ -190,11 +245,29 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .finally(function () {
                 grid.classList.remove('is-loading');
+                if (button) {
+                    button.classList.remove('is-loading');
+                }
                 activeRequest = null;
             });
     }
 
-    let updateTimer = null;
+    function sendFiltersAjax() {
+        const filters = getActiveFilters();
+        const filtersKey = JSON.stringify(filters);
+
+        if (filtersKey === lastFiltersKey) {
+            return;
+        }
+
+        lastFiltersKey = filtersKey;
+
+        requestInspirations({
+            offset: 0,
+            limit: pageSize,
+            append: false
+        });
+    }
 
     function updateFilters() {
         renderChips();
@@ -204,7 +277,7 @@ document.addEventListener('DOMContentLoaded', function () {
             sendFiltersAjax();
         }, 150);
     }
-    
+
     tabs.forEach(function (tab) {
         tab.addEventListener('click', function () {
             const tabName = this.getAttribute('data-tab');
@@ -280,20 +353,40 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (type === 'top-card') {
                 const target = document.querySelector('.insp-card[data-group="' + group + '"][data-value="' + value + '"] .insp-card__image');
-                if (target) target.classList.remove('is-active');
+                if (target) {
+                    target.classList.remove('is-active');
+                }
             }
 
             if (type === 'filter-text') {
                 const target = document.querySelector('.insp-filter-values--text > div[data-group="' + group + '"][data-value="' + value + '"]');
-                if (target) target.classList.remove('is-active');
+                if (target) {
+                    target.classList.remove('is-active');
+                }
             }
 
             if (type === 'filter-color') {
                 const target = document.querySelector('.insp-color[data-group="' + group + '"][data-value="' + value + '"]');
-                if (target) target.classList.remove('is-active');
+                if (target) {
+                    target.classList.remove('is-active');
+                }
             }
 
             updateFilters();
+        });
+    }
+
+    if (button) {
+        button.addEventListener('click', function () {
+            if (button.classList.contains('is-loading')) {
+                return;
+            }
+
+            requestInspirations({
+                offset: getButtonOffset(),
+                limit: pageSize,
+                append: true
+            });
         });
     }
 

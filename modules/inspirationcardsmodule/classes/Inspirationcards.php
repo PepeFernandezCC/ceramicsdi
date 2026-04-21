@@ -26,7 +26,7 @@ class Inspirationcards extends ObjectModel
             'name' => [
                 'type' => self::TYPE_STRING,
                 'lang' => true,
-                'required' => true,
+                'required' => false,
                 'size' => 255
             ],
             'slug' => [

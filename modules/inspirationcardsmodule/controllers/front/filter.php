@@ -32,24 +32,42 @@ class InspirationcardsmoduleFilterModuleFrontController extends Inspirationcards
             $estilo = [];
         }
 
+        $limit = (int)Tools::getValue('limit', 12);
+        $offset = (int)Tools::getValue('offset', 0);
+
+        if ($limit <= 0) {
+            $limit = 12;
+        }
+
+        if ($offset < 0) {
+            $offset = 0;
+        }
+
         $idLang = (int)$this->context->language->id;
 
-        $sql = '
-            SELECT i.id_inspiration, i.image, il.name, il.slug
+        $fromSql = '
             FROM '._DB_PREFIX_.'inspirationcards i
             INNER JOIN '._DB_PREFIX_.'inspirationcards_lang il
                 ON (il.id_inspiration = i.id_inspiration AND il.id_lang = '.(int)$idLang.')
             WHERE i.active = 1
         ';
 
-        $sql .= $this->buildCategoryFilterSql($space, 'space');
-        $sql .= $this->buildCategoryFilterSql($usage, 'usage');
-        $sql .= $this->buildFeatureFilterSql($aspecto, 'aspecto');
-        $sql .= $this->buildFeatureFilterSql($color, 'color');
-        $sql .= $this->buildFeatureFilterSql($tamano, 'tamano');
-        $sql .= $this->buildFeatureFilterSql($estilo, 'estilo');
+        $fromSql .= $this->buildCategoryFilterSql($space, 'space');
+        $fromSql .= $this->buildCategoryFilterSql($usage, 'usage');
+        $fromSql .= $this->buildFeatureFilterSql($aspecto, 'aspecto');
+        $fromSql .= $this->buildFeatureFilterSql($color, 'color');
+        $fromSql .= $this->buildFeatureFilterSql($tamano, 'tamano');
+        $fromSql .= $this->buildFeatureFilterSql($estilo, 'estilo');
 
-        $sql .= ' ORDER BY i.id_inspiration DESC';
+        $total = (int)Db::getInstance()->getValue('
+            SELECT COUNT(*) ' . $fromSql
+        );
+
+        $sql = '
+            SELECT i.id_inspiration, i.image, il.name, il.slug
+            ' . $fromSql . '
+            ORDER BY i.id_inspiration DESC
+            LIMIT '.(int)$offset.', '.(int)$limit;
 
         $inspirations = Db::getInstance()->executeS($sql);
 
@@ -68,9 +86,17 @@ class InspirationcardsmoduleFilterModuleFrontController extends Inspirationcards
 
         $html = $this->module->fetch('module:inspirationcardsmodule/views/templates/front/_grid.tpl');
 
+        $loaded = $offset + count($inspirations);
+        $hasMore = $loaded < $total;
+
         header('Content-Type: application/json');
         die(Tools::jsonEncode([
+            'success' => true,
             'html' => $html,
+            'count' => count($inspirations),
+            'loaded' => $loaded,
+            'total' => $total,
+            'has_more' => $hasMore,
         ]));
     }
 
@@ -212,6 +238,7 @@ class InspirationcardsmoduleFilterModuleFrontController extends Inspirationcards
 
         return array_unique($ids);
     }
+
     protected function getInspirationsLanguageUrls()
     {
         $languages = Language::getLanguages(true, $this->context->shop->id);

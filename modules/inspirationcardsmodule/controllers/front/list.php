@@ -11,14 +11,23 @@ class InspirationcardsmoduleListModuleFrontController extends Inspirationcardsmo
         $this->assignHeaderLanguages($this->getInspirationsLanguageUrls());
 
         $idLang = (int)$this->context->language->id;
+        $limit = 12;
+        $offset = 0;
 
         $inspirations = Db::getInstance()->executeS('
             SELECT i.id_inspiration, i.image, il.name, il.slug
             FROM '._DB_PREFIX_.'inspirationcards i
-            LEFT JOIN '._DB_PREFIX_.'inspirationcards_lang il
+            INNER JOIN '._DB_PREFIX_.'inspirationcards_lang il
                 ON (il.id_inspiration = i.id_inspiration AND il.id_lang = '.(int)$idLang.')
             WHERE i.active = 1
             ORDER BY i.id_inspiration DESC
+            LIMIT '.(int)$offset.', '.(int)$limit
+        );
+
+        $totalInspirations = (int)Db::getInstance()->getValue('
+            SELECT COUNT(*)
+            FROM '._DB_PREFIX_.'inspirationcards i
+            WHERE i.active = 1
         ');
 
         $languageUrls = $this->getInspirationsLanguageUrls();
@@ -32,11 +41,13 @@ class InspirationcardsmoduleListModuleFrontController extends Inspirationcardsmo
 
         $this->context->smarty->assign([
             'inspirations' => $inspirations,
-            'filter_ajax_url' => $this->context->link->getModuleLink( 'inspirationcardsmodule', 'filter'),
+            'filter_ajax_url' => $this->context->link->getModuleLink('inspirationcardsmodule', 'filter'),
+            'load_more_step' => $limit,
+            'total_inspirations' => $totalInspirations,
             'espacios' => [
-                ['id' => 13, 'name' => 'Salón'],
+                ['id' => 14, 'name' => 'Salón'],
                 ['id' => 12, 'name' => 'Cocina'],
-                ['id' => 14, 'name' => 'Baño'],
+                ['id' => 13, 'name' => 'Baño'],
                 ['id' => 15, 'name' => 'Dormitorio'],
                 ['id' => 16, 'name' => 'Exterior'],
                 ['id' => 37, 'name' => 'Piscina'],

@@ -193,7 +193,13 @@
   </section>
 
   <div class="insp-more">
-    <div class="insp-more__btn" role="button">
+    <div
+      id="viewMoreButton"
+      class="insp-more__btn"
+      role="button"
+      data-offset="{count($inspirations)}"
+      data-limit="{$load_more_step|intval}"
+    >
       VER MÁS
     </div>
   </div>

@@ -670,7 +670,7 @@
                         </div>
 
 
-                        {if $texto_muestra !== '' &&  $texto_muestra !== '.'}
+                        {if $hasSample && $texto_muestra !== '' &&  $texto_muestra !== '.'}
                             <div class="sampleText">
                                 <span class="sampleTextIcon">*</span>
                                 <span class="sampleTextDescription">{$texto_muestra}</span>
