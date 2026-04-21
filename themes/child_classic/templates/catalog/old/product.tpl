@@ -315,6 +315,8 @@
 
                         {/block}
 
+                        <div id="product-rating"> {hook h='displayProductAdditionalInfo' product=$product} </div>
+
                         <hr>
 
 
@@ -325,11 +327,8 @@
                             
                                 {if $product.show_availability && $product.availability_message}
 
-                                    {if $product.availability == 'available' and $product.quantity > 0}
+                                    {if $product.quantity > 0}
                                         <i class="material-icons rtl-no-flip product-available">&#xE5CA;</i> 
-                                        {assign var="display_custom_stock_msg" value="{$custom_stock_msg}"}
-                                    {elseif $product.availability == 'last_remaining_items'}
-                                        <i class="material-icons product-last-items">&#xE002;</i>
                                         {assign var="display_custom_stock_msg" value="{$custom_stock_msg}"}
                                     {else}
                                         <i class="material-icons product-last-items">&#xE002;</i>
@@ -840,11 +839,6 @@
 
                     {* END PLANATEC *}
 
-                    {block name='product_additional_info'}
-
-                                        {include file='catalog/_partials/product-additional-info.tpl'}
-
-                    {/block}
 
                     {block name='product_refresh'}{/block}
                 </div>

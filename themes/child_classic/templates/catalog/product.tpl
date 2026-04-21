@@ -669,6 +669,14 @@
                             </div>
                         </div>
 
+
+                        {if $texto_muestra !== '' &&  $texto_muestra !== '.'}
+                            <div class="sampleText">
+                                <span class="sampleTextIcon">*</span>
+                                <span class="sampleTextDescription">{$texto_muestra}</span>
+                            </div>
+                        {/if}
+
                         <div id="transport-wrapper" class="row mx-auto no-padding-desktop" style="margin-bottom:10px">
                             <div class="col-xl-12 col-xs-12 no-padding-desktop" style="padding-top:0">
                                 <div class="product-transport">

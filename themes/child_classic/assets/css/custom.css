@@ -7294,3 +7294,26 @@ span.manage-addresses {
   opacity:.35;
   cursor:default;
 }
+
+.sampleText {
+    display: flex;
+    align-items: center;
+}
+
+.sampleTextIcon {
+  font-weight: 800; 
+  color: #eac133; 
+  font-size: 24px;
+  padding-right: 10px;
+}
+
+.sampleTextDescription{
+  font-weight: 500;
+  padding-bottom: 5px;
+}
+
+@media (max-width:769px) {
+  .sampleText {
+      margin-top: 20px;
+  }
+}
