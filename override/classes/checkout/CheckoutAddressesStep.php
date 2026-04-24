@@ -54,7 +54,6 @@ class CheckoutAddressesStep extends CheckoutAddressesStepCore
         }
 
         // 5) Lógica intracomunitaria
-        //    getVatApiData($idDelivery, $idInvoice) -> ya tienes esa función
         $data = Address::getVatApiData($idDelivery, $idInvoice);
 
         $validate    = !empty($data['validate']);
@@ -168,7 +167,9 @@ class CheckoutAddressesStep extends CheckoutAddressesStepCore
                     }
 
                     // Otros errores de VIES → solo log, NO bloqueamos
+                    Customer::removeIntracomunitaryGroup($customer_id);
                     Customer::insertIntracomunitaryLog(false, 'DIRECCIONES: ' . $msg, $vatNumber, $customer_id, $idCountry);
+
                     return $this;
                 } elseif (isset($xml->vies->valid)) {
                     $ok  = ((string) $xml->vies->valid === 'true');

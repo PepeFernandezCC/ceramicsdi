@@ -32,10 +32,12 @@ class CheckoutAddressesStep extends CheckoutAddressesStepCore
 
         // 3) Asegurar que existe dirección de facturación.
         //    Si el core no ha puesto ninguna, copiamos la de envío.
+        /*
         if (!$idInvoice && $idDelivery) {
             $session->setIdAddressInvoice($idDelivery);
             $idInvoice = $idDelivery;
         }
+        */
 
         // 4) Si falta alguna de las dos, bloqueamos y nos quedamos en direcciones
         if (!$idDelivery || !$idInvoice) {
@@ -96,8 +98,18 @@ class CheckoutAddressesStep extends CheckoutAddressesStepCore
 
         // 6) Normalizar VAT (caso especial Francia incluido)
         $prefix = substr($vat_input, 0, 2);
+        $inputPrefix = $prefix;
+        
+        // Lista de prefijos válidos VIES (ISO VAT). Ojo: Grecia usa EL (no GR).
+        $validVatPrefixes = [
+            'AT','BE','BG','CY','CZ','DE','DK','EE','EL','FI','FR','HR','HU',
+            'IE','IT','LT','LU','LV','MT','NL','PL','PT','RO','SE','SI','SK'
+        ];
 
-        if ($prefix === $country->iso_code) {
+        // ¿Parece que el cliente ha metido ya un VAT completo? (2 letras + algo detrás)
+        $hasVatLikePrefix = strlen($vat_input) >= 4 && in_array($inputPrefix, $validVatPrefixes, true);
+
+        if ($prefix === $country->iso_code || $hasVatLikePrefix) {
             $vatNumber = $vat_input;
         } else {
             if ($idCountry === $FRANCE_ID && strlen($vat_input) == 9) {
