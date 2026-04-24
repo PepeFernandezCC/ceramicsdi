@@ -7317,3 +7317,11 @@ span.manage-addresses {
       margin-top: 20px;
   }
 }
+
+
+a:focus{
+  outline: none !important;
+}
+button:focus {
+  outline: none !important;
+}
