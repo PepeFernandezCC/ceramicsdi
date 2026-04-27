@@ -1,6 +1,7 @@
            
             {assign var="otherMaterialsArray" value=[81, 82, 88]}
             {assign var="materialValue" value=" - "}
+            {assign var="formatValue" value=" - "}
        
             {foreach from=$product.features item='feature'}
                 {if isset($feature.id_feature) && $feature.id_feature == $FEATURE_MEDIDA_ID}

@@ -26,7 +26,9 @@ class Carrier extends CarrierCore
             return null;
         }
 
+    
         $delivery_option_list = $cart->getDeliveryOptionList($country);
+
 
         if (!is_array($delivery_option_list) || empty($delivery_option_list)) {
             return null;
@@ -49,7 +51,7 @@ class Carrier extends CarrierCore
                     ? (float)$option['total_price_with_tax']
                     : (float)$option['total_price_without_tax'];
 
-                if ($bestPrice === null || $price < $bestPrice) {
+                if (($bestPrice === null || $price < $bestPrice) && $price > 0) {
                     $bestPrice = $price;
 
                     $firstCarrier = reset($option['carrier_list']);

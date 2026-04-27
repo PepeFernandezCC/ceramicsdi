@@ -165,6 +165,7 @@ class CheckoutDeliveryStepCore extends AbstractCheckoutStep
 
     public function render(array $extraParams = [])
     {
+
         return $this->renderTemplate(
             $this->getTemplate(),
             $extraParams,

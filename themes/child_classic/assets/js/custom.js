@@ -2008,6 +2008,7 @@ $( document ).ready( function () {
                   //si hay error limpiarlo
                    document.getElementById('messageContainer').style.display = 'none'
                   // Realizar la solicitud AJAX utilizando jQuery
+                  console.log('enviando ajax, calculo precios...');
                   $.ajax({
                      url: '/ajax/getDeliveryPrice.php', // Ruta al archivo PHP
                      method: 'POST', // Usamos POST para enviar los datos
@@ -2021,6 +2022,7 @@ $( document ).ready( function () {
                      },
                      success: function(response) {
                         // Si la respuesta es válida, puedes usar el resultado (por ejemplo, el costo de envío)
+                        console.log('respuesta obtenida');
                         if (response.shipping_cost) {
                            document.getElementById('euros-input').value = response.shipping_cost;
                         } else if (response.error) {
