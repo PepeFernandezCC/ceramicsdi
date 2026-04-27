@@ -99,19 +99,6 @@ class PayPalwithFeePaymentModuleFrontController extends ModuleFrontController
 		) : $this->module->getTotalAmount($product_list, false);
 		$discounts_amount = $this->module->getTotalDiscounts($discounts);
 		$discounts_amount_no_tax = $this->module->getTotalDiscounts($discounts, false);
-		/*FIX PAYPAL BUG PROTECCION-PP-1*/
-		if (!$this->context->cart->isVirtualCart()) {
-			$deliveryOption = $this->context->cart->getDeliveryOption();
-
-			if (empty($deliveryOption) || !reset($deliveryOption) || !(int)$this->context->cart->id_carrier) {
-				header('Content-Type: application/json');
-				die(json_encode([
-					'result' => 'error',
-					'message' => 'No hay transportista seleccionado. Vuelve al carrito y selecciona un método de envío.'
-				]));
-			}
-		}
-
 		$shipping_amount = Tools::ps_round($this->context->cart->getTotalShippingCost(), $this->decimals);
 		$shipping_amount_no_tax = Tools::ps_round(
 			$this->context->cart->getTotalShippingCost(null, false),
@@ -285,20 +272,6 @@ class PayPalwithFeePaymentModuleFrontController extends ModuleFrontController
 			$purchaseUnits['handling'] -
 			$purchaseUnits['shipping_discount'] -
 			$purchaseUnits['discount'], $this->decimals);
-
-		/*FIX PAYPAL BUG PROTECTION-PP-2 */
-		$expected_total = Tools::ps_round(
-			$this->context->cart->getOrderTotal(true, Cart::BOTH) + $fee_amount,
-			$this->decimals
-		);
-
-		if (abs($total - $expected_total) > 0.01) {
-			header('Content-Type: application/json');
-			die(json_encode([
-				'result' => 'error',
-				'message' => 'El total enviado a PayPal no coincide con el total del carrito.'
-			]));
-		}
 
 		//check if the discount exceeds the total payment to fix it.
 		if ($total < 0) {
