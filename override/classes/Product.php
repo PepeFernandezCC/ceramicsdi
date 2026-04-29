@@ -72,7 +72,8 @@ class Product extends ProductCore {
             'COLECCION_FUGABELLA_COLOR',
             'COLECCION_BAHIA',
             'COLECCION_FIJI',
-            'COLECCION_PURE_10_BRILLO_MATE'
+            'COLECCION_PURE_10_BRILLO_MATE',
+            'COLECCION_VIDEO_CUSTOM'
         ];
 
         
