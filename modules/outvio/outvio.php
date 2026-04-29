@@ -906,9 +906,6 @@ class Outvio extends Module
 //	      var_dump('Test', $carrier, '------------------------', $order); exit(0);
         $order_carrier = new OrderCarrier((int)$order->getIdOrderCarrier());
         $total_products_price = Tools::ps_round($order->total_paid_tax_incl, 2);
-        if (($order_carrier->carrier_name == 'Correos' || $order_carrier->carrier_name == 'International Postal Service') && $total_products_price < 1 ) {
-            $total_products_price =  Tools::ps_round(1, 2);
-        }
         $result = array(
             'id' => (int)$order->id,
             'originalId' => $order->reference,

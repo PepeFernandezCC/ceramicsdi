@@ -530,8 +530,12 @@ class Product extends ProductCore {
                 $tipology = self::getTipologyString($pieceTypology);
                 if (!$pieceTypology) {
                     $m2Caja = self::getM2CajaValue($productId);
-                    $price = $price / $m2Caja;
-                    $original_price = $original_price/$m2Caja;
+                    if($price > 0 && $m2Caja > 0){
+                        $price = $price / $m2Caja;
+                    }
+                    if($m2Caja > 0 && $original_price > 0){
+                        $original_price = $original_price/$m2Caja;
+                    }
                 } 
             }
         } 
@@ -908,6 +912,44 @@ class Product extends ProductCore {
             WHERE id_product='.(int)$idProduct.' AND active=1
         ';
         return (int)Db::getInstance()->getValue($sql);
+    }
+
+    public static function initPricesComputation($id_customer = null)
+    {
+        if ((int) $id_customer > 0) {
+            $customer = new Customer((int) $id_customer);
+
+            if (!Validate::isLoadedObject($customer)) {
+                PrestaShopLogger::addLog(
+                    'Product::initPricesComputation - id_customer invalido: ' . (int) $id_customer,
+                    3
+                );
+
+                self::$_taxCalculationMethod = Group::getPriceDisplayMethod((int) Group::getCurrent()->id);
+                return;
+            }
+
+            self::$_taxCalculationMethod = Group::getPriceDisplayMethod((int) $customer->id_default_group);
+
+            $cur_cart = Context::getContext()->cart;
+            $id_address = 0;
+
+            if (Validate::isLoadedObject($cur_cart)) {
+                $id_address = (int) $cur_cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')};
+            }
+
+            $address_infos = Address::getCountryAndState($id_address);
+
+            if (self::$_taxCalculationMethod != PS_TAX_EXC
+                && !empty($address_infos['vat_number'])
+                && $address_infos['id_country'] != Configuration::get('VATNUMBER_COUNTRY')
+                && Configuration::get('VATNUMBER_MANAGEMENT')
+            ) {
+                self::$_taxCalculationMethod = PS_TAX_EXC;
+            }
+        } else {
+            self::$_taxCalculationMethod = Group::getPriceDisplayMethod((int) Group::getCurrent()->id);
+        }
     }
 
 
