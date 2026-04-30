@@ -145,6 +145,22 @@ class AdminInspirationcardsController extends ModuleAdminController
                     ],
                     'form_group_class' => 'ic-row ic-col ic-col-right ic-col-right-second',
                 ],
+                                [
+                    'type' => 'checkbox',
+                    'label' => 'Material',
+                    'name' => 'material',
+                    'values' => [
+                        'query' => [
+                            ['id' => 11, 'label' => 'Azulejo'],
+                            ['id' => 82, 'label' => 'Piedra'],
+                            ['id' => 88, 'label' => 'Terracota'],
+                            ['id' => 81, 'label' => 'Mosaicos'],
+                        ],
+                        'id' => 'id',
+                        'name' => 'label',
+                    ],
+                    'form_group_class' => 'ic-row ic-col ic-col-right ic-col-right-third',
+                ],
                 [
                     'type' => 'html',
                     'label' => 'Productos relacionados',
@@ -188,6 +204,7 @@ class AdminInspirationcardsController extends ModuleAdminController
         foreach ($categories as $cat) {
             $fields['espacio_'.$cat['id_category']] = 1;
             $fields['uso_'.$cat['id_category']] = 1;
+            $fields['material_'.$cat['id_category']] = 1;
         }
 
         return $fields;
@@ -244,6 +261,15 @@ class AdminInspirationcardsController extends ModuleAdminController
         $usos = [1770, 1771, 9999];
         foreach ($usos as $cat) {
             if (Tools::getValue('uso_'.$cat)) {
+                Db::getInstance()->insert('inspirationcards_category', [
+                    'id_inspiration' => (int)$id,
+                    'id_category' => (int)$cat,
+                ]);
+            }
+        }
+        $material =  [11, 82, 88, 81];
+        foreach ($material as $cat) {
+            if (Tools::getValue('material_'.$cat)) {
                 Db::getInstance()->insert('inspirationcards_category', [
                     'id_inspiration' => (int)$id,
                     'id_category' => (int)$cat,

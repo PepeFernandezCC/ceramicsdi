@@ -12,6 +12,7 @@ class InspirationcardsmoduleFilterModuleFrontController extends Inspirationcards
         $color = json_decode(Tools::getValue('color', '[]'), true);
         $tamano = json_decode(Tools::getValue('tamano', '[]'), true);
         $estilo = json_decode(Tools::getValue('estilo', '[]'), true);
+        $producto = json_decode(Tools::getValue('producto', '[]'), true);
 
         if (!is_array($space)) {
             $space = [];
@@ -30,6 +31,10 @@ class InspirationcardsmoduleFilterModuleFrontController extends Inspirationcards
         }
         if (!is_array($estilo)) {
             $estilo = [];
+        }
+
+        if (!is_array($producto)) {
+            $producto = [];
         }
 
         $limit = (int)Tools::getValue('limit', 12);
@@ -54,10 +59,13 @@ class InspirationcardsmoduleFilterModuleFrontController extends Inspirationcards
 
         $fromSql .= $this->buildCategoryFilterSql($space, 'space');
         $fromSql .= $this->buildCategoryFilterSql($usage, 'usage');
+        $fromSql .= $this->buildCategoryFilterSql($producto, 'producto');
+
         $fromSql .= $this->buildFeatureFilterSql($aspecto, 'aspecto');
         $fromSql .= $this->buildFeatureFilterSql($color, 'color');
         $fromSql .= $this->buildFeatureFilterSql($tamano, 'tamano');
         $fromSql .= $this->buildFeatureFilterSql($estilo, 'estilo');
+       
 
         $total = (int)Db::getInstance()->getValue('
             SELECT COUNT(*) ' . $fromSql
@@ -91,6 +99,7 @@ class InspirationcardsmoduleFilterModuleFrontController extends Inspirationcards
 
         header('Content-Type: application/json');
         die(Tools::jsonEncode([
+            'sql' => $sql,
             'success' => true,
             'html' => $html,
             'count' => count($inspirations),
@@ -158,6 +167,7 @@ class InspirationcardsmoduleFilterModuleFrontController extends Inspirationcards
                 'dormitorio' => 15,
                 'exterior' => 16,
                 'piscina' => 37,
+
             ];
         }
 
@@ -166,6 +176,15 @@ class InspirationcardsmoduleFilterModuleFrontController extends Inspirationcards
                 'suelo' => 1770,
                 'pared' => 1771,
                 'moodboards' => 9999,
+            ];
+        }
+
+        if ($group === 'producto') {
+            $map = [
+                'azulejo' => 11,
+                'piedra' => 82,
+                'terracota' => 88,
+                'mosaico' => 81,
             ];
         }
 

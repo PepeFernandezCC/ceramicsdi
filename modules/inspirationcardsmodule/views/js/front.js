@@ -27,7 +27,8 @@ document.addEventListener('DOMContentLoaded', function () {
             aspecto: [],
             color: [],
             tamano: [],
-            estilo: []
+            estilo: [],
+            producto: []
         };
 
         document.querySelectorAll('.insp-card .insp-card__image.is-active').forEach(function (img) {
@@ -180,10 +181,13 @@ document.addEventListener('DOMContentLoaded', function () {
         formData.append('action', 'FilterInspirations');
         formData.append('space', JSON.stringify(filters.space));
         formData.append('usage', JSON.stringify(filters.usage));
+        formData.append('producto', JSON.stringify(filters.producto));
+        
         formData.append('aspecto', JSON.stringify(filters.aspecto));
         formData.append('color', JSON.stringify(filters.color));
         formData.append('tamano', JSON.stringify(filters.tamano));
         formData.append('estilo', JSON.stringify(filters.estilo));
+        
         formData.append('offset', offset);
         formData.append('limit', limit);
 
@@ -301,13 +305,18 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    const allowedGroups = ['space', 'usage', 'product'];
+
     topImages.forEach(function (image) {
         image.addEventListener('click', function () {
             const card = this.closest('.insp-card');
             if (!card) return;
 
             const group = card.dataset.group;
-            const opposite = group === 'space' ? 'usage' : 'space';
+
+            // Ignora cualquier grupo que no sea space, usage o product
+            if (!allowedGroups.includes(group)) return;
+
             const isActive = this.classList.contains('is-active');
 
             if (isActive) {
@@ -316,11 +325,28 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            clearTopGroup(opposite);
+            clearOtherTopGroups(group);
             this.classList.add('is-active');
             updateFilters();
         });
     });
+
+    function clearOtherTopGroups(activeGroup) {
+        topImages.forEach(function (image) {
+            const card = image.closest('.insp-card');
+            if (!card) return;
+
+            const group = card.dataset.group;
+
+            // Solo afecta a space, usage y product
+            if (
+                allowedGroups.includes(group) &&
+                group !== activeGroup
+            ) {
+                image.classList.remove('is-active');
+            }
+        });
+    }
 
     textFilters.forEach(function (item) {
         item.addEventListener('click', function () {

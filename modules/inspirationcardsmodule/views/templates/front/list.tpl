@@ -98,6 +98,9 @@
       <div class="insp-filter-tab" role="button" data-tab="estilo">
         <span>ESTILO</span>
       </div>
+      <div class="insp-filter-tab" role="button" data-tab="producto">
+        <span>{l s='PRODUCTO' d='Shop.Themes.Catalog'}</span>
+      </div>
       <div class="fill-filter"></div>
     </div>
 
@@ -181,6 +184,15 @@
           <div role="button" data-group="estilo" data-value="mediterraneo" data-label="Mediterráneo">Mediterráneo</div>
           <div role="button" data-group="estilo" data-value="wabisabi" data-label="Wabi-Sabi">Wabi-Sabi</div>
           <div role="button" data-group="estilo" data-value="contemporaneo" data-label="Contemporáneo">Contemporáneo</div>
+        </div>
+      </div>
+
+      <div class="insp-filter-panel" data-panel="producto">
+        <div class="insp-filter-values insp-filter-values--text">
+          <div role="button" data-group="producto" data-value="azulejo" data-label="Azulejo">{l s='Azulejo' d='Shop.Theme.Catalog'}</div>
+          <div role="button" data-group="producto" data-value="piedra" data-label="Piedra">{l s='Piedra' d='Shop.Theme.Catalog'}</div>
+          <div role="button" data-group="producto" data-value="terracota" data-label="Terracota">{l s='Terracota' d='Shop.Theme.Catalog'}</div>
+          <div role="button" data-group="producto" data-value="mosaico" data-label="Mosaico de vidrio">{l s='Mosaico de vidrio' d='Shop.Theme.Catalog'}</div>
         </div>
       </div>
     </div>
