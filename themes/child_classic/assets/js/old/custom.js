@@ -3,18 +3,6 @@ $( document ).ready( function () {
    let myGlobal = [];
    
    let initializeCustom = function () {
-
-
-      /*FIX REDSYS BUG*/
-      if (typeof updateTotalsWithFee === 'function') {
-         updateTotalsWithFee = function() {};
-      }
-
-      if (typeof updateOrderSummaryWithFee === 'function') {
-         updateOrderSummaryWithFee = function() {};
-      }
-
-
       if(document.getElementById('desktop-product-images')) {
          $(document).on('click', '.images-container .layer', function () {
             const idx = parseInt($(this).data('iteration'), 10) - 1;
@@ -2020,6 +2008,7 @@ $( document ).ready( function () {
                   //si hay error limpiarlo
                    document.getElementById('messageContainer').style.display = 'none'
                   // Realizar la solicitud AJAX utilizando jQuery
+                  console.log('enviando ajax, calculo precios...');
                   $.ajax({
                      url: '/ajax/getDeliveryPrice.php', // Ruta al archivo PHP
                      method: 'POST', // Usamos POST para enviar los datos
@@ -2033,6 +2022,7 @@ $( document ).ready( function () {
                      },
                      success: function(response) {
                         // Si la respuesta es válida, puedes usar el resultado (por ejemplo, el costo de envío)
+                        console.log('respuesta obtenida');
                         if (response.shipping_cost) {
                            document.getElementById('euros-input').value = response.shipping_cost;
                         } else if (response.error) {
@@ -2219,8 +2209,22 @@ $( document ).ready( function () {
          }
       }
 
-      if (document.getElementById('delivery-address')) {
 
+      function getSubtotalProductsPriceRoundUpInteger() {
+         let text = document.querySelector('#cart-subtotal-products .value').textContent;
+         // Limpiar formato europeo correctamente
+         let number = parseFloat(
+         text
+            .replace(/\./g, '')     // quitar separador de miles
+            .replace(',', '.')      // convertir decimal
+            .replace(/[^\d.]/g, '') // quitar símbolo €
+         );
+
+         return  Math.ceil(number);
+      }
+
+      if (document.getElementById('delivery-address')) {
+         const SubtotalProductsRoundUpInteger = getSubtotalProductsPriceRoundUpInteger();
          const $treatment = $( 'input[name="treatment"]:checked' );
          const $fieldAlias = $( '#field-alias' ).closest( '.form-group' );
          const customerTypeBox = $('#field-empresa').closest( '.form-group' );
@@ -2405,12 +2409,13 @@ $( document ).ready( function () {
          }
 
          function newAddresParticularsetup(useSameCheck) {
+            
             let switchUseSame = $('#switchUseSameFormDiv').closest( '.form-group' );
             switchUseSame.css('display', 'flex');
             if (!useSameCheck && !invoiceForm) { //Diferente Dirección y no es facturacion
                   addressFormatOnlyName();
             }else{//misma dirección
-               if ($('#field-id_country').val() != 6) {
+               if ($('#field-id_country').val() != 6 && SubtotalProductsRoundUpInteger < 2200) {
                   addressFormatOnlyName();
                }else{
                   addressFormatNameDni();
@@ -2426,7 +2431,7 @@ $( document ).ready( function () {
             if (!useSameCheck) {
                addressFormatOnlyName(); 
             }else{
-               if ($('#field-id_country').val() != 6) {
+               if ($('#field-id_country').val() != 6 && SubtotalProductsRoundUpInteger < 2200) {
                   addressFormatOnlyName();
                }else{
                   addressFormatNameDni();
@@ -2453,7 +2458,7 @@ $( document ).ready( function () {
          function editAddressParticularInvoice() {
             let switchUseSame = $('#switchUseSameFormDiv').closest( '.form-group' );
             switchUseSame.css('display', 'none');
-            if ($('#field-id_country').val() != 6) {
+            if ($('#field-id_country').val() != 6 && SubtotalProductsRoundUpInteger < 2200) {
                addressFormatOnlyName();
             } else {
                addressFormatNameDni();
@@ -2559,7 +2564,7 @@ $( document ).ready( function () {
          }
 
          // 4) Aplicamos la configuración inicial del formulario
-          console.log('type: '+invoiceForm+' | new: '+($('#field-alias').val() == '' || newAddress)+ ' |mode: '+ initialMode +' | useSame: '+useSameCheck);
+         //console.log('cart: '+ SubtotalProductsRoundUpInteger + ' type: '+invoiceForm+' | new: '+($('#field-alias').val() == '' || newAddress)+ ' |mode: '+ initialMode +' | useSame: '+useSameCheck);
          applyFormSetup(initialMode, useSameCheck);
 
          $('#field-empresa').on('change', function () {
@@ -2780,6 +2785,30 @@ $( document ).ready( function () {
             return false; // Si no coincide con ninguna de las expresiones regulares
          }
 
+         function validarNIE() {
+            let dniInput = document.getElementById("field-dni").value.toUpperCase().trim();
+
+            // Eliminar espacios internos y caracteres comunes como guiones o puntos
+            dniInput = dniInput.replace(/[\s.-]/g, "");
+
+            // Validar longitud mínima y máxima razonable
+            if (dniInput.length < 5 || dniInput.length > 20) {
+               return false;
+            }
+
+            // Solo permitir letras y números
+            if (!/^[A-Z0-9]+$/.test(dniInput)) {
+               return false;
+            }
+
+            // Debe contener al menos una letra o un número (evita cosas raras tipo "-----")
+            if (!/[A-Z0-9]/.test(dniInput)) {
+               return false;
+            }
+
+            return true;
+         }
+
          // Función para validar el CIF
          function isValidCif(cif) {
             if (!cif || cif.length !== 9) {
@@ -2844,7 +2873,7 @@ $( document ).ready( function () {
                   useSameCheck = (isInvoiceParam == '2' || isInvoiceParam == '1') ? true : false;
                }
 
-
+/*
                if( $( '#field-particular' ).is(':checked')) { // VALIDAR PARTICULAR
                   if ($('#field-id_country').val() == 6) { //si es español
                      if (useSameCheck){
@@ -2864,10 +2893,70 @@ $( document ).ready( function () {
                            }  
                         }
                      }
+                  }else{
+                     if (SubtotalProductsRoundUpInteger >= 2200) {
+                        if (useSameCheck){
+                           if ($('#field-dni').val() == '') {
+                              document.getElementById("dni-error").style.display = "block";// error cif/dni vacío
+                              validation = false;
+                              console.log('Error: validation dni particular español vacio | check off');
+                           }else if (!validarNIE()) {
+                              validation = false;
+                              console.log('ERRORES CON ID extrangero...');
+                              const errorSpan = document.getElementById("dni-error");
+                              errorSpan.style.display = "block";
+                              errorSpan.innerText = "ID error: wrong format";
+                           }else{
+                              if(document.getElementById("dni-error")) {
+                                 document.getElementById("dni-error").style.display = "none";// error cif/dni vacío
+                              }  
+                           }
+                        } 
+                     }
                   }
 
                }
-               
+ */
+               if ($('#field-particular').is(':checked')) {
+                  const isSpanish = $('#field-id_country').val() == 6;
+                  const shouldValidateForeignId = !isSpanish && SubtotalProductsRoundUpInteger >= 2200;
+                  const shouldValidate = useSameCheck && (isSpanish || shouldValidateForeignId);
+
+                  if (shouldValidate) {
+                     const dniValue = $('#field-dni').val().trim();
+                     const errorSpan = document.getElementById("dni-error");
+
+                     let isValid = true;
+                     let errorMessage = "";
+
+                     if (dniValue === "") {
+                        isValid = false;
+                        errorMessage = isSpanish
+                        ? "Formato incorrecto. Introduzca un DNI o NIE válido."
+                        : "ID error: wrong format";
+                        console.log(`Error: validation id vacío | ${isSpanish ? 'español' : 'extranjero'}`);
+                     } else if (isSpanish && !validarDNI()) {
+                        isValid = false;
+                        errorMessage = "Formato incorrecto. Introduzca un DNI o NIE válido.";
+                        console.log("ERRORES CON DNI...");
+                     } else if (!isSpanish && !validarNIE()) {
+                        isValid = false;
+                        errorMessage = "ID error: wrong format";
+                        console.log("ERRORES CON ID extranjero...");
+                     }
+
+                     if (!isValid) {
+                        validation = false;
+                        if (errorSpan) {
+                        errorSpan.style.display = "block";
+                        errorSpan.innerText = errorMessage;
+                        }
+                     } else if (errorSpan) {
+                        errorSpan.style.display = "none";
+                     }
+                  }
+               }
+
                if( $( '#field-empresa' ).is(':checked')) {//VALIDAR EMPRESA
                   if (invoiceForm){
                      if($( '#field-company' ).val() == '')  {
@@ -2915,8 +3004,7 @@ $( document ).ready( function () {
                   document.getElementById("postcode-required-error").style.display = "block";
                   document.getElementById("postcode-matchmaking").style.display = "none";
                   validation = false;
-               }else{
-                  
+               }else{                
                   if($('#field-id_country').val() == '6'){
                      console.log('comprobando codigo postal con provincia...');
                      if(!comprobarCPPorProvincia($('#field-postcode').val(),$('#field-id_state').val())){
@@ -2975,7 +3063,11 @@ $( document ).ready( function () {
                      
                      // Extranjero PARTICULAR con DNI: limpiamos DNI y empresa antes de enviar
                      if ($('#field-id_country').val() != 6 && $('#field-dni').val() != '' && $('#field-particular').is(':checked')) {
-                        $('#field-dni').val('');
+                        
+                        if (SubtotalProductsRoundUpInteger < 2200) {
+                           $('#field-dni').val('');
+                        }
+                        
                         $('#field-company').val('');
                      }
 

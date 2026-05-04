@@ -76,19 +76,25 @@
     <div class="block">
         <div class="row">
             <div class="contact-assist-card col-md-6">
-                <div>
-                    <img class="contact-flag" loading="lazy" src="/themes/child_classic/assets/img/web/spain.png" alt="spain flag"/>
-                    <span class="span-country">ES</span>
+                <div style="display:flex">
+                    <div style="padding-right:15px">
+                        <img class="contact-flag" loading="lazy" src="/themes/child_classic/assets/img/web/spain.png" alt="spain flag"/>
+                        <span class="span-country">ES</span>
+                    </div>
+                    <div >
+                        <img class="contact-flag" loading="lazy" src="/themes/child_classic/assets/img/web/germany.png" alt="germany flag"/>
+                        <span class="span-country">DE</span>
+                    </div>
                 </div>
                 <div class="contact-email">
                     <span class="at-contact">@</span>
                     <span class="span-email">
-                        <a href="mailto:atencion.es@ceramicconnection.es" style="font-size: 15px;">
-                           atencion.es@ceramicconnection.es
+                        <a href="mailto:info@ceramicconnection.es" style="font-size: 15px;">
+                           info@ceramicconnection.es
                         </a>
                     </span>
                 </div>
-                <div >
+                <div style="padding-bottom: 5px">
                     <i class="fas fa-phone-alt contact-phone"></i>
                     <span class="contact-phone-number">
                         <a href="https://wa.me/34623240148" target="_BLANK">
@@ -96,22 +102,45 @@
                         </a> 
                     </span>
                 </div>
+                <div >
+                    <i class="fa-brands fa-whatsapp contact-whatsapp"></i>
+                    <span class="contact-phone-number">
+                        <a href="https://wa.me/34623240148" target="_BLANK">
+                            +34 623 240 148
+                        </a>
+                    </span>
+                </div>
             </div>
             <div class="contact-assist-card col-md-6">
-                <div>
-                    <img class="contact-flag" loading="lazy" src="/themes/child_classic/assets/img/web/france.png" alt="france flag"/>
-                    <span class="span-country">FR</span>
+                <div style="display:flex">
+                    <div style="padding-right:15px">
+                        <img class="contact-flag" loading="lazy" src="/themes/child_classic/assets/img/web/france.png" alt="france flag"/>
+                        <span class="span-country">FR</span>
+                    </div>
+                    <div>
+                        <img class="contact-flag" loading="lazy" src="/themes/child_classic/assets/img/web/united-kingdom.png" alt="united kingdom flag"/>
+                        <span class="span-country">EN</span>
+                    </div>
                 </div>
+
                 <div class="contact-email">
                     <span class="at-contact">@</span>
                     <span class="span-email">
-                        <a href="mailto:assistance.fr@ceramicconnection.es" style="font-size: 15px;">
-                            assistance.fr@ceramicconnection.es
+                        <a href="mailto:info@ceramicconnection.es" style="font-size: 15px;">
+                           info@ceramicconnection.es
+                        </a>
+                    </span>
+                </div>
+                <div style="padding-bottom: 5px">
+                    <i class="fas fa-phone-alt contact-phone"></i>
+                    <span class="contact-phone-number">
+                        <a href="https://wa.me/34623240148" target="_BLANK">
+                            +34 623 240 148
                         </a>
                     </span>
                 </div>
                 <div >
-                    <i class="fas fa-phone-alt contact-phone"></i>
+                    <i class="fa-brands fa-whatsapp contact-whatsapp"></i>
                     <span class="contact-phone-number">
                         <a href="https://wa.me/34623240148" target="_BLANK">
                             +34 623 240 148
@@ -120,52 +149,7 @@
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="contact-assist-card col-md-6">
-                <div>
-                    <img class="contact-flag" loading="lazy" src="/themes/child_classic/assets/img/web/united-kingdom.png" alt="united kingdom flag"/>
-                    <span class="span-country">EN</span>
-                </div>
-                <div class="contact-email">
-                    <span class="at-contact">@</span>
-                    <span class="span-email">
-                        <a href="mailto:support.en@ceramicconnection.es" style="font-size: 15px;">
-                            support.en@ceramicconnection.es
-                        </a>
-                    </span>
-                </div>
-                <div>
-                    <i class="fas fa-phone-alt contact-phone"></i>
-                    <span class="contact-phone-number">
-                        <a href="https://wa.me/34623240148" target="_BLANK">
-                            +34 623 240 148</span>
-                        </a>
-                    </span>
-                </div>
-            </div>
-            <div class="contact-assist-card col-md-6">
-                <div >
-                    <img class="contact-flag" loading="lazy" src="/themes/child_classic/assets/img/web/germany.png" alt="germany flag"/>
-                    <span class="span-country">DE</span>
-                </div>
-                <div class="contact-email">
-                    <span class="at-contact">@</span>
-                    <span class="span-email">
-                        <a href="mailto:kundenservice.de@ceramicconnection.es" style="font-size: 15px;">
-                            kundenservice.de@ceramicconnection.es
-                        </a>
-                    </span>
-                </div>
-                <div >
-                    <i class="fas fa-phone-alt contact-phone"></i>
-                    <span class="contact-phone-number">
-                        <a href="https://wa.me/34623240148" target="_BLANK">
-                            +34 647 145 062
-                        </a> 
-                    </span>
-                </div>
-            </div>
-        </div>
+
     </div>
 
     {if $contact_infos.fax}

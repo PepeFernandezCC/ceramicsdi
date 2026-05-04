@@ -1,34 +1,12 @@
-{**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
- *
- * NOTICE OF LICENSE
- *
- * This source file is subject to the Academic Free License 3.0 (AFL-3.0)
- * that is bundled with this package in the file LICENSE.md.
- * It is also available through the world-wide-web at this URL:
- * https://opensource.org/licenses/AFL-3.0
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@prestashop.com so we can send you a copy immediately.
- *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
- * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
- *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
- * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
- *}
+
 {if $field.type == 'hidden'}
 
     {block name='form_field_item_hidden'}
-        <input type="hidden" name="{$field.name}" value="{$field.value}">
+        <input type="hidden" name="{$field.name}" id="{$field.name}" value="{$field.value}">
     {/block}
 
 {else}
+
     <div class="form-group row {if !empty($field.errors)}has-error{/if} {if $field.name == 'customer_privacy'}hideThisCheck {/if}">
         <div class="col-md-12{if ($field.type === 'radio-buttons')} form-control-valign{/if}">
             {if $field.type !== 'checkbox'}
@@ -60,14 +38,6 @@
             {elseif $field.type === 'countrySelect'}
 
                 {block name='form_field_item_country'}
-                {*
-                    <select
-                            id="field-{$field.name}"
-                            class="form-control form-control-select js-country"
-                            name="{$field.name}"
-                            {if $field.required}required{/if}
-                    >
-                *}
                     <select
                             id="field-{$field.name}"
                             class="form-control form-control-select"
@@ -87,17 +57,17 @@
                 {block name='form_field_item_radio'}
                     {foreach from=$field.availableValues item="label" key="value"}
                         <label class="radio-inline" for="field-{$field.name}-{$value}">
-              <span class="custom-radio">
-                <input
-                        name="{$field.name}"
-                        id="field-{$field.name}-{$value}"
-                        type="radio"
-                        value="{$value}"
-                        {if $field.required}required{/if}
-                        {if $value eq $field.value} checked {/if}
-                >
-                <span></span>
-              </span>
+                            <span class="custom-radio">
+                                <input
+                                        name="{$field.name}"
+                                        id="field-{$field.name}-{$value}"
+                                        type="radio"
+                                        value="{$value}"
+                                        {if $field.required}required{/if}
+                                        {if $value eq $field.value} checked {/if}
+                                >
+                                <span></span>
+                            </span>
                             {$label}
                         </label>
                     {/foreach}
@@ -232,16 +202,19 @@
                             {l s='Codigo Postal no coincide con provincia' d='Shop.Forms.Help'}
                         </span>
                     {/if}
+                    
                     {if $field.name == 'city'}
                         <span id="city-required-error" class="custom-empty-field-error">
                             {l s='Required fields' d='Shop.Forms.Help'}
                         </span>
                     {/if}
+
                     {if $field.name == 'phone'}
                         <span id="phone-required-error" class="custom-empty-field-error">
                             {l s='Required fields' d='Shop.Forms.Help'}
                         </span>
                     {/if}
+
                     {if $field.name == 'dni'}
                         <span id="dni-error" class="custom-empty-field-error">
                             {l s='Required fields' d='Shop.Forms.Help'}

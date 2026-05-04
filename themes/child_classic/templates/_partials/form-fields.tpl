@@ -40,7 +40,7 @@
                 {block name='form_field_item_country'}
                     <select
                             id="field-{$field.name}"
-                            class="form-control form-control-select"
+                            class="form-control form-control-select {$field.name}Class"
                             name="{$field.name}"
                             {if $field.required}required{/if}
                     >
@@ -155,16 +155,29 @@
             {else}
 
                 {block name='form_field_item_other'}
-                    <input
-                            id="field-{$field.name}"
-                            class="form-control {$field.name}Class"
-                            name="{$field.name}"
-                            type="{$field.type}"
-                            value="{$field.value}"
-                            {if $field.autocomplete}autocomplete="{$field.autocomplete}"{/if}
-                            {if $field.maxLength}maxlength="{$field.maxLength}"{/if}
-                            {if $field.required}required{/if}
-                    >
+                    {if $field.name == 'phone'}
+                        <div class="input-group phone-prefix-wrapper">
+                            <span class="input-group-addon js-phone-prefix" data-prefix="+34">+34</span>
+                    {/if}
+                        <input
+                                id="field-{$field.name}"
+                                class="form-control {$field.name}Class {if $field.name == 'phone'}js-phone-number{/if}"
+                                name="{$field.name}"
+                                type="{$field.type}"
+                                value="{$field.value}"
+                                {if $field.name == 'phone'}
+                                inputmode="numeric"
+                                pattern="[1-9][0-9]*"
+                                {/if}
+                                {if $field.autocomplete}autocomplete="{$field.autocomplete}"{/if}
+                                {if $field.maxLength}maxlength="{$field.maxLength}"{/if}
+                                {if $field.required}required{/if}
+
+                        >
+
+                    {if $field.name == 'phone'}
+                        </div>
+                    {/if}
                     {if isset($field.availableValues.comment)}
                         <span class="form-control-comment">
                             {$field.availableValues.comment}

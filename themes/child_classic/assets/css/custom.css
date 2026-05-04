@@ -7325,3 +7325,10 @@ a:focus{
 button:focus {
   outline: none !important;
 }
+
+
+.contact-whatsapp {
+    padding-right: 10px;
+    font-size: 18px;
+    font-weight: 600;
+}
