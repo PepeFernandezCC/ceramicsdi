@@ -124,15 +124,11 @@ class AdminShippingCalculatorController extends ModuleAdminController
             $shipping_days_max = (int)$shipping_single;
         }
         
-        // Calcular coste de envío usando el mismo método que el carrito (getDeliveryPrice.php)
-        // IMPORTANTE: Pasar el peso del carrito como parámetro (igual que getDeliveryPrice.php recibe weight)
-        $weight = $temp_cart->getTotalWeight();
-        
         // Determinar si mostrar impuestos (igual que en cart-voucher.tpl)
         $tax_config = new \TaxConfiguration();
         $show_taxes = $tax_config->includeTaxes() || !Configuration::get('PS_TAX');
         
-        $shipping_cost = $this->calculateShippingCostLikeCart($temp_cart, $country_id, $state_id, $weight, $show_taxes);
+        $shipping_cost = $this->calculateShippingCostLikeCart($temp_cart, $show_taxes);
         
         $state = new State($state_id);
         
@@ -674,156 +670,42 @@ class AdminShippingCalculatorController extends ModuleAdminController
         $template_path = _PS_MODULE_DIR_ . $module->name . '/views/templates/admin/calculator.tpl';
         return $this->context->smarty->fetch($template_path);
     }
-
-    private function calculateCarrier($id_country, $id_state, $weight, $id_zone) {
-     
-        $international=false;
-        // IDs de transportistas (del servidor según getDeliveryPrice.php)
-        $correos = 333;
-        $correos_internacional = 327;
-        $camion = 331;
-        $camion_internacional = 322;
-        $seur = 311;
-        $gc_international = 325;
-        $camion_islas_baleares = 332;
-
-
-        
-        // Excepciones por zona
-        $transaher = 294;
-        $transaher_zones = ['65', '66', '67', '68'];
-        $islas_baleares = ['10', '11', '12', '13'];
-
-
-        if ($id_country != 6) {
-            $international = true;
-        }
-
-        
-        if ($international) {
-
-            // LOGICA TRANSPORTISTAS INTERNACIONAL
-
-            $id_carrier = $correos_internacional;
-
-            if($id_country == 13) { //Envíos a Paises Bajos
-                $id_carrier = $seur;
-            }
-
-            if($weight > 8) {
-                $id_carrier = $gc_international;
-            }
-
-            if($weight > 60) {
-                $id_carrier = $camion_internacional;
-            }
-
-        }else{
-
-            // LOGICA TRANSPORTISTAS ESPAÑA
-
-            $id_carrier = $correos;
-
-            if($weight > 8) {
-
-                $id_carrier = $camion;
-
-                if (in_array($id_state, $islas_baleares)) {
-                    $id_carrier = $camion_islas_baleares;
-                }  
-
-            }
-
-        } 
-
-        //EXCEPCIÓN TRANSAHER
-        
-        if (in_array($id_zone, $transaher_zones) && $weight > 8) {
-            $id_carrier = $transaher;
-        }
-
-        return $id_carrier;
-    }
     
     /**
      * Calcular coste de envío usando el mismo método que getDeliveryPrice.php (carrito)
      * Replica exactamente la lógica de ajax/getDeliveryPrice.php
      */
-    private function calculateShippingCostLikeCart($cart, $id_country, $id_state, $weight = null, $show_taxes = true)
+    private function calculateShippingCostLikeCart($cart, $showTaxes = true)
     {
         if (!$cart || !$cart->id) {
             return 0;
         }
         
-        // Obtener peso del carrito (igual que getDeliveryPrice.php usa Tools::getValue('weight'))
-        if ($weight === null) {
-            $weight = $cart->getTotalWeight();
-        }
-        
-        // Calcular id_zone
-        $id_zone = State::getIdZone((int)$id_state);
-        $id_carrier = $this->calculateCarrier($id_country, $id_state, $weight, $id_zone);
-        
-        
-        // Configurar carrito (exactamente como getDeliveryPrice.php)
-        $cart->id_carrier = (string)$id_carrier;
+        // Actualizar carrito
         $cart->id_address_delivery = '1';
         $cart->id_address_invoice = '1';
         $cart->id_customer = '2';
+        $cart->update();
+
+        //Coge el transportista mas barato
+        $bestOption = Carrier::getCheapestDeliveryOptionByCart($cart, $showTaxes);
+
+        if (!$bestOption || empty($bestOption['id_carrier'])) {
+            echo json_encode([
+                'error' => 'No hay transportistas disponibles'
+            ]);
+            exit;
+        }
+
+        $id_carrier = (int)$bestOption['id_carrier'];
+        $result = $showTaxes ? (float)$bestOption['price_with_tax'] : (float)$bestOption['price_without_tax'];
+        
+        
+        // actualizar el carrito
+        $cart->id_carrier = (string)$id_carrier;
         $cart->delivery_option = '{"1":"'.$id_carrier.'"}';
-        
-        // Construir parámetros (igual que getDeliveryPrice.php)
-        $total = 0;
-        $return = false;
-        $use_tax = false;
-        $default_country = new Country((int)$id_country);
-        $keepOrderPrices = false;
-        $product_list = null;
-        
-        Hook::exec('actionCartGetPackageShippingCost', [
-            'object' => &$cart,
-            'id_carrier' => &$id_carrier,
-            'use_tax' => &$use_tax,
-            'default_country' => &$default_country,
-            'product_list' => &$product_list,
-            'id_zone' => &$id_zone,
-            'keepOrderPrices' => &$keepOrderPrices,
-            'total' => &$total,
-            'return' => &$return,
-            'custom' => true
-        ]);
-        
-        $result = false;
-        if ($return) {
-            $result = ($total !== false ? (float)Tools::ps_round((float)$total, 2) : false);
-        } else {
-            $shipping_cost = $cart->getParentPackageShippingCost(
-                $id_carrier,
-                $use_tax,
-                $default_country,
-                $product_list,
-                $id_zone,
-                $keepOrderPrices
-            );
-            if ($shipping_cost !== false) {
-                $result = $shipping_cost + (float)Tools::ps_round((float)$total, 2);
-            }
-        }
-        
-        // Si no hay resultado, maneja el caso
-        if ($result === null) {
-            return 0;
-        }
-        
-        // Aplicar impuestos si es necesario (igual que getDeliveryPrice.php)
-        if ($show_taxes) {
-            $rate = Tax::getStandardTaxByCountryId((int)$id_country);
-            $result = $result * (1 + ($rate / 100));
-        }
-        
-        // Redondear resultado (igual que getDeliveryPrice.php)
-        $result = (float)Tools::ps_round((float)$result, 2);
-        
+        $cart->update();
+            
         return $result;
     }
 }
