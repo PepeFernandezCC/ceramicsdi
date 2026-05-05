@@ -30,41 +30,8 @@ foreach ($sql as $query) {
     }
 }
 
-// Insertar provincias argentinas por defecto
-$provinces = [
-    ['C', 'Ciudad Autónoma de Buenos Aires', 3],
-    ['B', 'Buenos Aires', 5],
-    ['K', 'Catamarca', 7],
-    ['H', 'Chaco', 7],
-    ['U', 'Chubut', 8],
-    ['X', 'Córdoba', 5],
-    ['W', 'Corrientes', 6],
-    ['E', 'Entre Ríos', 6],
-    ['P', 'Formosa', 7],
-    ['Y', 'Jujuy', 8],
-    ['L', 'La Pampa', 6],
-    ['F', 'La Rioja', 7],
-    ['M', 'Mendoza', 6],
-    ['N', 'Misiones', 7],
-    ['Q', 'Neuquén', 8],
-    ['R', 'Río Negro', 8],
-    ['A', 'Salta', 8],
-    ['J', 'San Juan', 7],
-    ['D', 'San Luis', 6],
-    ['Z', 'Santa Cruz', 10],
-    ['S', 'Santa Fe', 5],
-    ['G', 'Santiago del Estero', 7],
-    ['V', 'Tierra del Fuego', 12],
-    ['T', 'Tucumán', 6],
-];
-
-foreach ($provinces as $province) {
-    $insert = 'INSERT INTO `' . _DB_PREFIX_ . 'shipping_calculator_delays`
-               (province_code, province_name, delivery_days)
-               VALUES ("' . pSQL($province[0]) . '", "' . pSQL($province[1]) . '", ' . (int)$province[2] . ')
-               ON DUPLICATE KEY UPDATE delivery_days = ' . (int)$province[2];
-    Db::getInstance()->execute($insert);
-}
+// NO insertar provincias por defecto - el usuario las configurará manualmente
+// Las provincias se añadirán automáticamente cuando se guarden desde el panel de administración
 
 return true;
 
