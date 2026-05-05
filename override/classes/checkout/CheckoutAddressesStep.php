@@ -6,6 +6,8 @@ class CheckoutAddressesStep extends CheckoutAddressesStepCore
 {
        public function handleRequest(array $requestParams = [])
     {
+         $this->debugAddressStepRequest($requestParams, 'BEFORE_PARENT');
+
         // 1) Deja que el core haga TODO su trabajo primero
         parent::handleRequest($requestParams);
 
@@ -29,15 +31,6 @@ class CheckoutAddressesStep extends CheckoutAddressesStepCore
         $session   = $this->getCheckoutSession();
         $idDelivery = (int) $session->getIdAddressDelivery();
         $idInvoice  = (int) $session->getIdAddressInvoice();
-
-        // 3) Asegurar que existe dirección de facturación.
-        //    Si el core no ha puesto ninguna, copiamos la de envío.
-        /*
-        if (!$idInvoice && $idDelivery) {
-            $session->setIdAddressInvoice($idDelivery);
-            $idInvoice = $idDelivery;
-        }
-        */
 
         // 4) Si falta alguna de las dos, bloqueamos y nos quedamos en direcciones
         if (!$idDelivery || !$idInvoice) {
@@ -202,6 +195,43 @@ class CheckoutAddressesStep extends CheckoutAddressesStepCore
         Customer::insertIntracomunitaryLog($ok, 'DIRECCIONES: ' . $msg, $vatNumber, $customer_id, $idCountry);
 
         return $this;
+    }
+
+    private function debugAddressStepRequest(array $requestParams, $stage)
+    {
+        $logFile = _PS_ROOT_DIR_ . '/var/logs/checkout_address_step_debug.log';
+
+        $data = [
+            'date' => date('Y-m-d H:i:s'),
+            'stage' => $stage,
+            'request_uri' => $_SERVER['REQUEST_URI'] ?? null,
+            'request_method' => $_SERVER['REQUEST_METHOD'] ?? null,
+            'content_type' => $_SERVER['CONTENT_TYPE'] ?? null,
+
+            'requestParams_is_invoice' => isset($requestParams['is_invoice'])
+                ? $requestParams['is_invoice']
+                : 'NO_REQUEST_PARAM',
+
+            'post_is_invoice' => isset($_POST['is_invoice'])
+                ? $_POST['is_invoice']
+                : 'NO_POST',
+
+            'tools_is_invoice' => Tools::getValue('is_invoice', 'NO_TOOLS'),
+
+            'requestParams' => $requestParams,
+            'POST' => $_POST,
+            'GET' => $_GET,
+
+            // Ojo: php://input normalmente solo se puede leer una vez.
+            // En x-www-form-urlencoded suele seguir disponible, pero no dependas de él.
+            'raw_input' => file_get_contents('php://input'),
+        ];
+
+        file_put_contents(
+            $logFile,
+            print_r($data, true) . "\n-----------------------------\n\n",
+            FILE_APPEND
+        );
     }
 
 }

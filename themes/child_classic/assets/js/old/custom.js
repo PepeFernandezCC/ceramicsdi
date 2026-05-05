@@ -2661,6 +2661,102 @@ $( document ).ready( function () {
 
          $fieldAddress2.css('display', 'none');
 
+         const countryPrefixes = {
+            1: '+49',   // DE
+            2: '+43',   // AT
+            3: '+32',   // BE
+            4: '+1',    // CA
+            6: '+34',   // ES
+            7: '+358',  // FI
+            8: '+33',   // FR
+            9: '+30',   // GR
+            10: '+39',  // IT
+            12: '+352', // LU
+            13: '+31',  // NL
+            14: '+48',  // PL
+            15: '+351', // PT
+            16: '+420', // CZ
+            17: '+44',  // GB
+            18: '+46',  // SE
+            19: '+41',  // CH
+            20: '+45',  // DK
+            23: '+47',  // NO
+            26: '+353', // IE
+            29: '+972', // IL
+            36: '+40',  // RO
+            37: '+421', // SK
+            40: '+376', // AD
+            52: '+375', // BY 
+            74: '+385', // HR
+            76: '+357', // CY
+            86: '+372', // EE
+            93: '+995', // GE
+            97: '+350', // GI
+            106: '+379',// VA
+            124: '+371',// LV
+            129: '+423',// LI
+            130: '+370',// LT
+            138: '+356',// MT
+            142: '+36', // HU
+            146: '+373',// MD
+            147: '+377',// MC
+            149: '+382',// ME
+            188: '+381',// RS
+            191: '+386',// SI
+            231: '+387',// BA
+            233: '+359' // BG
+         };
+
+         if(document.getElementsByClassName('phoneClass')) {
+            const countrySelect = document.querySelector('.id_countryClass');
+            const phoneInput = document.querySelector('.js-phone-number');
+            const prefixBox = document.querySelector('.js-phone-prefix');
+
+            function cleanPhoneForDisplay() {
+            if (!phoneInput || !countrySelect) return;
+
+            let phone = phoneInput.value.replace(/\D/g, '');
+            const countryId = countrySelect.value;
+            const prefix = countryPrefixes[countryId] || '';
+            const prefixDigits = prefix.replace(/\D/g, '');
+
+            if (prefixDigits && phone.startsWith(prefixDigits)) {
+               phone = phone.substring(prefixDigits.length);
+            }
+
+            phone = phone.replace(/^0+/, '');
+            phoneInput.value = phone;
+            }
+
+            function updatePrefix() {
+            if (!countrySelect || !prefixBox) return;
+
+            const countryId = countrySelect.value;
+            const prefix = countryPrefixes[countryId] || '';
+
+            prefixBox.textContent = prefix || '+';
+            prefixBox.setAttribute('data-prefix', prefix);
+            }
+
+            if (countrySelect) {
+            countrySelect.addEventListener('change', function () {
+               updatePrefix();
+               cleanPhoneForDisplay();
+            });
+
+            updatePrefix();
+            cleanPhoneForDisplay();
+            }
+
+            if (phoneInput) {
+            phoneInput.addEventListener('input', function () {
+               let value = this.value.replace(/\D/g, '');
+               value = value.replace(/^0+/, '');
+               this.value = value;
+            });
+            }
+         }
+
 
          /* FIN LOGICA FORMULARIO DIRECCIONES */
 
@@ -2873,50 +2969,6 @@ $( document ).ready( function () {
                   useSameCheck = (isInvoiceParam == '2' || isInvoiceParam == '1') ? true : false;
                }
 
-/*
-               if( $( '#field-particular' ).is(':checked')) { // VALIDAR PARTICULAR
-                  if ($('#field-id_country').val() == 6) { //si es español
-                     if (useSameCheck){
-                        if ($('#field-dni').val() == '') {
-                           document.getElementById("dni-error").style.display = "block";// error cif/dni vacío
-                           validation = false;
-                           console.log('Error: validation dni particular español vacio | check off');
-                        }else if (!validarDNI()) {
-                           validation = false;
-                           console.log('ERRORES CON DNI...');
-                           const errorSpan = document.getElementById("dni-error");
-                           errorSpan.style.display = "block";
-                           errorSpan.innerText = "Formato incorrecto. Introduzca un DNI o NIE válido.";
-                        }else{
-                           if(document.getElementById("dni-error")) {
-                              document.getElementById("dni-error").style.display = "none";// error cif/dni vacío
-                           }  
-                        }
-                     }
-                  }else{
-                     if (SubtotalProductsRoundUpInteger >= 2200) {
-                        if (useSameCheck){
-                           if ($('#field-dni').val() == '') {
-                              document.getElementById("dni-error").style.display = "block";// error cif/dni vacío
-                              validation = false;
-                              console.log('Error: validation dni particular español vacio | check off');
-                           }else if (!validarNIE()) {
-                              validation = false;
-                              console.log('ERRORES CON ID extrangero...');
-                              const errorSpan = document.getElementById("dni-error");
-                              errorSpan.style.display = "block";
-                              errorSpan.innerText = "ID error: wrong format";
-                           }else{
-                              if(document.getElementById("dni-error")) {
-                                 document.getElementById("dni-error").style.display = "none";// error cif/dni vacío
-                              }  
-                           }
-                        } 
-                     }
-                  }
-
-               }
- */
                if ($('#field-particular').is(':checked')) {
                   const isSpanish = $('#field-id_country').val() == 6;
                   const shouldValidateForeignId = !isSpanish && SubtotalProductsRoundUpInteger >= 2200;
@@ -3024,12 +3076,30 @@ $( document ).ready( function () {
                   
                }
 
-               if($('#field-phone').val() == ''){ //valida teléfono
-                  console.log('error en phone');
-                  document.getElementById("phone-required-error").style.display = "block";
-                  validation = false;
+               if($('#field-phone').val() == ''){ // valida teléfono
+               console.log('error en phone');
+               document.getElementById("phone-required-error").style.display = "block";
+               validation = false;
+
                }else{
-                  document.getElementById("phone-required-error").style.display = "none";
+               document.getElementById("phone-required-error").style.display = "none";
+
+               var raw = $('#field-phone').val();
+
+               // 👉 dejar solo números y quitar ceros iniciales
+               var phone = raw.replace(/\D/g, '').replace(/^0+/, '');
+
+               // 👉 obtener prefijo actual desde el DOM
+               var prefix = $('.js-phone-prefix').attr('data-prefix') || '';
+               var prefixDigits = prefix.replace(/\D/g, '');
+
+               // 👉 evitar duplicar prefijo si ya venía (modo editar)
+               if (prefixDigits && phone.startsWith(prefixDigits)) {
+                  phone = phone.substring(prefixDigits.length);
+               }
+
+               // 👉 reconstruir valor final para guardar
+               $('#field-phone').val(prefix + phone);
                }
 
                console.log('las validaciones son: ' + validation);
@@ -3041,7 +3111,7 @@ $( document ).ready( function () {
    
          if(document.getElementById("address-form")) {
 
-               var loader = document.getElementById("loader-overlay");
+               
                let validations = false;
 
                if (document.getElementById("confirmAddressButton").getAttribute("data-location") == "form") {
@@ -3051,6 +3121,13 @@ $( document ).ready( function () {
                   }
 
                   document.getElementById("confirmAddressButton").addEventListener("click", function(event) {
+
+                     var loader = document.getElementById("loader-overlay");
+                     // Mostrar loader y bloquear botones
+                     if (loader) {
+                        loader.style.display = "flex";
+                     }
+
                      // LOGICA NUEVA SIN AJAX
                      event.preventDefault();
                      validations = getValidations(); 

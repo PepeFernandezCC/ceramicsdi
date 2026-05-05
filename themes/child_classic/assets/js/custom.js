@@ -2256,6 +2256,7 @@ $( document ).ready( function () {
             $('#cancel-address-form').css('display', 'none');
          }
          if (isInvoiceParam) {
+           
             $('#field-is_invoice').val(isInvoiceParam);
          }else{
             setIsInvoiceDefault();
@@ -2282,13 +2283,16 @@ $( document ).ready( function () {
             if(!invoiceForm) {
                if (document.getElementById('useDifferentAddress').checked){ //Diferente Dirección
                   useSameCheck = false;
+       
                   $('#field-is_invoice').val(originalIsInvoice);
                }else{ //misma dirección
                   useSameCheck = true;
+
                   $('#field-is_invoice').val('2');
                }
             }else{
                useSameCheck = false;
+     
                $('#field-is_invoice').val('1');
             }
 
@@ -2574,7 +2578,8 @@ $( document ).ready( function () {
             if ($(this).is(':checked')) {
                if ((document.getElementById('newAddress') && document.getElementById('newAddress').dataset.new == '1') && !getNewAddresParam) {//primera dirección
                   showGoToInvoiceButton();
-               }     
+               }
+      
                $('#field-is_invoice').val(originalIsInvoice);
                localStorage.setItem('customer_type', mode);
             }
@@ -2598,9 +2603,11 @@ $( document ).ready( function () {
             
             if ($(this).is(':checked')) {
                if (!useSameCheck) {
+                 
                   $('#field-is_invoice').val(originalIsInvoice);
                } else {
                   if(!invoiceForm && !invoiceParam) {
+                   
                      $('#field-is_invoice').val('2');
                   }
                   //addSameInputs(newAddress);
@@ -2634,6 +2641,7 @@ $( document ).ready( function () {
             
             if (document.getElementById('useDifferentAddress').checked){ //Diferente Dirección
                useSameCheck = false;
+               
                $('#field-is_invoice').val(originalIsInvoice);
 
                if ((document.getElementById('newAddress') && document.getElementById('newAddress').dataset.new == '1') && !getNewAddresParam) {
@@ -2647,6 +2655,7 @@ $( document ).ready( function () {
                }
 
                if (!invoiceParam){
+                 
                   $('#field-is_invoice').val('2');
                }
                

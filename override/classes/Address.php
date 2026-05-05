@@ -4,27 +4,41 @@ class Address extends AddressCore
 {
     /** @var int */
     public $is_invoice;
+
+    /** @var string */
     public $dni_format;
 
-
-    public function __construct($id = null, $idLang = null)
+    protected static function addCustomFieldsDefinition()
     {
-        parent::__construct($id, $idLang);
-
-        // Añadimos el campo a la definición del modelo
         self::$definition['fields']['is_invoice'] = [
             'type'     => self::TYPE_INT,
             'validate' => 'isUnsignedInt',
             'required' => false,
         ];
+
         self::$definition['fields']['dni_format'] = [
             'type'     => self::TYPE_STRING,
             'validate' => 'isCleanHtml',
             'required' => false,
             'size'     => 18,
         ];
+    }
 
+    protected function syncCustomFieldsDefinition()
+    {
+        if (isset($this->def['fields'])) {
+            $this->def['fields']['is_invoice'] = self::$definition['fields']['is_invoice'];
+            $this->def['fields']['dni_format'] = self::$definition['fields']['dni_format'];
+        }
+    }
 
+    public function __construct($id = null, $idLang = null)
+    {
+        self::addCustomFieldsDefinition();
+
+        parent::__construct($id, $idLang);
+
+        $this->syncCustomFieldsDefinition();
     }
 
     protected function buildDniFormat() {
@@ -58,9 +72,11 @@ class Address extends AddressCore
 
     public function add($autodate = true, $null_values = false)
     {
-        // Forzar que el objeto coja lo que viene del formulario
-        $postIsInvoice = \Tools::getValue('is_invoice');
-        
+        self::addCustomFieldsDefinition();
+        $this->syncCustomFieldsDefinition();
+
+        $postIsInvoice = Tools::getValue('is_invoice', null);
+
         if ($postIsInvoice !== null) {
             $this->is_invoice = (int) $postIsInvoice;
         }
@@ -72,7 +88,11 @@ class Address extends AddressCore
 
     public function update($null_values = false)
     {
-        $postIsInvoice = \Tools::getValue('is_invoice');
+        self::addCustomFieldsDefinition();
+        $this->syncCustomFieldsDefinition();
+
+        $postIsInvoice = Tools::getValue('is_invoice', null);
+
         if ($postIsInvoice !== null) {
             $this->is_invoice = (int) $postIsInvoice;
         }
@@ -81,7 +101,6 @@ class Address extends AddressCore
 
         return parent::update($null_values);
     }
-
 
 
     public static function getVatApiData($id_delivery, $id_invoice) {
@@ -184,5 +203,30 @@ class Address extends AddressCore
         }
 
         return $hasDni;
+    }
+
+    private function debugAddressPayload($method)
+    {
+        $logFile = _PS_ROOT_DIR_ . '/var/logs/address_payload_debug.log';
+
+        $data = [
+            'date' => date('Y-m-d H:i:s'),
+            'method' => $method,
+            'request_method' => $_SERVER['REQUEST_METHOD'] ?? null,
+            'request_uri' => $_SERVER['REQUEST_URI'] ?? null,
+            'content_type' => $_SERVER['CONTENT_TYPE'] ?? null,
+            'post_is_invoice' => $_POST['is_invoice'] ?? 'NO_POST',
+            'tools_is_invoice' => \Tools::getValue('is_invoice', 'NO_TOOLS'),
+            'object_is_invoice' => $this->is_invoice ?? 'NO_OBJECT_VALUE',
+            'POST' => $_POST,
+            'GET' => $_GET,
+            'raw_input' => file_get_contents('php://input'),
+        ];
+
+        file_put_contents(
+            $logFile,
+            print_r($data, true) . "\n\n----------------------\n\n",
+            FILE_APPEND
+        );
     }
 }
