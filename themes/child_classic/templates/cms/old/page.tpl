@@ -366,12 +366,12 @@
                                             </div>
 
                                             {*
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <p style="color: black;" class="text-sm-right small">
-                                                        * {l s='Required fields' d='Shop.Forms.Help'}</p>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <p style="color: black;" class="text-sm-right small">
+                                                            * {l s='Required fields' d='Shop.Forms.Help'}</p>
+                                                    </div>
                                                 </div>
-                                            </div>
                                             *}
 
                                             <div class="form-group row">
@@ -401,7 +401,6 @@
                                                     {/block}
                                                 </div>
                                             </div>
-
                                             <div class="form-group row">
                                                 <div class="col-xs-12">
                                                     <a class="conditions-professionals"
@@ -411,7 +410,6 @@
                                                 </div>
                                             </div>
                                         </div>
-
                                     </section>
                                     <footer class="form-footer text-sm-left professional-form-box" style="padding-left: 0;">
                                         <div>
@@ -431,15 +429,12 @@
                                 </form>
                             </section>
                         </div>
-
-
-
-                        {if $language.id == 1}
+                        {* if $language.id == 1 *}
                             <div id="catalogDownloads">
-                                <div style="padding-bottom: 10px"><a style="color: black" href="{$urls.base_url}catalog/CC_CATALOGO-2025.pdf" rel="nofollow" download="CC_CATALOGO-2025.pdf">DESCARGAR CATALOGO PDF <i class="fas fa-file" style="padding:2px"></i></a></div>
-                                <div><a style="color: black"href="https://ceramicconnection.com/pricelist.php" target="_BLANK" rel="nofollow">VER TARIFA DE PRECIOS</a></div>                         
+                                <div style="padding-bottom: 10px"><a style="color: black" href="{$urls.base_url}catalog/CC_CATALOGO-2025.pdf" rel="nofollow" download="CC_CATALOGO-2025.pdf">{l s='DOWNLOAD CATALOG PDF' d='Shop.Theme.Catalog'} <i class="fas fa-file" style="padding:2px"></i></a></div>
+                                <div><a style="color: black"href="https://ceramicconnection.com/pricelist.php" target="_BLANK" rel="nofollow">{l s='VIEW PRICE LIST' d='Shop.Theme.Catalog'}</a></div>                         
                             </div>
-                        {/if}
+                        {* /if *}
                     </div>
                 </section>
             {else}
