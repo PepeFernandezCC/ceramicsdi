@@ -50,15 +50,21 @@
 {* Eliminar parámetros de consulta *}
 {assign var="clean_url" value=$clean_url|regex_replace:"/\?.*$/" : ""}
 
+{assign var="show_canonical" value=true}
+
+{if $clean_url|regex_replace:"/blog\/[0-9]+/":"" neq $clean_url}
+    {assign var="show_canonical" value=false}
+{/if}
+
 {* Eliminar segmentos numéricos y evitar barras redundantes *}
 {if strpos($clean_url, 'blog') !== false}
     {assign var="clean_url" value=$clean_url|regex_replace:"/\/[0-9]+\//" : "/"}  {* Eliminación de números entre barras y mantención de la parte restante *}
     {assign var="clean_url" value=$clean_url|regex_replace:"/\/[0-9]+/" : ""}  {* Eliminación de números al final *}
 {/if}
 
-
-<link rel="canonical" href="{$clean_url}">
-
+{if $show_canonical}
+    <link rel="canonical" href="{$clean_url}">
+{/if}
     {block name='head_hreflang'}
         {foreach from=$urls.alternative_langs item=pageUrl key=code}
             <link rel="alternate" href="{$pageUrl}" hreflang="{$code}">

@@ -23,10 +23,13 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
 {extends file='page.tpl'}
+{if $cms.id != 12}
+    {block name='page_title'}
+        
+        {$cms.meta_title}
 
-{block name='page_title'}
-    {$cms.meta_title}
-{/block}
+    {/block}
+{/if}
 
 {block name='page_content_container'}
     <section id="content" class="page-content page-cms page-cms-{$cms.id}">
@@ -57,11 +60,11 @@
             {elseif $cms.id == 12}
                 <section id="profesionales">
                     <h1 style="text-align: center;">{l s='Ceramic Connection Professionals' d='Shop.Theme.Global'}</h1>
-                    <h2 style="text-align: center;">
+                    <p style="text-align: center;">
                         {l s='At Ceramic Connection we are at your disposal for suggestions, personalized projects' d='Shop.Theme.Global'}
                         <br>
                         {l s='and technical support to improve or streamline your project.' d='Shop.Theme.Global'}
-                    </h2>
+                    </p>
 
                     <div class="col-md-6 col-xs-12 p-left">
                         <div class="row">
@@ -72,7 +75,9 @@
                    
                         <div class="row">
                             <div class="col-xs-12 title">
-                                <h3 class="h3">{l s='Register like a Professional' d='Shop.Theme.Global'}</h3>
+                                <h2 class="h3" style="padding:  0; font-weight: 600; font-size: 18px; ">
+                                    {l s='Register like a Professional' d='Shop.Theme.Global'}
+                                </h2>
                             </div>
                             {if $customer.is_logged}
 
