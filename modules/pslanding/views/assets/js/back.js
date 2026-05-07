@@ -569,6 +569,7 @@ document.addEventListener('DOMContentLoaded', () => {
         (el.classList.contains('tpl-default') && tpl === 'landing-morocco') ||
         (el.classList.contains('tpl-simple') && tpl === 'landing-muestras') ||
         (el.classList.contains('tpl-color') && tpl === 'landing-color') ||
+        (el.classList.contains('tpl-color') && tpl === 'landing-vitri') ||
         (el.classList.contains('tpl-stone') && tpl === 'landing-piedras');
       
       // Mostrar u ocultar según corresponda

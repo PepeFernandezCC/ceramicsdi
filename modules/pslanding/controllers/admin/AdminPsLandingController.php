@@ -57,6 +57,7 @@ class AdminPsLandingController extends ModuleAdminController
             ['id' => 'landing-muestras', 'name' => 'Landing Muestras'],
             ['id' => 'landing-piedras',  'name' => 'Landing Piedras'],
             ['id' => 'landing-color',  'name' => 'Landing Colores'],
+            ['id' => 'landing-vitri',  'name' => 'Landing vitri'],
         ];
 
         // Para previews: al editar, el objeto está cargado.
