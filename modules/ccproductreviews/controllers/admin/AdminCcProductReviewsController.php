@@ -1,6 +1,7 @@
 <?php
 require_once _PS_MODULE_DIR_.'ccproductreviews/classes/Review.php';
 require_once _PS_MODULE_DIR_.'ccproductreviews/classes/ReviewImage.php';
+require_once _PS_MODULE_DIR_.'ccproductreviews/classes/GoogleProductReviewsFeed.php';
 
 if (!defined('_PS_VERSION_')) {
     exit;
@@ -83,6 +84,16 @@ class AdminCcProductReviewsController extends ModuleAdminController
         ];
     }
 
+    public function initToolbar()
+    {
+        parent::initToolbar();
+
+        $this->toolbar_btn['ccpr_generate_google_feed'] = [
+            'href' => self::$currentIndex.'&token='.$this->token.'&submitCcprGenerateGoogleReviewsFeed=1',
+            'desc' => $this->l('Generar feed Google Reviews'),
+            'icon' => 'process-icon-export',
+        ];
+    }
 
     public function setMedia($isNewTheme = false)
     {
@@ -94,6 +105,11 @@ class AdminCcProductReviewsController extends ModuleAdminController
 
     public function postProcess()
     {
+
+        if (Tools::isSubmit('submitCcprGenerateGoogleReviewsFeed')) {
+            $this->processGenerateGoogleReviewsFeed();
+            return;
+        }
         // 1) Toggle desde la vista detalle
         if (Tools::isSubmit('ccpr_toggle_view')) {
             $this->processToggleFromView();
@@ -236,6 +252,25 @@ class AdminCcProductReviewsController extends ModuleAdminController
         return $this->module->fetch('module:'.$this->module->name.'/views/templates/admin/view.tpl');
     }
 
+    public function renderList()
+    {
+        $html = parent::renderList();
+        $feedUrl = CcprGoogleProductReviewsFeed::getFeedUrl($this->context);
+        $cachePath = CcprGoogleProductReviewsFeed::getCachePath();
+        $exists = is_file($cachePath);
+        $updated = $exists ? date('Y-m-d H:i:s', (int)filemtime($cachePath)) : $this->l('No generado todavía');
+        $count = (int)Db::getInstance()->getValue('SELECT COUNT(*) FROM `'._DB_PREFIX_.'product_review` WHERE active = 1');
+
+        $html .= '<div class="panel">';
+        $html .= '<h3><i class="icon-star"></i> '.$this->l('Feed de reseñas para Google Merchant Center').'</h3>';
+        $html .= '<p>'.$this->l('Este feed incluye solo reseñas visibles/aprobadas y se sirve en XML v2.3 con caché de 1 hora.').'</p>';
+        $html .= '<p><strong>'.$this->l('Endpoint público para Scheduled fetch:').'</strong><br><a href="'.Tools::safeOutput($feedUrl).'" target="_blank" rel="noopener noreferrer">'.Tools::safeOutput($feedUrl).'</a></p>';
+        $html .= '<p><strong>'.$this->l('Reseñas aprobadas:').'</strong> '.(int)$count.' &nbsp; <strong>'.$this->l('Última generación:').'</strong> '.Tools::safeOutput($updated).'</p>';
+        $html .= '<a class="btn btn-default" href="'.self::$currentIndex.'&token='.$this->token.'&submitCcprGenerateGoogleReviewsFeed=1"><i class="icon-refresh"></i> '.$this->l('Generar feed ahora').'</a>';
+        $html .= '</div>';
+
+        return $html;
+    }
 
     private function deleteReviewAssets($idReview)
     {
@@ -356,6 +391,23 @@ class AdminCcProductReviewsController extends ModuleAdminController
         Tools::redirectAdmin(
             self::$currentIndex.'&token='.$this->token.'&view'.$this->table.'=&'.$this->identifier.'='.(int)$idReview.'&ccpr_mail_sent=1'
         );
+    }
+
+    private function processGenerateGoogleReviewsFeed()
+    {
+        $result = CcprGoogleProductReviewsFeed::generate($this->context, true);
+
+        if (empty($result['ok'])) {
+            $this->errors[] = $this->l('No se pudo generar el feed: ').(isset($result['error']) ? $result['error'] : $this->l('Error desconocido'));
+            return;
+        }
+
+        $message = sprintf(
+            $this->l('Feed generado correctamente con %d reseñas aprobadas. URL: %s'),
+            (int)$result['count'],
+            $result['url']
+        );
+        $this->confirmations[] = $message;
     }
 
 }

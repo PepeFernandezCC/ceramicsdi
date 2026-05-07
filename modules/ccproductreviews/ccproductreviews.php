@@ -25,6 +25,7 @@ class CcProductReviews extends Module
             && $this->registerHook('displayProductAdditionalInfo')
             && $this->registerHook('displayCcProductReviews')
             && $this->registerHook('actionOrderStatusPostUpdate')
+            && $this->registerHook('moduleRoutes')
             && $this->installTab()
             && Configuration::updateValue('CCPR_DELIVERED_STATE', (int)Configuration::get('PS_OS_DELIVERED'));
     }
@@ -214,5 +215,21 @@ class CcProductReviews extends Module
         ]);
 
         return $this->fetch('module:'.$this->name.'/views/templates/hook/product_rating.tpl');
+    }
+
+    public function hookModuleRoutes($params)
+    {
+        return [
+            'module-'.$this->name.'-googlefeed-xml' => [
+                'controller' => 'googlefeed',
+                'rule' => 'feeds/google-reviews.xml',
+                'keywords' => [],
+                'params' => [
+                    'fc' => 'module',
+                    'module' => $this->name,
+                    'controller' => 'googlefeed',
+                ],
+            ],
+        ];
     }
 }

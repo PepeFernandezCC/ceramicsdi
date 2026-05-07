@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed>
+  <version>2.3</version>
+  <publisher>
+    <name>Ceramic Connection Shop S.L.</name>
+    <favicon>http://ceramicsdi/img/favicon.ico</favicon>
+  </publisher>
+  <reviews>
+    <review>
+      <review_id>ccpr-12</review_id>
+      <reviewer>
+        <name>Pepe Fernández</name>
+        <reviewer_id>customer-7485</reviewer_id>
+      </reviewer>
+      <review_timestamp>2026-03-06T08:13:58+01:00</review_timestamp>
+      <content>la mesa es ia</content>
+      <ratings>
+        <overall min="1" max="5">4</overall>
+      </ratings>
+      <collection_method>post_fulfillment</collection_method>
+      <is_spam>false</is_spam>
+      <products>
+        <product>
+          <product_ids>
+            <gtins>
+              <gtin>0734690121928</gtin>
+            </gtins>
+            <skus>
+              <sku>R-00258</sku>
+            </skus>
+            <brands>
+              <brand>Ceramic Connection</brand>
+            </brands>
+          </product_ids>
+          <product_name>Calacatta Gold Pulido</product_name>
+          <product_url>http://ceramicsdi/es/azulejo/calacatta-gold-pulido-60x120.html</product_url>
+        </product>
+      </products>
+    </review>
+    <review>
+      <review_id>ccpr-11</review_id>
+      <reviewer>
+        <name>Pepe Fernández</name>
+        <reviewer_id>customer-7485</reviewer_id>
+      </reviewer>
+      <review_timestamp>2026-03-06T07:56:01+01:00</review_timestamp>
+      <content>el mejor producto!!!</content>
+      <ratings>
+        <overall min="1" max="5">4</overall>
+      </ratings>
+      <collection_method>post_fulfillment</collection_method>
+      <is_spam>false</is_spam>
+      <products>
+        <product>
+          <product_ids>
+            <gtins>
+              <gtin>0734690121928</gtin>
+            </gtins>
+            <skus>
+              <sku>R-00258</sku>
+            </skus>
+            <brands>
+              <brand>Ceramic Connection</brand>
+            </brands>
+          </product_ids>
+          <product_name>Calacatta Gold Pulido</product_name>
+          <product_url>http://ceramicsdi/es/azulejo/calacatta-gold-pulido-60x120.html</product_url>
+        </product>
+      </products>
+    </review>
+    <review>
+      <review_id>ccpr-10</review_id>
+      <reviewer>
+        <name>Pepe Fernández</name>
+        <reviewer_id>customer-7485</reviewer_id>
+      </reviewer>
+      <review_timestamp>2026-03-05T17:23:16+01:00</review_timestamp>
+      <content>best tile ever</content>
+      <ratings>
+        <overall min="1" max="5">4</overall>
+      </ratings>
+      <collection_method>post_fulfillment</collection_method>
+      <is_spam>false</is_spam>
+      <products>
+        <product>
+          <product_ids>
+            <gtins>
+              <gtin>0734690121928</gtin>
+            </gtins>
+            <skus>
+              <sku>R-00258</sku>
+            </skus>
+            <brands>
+              <brand>Ceramic Connection</brand>
+            </brands>
+          </product_ids>
+          <product_name>Calacatta Gold Pulido</product_name>
+          <product_url>http://ceramicsdi/es/azulejo/calacatta-gold-pulido-60x120.html</product_url>
+        </product>
+      </products>
+    </review>
+    <review>
+      <review_id>ccpr-8</review_id>
+      <reviewer>
+        <name>Pepe Fernández</name>
+        <reviewer_id>customer-7485</reviewer_id>
+      </reviewer>
+      <review_timestamp>2026-02-27T09:59:57+01:00</review_timestamp>
+      <content>producto bochernoso</content>
+      <ratings>
+        <overall min="1" max="5">2</overall>
+      </ratings>
+      <collection_method>post_fulfillment</collection_method>
+      <is_spam>false</is_spam>
+      <products>
+        <product>
+          <product_ids>
+            <gtins>
+              <gtin>0734690121928</gtin>
+            </gtins>
+            <skus>
+              <sku>R-00258</sku>
+            </skus>
+            <brands>
+              <brand>Ceramic Connection</brand>
+            </brands>
+          </product_ids>
+          <product_name>Calacatta Gold Pulido</product_name>
+          <product_url>http://ceramicsdi/es/azulejo/calacatta-gold-pulido-60x120.html</product_url>
+        </product>
+      </products>
+    </review>
+    <review>
+      <review_id>ccpr-7</review_id>
+      <reviewer>
+        <name>Pepe Fernández</name>
+        <reviewer_id>customer-7485</reviewer_id>
+      </reviewer>
+      <review_timestamp>2026-02-27T08:01:14+01:00</review_timestamp>
+      <content>buen producto</content>
+      <ratings>
+        <overall min="1" max="5">5</overall>
+      </ratings>
+      <collection_method>post_fulfillment</collection_method>
+      <is_spam>false</is_spam>
+      <products>
+        <product>
+          <product_ids>
+            <gtins>
+              <gtin>0734690121928</gtin>
+            </gtins>
+            <skus>
+              <sku>R-00258</sku>
+            </skus>
+            <brands>
+              <brand>Ceramic Connection</brand>
+            </brands>
+          </product_ids>
+          <product_name>Calacatta Gold Pulido</product_name>
+          <product_url>http://ceramicsdi/es/azulejo/calacatta-gold-pulido-60x120.html</product_url>
+        </product>
+      </products>
+    </review>
+    <review>
+      <review_id>ccpr-6</review_id>
+      <reviewer>
+        <name>Pepe Fernández</name>
+        <reviewer_id>customer-7485</reviewer_id>
+      </reviewer>
+      <review_timestamp>2026-02-26T10:03:57+01:00</review_timestamp>
+      <content>gran producto le doy un 100%</content>
+      <ratings>
+        <overall min="1" max="5">5</overall>
+      </ratings>
+      <collection_method>post_fulfillment</collection_method>
+      <is_spam>false</is_spam>
+      <products>
+        <product>
+          <product_ids>
+            <gtins>
+              <gtin>0734690121881</gtin>
+            </gtins>
+            <skus>
+              <sku>R-00253</sku>
+            </skus>
+            <brands>
+              <brand>Ceramic Connection</brand>
+            </brands>
+          </product_ids>
+          <product_name>Calacatta Mate</product_name>
+          <product_url>http://ceramicsdi/es/azulejo/calacatta-mate-60x120.html</product_url>
+        </product>
+      </products>
+    </review>
+    <review>
+      <review_id>ccpr-5</review_id>
+      <reviewer>
+        <name>Pepe Fernández</name>
+        <reviewer_id>customer-7485</reviewer_id>
+      </reviewer>
+      <review_timestamp>2026-02-26T10:02:43+01:00</review_timestamp>
+      <content>le doy a este producto solo un 40 'select * from ps_product where 1;</content>
+      <ratings>
+        <overall min="1" max="5">2</overall>
+      </ratings>
+      <collection_method>post_fulfillment</collection_method>
+      <is_spam>false</is_spam>
+      <products>
+        <product>
+          <product_ids>
+            <gtins>
+              <gtin>0734690121881</gtin>
+            </gtins>
+            <skus>
+              <sku>R-00253</sku>
+            </skus>
+            <brands>
+              <brand>Ceramic Connection</brand>
+            </brands>
+          </product_ids>
+          <product_name>Calacatta Mate</product_name>
+          <product_url>http://ceramicsdi/es/azulejo/calacatta-mate-60x120.html</product_url>
+        </product>
+      </products>
+    </review>
+  </reviews>
+</feed>
