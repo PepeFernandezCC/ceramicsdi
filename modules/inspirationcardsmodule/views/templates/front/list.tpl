@@ -61,21 +61,21 @@
 
         <div class="insp-card" data-group="usage" data-value="suelo">
           <div class="insp-card__image" role="button">
-            <img src="{$urls.base_url}modules/inspirationcardsmodule/views/images/piscina.webp" alt="suelo">
+            <img src="{$urls.base_url}modules/inspirationcardsmodule/views/images/suelo.webp" alt="suelo">
           </div>
           <div class="insp-card__label">SUELO</div>
         </div>
 
         <div class="insp-card" data-group="usage" data-value="pared">
           <div class="insp-card__image" role="button">
-            <img src="{$urls.base_url}modules/inspirationcardsmodule/views/images/piscina.webp" alt="pared">
+            <img src="{$urls.base_url}modules/inspirationcardsmodule/views/images/pared.webp" alt="pared">
           </div>
           <div class="insp-card__label">PARED</div>
         </div>
 
         <div class="insp-card" data-group="usage" data-value="moodboards">
           <div class="insp-card__image" role="button">
-            <img src="{$urls.base_url}modules/inspirationcardsmodule/views/images/piscina.webp" alt="moodboards">
+            <img src="{$urls.base_url}modules/inspirationcardsmodule/views/images/moodboard.webp" alt="moodboards">
           </div>
           <div class="insp-card__label">MOODBOARDS</div>
         </div>
