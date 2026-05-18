@@ -115,7 +115,7 @@
                 <div class="product-quantity-wrapper clearfix">
 
                     {if $isByPiece}
-
+                        {assign var="linealMeters" value=Product::getLinealValue($product.id)}
                         <div class="inputs-calculator">
 
                             <div class="row mx-auto row-calculator margin-calculator">
@@ -124,12 +124,16 @@
                                         <div class="label-query">
                                             <div class="queryCalculator">
                                                 <strong>
-                                                    {l s='How many pieces do you need?' d='Shop.Theme.Catalog'}
+                                                    {if $linealMeters > 1}
+                                                        {l s='how many m do you need' d='Shop.Theme.Catalog'}
+                                                    {else}
+                                                        {l s='How many pieces do you need?' d='Shop.Theme.Catalog'}
+                                                    {/if}
                                                 </strong>
                                             </div>  
                                         </div>                              
                                 
-
+                                        
                                         <input
                                             type="number"
                                             name="pieces"
@@ -140,22 +144,29 @@
                                             class="input-group boxInput"
                                             aria-label="{l s='Quantity' d='Shop.Theme.Actions'}"
                                             data-piezas-caja="{$piezas_caja}"
-                                            placeholder="{l s='pieces needed' d='Shop.Theme.Actions'}"
+                                            data-lineal-meters="{$linealMeters}"
+                                            {if $linealMeters > 1} 
+                                                placeholder="{l s='m needed' d='Shop.Theme.Actions'}"
+                                            {else}
+                                                placeholder="{l s='pieces needed' d='Shop.Theme.Actions'}"
+                                            {/if}
                                             rquired
                                         >
                                 
                                 </div>
-
-                                <div class="m2cajaInfo">
-                                    
-                                    {foreach from=$product.features item='feature'}
-                                        {if isset($feature.id_feature) && $feature.id_feature == $FEATURE_M2_PIEZA_ID}
-                                            <span>{l s='pieces' d='Shop.Theme.Catalog'}/{l s='box' d='Shop.Theme.Catalog'}:<strong>{$piezas_caja}</strong></span>
-                                        {/if}
-                                    {/foreach}
-                                    
-                                    
-                                </div>
+                                
+                                    <div class="m2cajaInfo">
+                                        {if $linealMeters > 1} 
+                                            <span><span>M/{l s='piece' d='Shop.Theme.Catalog'}: <strong>{$linealMeters/100}</strong></span>
+                                        {else}
+                                            {foreach from=$product.features item='feature'}
+                                                {if isset($feature.id_feature) && $feature.id_feature == $FEATURE_M2_PIEZA_ID}
+                                                    <span>{l s='pieces' d='Shop.Theme.Catalog'}/{l s='box' d='Shop.Theme.Catalog'}: <strong>{$piezas_caja}</strong></span>
+                                                {/if}
+                                            {/foreach}
+                                        {/if}   
+                                    </div>
+                                
                             </div>
 
                             <div class="actionButtons">

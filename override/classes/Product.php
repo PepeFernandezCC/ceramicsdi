@@ -442,27 +442,36 @@ class Product extends ProductCore {
 
         $db = Db::getInstance();
 
-        $query = 'SELECT `reduction` FROM `ps_specific_price` WHERE `id_product` = ' . $productId;
+        $query = 'SELECT `reduction`, `from_quantity` FROM `ps_specific_price` WHERE `id_product` = ' . $productId;
 
         $result = $db->getRow($query);
+
+        $volume = false;
+
+        if ($result && isset($result['from_quantity'])) {
+            $volume = $result['from_quantity'] != '1' ? true : false;
+        }
 
         if ($result && isset($result['reduction'])) {
             // Reemplazar coma por punto y convertir a float
             $value = str_replace(',', '.', $result['reduction']);
             $reduction = 1 - (float) $value;
         }else{
+
             return [
                 'price' => $price,
                 'discount' => 0,
-                'discount_price' => $price
+                'discount_price' => $price,
+                'volume' => $volume
             ];
         }
                 
         return [
             'price' => $price,
             'discount' => (float) $value * 100,
-            'discount_price' => $price * $reduction
-        ]; 
+            'discount_price' => $price * $reduction,
+            'volume' => $volume
+        ];
     }
 
 
@@ -517,6 +526,7 @@ class Product extends ProductCore {
         $original_price = $discountPrice['price']; // precio sin descuento
         $price = $discountPrice['discount_price']; //precio con descuento (el mismo si no hay descuento)
         $discount = $discountPrice['discount'];     //porcentaje de descuento
+        $volume = $discountPrice['volume']; //descuento por volumen
 
         // Calcular precio
         if (!self::getIfNormalSell($productId)) {
@@ -541,11 +551,14 @@ class Product extends ProductCore {
             }
         } 
 
+        //dump('volume -> '.$volume. ' | price -> '.$price. ' | original -> '.$original_price);die();
+
         return [
             'price' => number_format($price, 2, ',', ''),
             'original_price' => number_format($original_price, 2, ',', ''),
             'discount' => $discount,
-            'tipologia' => $tipology
+            'tipologia' => $tipology,
+            'volume' => $volume
         ];
         
     }

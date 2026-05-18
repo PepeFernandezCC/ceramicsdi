@@ -519,14 +519,22 @@
                                     </button>
                                     <div class="panel">
                                         {block name='downloadable_content'}
+                                            {assign var="spanish_names" value=array('PDF Técnico', 'Plantilla Hidráulicos a medida')}
+                                            {assign var="french_names" value=array('PDF technique', 'Modèle pour carreaux sur mesure')}
+                                            {assign var="english_names" value=array('Technical PDF', 'Custom hydraulic tile template')}
+                                            {assign var="german_names" value=array('PDF Technical', 'Vorlage Zementfliesen Mass')}
+                                            {assign var="portugeish_names" value=array('PDF Tecnico', 'Modelo ladrilho sob medida')}
+                                            {assign var="neerlandish_names" value=array('PDF-techniek', 'Sjabloon tegels op maat')}
                                             <div class="tab-panel" id="product-accordion-downloads" role="tabpanel">
+
                                                 {foreach from=$product.attachments item=attachment}
-                                                    {if ($attachment.name == 'PDF Técnico' && $language.id == 1)
-                                                        || ($attachment.name == 'PDF technique' && $language.id == 2)
-                                                        || ($attachment.name == 'Technical PDF' && $language.id == 3)
-                                                        || ($attachment.name == 'PDF Technical' && $language.id == 4)
-                                                        || ($attachment.name == 'PDF Tecnico' && $language.id == 5)
-                                                        || ($attachment.name == 'PDF-techniek' && $language.id == 6)
+                                                {$attachment.name|@var_dump}
+                                                    {if (in_array($attachment.name, $psanish_names) && $language.id == 1)
+                                                        || (in_array($attachment.name, $french_names) && $language.id == 2)
+                                                        || (in_array($attachment.name, $english_names) && $language.id == 3)
+                                                        || (in_array($attachment.name, $german_names) && $language.id == 4)
+                                                        || (in_array($attachment.name, $portugeish_names) && $language.id == 5)
+                                                        || (in_array($attachment.name, $neerlandish_names) && $language.id == 6)
                                                     }
                                                         <div id="product-attachment-pdf-tecnico" style="padding-left: 30px; padding-bottom: 14px;">
                                                             <div>
@@ -534,7 +542,7 @@
                                                                 <a href="{url entity='attachment' params=['id_attachment' => $attachment.id_attachment]}"
                                                                     target="_blank"
                                                                     style="text-transform: uppercase;font-weight: 500;font-size: 14px !important;">
-                                                                       {* {l s='Download' d='Shop.Theme.Actions'}*} {l s='Technical PDF' d='Shop.Theme.Catalog'}
+                                                                       {$attachment.name}
                                                                 </a>
                                                             </div>
                                                         </div>
@@ -549,6 +557,10 @@
 
                         {/block}
 
+                    </div>
+
+                    <div class="volume-discount">
+                        {include file='catalog/_partials/product-discounts.tpl' product=$product}
                     </div>
 
                 </div>

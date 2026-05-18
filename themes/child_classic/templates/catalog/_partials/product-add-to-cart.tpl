@@ -436,6 +436,18 @@
 
                     <hr>
 
+                    <div id="subotals-product-dicount" style="display:none">
+                        <div class="subtotal-product" style="font-size:15px; margin-bottom: 5px">
+                            <div class="subtotal-title-product">{l s='Subtotal' d='Shop.Theme.Catalog'}:</div>
+                            <div class="total-quantity-product"><span id="m2PriceNoDiscount">0.00</span> €</div>
+                        </div>
+
+                        <div class="subtotal-product" style="font-size:15px; margin-bottom: 5px">
+                            <div class="subtotal-title-product">{l s='Discount' d='Shop.Theme.Catalog'}:</div>
+                            <div class="total-quantity-product"><span id="m2TotalDiscount" style="color:red">0.00</span> €</div>
+                        </div>
+                    </div>
+
                     <div class="total-product">
                         <div class="total-title-product">{l s='Total' d='Shop.Theme.Catalog'}:</div>
                         <div class="total-quantity-product"><span id="m2TotalPrice">0.00</span> €</div>

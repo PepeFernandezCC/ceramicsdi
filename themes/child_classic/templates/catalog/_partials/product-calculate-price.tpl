@@ -4,7 +4,7 @@
     {assign var="regular_price" value=false}
 {/if}
 
-{if $regular_price}
+{if $regular_price || $productPrice.volume}
     {$productPrice.original_price} €{$productPrice.tipologia nofilter}
 {else}
     {$productPrice.price} €{$productPrice.tipologia nofilter}
