@@ -7363,3 +7363,37 @@ button:focus {
 .professional-loggin a:hover{
   color:#000000;
 }
+
+.product-discounts>.table-product-discounts thead tr th {
+    width: 25%;
+    padding: .625rem 1.25rem;
+    text-align: center;
+    background: #e5e6e5;
+    border: 1px solid black;
+}
+
+.product-discounts>.table-product-discounts tbody tr td {
+    padding: .625rem 1.25rem;
+    text-align: center;
+    border: 1px solid black;
+}
+
+.product-discounts>.table-product-discounts tbody tr {
+    background: #ffffff;
+}
+
+.product-discounts>.product-discounts-title, .terms-condition-title {
+    font-size: 18px;
+    text-transform: uppercase;
+    font-weight: 600;
+    text-align: center;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+@media (max-width:769px) {
+  .product-discounts {
+      margin-bottom: 0;
+  }
+}
