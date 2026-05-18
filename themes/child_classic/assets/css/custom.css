@@ -7382,7 +7382,7 @@ button:focus {
     background: #ffffff;
 }
 
-.product-discounts>.product-discounts-title {
+.product-discounts>.product-discounts-title, .terms-condition-title {
     font-size: 18px;
     text-transform: uppercase;
     font-weight: 600;

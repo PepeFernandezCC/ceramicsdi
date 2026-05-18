@@ -826,7 +826,10 @@
                                        
                                         <div class="modals-block">
 
-                                            <h2 class="product_H2">{l s='Terms of Purchase' d='Shop.Theme.Catalog'}</h2>
+                                            
+                                            <p class="h6 terms-condition-title">
+                                                <span style="color:#eac133; font-size:21px; padding-right: 10px;"><i class="fa-solid fa-angle-right"></i></span> {l s='Terms of Purchase' d='Shop.Theme.Catalog'}
+                                            </p>
 
                                            
                                             <a href="#" id="openModal" data-toggle="modal" data-target="#transportModal">

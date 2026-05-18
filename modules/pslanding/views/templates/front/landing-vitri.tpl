@@ -32,8 +32,19 @@
         </video>
       {/if}
       
-      <div class="slide-landing">
-      </div>
+        <div class="slide-landing">
+          <div class="landing-slide-title">
+            <h1>
+              {$landing_title|escape:'html'}
+            </h1>
+          </div>
+
+          <div class="landing-slide-subtitle">
+            {if $landing.hero_subtitle}
+              <span>{$landing.hero_subtitle nofilter}</span>
+            {/if}
+          </div>
+        </div>
       
     </div>
 
@@ -56,6 +67,17 @@
           {/if}
         
         <div class="slide-landing">
+          <div class="landing-slide-title">
+            <h1>
+              {$landing_title|escape:'html'}
+            </h1>
+          </div>
+
+          <div class="landing-slide-subtitle">
+            {if $landing.hero_subtitle}
+              <span>{$landing.hero_subtitle nofilter}</span>
+            {/if}
+          </div>
         </div>
       
       </div>
