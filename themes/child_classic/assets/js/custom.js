@@ -1160,7 +1160,11 @@ $( document ).ready( function () {
            setQuantitiesValue(boxes);
 
            let discount = 1;
-           let amount = Number(document.getElementById('amount-to-discount').dataset.discount);
+           let amount = 0;
+
+           if(document.getElementById('amount-to-discount')) {
+               amount = Number(document.getElementById('amount-to-discount').dataset.discount);
+           }
 
            if (amount > 0) {
                let discountPercentage = Number(document.getElementById('amount-discount').dataset.discount);
@@ -1204,7 +1208,12 @@ $( document ).ready( function () {
            setQuantitiesValue(quantity)
 
             let discount = 1;
-            let amount = Number(document.getElementById('amount-to-discount').dataset.discount);
+            let amount = 0;
+
+            if(document.getElementById('amount-to-discount')) {
+                  amount = Number(document.getElementById('amount-to-discount').dataset.discount);
+            }
+
 
             if (amount > 0) {
                   let discountPercentage = Number(document.getElementById('amount-discount').dataset.discount);
@@ -1273,7 +1282,12 @@ $( document ).ready( function () {
             inputQuantityBox.value = parseInt(inputQuantityBox.value) + 1;
 
             let discount = 1;
-            let amount = Number(document.getElementById('amount-to-discount').dataset.discount);
+            let amount = 0;
+
+            if(document.getElementById('amount-to-discount')) {
+                  amount = Number(document.getElementById('amount-to-discount').dataset.discount);
+            }
+
 
             if (amount > 0) {
                let discountPercentage = Number(document.getElementById('amount-discount').dataset.discount);
@@ -1295,7 +1309,12 @@ $( document ).ready( function () {
                inputQuantityBox.value = parseInt(inputQuantityBox.value) - 1;
 
                let discount = 1;
-               let amount = Number(document.getElementById('amount-to-discount').dataset.discount);
+               let amount = 0;
+
+               if(document.getElementById('amount-to-discount')) {
+                     amount = Number(document.getElementById('amount-to-discount').dataset.discount);
+               }
+
 
                if (amount > 0) {
                   let discountPercentage = Number(document.getElementById('amount-discount').dataset.discount);
@@ -1312,7 +1331,12 @@ $( document ).ready( function () {
          $('#quantity-input').keyup( function() {
    
             let discount = 1;
-            let amount = Number(document.getElementById('amount-to-discount').dataset.discount);
+            let amount = 0;
+
+            if(document.getElementById('amount-to-discount')) {
+                  amount = Number(document.getElementById('amount-to-discount').dataset.discount);
+            }
+
 
             if (amount > 0) {
                let discountPercentage = Number(document.getElementById('amount-discount').dataset.discount);
@@ -1446,7 +1470,12 @@ $( document ).ready( function () {
             setPiecesQuantitiesValue(pieces);
 
             let discount = 1;
-            let amount = Number(document.getElementById('amount-to-discount').dataset.discount);
+            let amount = 0;
+
+            if(document.getElementById('amount-to-discount')) {
+                  amount = Number(document.getElementById('amount-to-discount').dataset.discount);
+            }
+
 
             if (amount > 0) {
                let discountPercentage = Number(document.getElementById('amount-discount').dataset.discount);
@@ -1484,7 +1513,12 @@ $( document ).ready( function () {
             setPiecesQuantitiesValue(quantity);
 
             let discount = 1;
-            let amount = Number(document.getElementById('amount-to-discount').dataset.discount);
+            let amount = 0;
+
+            if(document.getElementById('amount-to-discount')) {
+                  amount = Number(document.getElementById('amount-to-discount').dataset.discount);
+            }
+
 
             if (amount > 0) {
                let discountPercentage = Number(document.getElementById('amount-discount').dataset.discount);
@@ -2747,6 +2781,25 @@ $( document ).ready( function () {
             233: '+359' // BG
          };
 
+         function detectOtherCountryPrefix(phoneDigits, selectedPrefixDigits) {
+            const prefixes = Object.values(countryPrefixes)
+               .map(prefix => prefix.replace(/\D/g, ''))
+               .filter(Boolean)
+               // Ordenar de más largo a más corto para evitar conflictos tipo 3, 34, 358
+               .sort((a, b) => b.length - a.length);
+
+            for (const prefixDigits of prefixes) {
+               if (
+                  prefixDigits !== selectedPrefixDigits &&
+                  phoneDigits.startsWith(prefixDigits)
+               ) {
+                  return prefixDigits;
+               }
+            }
+
+            return null;
+         }
+
          if(document.getElementsByClassName('phoneClass')) {
             const countrySelect = document.querySelector('.id_countryClass');
             const phoneInput = document.querySelector('.js-phone-number');
@@ -3122,24 +3175,39 @@ $( document ).ready( function () {
                validation = false;
 
                }else{
-               document.getElementById("phone-required-error").style.display = "none";
+                  document.getElementById("phone-required-error").style.display = "none";
 
-               var raw = $('#field-phone').val();
+                  var raw = $('#field-phone').val();
 
-               // 👉 dejar solo números y quitar ceros iniciales
-               var phone = raw.replace(/\D/g, '').replace(/^0+/, '');
+                  // 👉 dejar solo números y quitar ceros iniciales
+                  var phone = raw.replace(/\D/g, '').replace(/^0+/, '');
 
-               // 👉 obtener prefijo actual desde el DOM
-               var prefix = $('.js-phone-prefix').attr('data-prefix') || '';
-               var prefixDigits = prefix.replace(/\D/g, '');
+                  // 👉 obtener prefijo actual desde el DOM
+                  var prefix = $('.js-phone-prefix').attr('data-prefix') || '';
+                  var prefixDigits = prefix.replace(/\D/g, '');
 
-               // 👉 evitar duplicar prefijo si ya venía (modo editar)
-               if (prefixDigits && phone.startsWith(prefixDigits)) {
-                  phone = phone.substring(prefixDigits.length);
-               }
+                  // 👉 evitar duplicar prefijo si ya venía (modo editar)
+                  if (prefixDigits && phone.startsWith(prefixDigits)) {
+                     phone = phone.substring(prefixDigits.length);
+                  }
 
-               // 👉 reconstruir valor final para guardar
-               $('#field-phone').val(prefix + phone);
+                  // Detectar si el usuario ha escrito otro prefijo internacional
+                  var otherPrefix = detectOtherCountryPrefix(phone, prefixDigits);
+
+                     if (otherPrefix) {
+                        console.log('El teléfono parece tener otro prefijo internacional:', otherPrefix);
+
+                        document.getElementById("phone-required-error").innerText =
+                           "Error: Wrong National Phone";
+
+                        document.getElementById("phone-required-error").style.display = "block";
+                        validation = false;
+                     } else {
+                        document.getElementById("phone-required-error").style.display = "none";
+
+                        // Reconstruir valor final para guardar
+                        $('#field-phone').val(prefix + phone);
+                     }
                }
 
                console.log('las validaciones son: ' + validation);
