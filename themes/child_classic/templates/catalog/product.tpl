@@ -528,8 +528,8 @@
                                             <div class="tab-panel" id="product-accordion-downloads" role="tabpanel">
 
                                                 {foreach from=$product.attachments item=attachment}
-                                                {$attachment.name|@var_dump}
-                                                    {if (in_array($attachment.name, $psanish_names) && $language.id == 1)
+                                          
+                                                    {if (in_array($attachment.name, $spanish_names) && $language.id == 1)
                                                         || (in_array($attachment.name, $french_names) && $language.id == 2)
                                                         || (in_array($attachment.name, $english_names) && $language.id == 3)
                                                         || (in_array($attachment.name, $german_names) && $language.id == 4)
@@ -682,7 +682,7 @@
                         </div>
 
 
-                        {if $hasSample && $texto_muestra !== '' &&  $texto_muestra !== '.'}
+                        {if $texto_muestra !== '' &&  $texto_muestra !== '.'}
                             <div class="sampleText">
                                 <span class="sampleTextIcon">*</span>
                                 <span class="sampleTextDescription">{$texto_muestra}</span>
