@@ -74,6 +74,8 @@ class CcprGoogleProductReviewsFeed
         $writer->setIndentString('  ');
 
         $writer->startElement('feed');
+        $writer->writeAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
+        $writer->writeAttribute('xsi:noNamespaceSchemaLocation', 'http://www.google.com/shopping/reviews/schema/product/2.3/product_reviews.xsd');
         $writer->writeElement('version', '2.3');
 
         $writer->startElement('publisher');
@@ -103,9 +105,6 @@ class CcprGoogleProductReviewsFeed
             } else {
                 $writer->writeElement('is_anonymous', 'true');
             }
-            if (!empty($review['id_customer'])) {
-                $writer->writeElement('reviewer_id', 'customer-'.$review['id_customer']);
-            }
             $writer->endElement();
 
             $writer->writeElement('review_timestamp', self::formatTimestamp($review['date_add']));
@@ -116,6 +115,11 @@ class CcprGoogleProductReviewsFeed
             }
             $writer->writeElement('content', $content);
 
+            $writer->startElement('review_url');
+            $writer->writeAttribute('type', 'group');
+            $writer->text($review['product_url']);
+            $writer->endElement();
+
             $writer->startElement('ratings');
             $writer->startElement('overall');
             $writer->writeAttribute('min', '1');
@@ -123,9 +127,6 @@ class CcprGoogleProductReviewsFeed
             $writer->text((string)max(1, min(5, (int)$review['rating'])));
             $writer->endElement();
             $writer->endElement();
-
-            $writer->writeElement('collection_method', 'post_fulfillment');
-            $writer->writeElement('is_spam', 'false');
 
             $writer->startElement('products');
             $writer->startElement('product');
@@ -164,6 +165,9 @@ class CcprGoogleProductReviewsFeed
 
             $writer->endElement();
             $writer->endElement();
+
+            $writer->writeElement('is_spam', 'false');
+            $writer->writeElement('collection_method', 'post_fulfillment');
 
             $writer->endElement();
             $count++;
