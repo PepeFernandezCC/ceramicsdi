@@ -2739,7 +2739,6 @@ $( document ).ready( function () {
             1: '+49',   // DE
             2: '+43',   // AT
             3: '+32',   // BE
-            4: '+1',    // CA
             6: '+34',   // ES
             7: '+358',  // FI
             8: '+33',   // FR
@@ -3194,11 +3193,11 @@ $( document ).ready( function () {
                   // Detectar si el usuario ha escrito otro prefijo internacional
                   var otherPrefix = detectOtherCountryPrefix(phone, prefixDigits);
 
-                     if (otherPrefix) {
+                     if (otherPrefix || phone.length >= 12) {
                         console.log('El teléfono parece tener otro prefijo internacional:', otherPrefix);
 
                         document.getElementById("phone-required-error").innerText =
-                           "Error: Wrong National Phone";
+                           "Error: Use a selected country phone and less than 12 digits";
 
                         document.getElementById("phone-required-error").style.display = "block";
                         validation = false;
