@@ -3193,7 +3193,8 @@ $( document ).ready( function () {
                   // Detectar si el usuario ha escrito otro prefijo internacional
                   var otherPrefix = detectOtherCountryPrefix(phone, prefixDigits);
 
-                     if (otherPrefix || phone.length >= 12) {
+                     //if (otherPrefix || phone.length >= 12) {
+                     if (phone.length >= 12) {
                         console.log('El teléfono parece tener otro prefijo internacional:', otherPrefix);
 
                         document.getElementById("phone-required-error").innerText =
