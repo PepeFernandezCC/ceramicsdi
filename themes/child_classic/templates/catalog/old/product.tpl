@@ -526,7 +526,9 @@
                                             {assign var="portugeish_names" value=array('PDF Tecnico', 'Modelo ladrilho sob medida')}
                                             {assign var="neerlandish_names" value=array('PDF-techniek', 'Sjabloon tegels op maat')}
                                             <div class="tab-panel" id="product-accordion-downloads" role="tabpanel">
+
                                                 {foreach from=$product.attachments item=attachment}
+                                          
                                                     {if (in_array($attachment.name, $spanish_names) && $language.id == 1)
                                                         || (in_array($attachment.name, $french_names) && $language.id == 2)
                                                         || (in_array($attachment.name, $english_names) && $language.id == 3)
@@ -539,9 +541,8 @@
                                                                 <span style="color: #a3a3a3; font-size: large"><i class="fa-solid fa-file"></i></span>
                                                                 <a href="{url entity='attachment' params=['id_attachment' => $attachment.id_attachment]}"
                                                                     target="_blank"
-                                                                    style="text-transform: uppercase;font-weight: 500;font-size: 14px !important;">{$attachment.name}
-                                                                       {* {l s='Download' d='Shop.Theme.Actions'}{l s='Technical PDF' d='Shop.Theme.Catalog'}*} 
-
+                                                                    style="text-transform: uppercase;font-weight: 500;font-size: 14px !important;">
+                                                                       {$attachment.name}
                                                                 </a>
                                                             </div>
                                                         </div>
@@ -556,6 +557,10 @@
 
                         {/block}
 
+                    </div>
+
+                    <div class="volume-discount">
+                        {include file='catalog/_partials/product-discounts.tpl' product=$product}
                     </div>
 
                 </div>
@@ -677,7 +682,7 @@
                         </div>
 
 
-                        {if $hasSample && $texto_muestra !== '' &&  $texto_muestra !== '.'}
+                        {if $texto_muestra !== '' &&  $texto_muestra !== '.'}
                             <div class="sampleText">
                                 <span class="sampleTextIcon">*</span>
                                 <span class="sampleTextDescription">{$texto_muestra}</span>
@@ -821,7 +826,10 @@
                                        
                                         <div class="modals-block">
 
-                                            <h2 class="product_H2">{l s='Terms of Purchase' d='Shop.Theme.Catalog'}</h2>
+                                            
+                                            <p class="h6 terms-condition-title">
+                                                <span style="color:#eac133; font-size:21px; padding-right: 10px;"><i class="fa-solid fa-angle-right"></i></span> {l s='Terms of Purchase' d='Shop.Theme.Catalog'}
+                                            </p>
 
                                            
                                             <a href="#" id="openModal" data-toggle="modal" data-target="#transportModal">

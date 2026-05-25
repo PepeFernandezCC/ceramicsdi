@@ -28,9 +28,9 @@
                     {assign var="productMiniatureTitle" value="product-miniature-title-maintance"}
                 {/if}       
         
-                <article class="product-miniature js-product-miniature plr-10 article-height" data-id-product="{$product.id_product}" data-id-product-attribute="{$product.id_product_attribute}">
+                <article class="product-miniature js-product-miniature article-height" data-id-product="{$product.id_product}" data-id-product-attribute="{$product.id_product_attribute}">
                     <div class="product-miniature-title-box" data-category="{$product.id_category_default}" data-maintance="{$installation_category_id}">
-                        <div class="product-description {if $isAccessory|default:false}product-accessory{/if}">
+                        <div class="product-description {if $isAccessory|default:false}product-accessory{/if}" style="margin: 0 5px">
                             <div class="{if !$product.has_discount}product-miniatures-info{/if}">
                                 {block name='product_name'}
                                 <div class="{$productMiniatureTitle}">
@@ -67,23 +67,10 @@
                                 {/block}
                             </div>
                             {* Boton compartir *}
-                            {*
-                                <div class="share-product share-dropdown">
-                                    <span class="share-button" data-share-button>
-                                        <img loading="lazy" class="cc-share-icon" src="/themes/child_classic/assets/img/web/icons/cc-share-icon.svg" />
-                                    </span>
-                                    <div class="share-menu" data-share-menu>
-                                        <a href="https://api.whatsapp.com/send?text={$product.link|escape:'url'}" target="_blank" class="share-option"><i class="fa-brands fa-whatsapp"></i></a>
-                                        <a href="https://www.facebook.com/sharer/sharer.php?u={$product.link|escape:'url'}" target="_blank" class="share-option"><i class="fa-brands fa-facebook"></i></a>
-                                        <a href="https://twitter.com/intent/tweet?url={$product.link|escape:'url'}" target="_blank" class="share-option"><i class="fa fa-twitter"></i></a>
-                                        <a href="https://www.linkedin.com/sharing/share-offsite/?url={$product.link|escape:'url'}" target="_blank" class="share-option"><i class="fab fa-linkedin"></i></a>
-                                        <span class="share-option" data-share-id="{$product.link|escape:'url'}"><i class="fa-solid fa-link"></i></span>
-                                    </div>
-                                </div>
-                            *}
+
                         </div>
                     </div>
-                    <div class="block-image-product {if $productIteration % 2 == 0}block-image-product-r{else}block-image-product-l{/if}">                    
+                    <div>                    
                         <div class="thumbnail-top">
                             {block name='product_thumbnail'}
                                 {if $product.cover}
