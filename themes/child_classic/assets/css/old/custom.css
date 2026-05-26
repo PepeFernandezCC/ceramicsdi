@@ -7392,8 +7392,45 @@ button:focus {
     align-items: center;
 }
 
+
+div#search_filters_wrapper {
+    position: sticky;
+    top: 145px;
+    align-self: flex-start;
+    height: fit-content;
+    z-index: 10;
+}
+
+.page-proffessional-description {
+    text-align: center;
+    width: 40%;
+    margin: 0 auto;
+    padding-bottom: 20px;
+}
 @media (max-width:769px) {
   .product-discounts {
       margin-bottom: 0;
+  }
+
+  div#left-column {
+    position: sticky;
+    top: 90px;
+    z-index: 666;
+  }
+
+  .page-proffessional-description {
+    width:90%;
+  }
+}
+
+.professionals-iframe-form{
+    border:none; 
+    overflow:hidden;
+    width: 100%;
+    height: 1000px;
+}
+@media (max-width:769px) {
+  .professionals-iframe-form{
+      height: 1050px;
   }
 }

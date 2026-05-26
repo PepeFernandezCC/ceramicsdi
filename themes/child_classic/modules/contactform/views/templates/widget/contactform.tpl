@@ -1,245 +1,145 @@
-{**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
- *
- * NOTICE OF LICENSE
- *
- * This source file is subject to the Academic Free License 3.0 (AFL-3.0)
- * that is bundled with this package in the file LICENSE.md.
- * It is also available through the world-wide-web at this URL:
- * https://opensource.org/licenses/AFL-3.0
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@prestashop.com so we can send you a copy immediately.
- *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
- * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
- *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
- * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
- *}
-<section class="contact-form">
-    <form action="{$urls.pages.contact}" method="post"
-          {if $contact.allow_file_upload}enctype="multipart/form-data"{/if}>
-        {if $notifications}
-            <div class="col-xs-12 alert {if $notifications.nw_error}alert-danger{else}alert-success{/if}">
-                <ul>
-                    {* PLANATEC *}
-                    {assign var="repeat" value=""}
-                    {* END PLANATEC *}
-                    {foreach $notifications.messages as $notif}
-                        {* PLANATEC *}
-                        {if $notif != $repeat}
-                            <li>{$notif}</li>
-                        {/if}
+<section class="cc-contact">
+  <div class="cc-contact__container">
 
-                        {assign var="repeat" value=$notif}
-                        {* END PLANATEC *}
-                    {/foreach}
-                </ul>
+    <header class="cc-contact__header">
+      <h1>{l s='Contact Information' d='Shop.Theme.Global'}</h1>
+      <span class="cc-contact__divider"></span>
+    </header>
+
+    <div class="cc-contact__panel">
+
+      <h2 class="cc-contact__company">
+        {l s='Ceramic Connection Logistic' d='Shop.Theme.Global'}
+      </h2>
+
+      <div class="cc-contact__info-grid">
+
+        <article class="cc-info-card">
+          <div class="cc-info-card__icon">
+            <i class="fas fa-map-marker-alt"></i>
+          </div>
+
+          <div class="cc-info-card__content">
+
+            <p>
+              Avenida Real de Extremadura, 9 Onda 12200<br>
+              Castellón, {l s='Spain' d='Shop.Theme.Global'}
+            </p>
+
+            <a
+              class="cc-link"
+              href="https://www.google.com/maps/place/Ceramic+Connection/@39.9523827,-0.1899342,17z/data=!3m1!4b1!4m6!3m5!1s0xd60099c1b0adb19:0xc3c8af6c0bbf8d47!8m2!3d39.9523827!4d-0.1877402!16s%2Fg%2F11m79wxtc_"
+              target="_blank"
+              rel="noopener"
+            >
+              {l s='View on Google Maps' d='Shop.Theme.Global'}
+            </a>
+          </div>
+        </article>
+
+        <article class="cc-info-card">
+          <div class="cc-info-card__icon">
+            <i class="far fa-clock"></i>
+          </div>
+
+          <div class="cc-info-card__content">
+            <h3>{l s='Horario de atención al cliente' d='Shop.Theme.Global'}:</h3>
+
+            <div class="cc-schedule">
+              <span>{l s='From Monday to Friday' d='Shop.Theme.Global'}:</span>
+              <strong>{l s='From 9:00 to 14:00' d='Shop.Theme.Global'}</strong>
             </div>
-        {/if}
+          </div>
+        </article>
 
-        {if !$notifications || $notifications.nw_error}
-            <section class="form-fields">
+      </div>
 
-                <div class="form-group row title">
-                    <div class="col-xs-12">
-                        <h3>{l s='We are at your disposal' d='Shop.Forms.Title'}</h3>
-                    </div>
-                </div>
+      <section class="cc-language-section">
+        <h2>{l s='Contact us in the language you prefer:' d='Shop.Theme.Global'}</h2>
 
-                <div class="block-fields">
-                    <div class="row">
-                        <div class="col-xl-9 col-xs-12">
-                            <p style="color: black;">{l s='To better serve your needs, we ask you to select the reason for your contact and fill out the following form.' d='Shop.Forms.Help'}</p>
-                        </div>
-                    </div>
+        <div class="cc-language-grid">
 
-                    <div class="form-group row">
-                        <div class="col-xl-9 col-xs-12">
-                            <label class="form-control-label" for="id_contact">{l s='Subject' d='Shop.Forms.Labels'}
-                                *</label>
-                            <select name="id_contact" id="id_contact" class="form-control form-control-select">
-                                <option disabled selected value></option>
-                                {foreach from=$contact.contacts item=contact_elt}
-                                    <option value="{$contact_elt.id_contact}">{$contact_elt.name}</option>
-                                {/foreach}
-                            </select>
-                        </div>
-                    </div>
+          <article class="cc-language-card">
+            <div class="cc-language-card__flags">
+              <span>
+                <img src="/themes/child_classic/assets/img/web/spain.png" alt="Spain flag" loading="lazy">
+                ES
+              </span>
 
-                    {* PLANATEC *} 
-                    <div class="form-group row">
-                        <div class="col-xl-9 col-xs-12">
-                            <label class="form-control-label" for="name">{l s='Name' d='Shop.Forms.Labels'} *</label>
-                            <input
-                                    id="name"
-                                    class="form-control"
-                                    name="name"
-                                    type="text"
-                                    required
-                            >
-                        </div>
-                    </div>
+              <span>
+                <img src="/themes/child_classic/assets/img/web/germany.png" alt="Germany flag" loading="lazy">
+                DE
+              </span>
+            </div>
 
-                    <div class="form-group row">
-                        <div class="col-xl-9 col-xs-12">
-                            <label class="form-control-label" for="surname">{l s='Surname' d='Shop.Forms.Labels'}
-                                *</label>
-                            <input
-                                    id="surname"
-                                    class="form-control"
-                                    name="surname"
-                                    type="text"
-                                    {* placeholder="{l s='Surname' d='Shop.Forms.Help'} *" *}
-                                    required
-                            >
-                        </div>
-                    </div>
+            <ul class="cc-contact-list">
+              <li>
+                <i class="fas fa-at"></i>
+                <a href="mailto:info@ceramicconnection.es">info@ceramicconnection.es</a>
+              </li>
 
-                    <div class="form-group row">
-                        <div class="col-xl-9 col-xs-12">
-                            <label class="form-control-label" for="city">{l s='City' d='Shop.Forms.Labels'} *</label>
-                            <input
-                                    id="city"
-                                    class="form-control"
-                                    name="city"
-                                    type="text"
-                                    {* placeholder="{l s='City' d='Shop.Forms.Help'} *" *}
-                                    required
-                            >
-                        </div>
-                    </div>
-                    {* END PLANATEC *}
+              <li>
+                <i class="fas fa-phone-alt"></i>
+                <a href="tel:+34647145062">+34 647 145 062</a>
+              </li>
 
-                    <div class="form-group row">
-                        <div class="col-xl-9 col-xs-12">
-                            <label class="form-control-label" for="email">{l s='Email' d='Shop.Forms.Labels'} *</label>
-                            <input
-                                    id="email"
-                                    class="form-control"
-                                    name="from"
-                                    type="email"
-                                    value="{$contact.email}"
-                                    {* placeholder="{l s='your@email.com' d='Shop.Forms.Help'} *" *}
-                                    {* PLANATEC *}required{* END PLANATEC *}
-                            >
-                        </div>
-                    </div>
+              <li>
+                <i class="fa-brands fa-whatsapp"></i>
+                <a href="https://wa.me/34623240148" target="_blank" rel="noopener">
+                  +34 623 240 148
+                </a>
+              </li>
+            </ul>
+          </article>
 
-                    {* PLANATEC *}
-                    <div class="form-group row">
+          <article class="cc-language-card">
+            <div class="cc-language-card__flags">
+              <span>
+                <img src="/themes/child_classic/assets/img/web/france.png" alt="France flag" loading="lazy">
+                FR
+              </span>
 
-                        <div class="col-xl-9 col-xs-12">
-                            <label class="form-control-label" for="occupation">{l s='Occupation' d='Shop.Forms.Labels'}
-                                *</label>
-                            <input
-                                    id="occupation"
-                                    class="form-control"
-                                    name="occupation"
-                                    type="text"
-                                    required
-                            >
-                        </div>
-                    </div>
+              <span>
+                <img src="/themes/child_classic/assets/img/web/united-kingdom.png" alt="United Kingdom flag" loading="lazy">
+                EN
+              </span>
+            </div>
 
-                    {assign var='countries' value=Country::getCountries($language.id, false)}
-                    <div class="form-group row">
-                        <div class="col-xl-9 col-xs-12">
-                            <label class="form-control-label" for="country">{l s='Country' d='Shop.Forms.Labels'}
-                                *</label>
-                            <select id="country" name="country" class="form-control form-control-select">
-                                <option disabled selected value></option>
-                                {foreach from=$countries item=country}
-                                    <option value="{$country.id_country}">{$country.name}</option>
-                                {/foreach}
-                            </select>
-                        </div>
-                    </div>
-                    {* END PLANATEC *}
+            <ul class="cc-contact-list">
+              <li>
+                <i class="fas fa-at"></i>
+                <a href="mailto:info@ceramicconnection.es">info@ceramicconnection.es</a>
+              </li>
 
-                    {if $contact.allow_file_upload}
-                        <div class="form-group row">
-                            <label class="form-control-label"
-                                   for="file-upload">{l s='Choose file' d='Shop.Forms.Labels'} *</label>
-                            <div class="col-xl-9 col-xs-12">
-                                <input id="file-upload" type="file" name="fileUpload" class="filestyle"
-                                       data-buttonText="{l s='Choose file' d='Shop.Theme.Actions'}">
-                            </div>
-                            <span class="col-md-3 form-control-comment">
-                                {l s='optional' d='Shop.Forms.Help'}
-                            </span>
-                        </div>
-                    {/if}
+              <li>
+                <i class="fas fa-phone-alt"></i>
+                <a href="tel:+34623240148">+34 623 240 148</a>
+              </li>
 
-                    <div class="form-group row">
-                        <div class="col-xl-9 col-xs-12">
-                            <label class="form-control-label"
-                                   for="contactform-message">{l s='Message' d='Shop.Forms.Labels'} *</label>
-                            <textarea
-                                    id="contactform-message"
-                                    class="form-control"
-                                    name="message"
-                                    {* placeholder="{l s='How can we help?' d='Shop.Forms.Help'} *" *}
-                                    rows="5"
-                            >{if $contact.message}{$contact.message}{/if}
-                            </textarea>
-                        </div>
-                    </div>
+              <li>
+                <i class="fa-brands fa-whatsapp"></i>
+                <a href="https://wa.me/34623240148" target="_blank" rel="noopener">
+                  +34 623 240 148
+                </a>
+              </li>
+            </ul>
+          </article>
 
-                    <div class="row">
-                        <div class="col-xl-9 col-xs-12">
-                            <p style="color: black;" class="text-sm-right small">
-                                * {l s='Required fields' d='Shop.Forms.Help'}</p>
-                        </div>
-                    </div>
+        </div>
+      </section>
 
-                    {if isset($id_module)}
-                        <div class="form-group row">
-                            <div class="col-xl-9 col-xs-12">
-                                {hook h='displayGDPRConsent' id_module=$id_module}
-                            </div>
-                        </div>
-                    {/if}
+      <div class="cc-whatsapp-widget">
+        {hook h="displayWhatsAppChat" id_whatsappchat="4"}
+      </div>
 
-                    <div class="form-group row">
-                        <div class="col-xs-12">
-                            <div class="custom-newsletter">
-                                <span class="custom-checkbox">
-                                    <label class="psgdpr_consent_message">
-                                        <input id="suscribe_newsletter"
-                                               name="suscribe_newsletter" type="checkbox"
-                                               value="1">
-                                        <span><i class="material-icons rtl-no-flip checkbox-checked psgdpr_consent_icon"></i></span>
-                                        <span>{l s='I would like to receive information and offers' d='Shop.Forms.Labels'}</span>
-                                    </label>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+      {block name='ps_social_follow'}
+        <footer class="cc-social">
+          <h2>{l s='Follow us' d='Shop.Theme.Global'}:</h2>
 
-            </section>
-            <footer class="form-footer text-sm-left">
-                <div class="col-xl-9 col-xs-12">
-                    <style>
-                        input[name=url] {
-                            display: none !important;
-                        }
-                    </style>
-                    <input type="text" name="url" value=""/>
-                    <input type="hidden" name="token" value="{$token}"/>
-                    <input type="hidden" name="profform" value="0"/>
-                    <input class="btn btn-primary" type="submit" name="submitMessage"
-                           value="{l s='Send' d='Shop.Theme.Actions'}">
-                </div>
-            </footer>
-        {/if}
+          {include file="themes/child_classic/modules/ps_socialfollow/ps_socialfollow.tpl" social_links=$socialLinksFooter title=false}
+        </footer>
+      {/block}
 
-    </form>
+    </div>
+  </div>
 </section>
