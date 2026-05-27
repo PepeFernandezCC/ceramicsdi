@@ -55,49 +55,6 @@ class PayPalwithFeeValidationModuleFrontController extends ModuleFrontController
         $paypal->logError($cart, $response, array());
 
         if ($response['result'] != 'ok') {
-            $responseData = is_string($response['data']) ? $response['data'] : print_r($response['data'], true);
-
-            if (strpos($responseData, 'ORDER_ALREADY_CAPTURED') !== false) {
-                $id_order = (int) Order::getIdByCartId((int) $cart->id);
-
-                if ($id_order > 0) {
-                    $order = new Order($id_order);
-
-                    if (
-                        Validate::isLoadedObject($order)
-                        && $order->module == 'paypalwithfee'
-                        && ((int) $order->current_state == 0 || !$this->orderHasHistory($id_order))
-                        && $this->orderHasPaymentRegistered($order)
-                    ) {
-                        $history = new OrderHistory();
-                        $history->id_order = (int) $order->id;
-                        $history->changeIdOrderState((int) Configuration::get('PS_OS_PAYMENT'), $order, true);
-                        $history->addWithemail(true);
-
-                        $paypal->logError(
-                            $this->context->cart,
-                            array(
-                                'repair' => 'ORDER_ALREADY_CAPTURED',
-                                'id_order' => (int) $order->id,
-                                'new_state' => (int) Configuration::get('PS_OS_PAYMENT'),
-                            ),
-                            $responseData
-                        );
-
-                        $urlConfirmation = 'index.php?controller=order-confirmation&id_cart=' . (int) $cart->id .
-                            '&id_module=' . (int) $paypalwithfee->id .
-                            '&id_order=' . (int) $order->id .
-                            '&key=' . $customer->secure_key;
-
-                        if ($paylater) {
-                            die(json_encode(array('urlConfirmation' => $urlConfirmation)));
-                        } else {
-                            Tools::redirect($urlConfirmation);
-                        }
-                    }
-                }
-            }
-
             $params['error'] = 'Paymentprocess';
             $this->context->smarty->assign(
                 array(
@@ -111,7 +68,7 @@ class PayPalwithFeeValidationModuleFrontController extends ModuleFrontController
             );
             $paypal->logError($this->context->cart, $params, $response['data']);
             return $this->setTemplate('module:paypalwithfee/views/templates/front/error.tpl');
-        }elseif ($response['data']->result->status != 'COMPLETED') { //Response is ok, now check the return code
+        } elseif ($response['data']->result->status != 'COMPLETED') { //Response is ok, now check the return code
             $this->context->smarty->assign(
                 array(
                     'error_paypal' => $paypal->errors,
@@ -206,28 +163,5 @@ class PayPalwithFeeValidationModuleFrontController extends ModuleFrontController
         } else {
             Tools::redirect($urlConfirmation);
         }
-    }
-
-    private function orderHasHistory($id_order)
-    {
-        $sql = 'SELECT COUNT(*)
-            FROM `' . _DB_PREFIX_ . 'order_history`
-            WHERE `id_order` = ' . (int) $id_order;
-
-        return (int) Db::getInstance()->getValue($sql) > 0;
-    }
-
-    private function orderHasPaymentRegistered(Order $order)
-    {
-        /*
-        * Comprobamos si PrestaShop tiene algún pago registrado para la referencia del pedido.
-        * Esto evita marcar como pagado un pedido sin prueba local de pago.
-        */
-        $sql = 'SELECT COUNT(*)
-            FROM `' . _DB_PREFIX_ . 'order_payment`
-            WHERE `order_reference` = "' . pSQL($order->reference) . '"
-            AND `amount` > 0';
-
-        return (int) Db::getInstance()->getValue($sql) > 0;
     }
 }
