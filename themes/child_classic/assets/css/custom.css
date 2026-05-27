@@ -7737,3 +7737,26 @@ body#contact div#content-wrapper {
     font-size: 15px;
   }
 }
+
+/*FIX FILTERS TAGS*/
+.catalog-description-sticky {
+  position: sticky;
+  z-index: 99;
+  top: 145px
+}
+
+.catalog-filter-tags-sticky {
+  position: sticky;
+  z-index: 99;
+  top: 293px
+}
+
+@media (max-width: 768px) {
+  .catalog-description-sticky {
+    top: 130px
+  }
+
+  .catalog-filter-tags-sticky {
+    top: 298px
+  }
+}

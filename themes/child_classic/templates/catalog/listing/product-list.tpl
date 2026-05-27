@@ -74,7 +74,7 @@
 
                 {block name='product_list_active_filters'}
 
-                    <div class="">
+                    <div class="catalog-filter-tags-sticky">
 
                         {$listing.rendered_active_filters nofilter}
 

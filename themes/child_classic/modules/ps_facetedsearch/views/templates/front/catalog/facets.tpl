@@ -29,40 +29,7 @@
         {assign var="notShow" value=[9999]}
         {assign var="subCategories" value=Category::getSubCategoriesArray($category.id, $language.id)} 
 
-        {if $subCategories|@count > 0}
-            {if in_array($category.id, $areaArray) 
-                || in_array($category.id_parent, $areaArray)
-                || in_array($category.id, $colorArray) 
-                || in_array($category.id, $shapeArray) 
-                || in_array($category.id_parent, $colorArray)
-                || in_array($category.id, $typeArray)
-                || in_array($category.id_parent, $typeArray)}
-                <button class="accordion" data-label="subcategories" style="border-top: none">
-                    {l s='Subcategories' d='Shop.Theme.Global'}
-                </button>
-                <section class="facet clearfix">
-                    <ul id="subcategories">
-                        {foreach $subCategories as $subCategory}
-                            {if Category::categoryProductsCountById($subCategory.id_category) > 0 && !in_array($subCategory.id_category, $notShow)}
-                                <li class="facet-label">
-                                    {assign var="normalized_title" value=$subCategory.meta_title|lower}
-                                    <a href="{$link->getCategoryLink($subCategory.id_category|intval)}" style="{if $category.id == $subCategory.id_category}font-weight:bold{/if}">
-                                        {if $subCategory.meta_title == ''}
-                                            {$subCategory.name}
-                                        {else}
-                                            {$normalized_title|regex_replace:"/\|.*$/":""|trim|capitalize}
-                                        {/if}
-                                    </a> 
-                                </li>
-                            {/if}
-                        {/foreach}
-                    </ul>
-                </section>
 
-                {assign var="borderTop" value=true}
-                
-            {/if}
-        {/if}
 
         {foreach from=$displayedFacets item="facet" name="facetLoop"}
 
@@ -249,6 +216,42 @@
                 {/if}
             {/if}
         {/foreach}
+
+        {if $subCategories|@count > 0}
+            {if in_array($category.id, $areaArray) 
+                || in_array($category.id_parent, $areaArray)
+                || in_array($category.id, $colorArray) 
+                || in_array($category.id, $shapeArray) 
+                || in_array($category.id_parent, $colorArray)
+                || in_array($category.id, $typeArray)
+                || in_array($category.id_parent, $typeArray)}
+                <button class="accordion" data-label="subcategories">
+                    {l s='Subcategories' d='Shop.Theme.Global'}
+                </button>
+                <section class="facet clearfix">
+                    <ul id="subcategories">
+                        {foreach $subCategories as $subCategory}
+                            {if Category::categoryProductsCountById($subCategory.id_category) > 0 && !in_array($subCategory.id_category, $notShow)}
+                                <li class="facet-label">
+                                    {assign var="normalized_title" value=$subCategory.meta_title|lower}
+                                    <a href="{$link->getCategoryLink($subCategory.id_category|intval)}" style="{if $category.id == $subCategory.id_category}font-weight:bold{/if}">
+                                        {if $subCategory.meta_title == ''}
+                                            {$subCategory.name}
+                                        {else}
+                                            {$normalized_title|regex_replace:"/\|.*$/":""|trim|capitalize}
+                                        {/if}
+                                    </a> 
+                                </li>
+                            {/if}
+                        {/foreach}
+                    </ul>
+                </section>
+
+                {assign var="borderTop" value=true}
+                
+            {/if}
+        {/if}
+
     </div> 
        
 {/if}
