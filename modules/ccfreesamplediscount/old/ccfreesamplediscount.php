@@ -24,7 +24,7 @@ class CcFreeSampleDiscount extends Module
     {
         $this->name = 'ccfreesamplediscount';
         $this->tab = 'pricing_promotion';
-        $this->version = '0.1.4';
+        $this->version = '0.1.3';
         $this->author = 'CERAMIC CONNECTION';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -169,7 +169,7 @@ class CcFreeSampleDiscount extends Module
         self::$isSyncing = true;
 
         try {
-            $discountAmount = $this->calculateSampleDiscountAmountTaxExcl($cart);
+            $discountAmount = $this->calculateSampleDiscountAmountTaxIncl($cart);
             $cartRule = $this->findModuleCartRuleForCart((int) $cart->id);
 
             if ($discountAmount <= 0) {
@@ -187,7 +187,7 @@ class CcFreeSampleDiscount extends Module
                 }
             } else {
                 $cartRule->reduction_amount = (float) $discountAmount;
-                $cartRule->reduction_tax = 0;
+                $cartRule->reduction_tax = 1;
                 $cartRule->reduction_currency = (int) $cart->id_currency;
                 $cartRule->active = 1;
                 $cartRule->date_to = date('Y-m-d H:i:s', strtotime('+30 days'));
@@ -212,20 +212,20 @@ class CcFreeSampleDiscount extends Module
     }
 
     /**
-     * Calculates the discount amount excluding tax.
+     * Calculates the discount amount including tax.
      *
-     * Important: the sample product is normally priced at 0.01 tax excluded.
-     * If the cart rule is created as tax included, PrestaShop discounts 0.05
-     * but can leave the VAT amount visible/payable. The rule must therefore be
-     * tax excluded, so PrestaShop also reduces the taxable base and the tax.
+     * Important: in many PrestaShop shops a product entered as 0.01 is a
+     * tax-excluded price. With 21% VAT, five samples are not 0.05 tax included,
+     * but 0.0605. If we discount only 0.05, PrestaShop correctly leaves about
+     * 0.01 in the order total.
      *
      * Detection is based on a unit price of 0.01 either tax excluded or tax
-     * included, but the amount discounted is the tax-excluded amount.
+     * included, but the amount discounted is always the tax-included amount.
      *
      * @param Cart $cart
      * @return float
      */
-    protected function calculateSampleDiscountAmountTaxExcl(Cart $cart)
+    protected function calculateSampleDiscountAmountTaxIncl(Cart $cart)
     {
         $discountAmount = 0.0;
         $products = $cart->getProducts();
@@ -263,11 +263,7 @@ class CcFreeSampleDiscount extends Module
                 || $taxInclCents === self::SAMPLE_UNIT_PRICE_CENTS;
 
             if ($isSample) {
-                if ($unitPriceTaxExcl !== null) {
-                    $discountAmount += (float) $unitPriceTaxExcl * $quantity;
-                } elseif ($unitPriceTaxIncl !== null) {
-                    $discountAmount += (float) $unitPriceTaxIncl * $quantity;
-                }
+                $discountAmount += (float) $unitPriceTaxIncl * $quantity;
             }
         }
 
@@ -332,7 +328,7 @@ class CcFreeSampleDiscount extends Module
         $cartRule->free_shipping = 0;
         $cartRule->reduction_percent = 0;
         $cartRule->reduction_amount = (float) $discountAmount;
-        $cartRule->reduction_tax = 0;
+        $cartRule->reduction_tax = 1;
         $cartRule->reduction_currency = (int) $cart->id_currency;
         $cartRule->reduction_product = 0;
         $cartRule->gift_product = 0;
