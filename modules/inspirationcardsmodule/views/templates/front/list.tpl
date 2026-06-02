@@ -7,77 +7,77 @@
 
   <section class="insp-top">
     <div class="insp-top__group">
-      <p class="insp-top__title">Elige un espacio.</p>
+      <p class="insp-top__title">{l s='Elige un espacio' d='Shop.Theme.Catalog'}.</p>
       <div class="insp-top__cards">
 
         <div class="insp-card" data-group="space" data-value="salon">
           <div class="insp-card__image" role="button">
             <img src="{$urls.base_url}modules/inspirationcardsmodule/views/images/salon.webp" alt="Salón">
           </div>
-          <div class="insp-card__label">SALÓN</div>
+          <div class="insp-card__label">{l s='SALÓN' d='Shop.Theme.Catalog'}</div>
         </div>
 
         <div class="insp-card" data-group="space" data-value="cocina">
           <div class="insp-card__image" role="button">
             <img src="{$urls.base_url}modules/inspirationcardsmodule/views/images/cocina.webp" alt="Cocina">
           </div>
-          <div class="insp-card__label">COCINA</div>
+          <div class="insp-card__label">{l s='COCINA' d='Shop.Theme.Catalog'}</div>
         </div>
 
         <div class="insp-card" data-group="space" data-value="bano">
           <div class="insp-card__image" role="button">
             <img src="{$urls.base_url}modules/inspirationcardsmodule/views/images/bano.webp" alt="Baño">
           </div>
-          <div class="insp-card__label">BAÑO</div>
+          <div class="insp-card__label">{l s='BAÑO' d='Shop.Theme.Catalog'}</div>
         </div>
 
         <div class="insp-card" data-group="space" data-value="dormitorio">
           <div class="insp-card__image" role="button">
             <img src="{$urls.base_url}modules/inspirationcardsmodule/views/images/dormitorio.webp" alt="Dormitorio">
           </div>
-          <div class="insp-card__label">DORMITORIO</div>
+          <div class="insp-card__label">{l s='DORMITORIO' d='Shop.Theme.Catalog'}</div>
         </div>
 
         <div class="insp-card" data-group="space" data-value="exterior">
           <div class="insp-card__image" role="button">
             <img src="{$urls.base_url}modules/inspirationcardsmodule/views/images/exterior.webp" alt="Exterior">
           </div>
-          <div class="insp-card__label">EXTERIOR</div>
+          <div class="insp-card__label">{l s='EXTERIOR' d='Shop.Theme.Catalog'}</div>
         </div>
 
         <div class="insp-card" data-group="space" data-value="piscina">
           <div class="insp-card__image" role="button">
             <img src="{$urls.base_url}modules/inspirationcardsmodule/views/images/piscina.webp" alt="Piscina">
           </div>
-          <div class="insp-card__label">PISCINA</div>
+          <div class="insp-card__label">{l s='PISCINA' d='Shop.Theme.Catalog'}</div>
         </div>
 
       </div>
     </div>
 
     <div class="insp-top__group insp-top__group--usage">
-      <p class="insp-top__title">Filtra por uso o idea.</p>
+      <p class="insp-top__title">{l s='Filtra por uso o idea' d='Shop.Theme.Catalog'}.</p>
       <div class="insp-top__cards">
 
         <div class="insp-card" data-group="usage" data-value="suelo">
           <div class="insp-card__image" role="button">
             <img src="{$urls.base_url}modules/inspirationcardsmodule/views/images/suelo.webp" alt="suelo">
           </div>
-          <div class="insp-card__label">SUELO</div>
+          <div class="insp-card__label">{l s='SUELO' d='Shop.Theme.Catalog'}</div>
         </div>
 
         <div class="insp-card" data-group="usage" data-value="pared">
           <div class="insp-card__image" role="button">
             <img src="{$urls.base_url}modules/inspirationcardsmodule/views/images/pared.webp" alt="pared">
           </div>
-          <div class="insp-card__label">PARED</div>
+          <div class="insp-card__label">{l s='PARED' d='Shop.Theme.Catalog'}</div>
         </div>
 
         <div class="insp-card" data-group="usage" data-value="moodboards">
           <div class="insp-card__image" role="button">
             <img src="{$urls.base_url}modules/inspirationcardsmodule/views/images/moodboard.webp" alt="moodboards">
           </div>
-          <div class="insp-card__label">MOODBOARDS</div>
+          <div class="insp-card__label">{l s='MOODBOARDS' d='Shop.Theme.Catalog'}</div>
         </div>
 
       </div>
@@ -87,16 +87,16 @@
   <section class="insp-filters">
     <div class="insp-filter-tabs">
       <div class="insp-filter-tab" role="button" data-tab="aspecto">
-        <span>ASPECTO</span>
+        <span>{l s='ASPECTO' d='Shop.Theme.Catalog'}</span>
       </div>
       <div class="insp-filter-tab" role="button" data-tab="color">
-        <span>COLOR</span>
+        <span>{l s='COLOR' d='Shop.Theme.Catalog'}</span>
       </div>
       <div class="insp-filter-tab" role="button" data-tab="tamano">
-        <span>TAMAÑO</span>
+        <span>{l s='TAMAÑO' d='Shop.Theme.Catalog'}</span>
       </div>
       <div class="insp-filter-tab" role="button" data-tab="estilo">
-        <span>ESTILO</span>
+        <span>{l s='ESTILO' d='Shop.Theme.Catalog'}</span>
       </div>
       <div class="insp-filter-tab" role="button" data-tab="producto">
         <span>{l s='PRODUCTO' d='Shop.Themes.Catalog'}</span>
@@ -107,17 +107,17 @@
     <div class="insp-filter-panels">
       <div class="insp-filter-panel" data-panel="aspecto">
         <div class="insp-filter-values insp-filter-values--text">
-          <div role="button" data-group="aspecto" data-value="barro" data-label="Barro">Barro</div>
-          <div role="button" data-group="aspecto" data-value="cemento" data-label="Cemento">Cemento</div>
-          <div role="button" data-group="aspecto" data-value="hidraulico" data-label="Hidráulico">Hidráulico</div>
-          <div role="button" data-group="aspecto" data-value="madera" data-label="Madera">Madera</div>
-          <div role="button" data-group="aspecto" data-value="marmol" data-label="Mármol">Mármol</div>
-          <div role="button" data-group="aspecto" data-value="metro" data-label="Metro">Metro</div>
-          <div role="button" data-group="aspecto" data-value="monocolor" data-label="Monocolor">Monocolor</div>
-          <div role="button" data-group="aspecto" data-value="piedra" data-label="Piedra">Piedra</div>
-          <div role="button" data-group="aspecto" data-value="pizarra" data-label="Pizarra">Pizarra</div>
-          <div role="button" data-group="aspecto" data-value="terrazo" data-label="Terrazo">Terrazo</div>
-          <div role="button" data-group="aspecto" data-value="zellige" data-label="Zellige">Zellige</div>
+          <div role="button" data-group="aspecto" data-value="barro" data-label="Barro">{l s='Barro' d='Shop.Theme.Catalog'}</div>
+          <div role="button" data-group="aspecto" data-value="cemento" data-label="Cemento">{l s='Cemento' d='Shop.Theme.Catalog'}</div>
+          <div role="button" data-group="aspecto" data-value="hidraulico" data-label="Hidráulico">{l s='Hidráulico' d='Shop.Theme.Catalog'}</div>
+          <div role="button" data-group="aspecto" data-value="madera" data-label="Madera">{l s='Madera' d='Shop.Theme.Catalog'}</div>
+          <div role="button" data-group="aspecto" data-value="marmol" data-label="Mármol">{l s='Mármol' d='Shop.Theme.Catalog'}</div>
+          <div role="button" data-group="aspecto" data-value="metro" data-label="Metro">{l s='Metro' d='Shop.Theme.Catalog'}</div>
+          <div role="button" data-group="aspecto" data-value="monocolor" data-label="Monocolor">{l s='Monocolor' d='Shop.Theme.Catalog'}</div>
+          <div role="button" data-group="aspecto" data-value="piedra" data-label="Piedra">{l s='Piedra' d='Shop.Theme.Catalog'}</div>
+          <div role="button" data-group="aspecto" data-value="pizarra" data-label="Pizarra">{l s='Pizarra' d='Shop.Theme.Catalog'}</div>
+          <div role="button" data-group="aspecto" data-value="terrazo" data-label="Terrazo">{l s='Terrazo' d='Shop.Theme.Catalog'}</div>
+          <div role="button" data-group="aspecto" data-value="zellige" data-label="Zellige">{l s='Zellige' d='Shop.Theme.Catalog'}</div>
         </div>
       </div>
 
@@ -167,23 +167,22 @@
 
       <div class="insp-filter-panel" data-panel="tamano">
         <div class="insp-filter-values insp-filter-values--text">
-          <div role="button" data-group="tamano" data-value="Pequeño (hasta 30 cm)" data-label="Pequeño (hasta 30cm)">Pequeño (hasta 30cm)</div>
-          <div role="button" data-group="tamano" data-value="Mediano (hasta 60 cm)" data-label="Mediano (hasta 60cm)">Mediano (hasta 60cm)</div>
-          <div role="button" data-group="tamano" data-value="Grande (hasta 120 cm)" data-label="Grande (hasta 120cm)">Grande (hasta 120cm)</div>
-          <div role="button" data-group="tamano" data-value="Mosaico enmallado" data-label="Mosaico enmallado">Mosaico enmallado</div>
+          <div role="button" data-group="tamano" data-value="Pequeño (hasta 30 cm)" data-label="Pequeño (hasta 30cm)">{l s='Pequeño (hasta 30cm)' d='Shop.Theme.Catalog'}</div>
+          <div role="button" data-group="tamano" data-value="Mediano (hasta 60 cm)" data-label="Mediano (hasta 60cm)">{l s='Mediano (hasta 60cm)' d='Shop.Theme.Catalog'}</div>
+          <div role="button" data-group="tamano" data-value="Grande (hasta 120 cm)" data-label="Grande (hasta 120cm)">{l s='Grande (hasta 120cm)' d='Shop.Theme.Catalog'}</div>
+          <div role="button" data-group="tamano" data-value="Mosaico enmallado" data-label="Mosaico enmallado">{l s='Mosaico enmallado' d='Shop.Theme.Catalog'}</div>
         </div>
       </div>
 
       <div class="insp-filter-panel" data-panel="estilo">
         <div class="insp-filter-values insp-filter-values--text">
-          <div role="button" data-group="estilo" data-value="minimalista" data-label="Minimalista">Minimalista</div>
-          <div role="button" data-group="estilo" data-value="industrial" data-label="Industrial">Industrial</div>
-          <div role="button" data-group="estilo" data-value="vintage" data-label="Vintage">Vintage</div>
-          <div role="button" data-group="estilo" data-value="rustico" data-label="Rústico">Rústico</div>
-          <div role="button" data-group="estilo" data-value="nordico" data-label="Nórdico">Nórdico</div>
-          <div role="button" data-group="estilo" data-value="mediterraneo" data-label="Mediterráneo">Mediterráneo</div>
-          <div role="button" data-group="estilo" data-value="wabisabi" data-label="Wabi-Sabi">Wabi-Sabi</div>
-          <div role="button" data-group="estilo" data-value="contemporaneo" data-label="Contemporáneo">Contemporáneo</div>
+          <div role="button" data-group="estilo" data-value="minimalista" data-label="Minimalista">{l s='Minimalista' d='Shop.Theme.Catalog'}</div>
+          <div role="button" data-group="estilo" data-value="industrial" data-label="Industrial">{l s='Industrial' d='Shop.Theme.Catalog'}</div>
+          <div role="button" data-group="estilo" data-value="vintage" data-label="Vintage">{l s='Vintage' d='Shop.Theme.Catalog'}</div>
+          <div role="button" data-group="estilo" data-value="rustico" data-label="Rústico">{l s='Rústico' d='Shop.Theme.Catalog'}</div>
+          <div role="button" data-group="estilo" data-value="nordico" data-label="Nórdico">{l s='Nórdico' d='Shop.Theme.Catalog'}</div>
+          <div role="button" data-group="estilo" data-value="mediterraneo" data-label="Mediterráneo">{l s='Mediterráneo' d='Shop.Theme.Catalog'}</div>
+          <div role="button" data-group="estilo" data-value="contemporaneo" data-label="Contemporáneo">{l s='Contemporáneo' d='Shop.Theme.Catalog'}</div>
         </div>
       </div>
 
@@ -212,7 +211,7 @@
       data-offset="{count($inspirations)}"
       data-limit="{$load_more_step|intval}"
     >
-      VER MÁS
+      {l s='VER MÁS' d='Shop.Theme.Catalog'}
     </div>
   </div>
 

@@ -1,6 +1,10 @@
 /******************************************************************************************/
 /***************************** CSS LISTADO ***********************************************/
 /****************************************************************************************/
+body#module-inspirationcardsmodule-detail button {
+    outline: 0 !important;
+}
+
 .inspirations-page {
   max-width: 1380px;
   margin: 0 auto;
@@ -18,7 +22,7 @@
 }
 
 .insp-top__group--usage {
-  max-width: 430px;
+  max-width: 330px;
 }
 
 .insp-top__title {
@@ -273,6 +277,15 @@
 
 @media (max-width: 769px) {
 
+  .insp-filter-tab span {
+    padding: 0;
+  }
+
+  .insp-filter-tab span::after {
+   display: none;
+  }
+
+
   .insp-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -282,7 +295,7 @@
   }
 
   .insp-filter-tab {
-    min-width: 25%;
+    min-width: 20%;
   }
   .insp-color img {
     width: 105px;

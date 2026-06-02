@@ -37,7 +37,8 @@ class PayPalwithFeeValidationModuleFrontController extends ModuleFrontController
         }
 
         $json_data = Tools::file_get_contents('php://input');
-        $data = json_decode($json_data, true)['data'];
+        $decoded_data = json_decode($json_data, true);
+        $data = isset($decoded_data['data']) ? $decoded_data['data'] : array();
 
         $paypal = new Paypalwf(Configuration::get('PPAL_FEE_USER'), Configuration::get('PPAL_FEE_PASS'));
         $paypalwithfee = new Paypalwithfee();
@@ -111,7 +112,7 @@ class PayPalwithFeeValidationModuleFrontController extends ModuleFrontController
             );
             $paypal->logError($this->context->cart, $params, $response['data']);
             return $this->setTemplate('module:paypalwithfee/views/templates/front/error.tpl');
-        }elseif ($response['data']->result->status != 'COMPLETED') { //Response is ok, now check the return code
+        } elseif ($response['data']->result->status != 'COMPLETED') {
             $this->context->smarty->assign(
                 array(
                     'error_paypal' => $paypal->errors,
@@ -140,22 +141,21 @@ class PayPalwithFeeValidationModuleFrontController extends ModuleFrontController
 
         $transaction_id = null;
         $payment_status = $response['data']->result->status;
-        //Store the address in a variable because may be need after
-        $paypalAddress = null;
 
+        $paypalAddress = null;
         $sellerProtection = true;
         $payment_complete = true;
+
         foreach ($response['data']->result->purchase_units as $pUnit) {
             foreach ($pUnit->payments as $pUnitPayment) {
                 if ($pUnitPayment[0]->seller_protection->status != 'ELIGIBLE') {
                     $sellerProtection = false;
                 }
 
-                if($pUnitPayment[0]->status != 'COMPLETED'){
+                if ($pUnitPayment[0]->status != 'COMPLETED') {
                     $payment_complete = false;
                 }
 
-                //The transaction id is stored inside the purchase_unit > payments
                 if ($transaction_id == null) {
                     $transaction_id = $pUnitPayment[0]->id;
                 }
@@ -164,9 +164,9 @@ class PayPalwithFeeValidationModuleFrontController extends ModuleFrontController
             }
         }
 
-        if($payment_complete){
+        if ($payment_complete) {
             $status_payment = Configuration::get('PS_OS_PAYMENT');
-        }else{
+        } else {
             $status_payment = Configuration::get('PPAL_FEE_PENDINGSTATE');
         }
 
@@ -192,22 +192,63 @@ class PayPalwithFeeValidationModuleFrontController extends ModuleFrontController
             $payerID,
             $sellerProtection,
             $mailVars,
-            (int)$currency->id,
+            (int) $currency->id,
             false,
             $customer->secure_key,
             null,
             $paypalAddress
         );
 
-        $urlConfirmation = 'index.php?controller=order-confirmation&id_cart=' . $cart->id . '&id_module='
-            . $paypalwithfee->id . '&id_order=' . $paypalwithfee->currentOrder . '&key=' . $customer->secure_key;
+        /*
+        * Reparación para el caso:
+        * PayPal devuelve COMPLETED, validateOrder4webs crea el pedido,
+        * pero PrestaShop lo deja con current_state = 0 o sin historial.
+        */
+        $id_order = (int) $paypalwithfee->currentOrder;
+
+        if ($id_order <= 0) {
+            $id_order = (int) Order::getIdByCartId((int) $cart->id);
+        }
+
+        if ($id_order > 0) {
+            $order = new Order($id_order);
+
+            if (
+                Validate::isLoadedObject($order)
+                && $order->module == 'paypalwithfee'
+                && ((int) $order->current_state == 0 || !$this->orderHasHistory($id_order))
+            ) {
+                $history = new OrderHistory();
+                $history->id_order = (int) $order->id;
+                $history->changeIdOrderState((int) $status_payment, $order, true);
+                $history->addWithemail(true);
+
+                $paypal->logError(
+                    $this->context->cart,
+                    array(
+                        'repair' => 'PAYPAL_COMPLETED_WITHOUT_ORDER_STATE',
+                        'id_order' => (int) $order->id,
+                        'new_state' => (int) $status_payment,
+                        'paypal_order_id' => $response['data']->result->id,
+                        'transaction_id' => $transaction_id,
+                    ),
+                    $response['data']
+                );
+            }
+        }
+
+        $urlConfirmation = 'index.php?controller=order-confirmation&id_cart=' . (int) $cart->id .
+            '&id_module=' . (int) $paypalwithfee->id .
+            '&id_order=' . (int) $id_order .
+            '&key=' . $customer->secure_key;
+
         if ($paylater) {
-            die(json_encode(['urlConfirmation' => $urlConfirmation]));
+            die(json_encode(array('urlConfirmation' => $urlConfirmation)));
         } else {
             Tools::redirect($urlConfirmation);
         }
     }
-
+    
     private function orderHasHistory($id_order)
     {
         $sql = 'SELECT COUNT(*)

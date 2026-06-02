@@ -126,7 +126,8 @@ class InspirationcardsmoduleDetailModuleFrontController extends Inspirationcards
         $categoryIds = Db::getInstance()->executeS('
             SELECT id_category
             FROM '._DB_PREFIX_.'inspirationcards_category
-            WHERE id_inspiration = '.(int)$inspiration['id_inspiration']
+            WHERE id_inspiration = '.(int)$inspiration['id_inspiration'].'
+            AND id_category not in (11,81,82,88)'
         );
 
         $categoryIds = array_column($categoryIds, 'id_category');
