@@ -74,7 +74,7 @@ class InspirationcardsmoduleFilterModuleFrontController extends Inspirationcards
         $sql = '
             SELECT i.id_inspiration, i.image, il.name, il.slug
             ' . $fromSql . '
-            ORDER BY i.id_inspiration DESC
+            ORDER BY i.position ASC
             LIMIT '.(int)$offset.', '.(int)$limit;
 
         $inspirations = Db::getInstance()->executeS($sql);
@@ -167,6 +167,10 @@ class InspirationcardsmoduleFilterModuleFrontController extends Inspirationcards
                 'dormitorio' => 15,
                 'exterior' => 16,
                 'piscina' => 37,
+                //agregamos los usos para no separar filtros
+                'suelo' => 1770,
+                'pared' => 1771,
+                'moodboards' => 9999,
 
             ];
         }

@@ -59,21 +59,21 @@
       <p class="insp-top__title">{l s='Filtra por uso o idea' d='Shop.Theme.Catalog'}.</p>
       <div class="insp-top__cards">
 
-        <div class="insp-card" data-group="usage" data-value="suelo">
+        <div class="insp-card" data-group="space" data-value="suelo">
           <div class="insp-card__image" role="button">
             <img src="{$urls.base_url}modules/inspirationcardsmodule/views/images/suelo.webp" alt="suelo">
           </div>
           <div class="insp-card__label">{l s='SUELO' d='Shop.Theme.Catalog'}</div>
         </div>
 
-        <div class="insp-card" data-group="usage" data-value="pared">
+        <div class="insp-card" data-group="space" data-value="pared">
           <div class="insp-card__image" role="button">
             <img src="{$urls.base_url}modules/inspirationcardsmodule/views/images/pared.webp" alt="pared">
           </div>
           <div class="insp-card__label">{l s='PARED' d='Shop.Theme.Catalog'}</div>
         </div>
 
-        <div class="insp-card" data-group="usage" data-value="moodboards">
+        <div class="insp-card" data-group="space" data-value="moodboards">
           <div class="insp-card__image" role="button">
             <img src="{$urls.base_url}modules/inspirationcardsmodule/views/images/moodboard.webp" alt="moodboards">
           </div>

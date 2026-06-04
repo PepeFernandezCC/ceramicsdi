@@ -51,12 +51,17 @@ class InspirationcardsmoduleListModuleFrontController extends Inspirationcardsmo
                 ['id' => 15, 'name' => 'Dormitorio'],
                 ['id' => 16, 'name' => 'Exterior'],
                 ['id' => 37, 'name' => 'Piscina'],
+                ['id' => 1770, 'name' => 'Suelo'],
+                ['id' => 1771, 'name' => 'Pared'],
+                ['id' => 9999, 'name' => 'Moodboards'],
             ],
+            /*
             'usos' => [
                 ['id' => 1770, 'name' => 'Suelo'],
                 ['id' => 1771, 'name' => 'Pared'],
                 ['id' => 9999, 'name' => 'Moodboards'],
             ],
+            */
         ]);
 
         $this->setTemplate('module:inspirationcardsmodule/views/templates/front/list.tpl');
