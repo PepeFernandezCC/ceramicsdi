@@ -20,7 +20,7 @@ class InspirationcardsmoduleListModuleFrontController extends Inspirationcardsmo
             INNER JOIN '._DB_PREFIX_.'inspirationcards_lang il
                 ON (il.id_inspiration = i.id_inspiration AND il.id_lang = '.(int)$idLang.')
             WHERE i.active = 1
-            ORDER BY i.id_inspiration DESC
+            ORDER BY i.position ASC
             LIMIT '.(int)$offset.', '.(int)$limit
         );
 

@@ -37,3 +37,5 @@ CREATE TABLE IF NOT EXISTS `ps_inspirationcards_product` (
   `product_type` VARCHAR(10) NOT NULL DEFAULT 'suelo',
   PRIMARY KEY (`id_inspiration`, `id_product`)
 );
+
+ALTER TABLE `ps_inspirationcards` ADD `position` INT NULL AFTER `image`;

@@ -7,6 +7,7 @@ class Inspirationcards extends ObjectModel
     public $date_add;
     public $date_upd;
     public $image;
+    public $position;
 
     // multilang
     public $name;
@@ -19,6 +20,7 @@ class Inspirationcards extends ObjectModel
 
         'fields' => [
             'active' => ['type' => self::TYPE_BOOL],
+            'position' => ['type' => self::TYPE_INT],
             'date_add' => ['type' => self::TYPE_DATE],
             'date_upd' => ['type' => self::TYPE_DATE],
 

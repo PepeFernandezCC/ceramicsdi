@@ -32,11 +32,23 @@ class AdminInspirationcardsController extends ModuleAdminController
                 'orderby' => false,
                 'search' => false,
             ],
+            'position' => [
+                'title' => $this->l('Posición'),
+                'type' => 'int',
+                'filter_key' => 'a!position',
+                'orderby' => true,
+            ],
             'name' => [
                 'title' => $this->l('Nombre'),
+                'type' => 'text',
+                'filter_key' => 'b!name',
+                'orderby' => true,
             ],
             'slug' => [
-                'title' => $this->l('slug'),
+                'title' => $this->l('Slug'),
+                'type' => 'text',
+                'filter_key' => 'b!slug',
+                'orderby' => true,
             ],
             'active' => [
                 'title' => $this->l('Activo'),
@@ -44,20 +56,17 @@ class AdminInspirationcardsController extends ModuleAdminController
                 'type' => 'bool',
                 'align' => 'center',
                 'class' => 'fixed-width-sm',
+                'filter_key' => 'a!active',
+                'orderby' => true,
             ],
         ];
-
-        $this->_join = 'LEFT JOIN '._DB_PREFIX_.'inspirationcards_lang il 
-            ON (a.id_inspiration = il.id_inspiration AND il.id_lang='.(int)$this->context->language->id.')';
-
-        $this->_select = 'il.name';
 
         $this->addRowAction('edit');
         $this->addRowAction('delete');
 
         return parent::renderList();
     }
-
+    
     public function renderImageColumn($value, $row)
     {
         if (empty($value)) {
@@ -94,6 +103,15 @@ class AdminInspirationcardsController extends ModuleAdminController
                             'label' => $this->l('No'),
                         ],
                     ],
+                ],
+                [
+                    'type' => 'text',
+                    'label' => $this->l('Posición'),
+                    'name' => 'position',
+                    'class' => 'fixed-width-sm',
+                    'required' => false,
+                    'validation' => 'isUnsignedInt',
+                    'desc' => $this->l('Introduce un número entero.'),
                 ],
                 [
                     'type' => 'text',
@@ -213,6 +231,15 @@ class AdminInspirationcardsController extends ModuleAdminController
     public function processSave()
     {
         $id = (int)Tools::getValue('id_inspiration');
+
+        $position = Tools::getValue('position');
+
+        if ($position !== '' && !Validate::isUnsignedInt($position)) {
+            $this->errors[] = $this->l('La posición debe ser un número entero válido.');
+            return false;
+        }
+
+        $_POST['position'] = (int)$position;
 
         if ($id > 0 && empty($_FILES['image']['tmp_name'])) {
             $currentImage = Db::getInstance()->getValue('
