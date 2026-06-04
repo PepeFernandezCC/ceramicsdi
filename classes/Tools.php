@@ -1162,17 +1162,67 @@ class ToolsCore
      *
      * @throws PrestaShopException If _PS_MODE_DEV_ is enabled
      */
+    
     public static function displayError($errorMessage = null, $htmlentities = null, Context $context = null)
     {
         header('HTTP/1.1 500 Internal Server Error', true, 500);
+
         if (null !== $htmlentities) {
             self::displayParameterAsDeprecated('htmlentities');
         }
+
         if (null !== $context) {
             self::displayParameterAsDeprecated('context');
         }
 
         if (null === $errorMessage) {
+            $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 30);
+
+            $traceLines = array();
+            foreach ($trace as $i => $t) {
+                $traceLines[] =
+                    '#' . $i . ' ' .
+                    (isset($t['file']) ? $t['file'] : '[internal]') .
+                    ':' .
+                    (isset($t['line']) ? $t['line'] : '?') .
+                    ' ' .
+                    (isset($t['class']) ? $t['class'] : '') .
+                    (isset($t['type']) ? $t['type'] : '') .
+                    (isset($t['function']) ? $t['function'] : '');
+            }
+
+            $caller = isset($trace[1]) ? $trace[1] : array();
+
+            $clientIp = isset($_SERVER['HTTP_CF_CONNECTING_IP'])
+                ? $_SERVER['HTTP_CF_CONNECTING_IP']
+                : (isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '');
+
+            $debugText =
+                'FATAL ERROR SIN MENSAJE' . PHP_EOL .
+                'DATE: ' . date('c') . PHP_EOL .
+                'URI: ' . (isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '') . PHP_EOL .
+                'METHOD: ' . (isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : '') . PHP_EOL .
+                'REFERER: ' . (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '') . PHP_EOL .
+                'IP: ' . $clientIp . PHP_EOL .
+                'CALLER: ' .
+                    (isset($caller['file']) ? $caller['file'] : '[internal]') .
+                    ':' .
+                    (isset($caller['line']) ? $caller['line'] : '?') .
+                    ' ' .
+                    (isset($caller['class']) ? $caller['class'] : '') .
+                    (isset($caller['type']) ? $caller['type'] : '') .
+                    (isset($caller['function']) ? $caller['function'] : '') . PHP_EOL .
+                'LAST_ERROR: ' . print_r(error_get_last(), true) . PHP_EOL .
+                'TRACE:' . PHP_EOL .
+                implode(PHP_EOL, $traceLines) .
+                PHP_EOL . str_repeat('-', 120) . PHP_EOL;
+
+            @file_put_contents(
+                _PS_ROOT_DIR_ . '/var/logs/fatal-error-trace.log',
+                $debugText,
+                FILE_APPEND
+            );
+
             $errorMessage = Context::getContext()
                 ->getTranslator()
                 ->trans('Fatal error', [], 'Admin.Notifications.Error');
@@ -1184,7 +1234,6 @@ class ToolsCore
 
         return $errorMessage;
     }
-
     /**
      * Display an error with detailed object.
      *

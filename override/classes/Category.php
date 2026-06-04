@@ -63,8 +63,12 @@ class Category extends CategoryCore {
         
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
 
-        return $result[0];
+        if (empty($result) || !isset($result[0])) {
+            return false;
+        }
 
+        return $result[0];
+ 
     }
 
     public static function getCategoryMinPriceById($idCategory) {

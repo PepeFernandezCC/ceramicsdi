@@ -20,11 +20,22 @@ class CcFreeSampleDiscount extends Module
     const DISCOUNT_LABEL = 'Descuento por muestras gratis';
     const SAMPLE_UNIT_PRICE_CENTS = 1;
 
+    /**
+     * Use a tax-included voucher amount.
+     *
+     * This avoids carts such as:
+     *   samples 0.05 - discount 0.05 = tax residue 0.01
+     *
+     * If your prices are tax excluded and you want the exact tax-excluded
+     * discount instead, set this to false and use reduction_tax = 0.
+     */
+    const DISCOUNT_TAX_INCLUDED = true;
+
     public function __construct()
     {
         $this->name = 'ccfreesamplediscount';
         $this->tab = 'pricing_promotion';
-        $this->version = '0.1.4';
+        $this->version = '0.1.5';
         $this->author = 'CERAMIC CONNECTION';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -55,10 +66,20 @@ class CcFreeSampleDiscount extends Module
     /**
      * Recalculate the sample discount every time the cart is saved.
      *
+     * IMPORTANT:
+     * PrestaShop also saves/updates the cart while loading normal front pages
+     * such as category pages. Running Cart::getProducts() from this hook in
+     * those pages can trigger Product::getPriceStatic() and die(Tools::displayError()).
+     * Therefore the hook is limited to cart/checkout contexts.
+     *
      * @param array $params
      */
     public function hookActionCartSave($params)
     {
+        if (!$this->shouldSyncInCurrentContext(false)) {
+            return;
+        }
+
         $this->syncFromHookParams($params);
     }
 
@@ -70,6 +91,10 @@ class CcFreeSampleDiscount extends Module
      */
     public function hookActionFrontControllerInitAfter($params)
     {
+        if (!$this->shouldSyncInCurrentContext(false)) {
+            return;
+        }
+
         $this->syncFromHookParams($params);
     }
 
@@ -107,6 +132,48 @@ class CcFreeSampleDiscount extends Module
     {
         $this->syncFromHookParams($params);
         return '';
+    }
+
+    /**
+     * Only run automatic cart-rule syncing in controllers where it is actually
+     * needed. This is the main protection against fatal errors while browsing
+     * category/product/home pages.
+     *
+     * @param bool $force
+     * @return bool
+     */
+    protected function shouldSyncInCurrentContext($force = false)
+    {
+        if ($force) {
+            return true;
+        }
+
+        if (defined('_PS_ADMIN_DIR_')) {
+            return false;
+        }
+
+        if (!isset($this->context) || !isset($this->context->controller)) {
+            return false;
+        }
+
+        $phpSelf = isset($this->context->controller->php_self)
+            ? (string) $this->context->controller->php_self
+            : '';
+
+        $controller = Tools::getValue('controller');
+        $controller = is_string($controller) ? Tools::strtolower($controller) : '';
+
+        $allowed = array(
+            'cart',
+            'order',
+            'order-opc',
+            'orderopc',
+            'checkout',
+            'order-confirmation',
+            'orderconfirmation',
+        );
+
+        return in_array($phpSelf, $allowed, true) || in_array($controller, $allowed, true);
     }
 
     /**
@@ -169,7 +236,7 @@ class CcFreeSampleDiscount extends Module
         self::$isSyncing = true;
 
         try {
-            $discountAmount = $this->calculateSampleDiscountAmountTaxExcl($cart);
+            $discountAmount = $this->calculateSampleDiscountAmount($cart);
             $cartRule = $this->findModuleCartRuleForCart((int) $cart->id);
 
             if ($discountAmount <= 0) {
@@ -187,7 +254,7 @@ class CcFreeSampleDiscount extends Module
                 }
             } else {
                 $cartRule->reduction_amount = (float) $discountAmount;
-                $cartRule->reduction_tax = 0;
+                $cartRule->reduction_tax = self::DISCOUNT_TAX_INCLUDED ? 1 : 0;
                 $cartRule->reduction_currency = (int) $cart->id_currency;
                 $cartRule->active = 1;
                 $cartRule->date_to = date('Y-m-d H:i:s', strtotime('+30 days'));
@@ -212,66 +279,117 @@ class CcFreeSampleDiscount extends Module
     }
 
     /**
-     * Calculates the discount amount excluding tax.
+     * Calculates the discount amount using direct SQL instead of Cart::getProducts().
      *
-     * Important: the sample product is normally priced at 0.01 tax excluded.
-     * If the cart rule is created as tax included, PrestaShop discounts 0.05
-     * but can leave the VAT amount visible/payable. The rule must therefore be
-     * tax excluded, so PrestaShop also reduces the taxable base and the tax.
-     *
-     * Detection is based on a unit price of 0.01 either tax excluded or tax
-     * included, but the amount discounted is the tax-excluded amount.
+     * This is deliberate: Cart::getProducts() can enter Product::getPriceStatic()
+     * and die(Tools::displayError()) when the cart contains an inconsistent line
+     * or when PrestaShop is in the middle of refreshing cart context. Direct SQL
+     * is safer for this module because we only need to detect products whose base
+     * unit price is 0.01.
      *
      * @param Cart $cart
      * @return float
      */
-    protected function calculateSampleDiscountAmountTaxExcl(Cart $cart)
+    protected function calculateSampleDiscountAmount(Cart $cart)
     {
         $discountAmount = 0.0;
-        $products = $cart->getProducts();
+        $rows = $this->getCartProductRowsSafely($cart);
 
-        foreach ($products as $product) {
+        if (empty($rows) || !is_array($rows)) {
+            return 0.0;
+        }
+
+        foreach ($rows as $product) {
             $quantity = isset($product['cart_quantity']) ? (int) $product['cart_quantity'] : 0;
             if ($quantity <= 0) {
                 continue;
             }
 
-            $unitPriceTaxExcl = null;
-            if (isset($product['price'])) {
-                $unitPriceTaxExcl = (float) $product['price'];
-            } elseif (isset($product['price_tax_exc'])) {
-                $unitPriceTaxExcl = (float) $product['price_tax_exc'];
-            }
+            $unitPriceTaxExcl = (float) $product['unit_price_tax_excl'];
+            $taxExclCents = (int) round($unitPriceTaxExcl * 100);
 
-            $unitPriceTaxIncl = null;
-            if (isset($product['price_wt'])) {
-                $unitPriceTaxIncl = (float) $product['price_wt'];
-            } elseif (isset($product['price_tax_incl'])) {
-                $unitPriceTaxIncl = (float) $product['price_tax_incl'];
-            } elseif ($unitPriceTaxExcl !== null) {
-                $unitPriceTaxIncl = $unitPriceTaxExcl;
-            }
-
-            if ($unitPriceTaxExcl === null && $unitPriceTaxIncl === null) {
+            if ($taxExclCents !== self::SAMPLE_UNIT_PRICE_CENTS) {
                 continue;
             }
 
-            $taxExclCents = $unitPriceTaxExcl !== null ? (int) round($unitPriceTaxExcl * 100) : null;
-            $taxInclCents = $unitPriceTaxIncl !== null ? (int) round($unitPriceTaxIncl * 100) : null;
+            if (self::DISCOUNT_TAX_INCLUDED) {
+                $taxRate = $this->getProductTaxRateSafely(
+                    (int) $product['id_product'],
+                    (int) $cart->id_address_delivery
+                );
 
-            $isSample = $taxExclCents === self::SAMPLE_UNIT_PRICE_CENTS
-                || $taxInclCents === self::SAMPLE_UNIT_PRICE_CENTS;
-
-            if ($isSample) {
-                if ($unitPriceTaxExcl !== null) {
-                    $discountAmount += (float) $unitPriceTaxExcl * $quantity;
-                } elseif ($unitPriceTaxIncl !== null) {
-                    $discountAmount += (float) $unitPriceTaxIncl * $quantity;
-                }
+                $unitAmount = $unitPriceTaxExcl * (1 + ($taxRate / 100));
+            } else {
+                $unitAmount = $unitPriceTaxExcl;
             }
+
+            $discountAmount += $unitAmount * $quantity;
         }
 
         return $this->roundAmountForCartCurrency($discountAmount, $cart);
+    }
+
+    /**
+     * Read cart lines and product base prices without invoking Product price
+     * calculation. Combination additional price is included when present.
+     *
+     * @param Cart $cart
+     * @return array
+     */
+    protected function getCartProductRowsSafely(Cart $cart)
+    {
+        $idShop = (int) $cart->id_shop;
+        if ($idShop <= 0 && isset($this->context->shop) && (int) $this->context->shop->id > 0) {
+            $idShop = (int) $this->context->shop->id;
+        }
+
+        $sql = '
+            SELECT
+                cp.`id_product`,
+                cp.`id_product_attribute`,
+                SUM(cp.`quantity`) AS cart_quantity,
+                (ps.`price` + IFNULL(pas.`price`, 0)) AS unit_price_tax_excl
+            FROM `' . _DB_PREFIX_ . 'cart_product` cp
+            INNER JOIN `' . _DB_PREFIX_ . 'product_shop` ps
+                ON ps.`id_product` = cp.`id_product`
+                AND ps.`id_shop` = ' . (int) $idShop . '
+            LEFT JOIN `' . _DB_PREFIX_ . 'product_attribute_shop` pas
+                ON pas.`id_product_attribute` = cp.`id_product_attribute`
+                AND pas.`id_shop` = ' . (int) $idShop . '
+            WHERE cp.`id_cart` = ' . (int) $cart->id . '
+            GROUP BY cp.`id_product`, cp.`id_product_attribute`, ps.`price`, pas.`price`
+        ';
+
+        $rows = Db::getInstance()->executeS($sql);
+
+        return is_array($rows) ? $rows : array();
+    }
+
+    /**
+     * @param int $idProduct
+     * @param int $idAddress
+     * @return float
+     */
+    protected function getProductTaxRateSafely($idProduct, $idAddress)
+    {
+        if ((int) $idProduct <= 0) {
+            return 0.0;
+        }
+
+        try {
+            return (float) Tax::getProductTaxRate((int) $idProduct, (int) $idAddress);
+        } catch (Exception $e) {
+            PrestaShopLogger::addLog(
+                sprintf('[%s] Could not calculate tax rate for product %d: %s', $this->name, (int) $idProduct, $e->getMessage()),
+                2,
+                null,
+                'Product',
+                (int) $idProduct,
+                true
+            );
+        }
+
+        return 0.0;
     }
 
     /**
@@ -332,7 +450,7 @@ class CcFreeSampleDiscount extends Module
         $cartRule->free_shipping = 0;
         $cartRule->reduction_percent = 0;
         $cartRule->reduction_amount = (float) $discountAmount;
-        $cartRule->reduction_tax = 0;
+        $cartRule->reduction_tax = self::DISCOUNT_TAX_INCLUDED ? 1 : 0;
         $cartRule->reduction_currency = (int) $cart->id_currency;
         $cartRule->reduction_product = 0;
         $cartRule->gift_product = 0;
@@ -418,7 +536,7 @@ class CcFreeSampleDiscount extends Module
     }
 
     /**
-     * Cleanup only cart rules that are still attached to open carts or inactive generated rules.
+     * Cleanup only cart rules generated by this module.
      *
      * @return bool
      */

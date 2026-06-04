@@ -439,6 +439,11 @@ body#module-inspirationcardsmodule-detail button {
   display: flex;
   flex-direction: column;
   gap: 44px;
+  margin-bottom: 45px;
+}
+
+body#module-inspirationcardsmodule-detail #carousel-landings .owl-stage-outer .owl-item {
+    padding: 0 5px !important;
 }
 
 .inspiration-product {
