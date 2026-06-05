@@ -59,24 +59,102 @@ class AdminShippingCalculatorController extends ModuleAdminController
         $product_quantities = Tools::getValue('product_quantities', []);
         $this->product_quantities = $product_quantities; // Guardar para el template
         
-        // Crear un carrito temporal para el cálculo (igual que getDeliveryPrice.php)
+        $idFakeCustomer = 1;
+        $fakeCustomer = new Customer((int)$idFakeCustomer);
+        $state_id = State::getIdByIso($province_code, $country_id);
+
+        if (!Validate::isLoadedObject($fakeCustomer)) {
+            $this->errors[] = $this->l('Cliente temporal no válido');
+            return;
+        }
+
+        // Crear dirección temporal igual que en el AJAX
+        $address = new Address();
+        $address->id_customer = (int)$fakeCustomer->id;
+        $address->id_country = (int)$country_id;
+        $address->id_state = (int)$state_id;
+        $address->alias = 'Temporal shipping calculation';
+        $address->firstname = 'Temporal';
+        $address->lastname = 'Shipping';
+        $address->address1 = 'Temporal address';
+        $address->postcode = pSQL($postal_code);
+        $address->city = 'Temporal';
+        $address->phone = '000000000';
+        $address->active = 1;
+        $address->deleted = 0;
+
+        if (!$address->add()) {
+            $this->errors[] = $this->l('No se pudo crear la dirección temporal');
+            return;
+        }
+
+        // Crear carrito temporal completo
         $temp_cart = new Cart();
-        $temp_cart->id_currency = $this->context->currency->id;
-        $temp_cart->id_lang = $this->context->language->id;
-        $temp_cart->id_shop = $this->context->shop->id;
-        $temp_cart->id_customer = 2; // Cliente temporal (igual que getDeliveryPrice.php)
-        $temp_cart->add();
-        
-        // Añadir productos al carrito temporal con sus cantidades
+        $temp_cart->id_shop_group = (int)$this->context->shop->id_shop_group;
+        $temp_cart->id_shop = (int)$this->context->shop->id;
+        $temp_cart->id_lang = (int)$this->context->language->id;
+        $temp_cart->id_currency = (int)$this->context->currency->id;
+        $temp_cart->id_customer = (int)$fakeCustomer->id;
+        $temp_cart->id_guest = 0;
+        $temp_cart->id_address_delivery = (int)$address->id;
+        $temp_cart->id_address_invoice = (int)$address->id;
+        $temp_cart->id_carrier = 0;
+        $temp_cart->delivery_option = '';
+        $temp_cart->secure_key = $fakeCustomer->secure_key;
+        $temp_cart->recyclable = 0;
+        $temp_cart->gift = 0;
+        $temp_cart->allow_seperated_package = 0;
+
+        if (!$temp_cart->add()) {
+            $address->delete();
+            $this->errors[] = $this->l('No se pudo crear el carrito temporal');
+            return;
+        }
+
+        // Añadir productos al carrito temporal indicando dirección
         foreach ($selected_products as $id_product) {
             $quantity = isset($product_quantities[$id_product]) ? (int)$product_quantities[$id_product] : 1;
+
             if ($quantity < 1) {
                 $quantity = 1;
             }
-            $temp_cart->updateQty($quantity, (int)$id_product);
+
+            $result = $temp_cart->updateQty(
+                $quantity,
+                (int)$id_product,
+                null,
+                false,
+                'up',
+                (int)$address->id
+            );
+
+            if (!$result) {
+                $temp_cart->delete();
+                $address->delete();
+
+                $this->errors[] = $this->l('No se pudo añadir un producto al carrito temporal');
+                return;
+            }
         }
-        
-        // Guardar carrito después de agregar productos (necesario para que getTotalWeight funcione)
+
+        // Muy importante: forzar dirección en las líneas del carrito
+        Db::getInstance()->execute('
+            UPDATE `' . _DB_PREFIX_ . 'cart_product`
+            SET `id_address_delivery` = ' . (int)$address->id . '
+            WHERE `id_cart` = ' . (int)$temp_cart->id
+        );
+
+        // Recargar carrito
+        $temp_cart = new Cart((int)$temp_cart->id);
+
+        // Actualizar contexto igual que en AJAX
+        $this->context->cart = $temp_cart;
+        $this->context->customer = $fakeCustomer;
+        $this->context->country = new Country((int)$country_id);
+        $this->context->currency = new Currency((int)$temp_cart->id_currency);
+
+        $temp_cart->id_carrier = 0;
+        $temp_cart->delivery_option = '';
         $temp_cart->update();
         
         // Verificar que el país existe y está activo
@@ -94,7 +172,7 @@ class AdminShippingCalculatorController extends ModuleAdminController
             return;
         }
         
-        $state_id = State::getIdByIso($province_code, $country_id);
+       
         
         if (!$state_id) {
             $this->errors[] = $this->l('La provincia/estado seleccionado no existe para este país');
@@ -102,15 +180,6 @@ class AdminShippingCalculatorController extends ModuleAdminController
             return;
         }
         
-        // Actualizar la dirección ID 1 directamente en la base de datos (igual que getDeliveryPrice.php)
-       
-        $sql = 'UPDATE `' . _DB_PREFIX_ . 'address`
-                SET `id_country` = ' . (int)$country_id . ',
-                `id_state` = ' . (int)$state_id . ',
-                `postcode` = "' . pSQL($postal_code) . '"
-                WHERE `id_address` = 1';
-        
-        Db::getInstance()->execute($sql);
         
         // Obtener días de envío (horquilla)
         $shipping_range = $module->getShippingDaysRangeByProvince($province_code);
@@ -680,33 +749,36 @@ class AdminShippingCalculatorController extends ModuleAdminController
         if (!$cart || !$cart->id) {
             return 0;
         }
-        
-        // Actualizar carrito
-        $cart->id_address_delivery = '1';
-        $cart->id_address_invoice = '1';
-        $cart->id_customer = '2';
+
+        $cart = new Cart((int)$cart->id);
+
+        if (!Validate::isLoadedObject($cart)) {
+            return 0;
+        }
+
+        $cart->id_carrier = 0;
+        $cart->delivery_option = '';
         $cart->update();
 
-        //Coge el transportista mas barato
         $bestOption = Carrier::getCheapestDeliveryOptionByCart($cart, $showTaxes);
 
         if (!$bestOption || empty($bestOption['id_carrier'])) {
-            echo json_encode([
-                'error' => 'No hay transportistas disponibles'
-            ]);
-            exit;
+            return 0;
         }
 
         $id_carrier = (int)$bestOption['id_carrier'];
-        $result = $showTaxes ? (float)$bestOption['price_with_tax'] : (float)$bestOption['price_without_tax'];
-        
-        
-        // actualizar el carrito
-        $cart->id_carrier = (string)$id_carrier;
-        $cart->delivery_option = '{"1":"'.$id_carrier.'"}';
+
+        $result = $showTaxes
+            ? (float)$bestOption['price_with_tax']
+            : (float)$bestOption['price_without_tax'];
+
+        $cart->id_carrier = $id_carrier;
+        $cart->delivery_option = json_encode([
+            (int)$cart->id_address_delivery => $id_carrier . ',',
+        ]);
         $cart->update();
-            
-        return $result;
+
+        return (float)Tools::ps_round($result, 2);
     }
 }
 

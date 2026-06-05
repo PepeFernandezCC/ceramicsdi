@@ -5,7 +5,7 @@
 *
 * This source file is subject to the Academic Free License (AFL 3.0)
 *}
-<div class="fail-hide" style="display:none">
+<div class="fail-hide" style="margin-top:25px" >
 {if isset($has_delivery_info) && $has_delivery_info && isset($estimated_delivery) && $estimated_delivery}
     {if isset($estimated_delivery.mode) && $estimated_delivery.mode == 'by_product'}
         {* Modo por producto: mostrar plazos individuales (similar diseño) *}

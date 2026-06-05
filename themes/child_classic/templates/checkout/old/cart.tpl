@@ -29,6 +29,9 @@
         <div class="cart-grid row">
 
             <!-- Left Block: cart product informations & shpping -->
+            {* PLANATEC
+            <div class="cart-grid-body col-xs-12 col-lg-8">
+            *}
             <div class="cart-grid-body">
 
                 <!-- cart products detailed -->
@@ -41,8 +44,13 @@
                         {include file='checkout/_partials/cart-detailed.tpl' cart=$cart}
                     {/block}
                 </div>
+
             </div>
 
+            <!-- Right Block: cart subtotal & cart total -->
+            {* PLANATEC
+            <div class="cart-grid-right col-xs-12 col-lg-4">
+            *}
             <div class="cart-grid-right">
 
                 {block name='cart_summary'}
