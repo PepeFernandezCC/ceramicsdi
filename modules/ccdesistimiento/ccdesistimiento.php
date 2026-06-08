@@ -13,7 +13,7 @@ class CcDesistimiento extends Module
     {
         $this->name = 'ccdesistimiento';
         $this->tab = 'front_office_features';
-        $this->version = '1.0.0';
+        $this->version = '1.1.0';
         $this->author = 'Ceramic Connection';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -30,7 +30,9 @@ class CcDesistimiento extends Module
         return parent::install()
             && $this->installDb()
             && $this->registerHook('displayOrderDetail')
+            && $this->registerHook('displayCustomerOrderWithdrawalButton')
             && $this->registerHook('displayCustomerAccount')
+            && $this->registerHook('displayHeader')
             && Configuration::updateValue('CC_DESISTIMIENTO_DAYS', 14)
             && Configuration::updateValue('CC_DESISTIMIENTO_EMAIL', 'info@ceramicconnection.es')
             && Configuration::updateValue('CC_DESISTIMIENTO_PHONE', '+34 623 240 148')
@@ -132,6 +134,98 @@ class CcDesistimiento extends Module
         return $html;
     }
 
+
+    public function hookDisplayHeader($params)
+    {
+        if (!$this->context->controller || $this->context->controller->php_self !== 'history') {
+            return '';
+        }
+        if (!$this->context->customer || !$this->context->customer->isLogged()) {
+            return '';
+        }
+
+        $eligibleUrl = $this->context->link->getModuleLink($this->name, 'eligible', array(), true);
+        $buttonText = $this->l('Solicitar desistimiento');
+        $requestedText = $this->l('Desistimiento solicitado');
+
+        return '<style>
+            .cc-desistimiento-history-btn{display:inline-block;margin-left:8px;margin-top:4px;padding:4px 8px;border:1px solid #2fb5d2;border-radius:3px;color:#2fb5d2;font-size:12px;line-height:1.2;text-decoration:none;white-space:nowrap;}
+            .cc-desistimiento-history-btn:hover{background:#2fb5d2;color:#fff;text-decoration:none;}
+            .cc-desistimiento-history-badge{display:inline-block;margin-left:8px;margin-top:4px;padding:4px 8px;border-radius:3px;background:#eee;color:#555;font-size:12px;line-height:1.2;white-space:nowrap;}
+            .orders .cc-desistimiento-history-btn,.orders .cc-desistimiento-history-badge{margin-left:0;margin-top:8px;}
+        </style>
+        <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch(' . json_encode($eligibleUrl) . ', {credentials: "same-origin"})
+                .then(function (response) { return response.json(); })
+                .then(function (payload) {
+                    if (!payload || !payload.success || !payload.orders) { return; }
+                    var byReference = {};
+                    payload.orders.forEach(function (order) { byReference[String(order.reference).trim()] = order; });
+
+                    document.querySelectorAll("table.table-labeled tbody tr").forEach(function (row) {
+                        var refCell = row.querySelector("th[scope=row]");
+                        var actions = row.querySelector(".order-actions");
+                        if (!refCell || !actions) { return; }
+                        var order = byReference[String(refCell.textContent).trim()];
+                        if (!order) { return; }
+                        actions.appendChild(ccCreateWithdrawalNode(order));
+                    });
+
+                    document.querySelectorAll(".orders .order").forEach(function (block) {
+                        var refNode = block.querySelector("h3");
+                        if (!refNode) { return; }
+                        var order = byReference[String(refNode.textContent).trim()];
+                        if (!order) { return; }
+                        var target = block.querySelector(".col-xs-10") || block;
+                        target.appendChild(ccCreateWithdrawalNode(order));
+                    });
+                })
+                .catch(function () {});
+
+            function ccCreateWithdrawalNode(order) {
+                if (order.already_requested) {
+                    var span = document.createElement("span");
+                    span.className = "cc-desistimiento-history-badge";
+                    span.textContent = ' . json_encode($requestedText) . ';
+                    return span;
+                }
+                var link = document.createElement("a");
+                link.className = "cc-desistimiento-history-btn";
+                link.href = order.url;
+                link.textContent = ' . json_encode($buttonText) . ';
+                return link;
+            }
+        });
+        </script>';
+    }
+
+    public function getEligibleOrdersForCustomer($idCustomer)
+    {
+        $rows = Db::getInstance()->executeS('SELECT id_order FROM `' . _DB_PREFIX_ . 'orders` WHERE id_customer=' . (int) $idCustomer . ' ORDER BY date_add DESC LIMIT 100');
+        $result = array();
+        if (!$rows) {
+            return $result;
+        }
+        foreach ($rows as $row) {
+            $order = new Order((int) $row['id_order']);
+            if (!Validate::isLoadedObject($order)) {
+                continue;
+            }
+            if (!$this->canRequestWithdrawal($order)) {
+                continue;
+            }
+            $existing = (int) Db::getInstance()->getValue('SELECT COUNT(*) FROM `' . _DB_PREFIX_ . 'cc_desistimiento` WHERE id_order=' . (int) $order->id);
+            $result[] = array(
+                'id_order' => (int) $order->id,
+                'reference' => $order->reference,
+                'url' => $this->context->link->getModuleLink($this->name, 'request', array('id_order' => (int) $order->id), true),
+                'already_requested' => $existing > 0,
+            );
+        }
+        return $result;
+    }
+
     public function hookDisplayCustomerAccount($params)
     {
         $this->context->smarty->assign(array(
@@ -223,5 +317,48 @@ class CcDesistimiento extends Module
             }
         }
         return true;
+    }
+
+    public function hookDisplayCustomerOrderWithdrawalButton($params)
+    {
+        if (empty($params['order'])) {
+            return '';
+        }
+
+        $orderPresenter = $params['order'];
+
+        if (empty($orderPresenter['details']['reference'])) {
+            return '';
+        }
+
+        $reference = pSQL($orderPresenter['details']['reference']);
+
+        $idOrder = (int) Db::getInstance()->getValue(
+            'SELECT id_order
+            FROM ' . _DB_PREFIX_ . 'orders
+            WHERE reference = "' . $reference . '"
+            AND id_customer = ' . (int) $this->context->customer->id
+        );
+
+        if (!$idOrder) {
+            return '';
+        }
+
+        $order = new Order($idOrder);
+
+        if (!$this->canRequestWithdrawal($order)) {
+            return '';
+        }
+
+        $this->context->smarty->assign([
+            'cc_desistimiento_url' => $this->context->link->getModuleLink(
+                $this->name,
+                'withdrawal',
+                ['id_order' => $idOrder],
+                true
+            ),
+        ]);
+
+        return $this->fetch('module:' . $this->name . '/views/templates/hook/history_button.tpl');
     }
 }

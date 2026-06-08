@@ -58,7 +58,7 @@
               >
                 {$order.history.current.ostate_name}
               </span>
-            </td>
+            </td>          
             <td class="text-sm-center hidden-md-down">
               {if $order.details.invoice_url}
                 <a href="{$order.details.invoice_url}"><i class="material-icons">&#xE415;</i></a>
@@ -67,12 +67,17 @@
               {/if}
             </td>
             <td class="text-sm-center order-actions">
+
+              {hook h='displayCustomerOrderWithdrawalButton' order=$order}
+
               <a href="{$order.details.details_url}" data-link-action="view-order-details">
                 {l s='Details' d='Shop.Theme.Customeraccount'}
               </a>
+
               {if $order.details.reorder_url}
                 <a href="{$order.details.reorder_url}">{l s='Reorder' d='Shop.Theme.Actions'}</a>
               {/if}
+
             </td>
           </tr>
         {/foreach}
@@ -95,6 +100,8 @@
                   {$order.history.current.ostate_name}
                 </span>
               </div>
+
+              {hook h='displayCustomerOrderWithdrawalButton' order=$order}
             </div>
             <div class="col-xs-2 text-xs-right">
                 <div>

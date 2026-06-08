@@ -7774,3 +7774,9 @@ body#checkout #deliveryPriceCalculator {
     top: 130px
   }
 }
+
+body#order-detail section#main{
+  width: 80%;
+  margin: auto;
+  margin-top: 30px;
+}

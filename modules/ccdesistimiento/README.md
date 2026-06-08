@@ -2,27 +2,22 @@
 
 Modulo Prestashop 1.7/8.x para Ceramic Connection.
 
-## Que hace
+## Version 1.1.0
 
-- Anade boton "Solicitar desistimiento" en el detalle del pedido del cliente.
-- Muestra formulario con productos del pedido.
-- Registra la solicitud en la tabla `ps_cc_desistimiento`.
-- Anade nota privada al pedido.
-- Envia email de acuse al cliente y aviso interno a Ceramic Connection.
+Incluye:
 
-## Configuracion
-
-En Modulos > ccdesistimiento:
-
-- Plazo en dias: 14 por defecto.
-- Email interno: info@ceramicconnection.es.
-- Telefono/WhatsApp.
-- Direccion de devolucion.
-- IDs de estados considerados "Entregado". Por defecto 5.
-- IDs de categorias excluidas, separados por coma, para productos a medida o personalizados.
+- Boton `Solicitar desistimiento` en el detalle del pedido.
+- Boton `Solicitar desistimiento` tambien en `Mi cuenta > Historial de pedidos`, junto a `Detalles`, para pedidos dentro de plazo.
+- Formulario de confirmacion con productos afectados.
+- Registro interno en tabla `cc_desistimiento`.
+- Nota privada en el pedido.
+- Email automatico al cliente y aviso interno.
+- Configuracion de plazo, email, telefono, direccion de devolucion, estados considerados `Entregado` y categorias excluidas.
 
 ## Importante
 
-El modulo no aprueba automaticamente devoluciones ni genera reembolsos. Solo registra la solicitud de desistimiento.
+El boton del historial se inyecta desde el hook `displayHeader` mediante JavaScript, porque la plantilla habitual de historial de pedidos no incluye un hook propio en la columna de acciones. De esta forma no es necesario editar el fichero del tema.
 
-Antes de usar en produccion, probar en staging porque los hooks y estados pueden variar segun tema, version y configuracion de Prestashop.
+Si el modulo ya estaba instalado, actualizar a la version 1.1.0 o reinstalar/restablecer para registrar el hook `displayHeader`.
+
+Probar siempre en staging antes de produccion.
