@@ -42,22 +42,25 @@
 
             {/if}
 
-            <tr
-              data-discount-type="{$quantity_discount.reduction_type}"
-              data-discount="{$quantity_discount.real_value}"
-              data-discount-quantity="{$quantity_discount.quantity}"
-            >
-              <td id="amount-to-discount" data-discount="{$quantity_discount.quantity}">
-                {l s='A partir de' d='Shop.Theme.Catalog'} {$discount_quantity|string_format:"%.2f"}{$discount_unit} <i class="fa-solid fa-arrow-right"></i> <span style="font-weight:700">{$quantity_discount.real_value}%</span>
-              </td>
+              <tr
+                class="quantity-discount-row"
+                data-discount-type="{$quantity_discount.reduction_type}"
+                data-discount="{$quantity_discount.real_value}"
+                data-discount-quantity="{$quantity_discount.quantity}"
+              >
+                <td class="amount-to-discount" data-discount="{$quantity_discount.quantity}">
+                  {l s='A partir de' d='Shop.Theme.Catalog'} {$discount_quantity|string_format:"%.2f"}{$discount_unit}
+                  <i class="fa-solid fa-arrow-right"></i>
+                  <span style="font-weight:700">{$quantity_discount.real_value}%</span>
+                </td>
 
-              <td>
-                {$unit_price_m2|string_format:"%.2f"} €
-                {if !$isByPiece && $m2_caja > 0}
-                   / m²
-                {/if}
-              </td>
-            </tr>
+                <td>
+                  {$unit_price_m2|string_format:"%.2f"} €
+                  {if !$isByPiece && $m2_caja > 0}
+                    / m²
+                  {/if}
+                </td>
+              </tr>
 
           {/foreach}
         </tbody>
