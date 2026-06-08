@@ -6178,7 +6178,6 @@ body#checkout .card-block.cart-summary-totals .cart-total, body#order-confirmati
 /*# sourceMappingURL=custom.css.map */
 /* SHIPPING COST CALCULATOR */
 .scc-main {
-  width: 50%;
   margin-bottom: 15px;
 }
 
@@ -7436,11 +7435,11 @@ body#contact div#content-wrapper {
     border:none; 
     overflow:hidden;
     width: 100%;
-    height: 1050px;
+    height: 1120px;
 }
 @media (max-width:769px) {
   .professionals-iframe-form{
-      height: 1120px;
+      height: 1240px;
   }
 }
 
@@ -7751,7 +7750,15 @@ body#contact div#content-wrapper {
   top: 293px
 }
 
+body#checkout #deliveryPriceCalculator {
+    display: none;
+}
+
 @media (max-width: 768px) {
+
+  body#cart .card-block {
+    padding: 35px;
+  }
   .catalog-description-sticky {
     top: 130px
   }

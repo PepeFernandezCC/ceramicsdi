@@ -764,10 +764,10 @@ body:not(#category):not(#search) #wrapper #content-wrapper {
   }
 }
 
-#products .active_filters {
-  margin-bottom: 0;
-  border-bottom: 1px solid black;
-  padding: 0.9rem 1.1rem;
+.active_filters {
+    margin-bottom: 0 !important;
+    border-bottom: 1px solid #000;
+    padding: .625rem 1.875rem 0;
 }
 #products .active_filters .filter-block {
   margin-bottom: 0;
@@ -7392,13 +7392,6 @@ button:focus {
 }
 
 
-div#search_filters_wrapper {
-    position: sticky;
-    top: 145px;
-    align-self: flex-start;
-    height: fit-content;
-    z-index: 10;
-}
 
 .page-proffessional-description {
     text-align: center;
@@ -7744,14 +7737,32 @@ body#contact div#content-wrapper {
   top: 145px
 }
 
-.catalog-filter-tags-sticky {
-  position: sticky;
-  z-index: 99;
-  top: 293px
+div#search_filters_wrapper {
+    position: sticky;
+    top: 148px;
+    align-self: flex-start;
+    height: fit-content;
+    z-index: 100;
 }
 
 body#checkout #deliveryPriceCalculator {
     display: none;
+}
+
+
+@media (max-width: 1252px) {
+  .catalog-description-sticky {
+    top: 145px
+  }
+}
+
+@media (max-width: 1223px) {
+  .catalog-description-sticky {
+    top: 102px
+  }
+  div#search_filters_wrapper {
+    top: 100px;
+  }
 }
 
 @media (max-width: 768px) {
@@ -7761,9 +7772,5 @@ body#checkout #deliveryPriceCalculator {
   }
   .catalog-description-sticky {
     top: 130px
-  }
-
-  .catalog-filter-tags-sticky {
-    top: 298px
   }
 }

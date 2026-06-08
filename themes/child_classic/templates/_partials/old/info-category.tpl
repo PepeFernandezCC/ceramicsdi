@@ -1,4 +1,4 @@
-    <div class="product-list-header" style="background: #FFF">
+    <div class="product-list-header catalog-description-sticky" style="background: #FFF">
 
         <div class="info-category-header">
 
@@ -54,11 +54,6 @@
  
 
                 <div class="col-xl-12 col-xs-12">
-                    {*
-                        <div class="category-description hidden-md-down">
-                            {$category.description nofilter}
-                        </div>
-                    *}
 
                     <div class="category-description">
                         {$category.description nofilter}

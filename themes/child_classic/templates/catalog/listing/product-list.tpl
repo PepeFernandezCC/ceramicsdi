@@ -72,15 +72,7 @@
 
             {if $listing.products|count}
 
-                {block name='product_list_active_filters'}
 
-                    <div class="catalog-filter-tags-sticky">
-
-                        {$listing.rendered_active_filters nofilter}
-
-                    </div>
-
-                {/block}
 
 
 
