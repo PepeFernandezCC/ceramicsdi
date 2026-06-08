@@ -1,0 +1,10 @@
+Nueva solicitud de desistimiento.
+
+Pedido: {order_reference} / ID {order_id}
+Cliente: {customer_name} ({customer_email})
+Fecha: {request_date}
+
+Productos:
+{products_txt}
+
+Comentario: {comment}
