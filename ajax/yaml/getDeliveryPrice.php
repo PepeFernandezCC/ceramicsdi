@@ -175,101 +175,11 @@ if (!$bestOption || empty($bestOption['id_carrier'])) {
 
 $idCarrier = (int)$bestOption['id_carrier'];
 
-$tmpCart->id_carrier = $idCarrier;
-$tmpCart->delivery_option = json_encode([
-    (int)$address->id => $bestOption['option_key'],
-]);
-$tmpCart->update();
+$result = $showTaxes
+    ? (float)$bestOption['price_with_tax']
+    : (float)$bestOption['price_without_tax'];
 
-$id_zone = Address::getZoneById((int)$address->id);
-
-$total = 0;
-$return = false;
-
-/**
- * Importante:
- * En tu AJAX viejo el cálculo base se hacía sin impuestos,
- * y después añadías impuestos manualmente si procedía.
- */
-$use_tax = false;
-
-$default_country = new Country((int)$id_country);
-$keepOrderPrices = false;
-$product_list = null;
-
-Hook::exec('actionCartGetPackageShippingCost', [
-    'object' => &$tmpCart,
-    'id_carrier' => &$idCarrier,
-    'use_tax' => &$use_tax,
-    'default_country' => &$default_country,
-    'product_list' => &$product_list,
-    'id_zone' => &$id_zone,
-    'keepOrderPrices' => &$keepOrderPrices,
-    'total' => &$total,
-    'return' => &$return,
-    'custom' => true,
-]);
-
-if ($return) {
-    $result = ($total !== false)
-        ? (float) Tools::ps_round((float)$total, 2)
-        : false;
-} else {
-    /**
-     * Si tienes getParentPackageShippingCost en tu override de Cart,
-     * úsalo como en la versión vieja.
-     */
-    if (method_exists($tmpCart, 'getParentPackageShippingCost')) {
-        $shipping_cost = $tmpCart->getParentPackageShippingCost(
-            $idCarrier,
-            $use_tax,
-            $default_country,
-            $product_list,
-            $id_zone,
-            $keepOrderPrices
-        );
-    } else {
-        $shipping_cost = $tmpCart->getPackageShippingCost(
-            $idCarrier,
-            $use_tax,
-            $default_country,
-            $product_list,
-            $id_zone,
-            $keepOrderPrices
-        );
-    }
-
-    if ($shipping_cost === false) {
-        $tmpCart->delete();
-        $address->delete();
-
-        echo json_encode([
-            'error' => 'No se pudo calcular el coste de envío personalizado',
-            'id_carrier' => $idCarrier,
-        ]);
-        exit;
-    }
-
-    $result = $shipping_cost + (float) Tools::ps_round((float)$total, 2);
-}
-
-if ($result === false || $result === null) {
-    $tmpCart->delete();
-    $address->delete();
-
-    echo json_encode([
-        'error' => 'No se pudo calcular el coste de envío',
-        'id_carrier' => $idCarrier,
-    ]);
-    exit;
-}
-
-if ($showTaxes) {
-    $rate = Tax::getStandardTaxByCountryId((int)$id_country);
-    $result = $result * (1 + ($rate / 100));
-}
-
-$result = (float) Tools::ps_round((float)$result, 2);
+$result = (float) Tools::ps_round($result, 2);
 
 $carrier = new Carrier((int)$idCarrier);
 
