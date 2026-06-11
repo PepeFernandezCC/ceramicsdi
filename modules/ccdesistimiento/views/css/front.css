@@ -1,0 +1,89 @@
+/*
+.cc-desistimiento-history-btn {
+  display: inline-block;
+  margin-left: 8px;
+  margin-top: 4px;
+  padding: 4px 8px !important;
+  color: #ffffff;
+  background-color: #000000;
+  font-size: 12px;
+  line-height: 1.2;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+a.cc-desistimiento-history-btn,
+a.cc-desistimiento-history-btn:focus,
+a.cc-desistimiento-history-btn:hover {
+  color: #ffffff;
+  text-decoration: none;
+}
+*/
+.cc-desistimiento-history-badge {
+  display: inline-block;
+  margin-left: 8px;
+  margin-top: 4px;
+  padding: 4px 8px !important;
+  background: #eac133;
+  color: #000000;
+  font-size: 12px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.orders .cc-desistimiento-history-btn,
+.orders .cc-desistimiento-history-badge {
+  margin-left: 0;
+  margin-top: 8px;
+}
+
+/*CUADRAR ACCIONES*/
+td.order-actions {
+  min-width: 150px;
+}
+
+td.order-actions > a {
+  display: block;
+  margin-bottom: 6px;
+}
+
+td.order-actions a.cc-desistimiento-history-btn {
+  display: inline-block;
+  margin: 0;
+  padding: 5px 9px !important;
+  font-size: 12px;
+  line-height: 1.2;
+  text-align: center;
+  white-space: nowrap;
+  background: #000;
+  color: #fff;
+  text-decoration: none;
+
+}
+
+td.order-actions a.cc-desistimiento-history-btn:hover,
+td.order-actions a.cc-desistimiento-history-btn:focus {
+  background: #202020;
+  color: #fff;
+  text-decoration: none;
+}
+
+body#module-ccdesistimiento-request section#main {
+  width: 80%;
+  margin: 0 auto;
+}
+
+.btn.btn-dark {
+    padding: .25rem .75rem;
+}
+
+.btn-dark {
+    background-color: #000000;
+    color: #ffffff;
+    min-height: 40px;
+}
+.btn-dark {
+    padding: .5rem 1.25rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}

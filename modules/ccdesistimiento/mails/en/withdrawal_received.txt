@@ -1,0 +1,12 @@
+Hello {customer_name},
+
+We have received your withdrawal request for order {order_reference}.
+Request date: {request_date}
+
+Products:
+{products_txt}
+
+Ceramic Connection will review the request and contact you with the necessary instructions.
+
+Thank you,
+Ceramic Connection

@@ -1,0 +1,12 @@
+Olá {customer_name},
+
+Recebemos o seu pedido de desistência para a encomenda {order_reference}.
+Data do pedido: {request_date}
+
+Produtos:
+{products_txt}
+
+A Ceramic Connection irá analisar o pedido e contactá-lo com as instruções necessárias.
+
+Obrigado,
+Ceramic Connection

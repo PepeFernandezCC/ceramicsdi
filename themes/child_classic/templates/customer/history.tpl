@@ -68,8 +68,7 @@
             </td>
             <td class="text-sm-center order-actions">
 
-              {hook h='displayCustomerOrderWithdrawalButton' order=$order}
-
+              
               <a href="{$order.details.details_url}" data-link-action="view-order-details">
                 {l s='Details' d='Shop.Theme.Customeraccount'}
               </a>
@@ -99,6 +98,9 @@
                 >
                   {$order.history.current.ostate_name}
                 </span>
+              </div>
+              <div class="orderOutButton">
+                {hook h='displayCustomerOrderWithdrawalButton' order=$order}
               </div>
 
             </div>

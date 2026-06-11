@@ -1,0 +1,12 @@
+Bonjour {customer_name},
+
+Nous avons reçu votre demande de rétractation pour la commande {order_reference}.
+Date de la demande: {request_date}
+
+Produits:
+{products_txt}
+
+Ceramic Connection examinera la demande et vous contactera avec les instructions nécessaires.
+
+Merci,
+Ceramic Connection

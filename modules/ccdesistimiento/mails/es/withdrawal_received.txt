@@ -1,14 +1,12 @@
 Hola {customer_name},
 
-Confirmamos que hemos recibido tu solicitud de desistimiento del pedido {order_reference} el {request_date}.
+Hemos recibido tu solicitud de desistimiento para el pedido {order_reference}.
+Fecha solicitud: {request_date}
 
-Productos afectados:
+Productos:
 {products_txt}
 
-Direccion de devolucion: {return_address}
+Ceramic Connection revisará la solicitud y te contactará con las instrucciones necesarias.
 
-El coste y la gestion del transporte de devolucion corresponden al cliente, salvo defecto del producto o error en el envio. Recomendamos paletizar y embalar correctamente el material.
-
-Ceramic Connection revisara el estado del material recibido antes de emitir el reembolso, si procede.
-
-Contacto: {contact_email} / {phone}
+Gracias,
+Ceramic Connection

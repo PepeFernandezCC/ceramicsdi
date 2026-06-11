@@ -1,0 +1,12 @@
+Hallo {customer_name},
+
+Wir haben Ihre Widerrufsanfrage für die Bestellung {order_reference} erhalten.
+Anfragedatum: {request_date}
+
+Produkte:
+{products_txt}
+
+Ceramic Connection wird die Anfrage prüfen und Sie mit den erforderlichen Anweisungen kontaktieren.
+
+Vielen Dank,
+Ceramic Connection

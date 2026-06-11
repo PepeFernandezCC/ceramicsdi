@@ -1,0 +1,12 @@
+Hallo {customer_name},
+
+We hebben uw herroepingsverzoek voor bestelling {order_reference} ontvangen.
+Datum verzoek: {request_date}
+
+Producten:
+{products_txt}
+
+Ceramic Connection zal het verzoek beoordelen en contact met u opnemen met de nodige instructies.
+
+Bedankt,
+Ceramic Connection

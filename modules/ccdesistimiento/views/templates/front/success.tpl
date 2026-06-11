@@ -2,10 +2,14 @@
 
 {block name='page_content'}
   <section id="cc-desistimiento-success">
-    <h1>Solicitud registrada</h1>
+    <h1>{$cc_t.success_title|escape:'htmlall':'UTF-8'}</h1>
     <div class="alert alert-success">
-      Hemos recibido tu solicitud de desistimiento. Te hemos enviado un email de confirmacion y Ceramic Connection revisara la solicitud.
+      {$cc_t.success_message|escape:'htmlall':'UTF-8'}
     </div>
-    <a class="btn btn-primary" href="{$cc_history_link|escape:'htmlall':'UTF-8'}">Volver a mis pedidos</a>
+    <a href="{$cc_history_link|escape:'htmlall':'UTF-8'}">
+      <button class="btn btn-primary">
+        {$cc_t.back_to_orders|escape:'htmlall':'UTF-8'}
+      </button>    
+    </a>
   </section>
 {/block}
