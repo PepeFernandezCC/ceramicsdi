@@ -1,0 +1,13 @@
+Ola {customer_name},
+
+Informamos que aceitámos o seu pedido de desistencia para a encomenda {order_reference}.
+
+O procedimento de desistencia comecou. A nossa equipa ira analisar o pedido e contacta-lo com as instrucoes necessarias para continuar.
+
+Produtos:
+{products_txt}
+
+Para mais informacoes, pode escrever-nos para {contact_email}.
+
+Obrigado,
+{shop_name}

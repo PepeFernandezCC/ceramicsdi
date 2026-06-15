@@ -1,0 +1,11 @@
+Hello {customer_name},
+
+We inform you that your withdrawal request for order {order_reference} has not been accepted because it does not meet the applicable requirements.
+
+Products:
+{products_txt}
+
+For more information or clarification, you can write to us at {contact_email}.
+
+Thank you,
+{shop_name}

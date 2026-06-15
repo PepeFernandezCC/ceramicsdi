@@ -1,0 +1,11 @@
+Bonjour {customer_name},
+
+Nous vous informons que votre demande de retractation pour la commande {order_reference} n a pas ete acceptee car elle ne remplit pas les conditions applicables.
+
+Produits :
+{products_txt}
+
+Pour plus d informations ou de precisions, vous pouvez nous ecrire a {contact_email}.
+
+Merci,
+{shop_name}

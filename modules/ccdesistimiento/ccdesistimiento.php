@@ -152,6 +152,18 @@ class CcDesistimiento extends Module
                 'order_message' => "Solicitud de desistimiento recibida el %s\nProductos:\n%s\nComentario:\n%s",
                 'customer_email_subject' => 'Solicitud de desistimiento recibida',
                 'admin_email_subject' => 'Nueva solicitud de desistimiento',
+                'actions' => 'Acciones',
+                'accept' => 'Aceptar',
+                'reject' => 'Rechazar',
+                'accepted' => 'Aceptado',
+                'rejected' => 'Rechazado',
+                'withdrawal_accepted_confirmation' => 'Solicitud de desistimiento aceptada. Se ha avisado al cliente.',
+                'withdrawal_rejected_confirmation' => 'Solicitud de desistimiento rechazada. Se ha avisado al cliente.',
+                'withdrawal_decision_error' => 'No se ha podido actualizar la solicitud de desistimiento.',
+                'withdrawal_accepted_subject' => 'El procedimiento de desistimiento ha comenzado',
+                'withdrawal_rejected_subject' => 'Solicitud de desistimiento no aceptada',
+                'withdrawal_order_message_accepted' => 'Solicitud de desistimiento aceptada. Se ha enviado email al cliente indicando que el procedimiento ha comenzado.',
+                'withdrawal_order_message_rejected' => 'Solicitud de desistimiento rechazada. Se ha enviado email al cliente indicando que no cumple los requisitos.',
             ),
             'fr' => array(
                 'module_name' => 'Demande de retractation',
@@ -200,6 +212,18 @@ class CcDesistimiento extends Module
                 'order_message' => "Demande de retractation recue le %s\nProduits :\n%s\nCommentaire :\n%s",
                 'customer_email_subject' => 'Demande de retractation recue',
                 'admin_email_subject' => 'Nouvelle demande de retractation',
+                'actions' => 'Actions',
+                'accept' => 'Accepter',
+                'reject' => 'Refuser',
+                'accepted' => 'Accepte',
+                'rejected' => 'Refuse',
+                'withdrawal_accepted_confirmation' => 'Demande de retractation acceptee. Le client a ete informe.',
+                'withdrawal_rejected_confirmation' => 'Demande de retractation refusee. Le client a ete informe.',
+                'withdrawal_decision_error' => 'Impossible de mettre a jour la demande de retractation.',
+                'withdrawal_accepted_subject' => 'La procedure de retractation a commence',
+                'withdrawal_rejected_subject' => 'Demande de retractation non acceptee',
+                'withdrawal_order_message_accepted' => 'Demande de retractation acceptee. Un email a ete envoye au client indiquant que la procedure a commence.',
+                'withdrawal_order_message_rejected' => 'Demande de retractation refusee. Un email a ete envoye au client indiquant que les conditions ne sont pas remplies.',
             ),
             'en' => array(
                 'module_name' => 'Withdrawal request',
@@ -248,6 +272,18 @@ class CcDesistimiento extends Module
                 'order_message' => "Withdrawal request received on %s\nProducts:\n%s\nComment:\n%s",
                 'customer_email_subject' => 'Withdrawal request received',
                 'admin_email_subject' => 'New withdrawal request',
+                'actions' => 'Actions',
+                'accept' => 'Accept',
+                'reject' => 'Reject',
+                'accepted' => 'Accepted',
+                'rejected' => 'Rejected',
+                'withdrawal_accepted_confirmation' => 'Withdrawal request accepted. The customer has been notified.',
+                'withdrawal_rejected_confirmation' => 'Withdrawal request rejected. The customer has been notified.',
+                'withdrawal_decision_error' => 'The withdrawal request could not be updated.',
+                'withdrawal_accepted_subject' => 'The withdrawal procedure has started',
+                'withdrawal_rejected_subject' => 'Withdrawal request not accepted',
+                'withdrawal_order_message_accepted' => 'Withdrawal request accepted. An email has been sent to the customer indicating that the procedure has started.',
+                'withdrawal_order_message_rejected' => 'Withdrawal request rejected. An email has been sent to the customer indicating that the requirements are not met.',
             ),
             'de' => array(
                 'module_name' => 'Widerrufsanfrage',
@@ -296,6 +332,18 @@ class CcDesistimiento extends Module
                 'order_message' => "Widerrufsanfrage erhalten am %s\nProdukte:\n%s\nKommentar:\n%s",
                 'customer_email_subject' => 'Widerrufsanfrage erhalten',
                 'admin_email_subject' => 'Neue Widerrufsanfrage',
+                'actions' => 'Aktionen',
+                'accept' => 'Akzeptieren',
+                'reject' => 'Ablehnen',
+                'accepted' => 'Akzeptiert',
+                'rejected' => 'Abgelehnt',
+                'withdrawal_accepted_confirmation' => 'Widerrufsanfrage akzeptiert. Der Kunde wurde benachrichtigt.',
+                'withdrawal_rejected_confirmation' => 'Widerrufsanfrage abgelehnt. Der Kunde wurde benachrichtigt.',
+                'withdrawal_decision_error' => 'Die Widerrufsanfrage konnte nicht aktualisiert werden.',
+                'withdrawal_accepted_subject' => 'Das Widerrufsverfahren hat begonnen',
+                'withdrawal_rejected_subject' => 'Widerrufsanfrage nicht akzeptiert',
+                'withdrawal_order_message_accepted' => 'Widerrufsanfrage akzeptiert. Eine E-Mail wurde an den Kunden gesendet, dass das Verfahren begonnen hat.',
+                'withdrawal_order_message_rejected' => 'Widerrufsanfrage abgelehnt. Eine E-Mail wurde an den Kunden gesendet, dass die Voraussetzungen nicht erfuellt sind.',
             ),
             'pt' => array(
                 'module_name' => 'Pedido de desistencia',
@@ -344,6 +392,18 @@ class CcDesistimiento extends Module
                 'order_message' => "Pedido de desistencia recebido em %s\nProdutos:\n%s\nComentario:\n%s",
                 'customer_email_subject' => 'Pedido de desistencia recebido',
                 'admin_email_subject' => 'Novo pedido de desistencia',
+                'actions' => 'Acoes',
+                'accept' => 'Aceitar',
+                'reject' => 'Rejeitar',
+                'accepted' => 'Aceite',
+                'rejected' => 'Rejeitado',
+                'withdrawal_accepted_confirmation' => 'Pedido de desistencia aceite. O cliente foi notificado.',
+                'withdrawal_rejected_confirmation' => 'Pedido de desistencia rejeitado. O cliente foi notificado.',
+                'withdrawal_decision_error' => 'Nao foi possivel atualizar o pedido de desistencia.',
+                'withdrawal_accepted_subject' => 'O procedimento de desistencia comecou',
+                'withdrawal_rejected_subject' => 'Pedido de desistencia nao aceite',
+                'withdrawal_order_message_accepted' => 'Pedido de desistencia aceite. Foi enviado um email ao cliente indicando que o procedimento comecou.',
+                'withdrawal_order_message_rejected' => 'Pedido de desistencia rejeitado. Foi enviado um email ao cliente indicando que os requisitos nao estao cumpridos.',
             ),
             'nl' => array(
                 'module_name' => 'Herroepingsverzoek',
@@ -392,13 +452,26 @@ class CcDesistimiento extends Module
                 'order_message' => "Herroepingsverzoek ontvangen op %s\nProducten:\n%s\nOpmerking:\n%s",
                 'customer_email_subject' => 'Herroepingsverzoek ontvangen',
                 'admin_email_subject' => 'Nieuw herroepingsverzoek',
+                'actions' => 'Acties',
+                'accept' => 'Accepteren',
+                'reject' => 'Afwijzen',
+                'accepted' => 'Geaccepteerd',
+                'rejected' => 'Afgewezen',
+                'withdrawal_accepted_confirmation' => 'Herroepingsverzoek geaccepteerd. De klant is geinformeerd.',
+                'withdrawal_rejected_confirmation' => 'Herroepingsverzoek afgewezen. De klant is geinformeerd.',
+                'withdrawal_decision_error' => 'Het herroepingsverzoek kon niet worden bijgewerkt.',
+                'withdrawal_accepted_subject' => 'De herroepingsprocedure is gestart',
+                'withdrawal_rejected_subject' => 'Herroepingsverzoek niet geaccepteerd',
+                'withdrawal_order_message_accepted' => 'Herroepingsverzoek geaccepteerd. Er is een e-mail naar de klant gestuurd waarin staat dat de procedure is gestart.',
+                'withdrawal_order_message_rejected' => 'Herroepingsverzoek afgewezen. Er is een e-mail naar de klant gestuurd waarin staat dat niet aan de voorwaarden is voldaan.',
             ),
         );
     }
 
     public function getContent()
     {
-        $output = '';
+        $output = $this->processAdminWithdrawalDecision();
+
         if (Tools::isSubmit('submitCcDesistimientoConfig')) {
             Configuration::updateValue('CC_DESISTIMIENTO_DAYS', (int) Tools::getValue('CC_DESISTIMIENTO_DAYS'));
             Configuration::updateValue('CC_DESISTIMIENTO_EMAIL', pSQL(Tools::getValue('CC_DESISTIMIENTO_EMAIL')));
@@ -409,6 +482,123 @@ class CcDesistimiento extends Module
             $output .= $this->displayConfirmation($this->ccL('config_saved'));
         }
         return $output . $this->renderForm() . $this->renderRequestsTable();
+    }
+
+    private function processAdminWithdrawalDecision()
+    {
+        if (!Tools::isSubmit('cc_desistimiento_action')) {
+            return '';
+        }
+
+        $action = (string) Tools::getValue('cc_desistimiento_action');
+        $idWithdrawal = (int) Tools::getValue('id_cc_desistimiento');
+
+        if (!$idWithdrawal || !in_array($action, array('accept', 'reject'), true)) {
+            return $this->displayError($this->ccL('withdrawal_decision_error'));
+        }
+
+        $status = $action === 'accept' ? 'aceptado' : 'rechazado';
+
+        if ($this->updateWithdrawalStatusAndNotify($idWithdrawal, $status)) {
+            return $this->displayConfirmation($action === 'accept' ? $this->ccL('withdrawal_accepted_confirmation') : $this->ccL('withdrawal_rejected_confirmation'));
+        }
+
+        return $this->displayError($this->ccL('withdrawal_decision_error'));
+    }
+
+    private function updateWithdrawalStatusAndNotify($idWithdrawal, $status)
+    {
+        $row = Db::getInstance()->getRow(
+            'SELECT * FROM `' . _DB_PREFIX_ . 'cc_desistimiento` WHERE id_cc_desistimiento = ' . (int) $idWithdrawal
+        );
+
+        if (!$row) {
+            return false;
+        }
+
+        $order = new Order((int) $row['id_order']);
+        if (!Validate::isLoadedObject($order)) {
+            return false;
+        }
+
+        $updated = Db::getInstance()->update(
+            'cc_desistimiento',
+            array(
+                'status' => pSQL($status),
+                'date_upd' => date('Y-m-d H:i:s'),
+            ),
+            'id_cc_desistimiento = ' . (int) $idWithdrawal
+        );
+
+        if (!$updated) {
+            return false;
+        }
+
+        $this->addWithdrawalDecisionOrderMessage($order, $status);
+        $this->sendWithdrawalDecisionEmail($order, $row, $status);
+
+        return true;
+    }
+
+    private function addWithdrawalDecisionOrderMessage(Order $order, $status)
+    {
+        $message = new Message();
+        $message->id_order = (int) $order->id;
+        $message->id_customer = (int) $order->id_customer;
+        $message->private = 1;
+        $message->message = $status === 'aceptado'
+            ? $this->ccL('withdrawal_order_message_accepted')
+            : $this->ccL('withdrawal_order_message_rejected');
+
+        return $message->add();
+    }
+
+    private function sendWithdrawalDecisionEmail(Order $order, array $withdrawal, $status)
+    {
+        $customer = new Customer((int) $order->id_customer);
+        if (!Validate::isLoadedObject($customer)) {
+            return false;
+        }
+
+        $idLang = (int) $order->id_lang;
+        if (!$idLang) {
+            $idLang = (int) $this->context->language->id;
+        }
+
+        $contactEmail = Configuration::get('CC_DESISTIMIENTO_EMAIL');
+        if (!$contactEmail) {
+            $contactEmail = Configuration::get('PS_SHOP_EMAIL');
+        }
+
+        $template = $status === 'aceptado' ? 'withdrawal_accepted' : 'withdrawal_rejected';
+        $subject = $status === 'aceptado' ? $this->ccL('withdrawal_accepted_subject') : $this->ccL('withdrawal_rejected_subject');
+
+        $productsTxt = isset($withdrawal['products']) ? (string) $withdrawal['products'] : '';
+
+        $vars = array(
+            '{order_reference}' => $order->reference,
+            '{order_id}' => (int) $order->id,
+            '{customer_name}' => trim($customer->firstname . ' ' . $customer->lastname),
+            '{customer_email}' => $customer->email,
+            '{products}' => nl2br(Tools::safeOutput($productsTxt)),
+            '{products_txt}' => $productsTxt,
+            '{contact_email}' => $contactEmail,
+            '{shop_name}' => Configuration::get('PS_SHOP_NAME'),
+        );
+
+        return Mail::Send(
+            $idLang,
+            $template,
+            $subject,
+            $vars,
+            $customer->email,
+            trim($customer->firstname . ' ' . $customer->lastname),
+            null,
+            null,
+            null,
+            null,
+            _PS_MODULE_DIR_ . $this->name . '/mails/'
+        );
     }
 
     private function renderForm()
@@ -446,16 +636,39 @@ class CcDesistimiento extends Module
     private function renderRequestsTable()
     {
         $rows = Db::getInstance()->executeS('SELECT * FROM `' . _DB_PREFIX_ . 'cc_desistimiento` ORDER BY date_add DESC LIMIT 50');
-        $html = '<div class="panel"><h3>' . $this->ccL('latest_requests') . '</h3><table class="table"><thead><tr><th>ID</th><th>' . $this->ccL('order') . '</th><th>' . $this->ccL('customer') . '</th><th>Email</th><th>' . $this->ccL('products') . '</th><th>' . $this->ccL('status') . '</th><th>' . $this->ccL('date') . '</th></tr></thead><tbody>';
+        $html = '<div class="panel"><h3>' . $this->ccL('latest_requests') . '</h3><table class="table"><thead><tr><th>ID</th><th>' . $this->ccL('order') . '</th><th>' . $this->ccL('customer') . '</th><th>Email</th><th>' . $this->ccL('products') . '</th><th>' . $this->ccL('status') . '</th><th>' . $this->ccL('date') . '</th><th>' . $this->ccL('actions') . '</th></tr></thead><tbody>';
         if (!$rows) {
-            $html .= '<tr><td colspan="7">' . $this->ccL('no_requests') . '</td></tr>';
+            $html .= '<tr><td colspan="8">' . $this->ccL('no_requests') . '</td></tr>';
         } else {
             foreach ($rows as $row) {
-                $html .= '<tr><td>' . (int) $row['id_cc_desistimiento'] . '</td><td>#' . (int) $row['id_order'] . '</td><td>' . htmlspecialchars($row['customer_name']) . '</td><td>' . htmlspecialchars($row['customer_email']) . '</td><td>' . htmlspecialchars($row['products']) . '</td><td>' . htmlspecialchars($row['status']) . '</td><td>' . htmlspecialchars($row['date_add']) . '</td></tr>';
+                $html .= '<tr>';
+                $html .= '<td>' . (int) $row['id_cc_desistimiento'] . '</td>';
+                $html .= '<td>#' . (int) $row['id_order'] . '</td>';
+                $html .= '<td>' . htmlspecialchars($row['customer_name']) . '</td>';
+                $html .= '<td>' . htmlspecialchars($row['customer_email']) . '</td>';
+                $html .= '<td>' . nl2br(htmlspecialchars($row['products'])) . '</td>';
+                $html .= '<td>' . htmlspecialchars($row['status']) . '</td>';
+                $html .= '<td>' . htmlspecialchars($row['date_add']) . '</td>';
+                $html .= '<td>' . $this->renderRequestActions($row) . '</td>';
+                $html .= '</tr>';
             }
         }
         $html .= '</tbody></table></div>';
         return $html;
+    }
+
+    private function renderRequestActions(array $row)
+    {
+        if (!isset($row['status']) || $row['status'] !== 'pendiente') {
+            return '-';
+        }
+
+        $baseUrl = AdminController::$currentIndex . '&configure=' . $this->name . '&token=' . Tools::getAdminTokenLite('AdminModules') . '&id_cc_desistimiento=' . (int) $row['id_cc_desistimiento'];
+        $acceptUrl = $baseUrl . '&cc_desistimiento_action=accept';
+        $rejectUrl = $baseUrl . '&cc_desistimiento_action=reject';
+
+        return '<a class="btn btn-success btn-xs" href="' . htmlspecialchars($acceptUrl) . '" onclick="return confirm(\'' . addslashes($this->ccL('accept')) . '?\');">' . $this->ccL('accept') . '</a> '
+            . '<a class="btn btn-danger btn-xs" href="' . htmlspecialchars($rejectUrl) . '" onclick="return confirm(\'' . addslashes($this->ccL('reject')) . '?\');">' . $this->ccL('reject') . '</a>';
     }
 
     public function hookDisplayHeader($params)

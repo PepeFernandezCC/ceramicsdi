@@ -1,0 +1,13 @@
+Hallo {customer_name},
+
+Wij informeren u dat wij uw herroepingsverzoek voor bestelling {order_reference} hebben geaccepteerd.
+
+De herroepingsprocedure is gestart. Ons team zal het verzoek beoordelen en contact met u opnemen met de nodige instructies.
+
+Producten:
+{products_txt}
+
+Voor meer informatie kunt u schrijven naar {contact_email}.
+
+Bedankt,
+{shop_name}

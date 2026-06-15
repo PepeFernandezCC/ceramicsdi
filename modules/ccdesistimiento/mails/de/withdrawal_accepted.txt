@@ -1,0 +1,13 @@
+Hallo {customer_name},
+
+wir informieren Sie, dass wir Ihre Widerrufsanfrage fuer die Bestellung {order_reference} akzeptiert haben.
+
+Das Widerrufsverfahren hat begonnen. Unser Team wird die Anfrage pruefen und Sie mit den notwendigen Anweisungen kontaktieren.
+
+Produkte:
+{products_txt}
+
+Fuer weitere Informationen schreiben Sie bitte an {contact_email}.
+
+Vielen Dank,
+{shop_name}

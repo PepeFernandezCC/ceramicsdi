@@ -1,0 +1,11 @@
+Hola {customer_name},
+
+Te informamos de que tu solicitud de desistimiento para el pedido {order_reference} no ha sido aceptada porque no cumple los requisitos aplicables.
+
+Productos:
+{products_txt}
+
+Para mas informacion o aclaraciones, puedes escribirnos a {contact_email}.
+
+Gracias,
+{shop_name}

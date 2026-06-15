@@ -1,0 +1,13 @@
+Hello {customer_name},
+
+We inform you that we have accepted your withdrawal request for order {order_reference}.
+
+The withdrawal procedure has started. Our team will review the request and contact you with the necessary instructions to continue.
+
+Products:
+{products_txt}
+
+For more information, you can write to us at {contact_email}.
+
+Thank you,
+{shop_name}

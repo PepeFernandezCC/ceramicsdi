@@ -1,0 +1,13 @@
+Bonjour {customer_name},
+
+Nous vous informons que nous avons accepte votre demande de retractation pour la commande {order_reference}.
+
+La procedure de retractation a commence. Notre equipe examinera la demande et vous contactera avec les instructions necessaires pour continuer.
+
+Produits :
+{products_txt}
+
+Pour plus d informations, vous pouvez nous ecrire a {contact_email}.
+
+Merci,
+{shop_name}

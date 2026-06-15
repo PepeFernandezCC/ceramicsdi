@@ -1,0 +1,11 @@
+Hallo {customer_name},
+
+wir informieren Sie, dass Ihre Widerrufsanfrage fuer die Bestellung {order_reference} nicht akzeptiert wurde, da sie die geltenden Voraussetzungen nicht erfuellt.
+
+Produkte:
+{products_txt}
+
+Fuer weitere Informationen oder Rueckfragen schreiben Sie bitte an {contact_email}.
+
+Vielen Dank,
+{shop_name}

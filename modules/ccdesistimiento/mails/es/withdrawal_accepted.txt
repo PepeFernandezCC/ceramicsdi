@@ -1,0 +1,13 @@
+Hola {customer_name},
+
+Te informamos de que hemos aceptado tu solicitud de desistimiento para el pedido {order_reference}.
+
+El procedimiento de desistimiento ha comenzado. Nuestro equipo revisara la solicitud y te contactara con las instrucciones necesarias para continuar.
+
+Productos:
+{products_txt}
+
+Para mas informacion, puedes escribirnos a {contact_email}.
+
+Gracias,
+{shop_name}

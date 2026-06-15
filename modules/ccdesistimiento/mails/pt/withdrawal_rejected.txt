@@ -1,0 +1,11 @@
+Ola {customer_name},
+
+Informamos que o seu pedido de desistencia para a encomenda {order_reference} nao foi aceite porque nao cumpre os requisitos aplicaveis.
+
+Produtos:
+{products_txt}
+
+Para mais informacoes ou esclarecimentos, pode escrever-nos para {contact_email}.
+
+Obrigado,
+{shop_name}
