@@ -87,3 +87,17 @@ body#module-ccdesistimiento-request section#main {
     font-weight: 600;
     text-transform: uppercase;
 }
+.cc-desistimiento-history-badge.cc-desistimiento-status-aceptado {
+  background: #dff0d8;
+  color: #3c763d;
+}
+
+.cc-desistimiento-history-badge.cc-desistimiento-status-rechazado {
+  background: #f2dede;
+  color: #a94442;
+}
+
+.cc-desistimiento-history-badge.cc-desistimiento-status-pendiente {
+  background: #fcf8e3;
+  color: #8a6d3b;
+}

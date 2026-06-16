@@ -65,7 +65,12 @@ function ccCreateWithdrawalNode(order) {
   if (order.already_requested) {
     var span = document.createElement('span');
     span.className = 'cc-desistimiento-history-badge';
-    span.textContent = ccDesistimientoHistory.requestedText;
+
+    if (order.status) {
+      span.className += ' cc-desistimiento-status-' + String(order.status).toLowerCase();
+    }
+
+    span.textContent = order.status_text || ccDesistimientoHistory.requestedText;
     return span;
   }
 

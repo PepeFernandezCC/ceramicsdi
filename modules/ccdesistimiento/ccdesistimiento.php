@@ -121,6 +121,12 @@ class CcDesistimiento extends Module
                 'save' => 'Guardar',
                 'request_withdrawal' => 'Solicitar desistimiento',
                 'withdrawal_requested' => 'Desistimiento solicitado',
+                'withdrawal_status_pending' => 'Pendiente',
+                'withdrawal_status_accepted' => 'Aceptada',
+                'withdrawal_status_rejected' => 'Rechazada',
+                'withdrawal_customer_status_pending' => 'Desistimiento en proceso',
+                'withdrawal_customer_status_accepted' => 'Desistimiento aceptado',
+                'withdrawal_customer_status_rejected' => 'Desistimiento rechazado',
                 'latest_requests' => 'Ultimas solicitudes',
                 'order' => 'Pedido',
                 'customer' => 'Cliente',
@@ -181,6 +187,12 @@ class CcDesistimiento extends Module
                 'save' => 'Enregistrer',
                 'request_withdrawal' => 'Demander la retractation',
                 'withdrawal_requested' => 'Retractation demandee',
+                'withdrawal_status_pending' => 'En attente',
+                'withdrawal_status_accepted' => 'Acceptee',
+                'withdrawal_status_rejected' => 'Refusee',
+                'withdrawal_customer_status_pending' => 'Retractation en cours',
+                'withdrawal_customer_status_accepted' => 'Retractation acceptee',
+                'withdrawal_customer_status_rejected' => 'Retractation refusee',
                 'latest_requests' => 'Dernieres demandes',
                 'order' => 'Commande',
                 'customer' => 'Client',
@@ -241,6 +253,12 @@ class CcDesistimiento extends Module
                 'save' => 'Save',
                 'request_withdrawal' => 'Request withdrawal',
                 'withdrawal_requested' => 'Withdrawal requested',
+                'withdrawal_status_pending' => 'Pending',
+                'withdrawal_status_accepted' => 'Accepted',
+                'withdrawal_status_rejected' => 'Rejected',
+                'withdrawal_customer_status_pending' => 'Withdrawal in progress',
+                'withdrawal_customer_status_accepted' => 'Withdrawal accepted',
+                'withdrawal_customer_status_rejected' => 'Withdrawal rejected',
                 'latest_requests' => 'Latest requests',
                 'order' => 'Order',
                 'customer' => 'Customer',
@@ -301,6 +319,12 @@ class CcDesistimiento extends Module
                 'save' => 'Speichern',
                 'request_withdrawal' => 'Widerruf beantragen',
                 'withdrawal_requested' => 'Widerruf beantragt',
+                'withdrawal_status_pending' => 'Ausstehend',
+                'withdrawal_status_accepted' => 'Akzeptiert',
+                'withdrawal_status_rejected' => 'Abgelehnt',
+                'withdrawal_customer_status_pending' => 'Widerruf in Bearbeitung',
+                'withdrawal_customer_status_accepted' => 'Widerruf akzeptiert',
+                'withdrawal_customer_status_rejected' => 'Widerruf abgelehnt',
                 'latest_requests' => 'Neueste Anfragen',
                 'order' => 'Bestellung',
                 'customer' => 'Kunde',
@@ -361,6 +385,12 @@ class CcDesistimiento extends Module
                 'save' => 'Guardar',
                 'request_withdrawal' => 'Solicitar desistencia',
                 'withdrawal_requested' => 'Desistencia solicitada',
+                'withdrawal_status_pending' => 'Pendente',
+                'withdrawal_status_accepted' => 'Aceite',
+                'withdrawal_status_rejected' => 'Rejeitada',
+                'withdrawal_customer_status_pending' => 'Desistencia em curso',
+                'withdrawal_customer_status_accepted' => 'Desistencia aceite',
+                'withdrawal_customer_status_rejected' => 'Desistencia rejeitada',
                 'latest_requests' => 'Ultimos pedidos',
                 'order' => 'Encomenda',
                 'customer' => 'Cliente',
@@ -421,6 +451,12 @@ class CcDesistimiento extends Module
                 'save' => 'Opslaan',
                 'request_withdrawal' => 'Herroeping aanvragen',
                 'withdrawal_requested' => 'Herroeping aangevraagd',
+                'withdrawal_status_pending' => 'In behandeling',
+                'withdrawal_status_accepted' => 'Geaccepteerd',
+                'withdrawal_status_rejected' => 'Afgewezen',
+                'withdrawal_customer_status_pending' => 'Herroeping in behandeling',
+                'withdrawal_customer_status_accepted' => 'Herroeping geaccepteerd',
+                'withdrawal_customer_status_rejected' => 'Herroeping afgewezen',
                 'latest_requests' => 'Laatste verzoeken',
                 'order' => 'Bestelling',
                 'customer' => 'Klant',
@@ -633,6 +669,51 @@ class CcDesistimiento extends Module
         return $helper->generateForm(array($fields_form));
     }
 
+    private function getWithdrawalStatusLabel($status)
+    {
+        $status = (string) $status;
+
+        if ($status === 'aceptado') {
+            return $this->ccL('withdrawal_status_accepted');
+        }
+
+        if ($status === 'rechazado') {
+            return $this->ccL('withdrawal_status_rejected');
+        }
+
+        return $this->ccL('withdrawal_status_pending');
+    }
+
+    private function getCustomerWithdrawalStatusLabel($status)
+    {
+        $status = (string) $status;
+
+        if ($status === 'aceptado') {
+            return $this->ccL('withdrawal_customer_status_accepted');
+        }
+
+        if ($status === 'rechazado') {
+            return $this->ccL('withdrawal_customer_status_rejected');
+        }
+
+        return $this->ccL('withdrawal_customer_status_pending');
+    }
+
+    private function getWithdrawalStatusCssClass($status)
+    {
+        $status = (string) $status;
+
+        if ($status === 'aceptado') {
+            return 'success';
+        }
+
+        if ($status === 'rechazado') {
+            return 'danger';
+        }
+
+        return 'warning';
+    }
+
     private function renderRequestsTable()
     {
         $rows = Db::getInstance()->executeS('SELECT * FROM `' . _DB_PREFIX_ . 'cc_desistimiento` ORDER BY date_add DESC LIMIT 50');
@@ -647,7 +728,7 @@ class CcDesistimiento extends Module
                 $html .= '<td>' . htmlspecialchars($row['customer_name']) . '</td>';
                 $html .= '<td>' . htmlspecialchars($row['customer_email']) . '</td>';
                 $html .= '<td>' . nl2br(htmlspecialchars($row['products'])) . '</td>';
-                $html .= '<td>' . htmlspecialchars($row['status']) . '</td>';
+                $html .= '<td><span class="label label-' . $this->getWithdrawalStatusCssClass($row['status']) . '">' . htmlspecialchars($this->getWithdrawalStatusLabel($row['status'])) . '</span></td>';
                 $html .= '<td>' . htmlspecialchars($row['date_add']) . '</td>';
                 $html .= '<td>' . $this->renderRequestActions($row) . '</td>';
                 $html .= '</tr>';
@@ -724,15 +805,27 @@ class CcDesistimiento extends Module
             if (!Validate::isLoadedObject($order)) {
                 continue;
             }
-            if (!$this->canRequestWithdrawal($order)) {
+
+            $withdrawal = Db::getInstance()->getRow(
+                'SELECT status FROM `' . _DB_PREFIX_ . 'cc_desistimiento`
+                 WHERE id_order=' . (int) $order->id . '
+                 ORDER BY id_cc_desistimiento DESC'
+            );
+
+            if (!$withdrawal && !$this->canRequestWithdrawal($order)) {
                 continue;
             }
-            $existing = (int) Db::getInstance()->getValue('SELECT COUNT(*) FROM `' . _DB_PREFIX_ . 'cc_desistimiento` WHERE id_order=' . (int) $order->id);
+
+            $alreadyRequested = is_array($withdrawal) && isset($withdrawal['status']);
+            $status = $alreadyRequested ? (string) $withdrawal['status'] : '';
+
             $result[] = array(
                 'id_order' => (int) $order->id,
                 'reference' => $order->reference,
                 'url' => $this->context->link->getModuleLink($this->name, 'request', array('id_order' => (int) $order->id), true),
-                'already_requested' => $existing > 0,
+                'already_requested' => $alreadyRequested,
+                'status' => $status,
+                'status_text' => $alreadyRequested ? $this->getCustomerWithdrawalStatusLabel($status) : '',
             );
         }
         return $result;
@@ -761,12 +854,17 @@ class CcDesistimiento extends Module
         if (!$this->canRequestWithdrawal($order)) {
             return '';
         }
-        $existing = (int) Db::getInstance()->getValue('SELECT COUNT(*) FROM `' . _DB_PREFIX_ . 'cc_desistimiento` WHERE id_order=' . (int) $order->id);
-        if ($existing > 0) {
+        $existing = Db::getInstance()->getRow(
+            'SELECT status FROM `' . _DB_PREFIX_ . 'cc_desistimiento`
+             WHERE id_order=' . (int) $order->id . '
+             ORDER BY id_cc_desistimiento DESC'
+        );
+        if ($existing) {
+            $status = isset($existing['status']) ? (string) $existing['status'] : 'pendiente';
             $this->context->smarty->assign(array(
                 'cc_desistimiento_already_requested' => true,
                 'cc_desistimiento_title' => $this->ccL('right_of_withdrawal'),
-                'cc_desistimiento_already_requested_text' => $this->ccL('already_requested_order_detail'),
+                'cc_desistimiento_already_requested_text' => $this->getCustomerWithdrawalStatusLabel($status),
             ));
             return $this->display(__FILE__, 'views/templates/hook/order_detail.tpl');
         }
