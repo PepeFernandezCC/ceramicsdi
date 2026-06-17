@@ -119,7 +119,7 @@
 
                 </span>
 
-                <div>
+                <div style="margin-left: 10px">
 
                     <span class="reference">{$product.reference_to_display}</span>
 
@@ -478,7 +478,7 @@
 
                         </span>
 
-                        <div>
+                        <div style="margin-left: 10px">
 
                             <span class="reference">{$product.reference_to_display}</span>
 
