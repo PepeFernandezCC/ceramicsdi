@@ -13,7 +13,7 @@ class CcDesistimiento extends Module
     {
         $this->name = 'ccdesistimiento';
         $this->tab = 'front_office_features';
-        $this->version = '1.1.1';
+        $this->version = '1.1.2';
         $this->author = 'Ceramic Connection';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -29,12 +29,13 @@ class CcDesistimiento extends Module
     {
         return parent::install()
             && $this->installDb()
+            && $this->installAdminTab()
             && $this->registerHook('displayOrderDetail')
             && $this->installCustomHooks()
             && $this->registerHook('displayCustomerAccount')
             && $this->registerHook('displayHeader')
             && Configuration::updateValue('CC_DESISTIMIENTO_DAYS', 14)
-            && Configuration::updateValue('CC_DESISTIMIENTO_EMAIL', 'info@ceramicconnection.es')
+            && Configuration::updateValue('CC_DESISTIMIENTO_EMAIL', 'support@ceramicconnection.es')
             && Configuration::updateValue('CC_DESISTIMIENTO_PHONE', '+34 623 240 148')
             && Configuration::updateValue('CC_DESISTIMIENTO_RETURN_ADDRESS', 'Avenida Real de Extremadura, 9, Onda 12200, Espana')
             && Configuration::updateValue('CC_DESISTIMIENTO_DELIVERED_STATES', '5')
@@ -43,6 +44,8 @@ class CcDesistimiento extends Module
 
     public function uninstall()
     {
+        $this->uninstallAdminTab();
+
         return Configuration::deleteByName('CC_DESISTIMIENTO_DAYS')
             && Configuration::deleteByName('CC_DESISTIMIENTO_EMAIL')
             && Configuration::deleteByName('CC_DESISTIMIENTO_PHONE')
@@ -50,6 +53,65 @@ class CcDesistimiento extends Module
             && Configuration::deleteByName('CC_DESISTIMIENTO_DELIVERED_STATES')
             && Configuration::deleteByName('CC_DESISTIMIENTO_EXCLUDED_CATEGORIES')
             && parent::uninstall();
+    }
+
+    public function installAdminTab()
+    {
+        $className = 'AdminCcDesistimiento';
+
+        if ((int) Tab::getIdFromClassName($className)) {
+            return true;
+        }
+
+        $parentId = (int) Tab::getIdFromClassName('AdminParentCustomer');
+
+        if (!$parentId) {
+            $parentId = (int) Tab::getIdFromClassName('AdminCustomers');
+        }
+
+        $tab = new Tab();
+        $tab->active = 1;
+        $tab->class_name = $className;
+        $tab->id_parent = $parentId;
+        $tab->module = $this->name;
+
+        foreach (Language::getLanguages(false) as $language) {
+            $iso = strtolower(substr((string) $language['iso_code'], 0, 2));
+            $tab->name[(int) $language['id_lang']] = $this->getAdminTabNameByIso($iso);
+        }
+
+        return (bool) $tab->add();
+    }
+
+    private function uninstallAdminTab()
+    {
+        $idTab = (int) Tab::getIdFromClassName('AdminCcDesistimiento');
+
+        if (!$idTab) {
+            return true;
+        }
+
+        $tab = new Tab($idTab);
+
+        if (!Validate::isLoadedObject($tab)) {
+            return true;
+        }
+
+        return (bool) $tab->delete();
+    }
+
+    private function getAdminTabNameByIso($iso)
+    {
+        $names = array(
+            'es' => 'Desistimientos',
+            'fr' => 'Retractations',
+            'en' => 'Withdrawals',
+            'de' => 'Widerrufe',
+            'pt' => 'Desistencias',
+            'nl' => 'Herroepingen',
+        );
+
+        return isset($names[$iso]) ? $names[$iso] : $names['en'];
     }
 
     private function installDb()
