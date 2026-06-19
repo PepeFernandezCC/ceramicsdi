@@ -22,8 +22,14 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
+ {assign var="out_stock_flag" value=false}
+{foreach from=$product.flags item=flag}
+    {if $flag.type == 'out_of_stock'}
+        {assign var="out_stock_flag" value=true}
+    {/if}
+{/foreach}
 {block name='product_flags'}
-    <ul class="product-flags js-product-flags">
+    <ul class="product-flags js-product-flags" {if $out_stock_flag}style="top:0"{/if}>
         {foreach from=$product.flags item=flag}
             <li class="product-flag {$flag.type}">{$flag.label}</li>
         {/foreach}

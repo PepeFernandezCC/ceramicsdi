@@ -1344,18 +1344,29 @@ body:not(#category):not(#search) #wrapper #content-wrapper {
   width: auto;
   top: 45px;
 }
+.product-flags li.product-flag.discount-percentage, .product-flags li.product-flag.discount-amount, .product-flags li.product-flag.discount {
+    background-color: #000000;
+}
+.product-flags li.product-flag {
+    background: #000000;
+}
+
 @media (max-width: 1200px) {
   #product .product-container #product-content-block .product-flags {
     top: 110px;
     right: -15px;
   }
+  #product .product-container #product-content-block .product-flags-out {
+    top: 0;
+    right: -15px;
+  }
 }
 @media (max-width: 767px) {
-  #product .product-container #product-content-block .product-flags {
+  #product .product-container #product-content-block .product-flags .product-flags-out {
     right: 30px;
   }
 }
-#product .product-container #product-content-block .product-flags .product-flag {
+#product .product-container #product-content-block .product-flags .product-flag .product-flags-out {
   background-color: black;
 }
 #product .product-container #product-content-block h1 {
@@ -2190,9 +2201,7 @@ input[type=number]::-webkit-outer-spin-button {
 #carousel-materials.carousel-materials-category .owl-carousel .owl-item {
   padding: 0.9375rem;
 }
-#carousel-materials.carousel-materials-category .owl-carousel .owl-item .material-title {
-  padding-right: 30px;
-}
+
 #carousel-materials.carousel-materials-category .owl-carousel button {
   border-bottom: 1px solid black;
 }
@@ -2279,7 +2288,8 @@ input[type=number]::-webkit-outer-spin-button {
   overflow: hidden;
   position: absolute;
   top: 50%;
-  /*padding-right: 62px;*/
+  left: 50%;
+  transform: translateX(-50%);
 }
 #carousel-materials a .material-title h3,
 #carousel-materials a .material-title p {
@@ -7428,11 +7438,11 @@ body#contact div#content-wrapper {
     border:none; 
     overflow:hidden;
     width: 100%;
-    height: 1120px;
+    height: 1180px;
 }
 @media (max-width:769px) {
   .professionals-iframe-form{
-      height: 1240px;
+      height: 1310px;
   }
 }
 
@@ -7742,7 +7752,7 @@ div#search_filters_wrapper {
     top: 148px;
     align-self: flex-start;
     height: fit-content;
-    z-index: 100;
+    z-index: 95;
 }
 
 body#checkout #deliveryPriceCalculator {
