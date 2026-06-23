@@ -115,9 +115,12 @@
                     <div class="cart-delivery-box">
                         {* Plazo estimado de entrega - justo al lado del calculador de gastos de envío *}
                         {if isset($page.page_name) && $page.page_name == 'cart'}
-                            <div class="shipping-estimate-wrapper">
-                                {hook h='displayShoppingCartFooter'}
-                            </div>
+                            {assign var=products_out_of_stock value=Context::getContext()->cart->checkProductsOutOfStockInCart()}   
+                            {if $products_out_of_stock <= 0}
+                                <div class="shipping-estimate-wrapper">
+                                    {hook h='displayShoppingCartFooter'}
+                                </div>
+                            {/if}
                         {/if}
                     </div>
                 </div>

@@ -156,18 +156,32 @@ class ShippingCalculator extends Module
             return '';
         }
 
-        // Obtener el carrito del contexto (más confiable)
+        // Obtener el carrito del contexto
         $cart = $this->context->cart;
-        
+
         // Si no hay carrito en el contexto, intentar obtenerlo de params
         if (!$cart || !$cart->id) {
-            if (isset($params['cart']) && is_object($params['cart']) && isset($params['cart']->id) && $params['cart']->id) {
+            if (
+                isset($params['cart']) &&
+                is_object($params['cart']) &&
+                isset($params['cart']->id) &&
+                $params['cart']->id
+            ) {
                 $cart = $params['cart'];
             } else {
                 return '';
             }
         }
-        
+
+        // No mostrar si hay productos sin stock en el carrito
+        if (method_exists($cart, 'checkProductsOutOfStockInCart')) {
+            $products_out_of_stock = $cart->checkProductsOutOfStockInCart();
+
+            if ($products_out_of_stock > 0) {
+                return '';
+            }
+        }
+
         // Verificar que hay productos en el carrito
         $products = $cart->getProducts(true);
         if (empty($products)) {
@@ -177,17 +191,20 @@ class ShippingCalculator extends Module
         // Calcular el plazo estimado
         $estimated_delivery = $this->calculateEstimatedDelivery($cart);
 
+        // No mostrar el tpl si no hay información de entrega
+        if (empty($estimated_delivery)) {
+            return '';
+        }
+
         // Asignar variables a Smarty
         $this->context->smarty->assign([
             'estimated_delivery' => $estimated_delivery,
             'module_dir' => $this->_path,
-            'has_delivery_info' => !empty($estimated_delivery),
+            'has_delivery_info' => true,
         ]);
 
-        // Siempre mostrar el template (incluso si no hay datos, para debugging)
         return $this->display(__FILE__, 'views/templates/hook/shopping_cart_delivery.tpl');
     }
-
     /**
      * Hook: Añadir CSS/JS en el front
      */

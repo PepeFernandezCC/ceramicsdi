@@ -7797,3 +7797,7 @@ body#order-detail section#main{
   border: 1px solid black;
   margin-top: 25px;
 }
+
+div#ps_checkout-payment-method-logo-block-container {
+  display: none !important;
+}

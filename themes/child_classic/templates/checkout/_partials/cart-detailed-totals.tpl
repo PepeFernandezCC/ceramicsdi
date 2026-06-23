@@ -9,6 +9,7 @@
             </div>
 
             <div class="col-lg-4 col-xs-12">
+           
                 {if $language.id != 1 && $language.id != 5}
                     <div id="huelga">
                         <div class="transport-warning-cart">
@@ -16,10 +17,12 @@
                         </div>
                     </div>
                 {else}
-                    <!-- shipping informations -->
-                    {block name='hook_shopping_cart_footer'}
-                        {hook h='displayShoppingCartFooter'}
-                    {/block}
+                
+                        <!-- shipping informations -->
+                        {block name='hook_shopping_cart_footer'}
+                            {hook h='displayShoppingCartFooter'}
+                        {/block}
+             
                 {/if}
             </div>
             

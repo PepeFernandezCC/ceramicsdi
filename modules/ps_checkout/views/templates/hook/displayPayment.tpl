@@ -38,6 +38,9 @@
   </div>
   {/if}
   <div class="payment-options">
+    <pre style="background:#fff;border:1px solid #ccc;padding:10px;">
+      {$paymentOptions|@print_r}
+    </pre>
     {foreach from=$paymentOptions item="paymentOptionName" key="fundingSource"}
       <div id="payment-option-{$fundingSource}-container" class="payment-option row" style="display: none;">
         <div class="col-xs-12">
