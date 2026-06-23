@@ -514,9 +514,7 @@ $( document ).ready( function () {
 
       if ( linealMeters !== undefined ) {
 
-         linealMeters = linealMeters/100;
-
-         if(linealMeters < 1) {
+         if(linealMeters < 0) {
 
             linealMeters = parseFloat( linealMeters );
 
@@ -1446,34 +1444,36 @@ $( document ).ready( function () {
          };
 
          let calculatePiecesOnChangeEvent = function(piecesRequired, inputPieces) {
-         let pieces = Number(inputPieces.value);
+            let pieces = Number(inputPieces.value);
 
-         let necessaryBox = piezasCaja;
+            let necessaryBox = piezasCaja;
 
-         if (linealMeters > 0) {
-            necessaryBox = linealMeters;
-         }
+            if (linealMeters > 0) {
+               necessaryBox = linealMeters;
+            }
 
-         let quantity = Math.ceil(piecesRequired / necessaryBox);
+            let quantity = Math.ceil(piecesRequired / necessaryBox);
 
-         pieces = quantity;
-         pieceSubtotalBoxes.textContent = quantity;
+            pieces = quantity;
+            pieceSubtotalBoxes.textContent = quantity;
 
-         let totalPieces = (pieces * piezasCaja).toFixed(2);
+            let totalPieces = (pieces * piezasCaja).toFixed(2);
 
-         if (linealMeters > 0) {
-            totalPieces = quantity.toFixed(2);
-         }
+            if (linealMeters > 0) {
+               totalPieces = quantity.toFixed(2);
+            }
+            
+            inputPieces.value = quantity;
 
-         $piecesInputReal.val(totalPieces);
-         $pieceTotalMeters.text(totalPieces);
+            $piecesInputReal.val(totalPieces);
+            $pieceTotalMeters.text(totalPieces);
 
-         setPiecesQuantitiesValue(quantity);
+            setPiecesQuantitiesValue(quantity);
 
-         let discount = getQuantityDiscount(quantity);
+            let discount = getQuantityDiscount(quantity);
 
-         $eurosInput.val((quantity * price * discount).toFixed(2));
-         $m2TotalPrice.text((quantity * price * discount).toFixed(2));
+            $eurosInput.val((quantity * price * discount).toFixed(2));
+            $m2TotalPrice.text((quantity * price * discount).toFixed(2));
          };
 
          let setPiecesQuantitiesValue = function(quantity) {

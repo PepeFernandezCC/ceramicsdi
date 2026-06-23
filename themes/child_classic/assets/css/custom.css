@@ -7801,3 +7801,6 @@ body#order-detail section#main{
 div#ps_checkout-payment-method-logo-block-container {
   display: none !important;
 }
+.product-pack-price {
+  display:none;
+}

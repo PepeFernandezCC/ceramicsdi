@@ -532,10 +532,21 @@ class Product extends ProductCore {
         if (!self::getIfNormalSell($productId)) {
 
             if (self::isLinealProduct($productId)){
+                $language = (int) Context::getContext()->language->id;
+                $linealmeter = [
+                    1 => '/metro lineal',
+                    2 => '/mètre linéaire',
+                    3 => '/lineal meter',
+                    4 => '/laufendem Meter',
+                    5 => '/metro linear',
+                    6 => '/strekkende meter'
+                ];
+                
                 $long = self::getLinealValue($productId);
-                $price = ($price / $long) * 100;
-                $original_price = ($original_price/$long)*100;
-                $tipology = '/m';          
+                $price = ($price / $long);
+                $original_price = ($original_price/$long);
+
+                $tipology = $linealmeter[$language];          
             }else{
                 $pieceTypology = self::getTipology($productId);
                 $tipology = self::getTipologyString($pieceTypology);

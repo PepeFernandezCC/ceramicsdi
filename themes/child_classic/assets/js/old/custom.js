@@ -1145,111 +1145,101 @@ $( document ).ready( function () {
         })
   
   
-        let calculatem2bybox = function(m2Caja, numberInput, numberm2needed) {
-  
-           let boxes = Number(numberInput.value);
-            let totalSurface = (boxes * m2Caja).toFixed( 2 );
-           
-  
-           numberm2needed.value = totalSurface;
-         
-           m2SubtotalBoxes.textContent = boxes;
-           $surfaceInputReal.val( totalSurface );
-           $m2TotalMeters.text(totalSurface);
-  
-           setQuantitiesValue(boxes);
+         let calculatem2bybox = function(m2Caja, numberInput, numberm2needed) {
 
-           let discount = 1;
-           let amount = 0;
+         let boxes = Number(numberInput.value);
+         let totalSurface = (boxes * m2Caja).toFixed(2);
 
-           if(document.getElementById('amount-to-discount')) {
-               amount = Number(document.getElementById('amount-to-discount').dataset.discount);
-           }
+         numberm2needed.value = totalSurface;
 
-           if (amount > 0) {
-               let discountPercentage = Number(document.getElementById('amount-discount').dataset.discount);
-              
-               if(boxes >= amount) {
-                  discount = parseFloat(1 - (discountPercentage / 100) );
-               }
-           }
+         m2SubtotalBoxes.textContent = boxes;
+         $surfaceInputReal.val(totalSurface);
+         $m2TotalMeters.text(totalSurface);
 
-           let subtotal = boxes * price;
-           let total = boxes * price * discount;
+         setQuantitiesValue(boxes);
 
-           
-            if (total - subtotal < 0) {
-               document.getElementById("subotals-product-dicount").style.display = "";
-            } else {
-               document.getElementById("subotals-product-dicount").style.display = "none";
+         let discount = 1;
+
+         const discountRows = document.querySelectorAll('.quantity-discount-row');
+
+         discountRows.forEach(function(row) {
+            const amount = Number(row.dataset.discountQuantity);
+            const discountPercentage = Number(row.dataset.discount);
+
+            if (boxes >= amount) {
+               discount = 1 - (discountPercentage / 100);
             }
-  
-            $eurosInput.val( ( total ).toFixed( 2 ) );
-            $m2subtotal.text( ( subtotal ).toFixed( 2 ) );
-            $m2TotalDiscount.text((total - subtotal).toFixed( 2 ));
-            $m2TotalPrice.text( ( total ).toFixed( 2 ) );
-          
-        }
-  
-        let calculatem2OnChangeEvent = function(m2required, numberInput) {
-  
-           let quantity = Math.ceil(m2required / m2Caja);
-  
-           numberInput.value = Number(quantity);
-           m2SubtotalBoxes.textContent = Number(quantity);
-  
-           let totalSurface = (numberInput.value * m2Caja).toFixed( 2 );
-  
-           //document.getElementById('surface-input').value = totalSurface;
-  
-           $surfaceInputReal.val( totalSurface );
-           $m2TotalMeters.text(totalSurface);
-  
-           setQuantitiesValue(quantity)
+         });
 
-            let discount = 1;
-            let amount = 0;
+         let subtotal = boxes * price;
+         let total = subtotal * discount;
 
-            if(document.getElementById('amount-to-discount')) {
-                  amount = Number(document.getElementById('amount-to-discount').dataset.discount);
+         if (total - subtotal < 0) {
+            document.getElementById("subotals-product-dicount").style.display = "";
+         } else {
+            document.getElementById("subotals-product-dicount").style.display = "none";
+         }
+
+         $eurosInput.val(total.toFixed(2));
+         $m2subtotal.text(subtotal.toFixed(2));
+         $m2TotalDiscount.text((total - subtotal).toFixed(2));
+         $m2TotalPrice.text(total.toFixed(2));
+         };
+  
+         let calculatem2OnChangeEvent = function(m2required, numberInput) {
+
+         let quantity = Math.ceil(m2required / m2Caja);
+
+         numberInput.value = Number(quantity);
+         m2SubtotalBoxes.textContent = Number(quantity);
+
+         let totalSurface = (numberInput.value * m2Caja).toFixed(2);
+
+         $surfaceInputReal.val(totalSurface);
+         $m2TotalMeters.text(totalSurface);
+
+         setQuantitiesValue(quantity);
+
+         let discount = 1;
+
+         const discountRows = document.querySelectorAll('.quantity-discount-row');
+
+         discountRows.forEach(function(row) {
+            const amount = Number(row.dataset.discountQuantity);
+            const discountPercentage = Number(row.dataset.discount);
+
+            if (quantity >= amount) {
+               discount = 1 - (discountPercentage / 100);
             }
+         });
 
+         let subtotal = quantity * price;
+         let total = subtotal * discount;
 
-            if (amount > 0) {
-                  let discountPercentage = Number(document.getElementById('amount-discount').dataset.discount);
-                  if(numberInput.value >= amount) {
-                     discount = parseFloat(1 - (discountPercentage / 100) );
-                  }
-            }
-  
-            let subtotal = numberInput.value * price;
-            let total = numberInput.value * price * discount;
+         if (total - subtotal < 0) {
+            document.getElementById("subotals-product-dicount").style.display = "";
+         } else {
+            document.getElementById("subotals-product-dicount").style.display = "none";
+         }
 
-            if (total - subtotal < 0) {
-               document.getElementById("subotals-product-dicount").style.display = "";
-            } else {
-               document.getElementById("subotals-product-dicount").style.display = "none";
-            }
+         $eurosInput.val(total.toFixed(2));
+         $m2subtotal.text(subtotal.toFixed(2));
+         $m2TotalDiscount.text((total - subtotal).toFixed(2));
+         $m2TotalPrice.text(total.toFixed(2));
+
+         };
   
-            $eurosInput.val( ( total ).toFixed( 2 ) );
-            $m2subtotal.text( ( subtotal ).toFixed( 2 ) );
-            $m2TotalDiscount.text((total - subtotal).toFixed( 2 ));
-            $m2TotalPrice.text( ( total ).toFixed( 2 ) );
-  
-  
-        }
-  
-        let setQuantitiesValue = function(quantity) {
-  
-           let piecesValue = Math.ceil( quantity * piezasCaja );
-  
-           $piecesInput.val( '' );
-  
-           $piecesInputReal.val( piecesValue );
-  
-           $quantityInput.val( quantity );
-  
-        }
+         let setQuantitiesValue = function(quantity) {
+   
+            let piecesValue = Math.ceil( quantity * piezasCaja );
+   
+            $piecesInput.val( '' );
+   
+            $piecesInputReal.val( piecesValue );
+   
+            $quantityInput.val( quantity );
+   
+         }
 
        //botón +15%
       document.getElementById('recomendation-check').addEventListener('change', function() {
@@ -1275,78 +1265,43 @@ $( document ).ready( function () {
       
       if (document.getElementById('incrementQuantity')) {
 
-         const inputQuantityBox = document.getElementById('quantity-input');
+      const inputQuantityBox = document.getElementById('quantity-input');
 
-         document.getElementById('incrementQuantity').addEventListener('click', function() {
+      document.getElementById('incrementQuantity').addEventListener('click', function() {
 
-            inputQuantityBox.value = parseInt(inputQuantityBox.value) + 1;
+         inputQuantityBox.value = parseInt(inputQuantityBox.value || 0) + 1;
 
-            let discount = 1;
-            let amount = 0;
+         let quantity = Number(inputQuantityBox.value);
+         let discount = getQuantityDiscount(quantity);
 
-            if(document.getElementById('amount-to-discount')) {
-                  amount = Number(document.getElementById('amount-to-discount').dataset.discount);
-            }
+         $eurosInput.val((quantity * price * discount).toFixed(2));
 
+      });
 
-            if (amount > 0) {
-               let discountPercentage = Number(document.getElementById('amount-discount').dataset.discount);
-               if(inputQuantityBox.value >= amount) {
-                  discount = parseFloat(1 - (discountPercentage / 100) );
-               }
-            }
-  
+      document.getElementById('decrementQuantity').addEventListener('click', function() {
 
-            $eurosInput.val( ( inputQuantityBox.value * price * discount ).toFixed( 2 ) );
-  
+         if (Number(inputQuantityBox.value) > 0) {
 
-         });
-     
-         document.getElementById('decrementQuantity').addEventListener('click', function() {
-   
-            if(document.getElementById('quantity-input').value > 0) {
-   
-               inputQuantityBox.value = parseInt(inputQuantityBox.value) - 1;
+            inputQuantityBox.value = parseInt(inputQuantityBox.value || 0) - 1;
 
-               let discount = 1;
-               let amount = 0;
+            let quantity = Number(inputQuantityBox.value);
+            let discount = getQuantityDiscount(quantity);
 
-               if(document.getElementById('amount-to-discount')) {
-                     amount = Number(document.getElementById('amount-to-discount').dataset.discount);
-               }
+            $eurosInput.val((quantity * price * discount).toFixed(2));
 
+         }
 
-               if (amount > 0) {
-                  let discountPercentage = Number(document.getElementById('amount-discount').dataset.discount);
-                  if(inputQuantityBox.value >= amount) {
-                     discount = parseFloat(1 - (discountPercentage / 100) );
-                  }
-               }
-  
-               $eurosInput.val( ( inputQuantityBox.value * price * discount ).toFixed( 2 ) );
-  
-            }
-         });
+      });
 
-         $('#quantity-input').keyup( function() {
-   
-            let discount = 1;
-            let amount = 0;
+      $('#quantity-input').keyup(function() {
 
-            if(document.getElementById('amount-to-discount')) {
-                  amount = Number(document.getElementById('amount-to-discount').dataset.discount);
-            }
+         let quantity = Number(inputQuantityBox.value || 0);
+         let discount = getQuantityDiscount(quantity);
 
+         $eurosInput.val((quantity * price * discount).toFixed(2));
 
-            if (amount > 0) {
-               let discountPercentage = Number(document.getElementById('amount-discount').dataset.discount);
-               if(Number(inputQuantityBox.value) >= amount) {
-                  discount = parseFloat(1 - (discountPercentage / 100) );
-               }
-            }
-  
-            $eurosInput.val( ( inputQuantityBox.value * price * discount ).toFixed( 2 ) );
-         })
+      });
+
       }
 
       //JOINT CALCULATOR
@@ -1411,6 +1366,23 @@ $( document ).ready( function () {
 
       // PRODUCTO POR PIEZA
 
+      function getQuantityDiscount(quantity) {
+         let discount = 1;
+
+         const discountRows = document.querySelectorAll('.quantity-discount-row');
+
+         discountRows.forEach(function(row) {
+            const amount = Number(row.dataset.discountQuantity);
+            const discountPercentage = Number(row.dataset.discount);
+
+            if (Number(quantity) >= amount) {
+               discount = 1 - (discountPercentage / 100);
+            }
+         });
+
+         return discount;
+      }
+
       const inputPiecesBox = document.getElementById('inputPiecesBox');
       const pieceSubtotalBoxes = document.getElementById('pieceSubtotalBoxes');
 
@@ -1451,86 +1423,58 @@ $( document ).ready( function () {
          //FUNCIONES
    
          let calculatepiecesbybox = function(piezasCaja, inputPieces, piecesNeeded) {
-            let pieces = Number(inputPieces.value);
-   
-            let totalPieces = (pieces * piezasCaja).toFixed( 2 );
+         let pieces = Number(inputPieces.value);
 
-            if (linealMeters > 0 ) {
+         let totalPieces = (pieces * piezasCaja).toFixed(2);
 
-               piecesNeeded.value = Math.floor(pieces * linealMeters);
-
-            }else{
-               piecesNeeded.value = totalPieces;
-            }
-   
-            pieceSubtotalBoxes.textContent = inputPiecesBox.value;
-            $piecesInputReal.val( totalPieces );
-            $pieceTotalMeters.text(totalPieces);
-   
-            setPiecesQuantitiesValue(pieces);
-
-            let discount = 1;
-            let amount = 0;
-
-            if(document.getElementById('amount-to-discount')) {
-                  amount = Number(document.getElementById('amount-to-discount').dataset.discount);
-            }
-
-
-            if (amount > 0) {
-               let discountPercentage = Number(document.getElementById('amount-discount').dataset.discount);
-               if(pieces >= amount) {
-                  discount = parseFloat(1 - (discountPercentage / 100) );
-               }
-            }
-  
-   
-            $eurosInput.val( ( pieces * price * discount ).toFixed( 2 ) );
-            $m2TotalPrice.text( ( inputPiecesBox.value * price * discount ).toFixed( 2 ) );
-
+         if (linealMeters > 0) {
+            piecesNeeded.value = Math.floor(pieces * linealMeters);
+         } else {
+            piecesNeeded.value = totalPieces;
          }
-   
+
+         pieceSubtotalBoxes.textContent = inputPiecesBox.value;
+         $piecesInputReal.val(totalPieces);
+         $pieceTotalMeters.text(totalPieces);
+
+         setPiecesQuantitiesValue(pieces);
+
+         let discount = getQuantityDiscount(pieces);
+
+         $eurosInput.val((pieces * price * discount).toFixed(2));
+         $m2TotalPrice.text((inputPiecesBox.value * price * discount).toFixed(2));
+         };
+
          let calculatePiecesOnChangeEvent = function(piecesRequired, inputPieces) {
-            let pieces = Number(inputPieces.value);
-            let necessaryBox = piezasCaja;
-            if (linealMeters > 0) {
-               necessaryBox = linealMeters
-            }
-            let quantity = Math.ceil(piecesRequired / necessaryBox);
-   
-            pieces = quantity;
-            pieceSubtotalBoxes.textContent = quantity;
+         let pieces = Number(inputPieces.value);
 
-            let totalPieces = (pieces * piezasCaja).toFixed( 2 );
+         let necessaryBox = piezasCaja;
 
-            if (linealMeters > 0) {
-               totalPieces = quantity.toFixed( 2 );
-            }
-   
-            $piecesInputReal.val( totalPieces );
-            $pieceTotalMeters.text(totalPieces);
-   
-            setPiecesQuantitiesValue(quantity);
-
-            let discount = 1;
-            let amount = 0;
-
-            if(document.getElementById('amount-to-discount')) {
-                  amount = Number(document.getElementById('amount-to-discount').dataset.discount);
-            }
-
-
-            if (amount > 0) {
-               let discountPercentage = Number(document.getElementById('amount-discount').dataset.discount);
-               if(pieces >= amount) {
-                  discount = parseFloat(1 - (discountPercentage / 100) );
-               }
-            }
-   
-            $eurosInput.val( ( pieces * price * discount).toFixed( 2 ) );
-            $m2TotalPrice.text( ( inputPiecesBox.value * price ).toFixed( 2 ) );
-   
+         if (linealMeters > 0) {
+            necessaryBox = linealMeters;
          }
+
+         let quantity = Math.ceil(piecesRequired / necessaryBox);
+
+         pieces = quantity;
+         pieceSubtotalBoxes.textContent = quantity;
+
+         let totalPieces = (pieces * piezasCaja).toFixed(2);
+
+         if (linealMeters > 0) {
+            totalPieces = quantity.toFixed(2);
+         }
+
+         $piecesInputReal.val(totalPieces);
+         $pieceTotalMeters.text(totalPieces);
+
+         setPiecesQuantitiesValue(quantity);
+
+         let discount = getQuantityDiscount(quantity);
+
+         $eurosInput.val((quantity * price * discount).toFixed(2));
+         $m2TotalPrice.text((quantity * price * discount).toFixed(2));
+         };
 
          let setPiecesQuantitiesValue = function(quantity) {
    

@@ -43,13 +43,20 @@
 {/if}
 
 {assign var="isByPiece" value=false}
+{assign var="linearMeterType" value=false}
 {assign var="hasSample" value=true}
+{assign var="isPack" value=Pack::isPack($product.id)}
 
     {foreach from=$product.features item='feature'}
 
         {if $feature.id_feature === $FEATURE_M2_PIEZA_ID}
 
             {assign var="isByPiece" value=true}
+
+        {/if}
+        {if $feature.id_feature === $FEATURE_METROS_LINEALES}
+
+            {assign var="linealMeterType" value=true}
 
         {/if}
         {if $feature.id_feature === $FEATURE_SAMPLE_AVAILABLE}
@@ -113,8 +120,9 @@
 
                 <div class="product-quantity-wrapper clearfix">
 
-                    {if $isByPiece}
-                        {assign var="linealMeters" value=Product::getLinealValue($product.id)}
+                    {if $isByPiece || $linealMeterType}
+                        {assign var="linealMetersValue" value=Product::getLinealValue($product.id)}
+                        {assign var="linealMeters" value=$linealMetersValue|replace:',':'.'|floatval}
                         <div class="inputs-calculator">
 
                             <div class="row mx-auto row-calculator margin-calculator">
@@ -123,7 +131,7 @@
                                         <div class="label-query">
                                             <div class="queryCalculator">
                                                 <strong>
-                                                    {if $linealMeters > 1}
+                                                    {if $linealMeters > 0}
                                                         {l s='how many m do you need' d='Shop.Theme.Catalog'}
                                                     {else}
                                                         {l s='How many pieces do you need?' d='Shop.Theme.Catalog'}
@@ -144,7 +152,7 @@
                                             aria-label="{l s='Quantity' d='Shop.Theme.Actions'}"
                                             data-piezas-caja="{$piezas_caja}"
                                             data-lineal-meters="{$linealMeters}"
-                                            {if $linealMeters > 1} 
+                                            {if $linealMeters > 0} 
                                                 placeholder="{l s='m needed' d='Shop.Theme.Actions'}"
                                             {else}
                                                 placeholder="{l s='pieces needed' d='Shop.Theme.Actions'}"
@@ -155,8 +163,12 @@
                                 </div>
                                 
                                     <div class="m2cajaInfo">
-                                        {if $linealMeters > 1} 
-                                            <span><span>M/{l s='piece' d='Shop.Theme.Catalog'}: <strong>{$linealMeters/100}</strong></span>
+                                        {if $linealMeters > 0} 
+                                            {if $isPack}
+                                                <span><span>M/{l s='Pack' d='Shop.Theme.Catalog'}: <strong>{$linealMeters}</strong></span>
+                                            {else}
+                                                <span><span>M/{l s='piece' d='Shop.Theme.Catalog'}: <strong>{$linealMeters}</strong></span>
+                                            {/if}
                                         {else}
                                             {foreach from=$product.features item='feature'}
                                                 {if isset($feature.id_feature) && $feature.id_feature == $FEATURE_M2_PIEZA_ID}
@@ -173,7 +185,11 @@
                                     <div class="item-calculator">
 
                                             <div class="boxTextTitle">
-                                                <strong>{l s='pieces' d='Shop.Theme.Catalog'}:</strong>
+                                                {if $isPack}
+                                                    <strong>{l s='Pack' d='Shop.Theme.Catalog'}:</strong>
+                                                {else}
+                                                    <strong>{l s='pieces' d='Shop.Theme.Catalog'}:</strong>
+                                                {/if}
                                             </div>
                                             <div class="box-container">
                                                 <button type="button" id="decrementPieces" class="boxButton" style="width:60px; background-color: #eac133">
@@ -245,8 +261,13 @@
                             <div class="subtotal-quantity-product"><span id="pieceSubtotalBoxes">0</span> {l s='Boxes' d='Shop.Theme.Catalog'}</div>
                         </div>
                         <div class="subtotal-product">
-                            <div class="subtotal-title-product">{l s='Total pieces' d='Shop.Theme.Catalog'}:</sup></div>
-                            <div class="subtotal-quantity-product"><span id="pieceTotalMeters">0.00</span> {l s='pieces' d='Shop.Theme.Catalog'}</div>
+                            {if $isPack}
+                                <div class="subtotal-title-product">{l s='Total Packs' d='Shop.Theme.Catalog'}:</sup></div>
+                                <div class="subtotal-quantity-product"><span id="pieceTotalMeters">0.00</span> {l s='Packs' d='Shop.Theme.Catalog'}</div>
+                            {else}
+                                <div class="subtotal-title-product">{l s='Total pieces' d='Shop.Theme.Catalog'}:</sup></div>
+                                <div class="subtotal-quantity-product"><span id="pieceTotalMeters">0.00</span> {l s='pieces' d='Shop.Theme.Catalog'}</div>
+                            {/if}
                         </div>
                     {else}
 
