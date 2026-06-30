@@ -79,22 +79,22 @@
                             </div>
                             {if $customer.is_logged}
 
-                                {assign var="url_iframe_odoo" value="https://ceramic.sidoo.es/formulario-web-profesionales"}
+                                {assign var="url_iframe_odoo" value="https://ceramicconection.nextads.es/formulario-web-profesionales"}
 
                                 {if $language.id == 2}
-                                    {assign var="url_iframe_odoo" value="https://ceramic.sidoo.es/formulario-web-profesionales-fr"}
+                                    {assign var="url_iframe_odoo" value="https://ceramicconection.nextads.es/formulario-web-profesionales-fr"}
                                 {/if}
                                 {if $language.id == 3}
-                                    {assign var="url_iframe_odoo" value="https://ceramic.sidoo.es/formulario-web-profesionales-en"}
+                                    {assign var="url_iframe_odoo" value="https://ceramicconection.nextads.es/formulario-web-profesionales-en"}
                                 {/if}
                                 {if $language.id == 4}
-                                    {assign var="url_iframe_odoo" value="https://ceramic.sidoo.es/formulario-web-profesionales-de"}
+                                    {assign var="url_iframe_odoo" value="https://ceramicconection.nextads.es/formulario-web-profesionales-de"}
                                 {/if}
                                 {if $language.id == 5}
-                                    {assign var="url_iframe_odoo" value="https://ceramic.sidoo.es/formulario-web-profesionales-pt"}
+                                    {assign var="url_iframe_odoo" value="https://ceramicconection.nextads.es/formulario-web-profesionales-pt"}
                                 {/if}
                                 {if $language.id == 6}
-                                    {assign var="url_iframe_odoo" value="https://ceramic.sidoo.es/formulario-web-profesionales-nl"}
+                                    {assign var="url_iframe_odoo" value="https://ceramicconection.nextads.es/formulario-web-profesionales-nl"}
                                 {/if}
 
 
