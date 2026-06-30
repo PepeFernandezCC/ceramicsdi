@@ -43,7 +43,7 @@
 {/if}
 
 {assign var="isByPiece" value=false}
-{assign var="linearMeterType" value=false}
+{assign var="linealMeterType" value=false}
 {assign var="hasSample" value=true}
 {assign var="isPack" value=Pack::isPack($product.id)}
 
