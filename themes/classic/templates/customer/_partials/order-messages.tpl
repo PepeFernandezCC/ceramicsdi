@@ -40,7 +40,7 @@
     </div>
   {/if}
 {/block}
-
+{*
 {block name='order_message_form'}
   <section class="order-message-form box">
     <form action="{$urls.pages.order_detail}" method="post">
@@ -83,3 +83,4 @@
     </form>
   </section>
 {/block}
+*}

@@ -41,28 +41,23 @@
         {/if}
     {/block}
 
-{if $page.canonical}
-    {assign var="clean_url" value=$page.canonical}
-{else}
-    {assign var="clean_url" value=$urls.current_url}
-{/if}
+    {if $page.canonical}
+        {assign var="clean_url" value=$page.canonical}
+    {else}
+        {assign var="clean_url" value=$urls.current_url}
+    {/if}
 
-{* Eliminar parámetros de consulta *}
-{assign var="clean_url" value=$clean_url|regex_replace:"/\?.*$/" : ""}
-
-{*  
-{if strpos($clean_url, 'blog') !== false}
-    {assign var="clean_url" value=$clean_url|regex_replace:"/\/[0-9]+\//" : "/"}  
-    {assign var="clean_url" value=$clean_url|regex_replace:"/\/[0-9]+/" : ""}  
-{/if}
-*}
+    {* Eliminar parámetros de consulta *}
+    {assign var="clean_url" value=$clean_url|regex_replace:"/\?.*$/" : ""}
 
 
     <link rel="canonical" href="{$clean_url}">
 
     {block name='head_hreflang'}
         {foreach from=$urls.alternative_langs item=pageUrl key=code}
-            <link rel="alternate" href="{$pageUrl}" hreflang="{$code}">
+            {assign var="alternate_url" value=$pageUrl|regex_replace:"/\?.*$/" : ""|regex_replace:"/\/$/" : ""}
+            {assign var="short_code" value=$code|regex_replace:"/-.*$/" : ""}
+            <link rel="alternate" href="{$alternate_url}" hreflang="{$short_code}">
         {/foreach}
     {/block}
 

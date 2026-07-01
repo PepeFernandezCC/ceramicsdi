@@ -107,6 +107,7 @@
                     {assign var="display_custom_stock_msg" value="-"}
                     {assign var="custom_stock_msg" value="-"}
                     {assign var="custom_out_of_stock_msg" value="-"}
+                    {assign var="isPack" value=Pack::isPack($product.id)}
                     {if $CATEGORY_INSTALACION_ID|in_array:$categoriasProducto || $CATEGORY_MANTENIMIENTO_ID|in_array:$categoriasProducto || $CATEGORY_ARTICULATIONS|in_array:$categoriasProducto}
                         {assign var="normalSell" value=true}
                     {else}
@@ -281,7 +282,7 @@
                                                         
                                                         <div style="padding-right: 10px">
                                                             <span>
-                                                                {$minimalPrice} €/<span style="text-transform:capitalize">{if $productType == "PIECE"}{l s='piece' d='Shop.Theme.Catalog'}{else}{l s='box' d='Shop.Theme.Catalog'}{/if}
+                                                                {$minimalPrice} €/<span style="text-transform:capitalize">{if $isPack}{l s='Pack' d='Shop.Theme.Catalog'}{elseif $productType == "PIECE"}{l s='piece' d='Shop.Theme.Catalog'}{else}{l s='box' d='Shop.Theme.Catalog'}{/if}
                                                             </span>
                                                         </div>
                                                     </div>

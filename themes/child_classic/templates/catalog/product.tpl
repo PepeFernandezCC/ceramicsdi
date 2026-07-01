@@ -531,9 +531,9 @@
                                             {assign var="spanish_names" value=array('PDF Técnico', 'Plantilla Hidráulicos a medida')}
                                             {assign var="french_names" value=array('PDF technique', 'Modèle pour carreaux sur mesure')}
                                             {assign var="english_names" value=array('Technical PDF', 'Custom hydraulic tile template')}
-                                            {assign var="german_names" value=array('PDF Technical', 'Vorlage Zementfliesen Mass')}
-                                            {assign var="portugeish_names" value=array('PDF Tecnico', 'Modelo ladrilho sob medida')}
-                                            {assign var="neerlandish_names" value=array('PDF-techniek', 'Sjabloon tegels op maat')}
+                                            {assign var="german_names" value=array('PDF Technical', 'Vorlage Zementfliesen Mass', 'Technical PDF')}
+                                            {assign var="portugeish_names" value=array('PDF Tecnico', 'Modelo ladrilho sob medida', 'Technical PDF')}
+                                            {assign var="neerlandish_names" value=array('PDF-techniek', 'Sjabloon tegels op maat', 'Technical PDF')}
                                             <div class="tab-panel" id="product-accordion-downloads" role="tabpanel">
 
                                                 {foreach from=$product.attachments item=attachment}
