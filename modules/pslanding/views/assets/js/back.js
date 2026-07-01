@@ -570,7 +570,8 @@ document.addEventListener('DOMContentLoaded', () => {
         (el.classList.contains('tpl-simple') && tpl === 'landing-muestras') ||
         (el.classList.contains('tpl-color') && tpl === 'landing-color') ||
         (el.classList.contains('tpl-color') && tpl === 'landing-vitri') ||
-        (el.classList.contains('tpl-stone') && tpl === 'landing-piedras');
+        (el.classList.contains('tpl-stone') && tpl === 'landing-piedras') ||
+        (el.classList.contains('tpl-external') && tpl === 'landing-external');
       
       // Mostrar u ocultar según corresponda
       el.style.display = shouldShow ? '' : 'none';

@@ -9,7 +9,7 @@ class Pslanding extends Module
     {
         $this->name = 'pslanding';
         $this->tab = 'front_office_features';
-        $this->version = '1.0.2';
+        $this->version = '1.0.3';
         $this->author = 'Jose Fernández';
         $this->need_instance = 0;
 

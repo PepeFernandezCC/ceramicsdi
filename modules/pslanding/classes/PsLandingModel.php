@@ -15,6 +15,7 @@ class PsLandingModel extends ObjectModel
 
     public $title;
     public $slug;
+    public $external_url;
     public $hero_title;
     public $hero_subtitle;
     public $hero_media;
@@ -66,6 +67,8 @@ class PsLandingModel extends ObjectModel
 
             'title' => ['type' => self::TYPE_STRING, 'lang' => true, 'required' => true, 'validate' => 'isGenericName', 'size' => 255],
             'slug' => ['type' => self::TYPE_STRING, 'lang' => true, 'required' => true, 'validate' => 'isLinkRewrite', 'size' => 255],
+
+            'external_url' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isUrl', 'size' => 255],
 
             'hero_title' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isCleanHtml', 'size' => 255],
             'hero_subtitle' => ['type' => self::TYPE_HTML, 'lang' => true, 'validate' => 'isCleanHtml'],

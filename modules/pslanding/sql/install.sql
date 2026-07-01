@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS `ps_pslanding_lang` (
   `id_shop` INT(11) NOT NULL,
   `title` VARCHAR(255) NOT NULL,
   `slug` VARCHAR(255) NOT NULL,
+  `external_url` VARCHAR(255) NULL,
   `hero_title` VARCHAR(255) NULL,
   `hero_subtitle` TEXT NULL,
   `hero2_button` VARCHAR(255) NULL,

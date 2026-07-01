@@ -2,7 +2,7 @@
 <module>
     <name>pslanding</name>
     <displayName><![CDATA[Landing Pages]]></displayName>
-    <version><![CDATA[1.0.2]]></version>
+    <version><![CDATA[1.0.3]]></version>
     <description><![CDATA[Genera landing pages con URLs amigables y contenido multidioma.]]></description>
     <author><![CDATA[Jose Fern&aacute;ndez]]></author>
     <tab><![CDATA[front_office_features]]></tab>

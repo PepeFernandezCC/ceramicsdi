@@ -58,6 +58,7 @@ class AdminPsLandingController extends ModuleAdminController
             ['id' => 'landing-piedras',  'name' => 'Landing Piedras'],
             ['id' => 'landing-color',  'name' => 'Landing Colores'],
             ['id' => 'landing-vitri',  'name' => 'Landing vitri'],
+            ['id' => 'landing-external', 'name' => 'External Landing'],
         ];
 
         // Para previews: al editar, el objeto está cargado.
@@ -93,6 +94,7 @@ class AdminPsLandingController extends ModuleAdminController
 
         $inputs = array_merge(
             $this->addBlockBasics($templates),
+            $this->addBlockExternal(),
             $this->addBlockMainHero($heroFilename, $heroMobileFilename),
             $this->addBlockCarousel2(),
             $this->addBlock1($b2Filename),
@@ -1012,12 +1014,32 @@ class AdminPsLandingController extends ModuleAdminController
 
     }
 
+    protected function addBlockExternal(): array {
+        return [
+                // =========================
+                // CARD: External Landing (iframe)
+                // =========================
+                $this->cardStartInput('external', 'External Landing', 'default', 'landing-admin-card js-tpl tpl-external'),
+
+                [
+                    'type' => 'text',
+                    'label' => $this->l('URL externa'),
+                    'name' => 'external_url',
+                    'lang' => true,
+                    'hint' => $this->l('URL completa (https://...) que se cargará en un iframe. Puedes indicar una distinta por idioma.'),
+                    'form_group_class' => 'psl-field psl-field--external js-tpl tpl-external',
+                ],
+
+                $this->cardEndInput('external', 'js-tpl tpl-external'),
+        ];
+    }
+
     protected function addBlockMainHero($heroFilename, $heroMobileFilename): array {
         return [
                 // =========================
                 // CARD: Hero principal
                 // =========================
-                $this->cardStartInput('hero', 'Hero principal', 'info' , 'landing-admin-card'),
+                $this->cardStartInput('hero', 'Hero principal', 'info' , 'landing-admin-card js-tpl tpl-default tpl-simple tpl-stone tpl-color'),
 
                 [
                     'type' => 'text',
@@ -1093,7 +1115,7 @@ class AdminPsLandingController extends ModuleAdminController
                     'name' => 'hero_media_mobile_old',
                 ],
 
-                $this->cardEndInput('hero'),
+                $this->cardEndInput('hero', 'js-tpl tpl-default tpl-simple tpl-stone tpl-color'),
             ];
     }
 
@@ -1102,7 +1124,7 @@ class AdminPsLandingController extends ModuleAdminController
                 // =========================
                 // CARD: Bloque 1
                 // =========================
-                $this->cardStartInput('block1', 'Bloque 1', 'default', 'landing-admin-card'),
+                $this->cardStartInput('block1', 'Bloque 1', 'default', 'landing-admin-card js-tpl tpl-default tpl-simple tpl-stone tpl-color'),
 
                 [
                     'type' => 'text',
@@ -1149,7 +1171,7 @@ class AdminPsLandingController extends ModuleAdminController
                     'name' => 'block2_image_old',
                 ],
 
-                $this->cardEndInput('block1'),
+                $this->cardEndInput('block1', 'js-tpl tpl-default tpl-simple tpl-stone tpl-color'),
 
         ];
     }
