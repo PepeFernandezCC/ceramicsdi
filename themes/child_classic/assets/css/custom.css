@@ -4472,7 +4472,8 @@ label[for=field-vat_number] {
 
 /*banner trusted shop*/
 .trusted-shop-banner {
-  max-width: 300px;
+  max-width: 280px;
+  margin-top: 5px;
 }
 
 .trusted-shop-banner img {
@@ -4480,9 +4481,15 @@ label[for=field-vat_number] {
   margin-top: 15px;
 }
 
+img.img-trusted-footer {
+    width: 300px !important;
+}
+
 @media (max-width: 767px) {
   .trusted-shop-banner, .payment-method-banner {
     margin: 0 auto;
+    padding-bottom: 20px;
+    width: 250px;
   }
 }
 /* MEGAMENU */
@@ -7804,3 +7811,17 @@ div#ps_checkout-payment-method-logo-block-container {
 .product-pack-price {
   display:none;
 }
+
+
+@media (min-width: 1224px) {
+
+  .tiles-types .mm_menu_content_title {
+    font-weight: 800;
+  }
+
+  .separate-menu-item {
+      padding-left: 27px;
+  }
+
+}
+

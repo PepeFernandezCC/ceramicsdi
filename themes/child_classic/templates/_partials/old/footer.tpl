@@ -63,7 +63,7 @@
             <div class="col-md-3 col-xs-12 first-column">
 
                 <div>{$cmsFooterColumn1 nofilter}</div>
-                <div><img loading="lazy" src="/themes/child_classic/assets/img/web/Ecommerce-Awards-Espana-Logo.webp" class="logo-adwards" alt="banner ecommerce awards"/></div>
+                <div><img src="/themes/child_classic/assets/img/web/Ecommerce-Awards-Espana-Logo.webp" class="logo-adwards" alt="banner ecommerce awards"/></div>
                         
             </div>
 
@@ -141,6 +141,20 @@
                 <div class="generalitat-banner-box">
                     <img loading="lazy" src="/themes/child_classic/assets/img/web/gva-banner-color-logo-cut.png" class="gva-banner-img" alt="banner gva"/>
                 </div>
+            </div>
+
+            
+            <div id="generalitat-subvencion">
+                <a href="https://www.gva.es/es/inicio/presentacion" class="subvention-link">
+                    <div class="generalitat-sub-banner-box">
+                        <img loading="lazy" src="/themes/child_classic/assets/img/web/subvencion-generalitat.png" class="gva-sub-banner-img" alt="banner gva"/>
+                    </div>
+                    <div class="generalitat-sub-help-description">
+                        
+                        <div>{l s='cv subvention help text' d='Shop.Theme.Global'}</div>
+
+                    </div>
+                </a>
             </div>
 
         </div>
