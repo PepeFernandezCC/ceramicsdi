@@ -150,10 +150,14 @@
                         </div>
                     {/block}
                     <div class="order-options">
-                        <div id="delivery">
+                        <div id="delivery" style="display:none">
                             <label for="delivery_message">{l s='If you would like to add a comment about your order, please write it in the field below.' d='Shop.Theme.Checkout'}</label>
                             <textarea rows="6" cols="120" id="delivery_message"
                                       name="delivery_message">{$delivery_message}</textarea>
+                        </div>
+
+                        <div style="margin: 20px 0 50px;">
+                            {l s='additional order info' d='Shop.Theme.Checkout'}
                         </div>
 
                         {if $recyclablePackAllowed}

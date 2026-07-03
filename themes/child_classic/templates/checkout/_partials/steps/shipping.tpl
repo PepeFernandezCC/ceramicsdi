@@ -190,7 +190,7 @@
                 </button>
             </form>
         {else}
-            <p class="alert alert-danger">{l s='Unfortunately, there are no carriers available for your delivery address.' d='Shop.Theme.Checkout'}</p>
+            <p class="alert alert-success">{l s='Unfortunately, there are no carriers available for your delivery address.' d='Shop.Theme.Checkout'}</p>
         {/if}
     </div>
     <div id="hook-display-after-carrier">

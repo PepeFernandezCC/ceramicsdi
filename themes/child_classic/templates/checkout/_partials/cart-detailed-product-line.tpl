@@ -149,14 +149,16 @@
                         {/if}
 
                     {/foreach}
+                    
+                    {*
+                        {assign var='terracota' value='88'}
 
-                    {assign var='terracota' value='88'}
-
-                    {if in_array($terracota, $categoriasProducto)}
+                        {if in_array($terracota, $categoriasProducto)}
+                                
+                            <p style="margin-bottom: 0"><span style="color:red; font-size:11px">{l s='terracotta minimal quantity' d='Shop.Theme.Catalog'}</span></p>
                             
-                        <p style="margin-bottom: 0"><span style="color:red; font-size:11px">{l s='terracotta minimal quantity' d='Shop.Theme.Catalog'}</span></p>
-                        
-                    {/if}
+                        {/if}
+                    *}
 
                     {if is_array($product.customizations) && $product.customizations|count}
 

@@ -77,6 +77,7 @@
     {assign var="esMuestra" value=(int)Product::isSample($product.id)}
 
     {if $esMuestra}
+    
         
          {assign var="sampleText" value="SAMPLE"}
 
@@ -118,7 +119,7 @@
 
                 </span>
 
-                <div>
+                <div style="margin-left: 10px">
 
                     <span class="reference">{$product.reference_to_display}</span>
 
@@ -148,6 +149,14 @@
                         {/if}
 
                     {/foreach}
+
+                    {assign var='terracota' value='88'}
+
+                    {if in_array($terracota, $categoriasProducto)}
+                            
+                        <p style="margin-bottom: 0"><span style="color:red; font-size:11px">{l s='terracotta minimal quantity' d='Shop.Theme.Catalog'}</span></p>
+                        
+                    {/if}
 
                     {if is_array($product.customizations) && $product.customizations|count}
 
@@ -325,22 +334,10 @@
 
                 {if !$esMuestra}
 
-                    {foreach from=Product::getFrontFeaturesStatic($language.id, $product.id) item='feature'}
+                    {assign var="quantityValue" value=Product::getCartQuantityValue($language.id, $product.id, $product.quantity)}
 
-                        {if $feature.id_feature === $FEATURE_M2_CAJA_ID}
+                    <div class="label">{$quantityValue}</div>
 
-                            {assign var="m2Caja" value="{$feature.value|replace:',':'.'}"}
-
-                        {/if}
-
-                    {/foreach}
-
-                        {if !$normalSell}
-
-                            <div class="label">{($product.quantity * $m2Caja)|replace:'.':','} m<sup>2</sup></div>
-
-                        {/if}
-                
                 {else}
 
                     <div class="label" style="font-weight:700">{$sampleText}</div>
@@ -358,13 +355,21 @@
                 </div>
 
                 <div class="price">
-
                     <span class="product-price">
 
                         {if $esMuestra}
                             {$product.total}
                         {else}
-                            {include file='catalog/_partials/product-calculate-price.tpl'} 
+                            {assign var="priceData" value=Product::calculateCustomPrice($product.id, true, $language.id)}
+                            {$priceData.price}
+
+                            {if $priceData.tipologia == ''}
+                                 €{l s='/unit' d='Shop.Theme.Catalog'}
+                            {elseif $priceData.tipologia == '/piece'}
+                                 €{l s='/piece' d='Shop.Theme.Catalog'}
+                            {else}
+                                 €{$priceData.tipologia nofilter}
+                            {/if}
                         {/if}
                         
                     </span>
@@ -473,7 +478,7 @@
 
                         </span>
 
-                        <div>
+                        <div style="margin-left: 10px">
 
                             <span class="reference">{$product.reference_to_display}</span>
 
@@ -726,21 +731,9 @@
 
                         {if !$esMuestra}
 
-                            {foreach from=Product::getFrontFeaturesStatic($language.id, $product.id) item='feature'}
+                            {assign var="quantityValue" value=Product::getCartQuantityValue($language.id, $product.id, $product.quantity)}
 
-                                {if $feature.id_feature === $FEATURE_M2_CAJA_ID}
-
-                                    {assign var="m2Caja" value="{$feature.value|replace:',':'.'}"}
-
-                                {/if}
-
-                            {/foreach}
-
-                                {if !$normalSell}
-
-                                    <div class="product-price">{($product.quantity * $m2Caja)|replace:'.':','} m<sup>2</sup></div>
-
-                                {/if}
+                            <div class="product-price">{$quantityValue}</div>
                         
                         {else}
 
@@ -817,4 +810,3 @@
     <div class="clearfix"></div>
 
 </div>
-
