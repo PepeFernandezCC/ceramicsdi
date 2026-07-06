@@ -24,12 +24,16 @@
                             </div>
                             <div class="crp-title-price">
                                 <div class="relatedMaterial">
-                                    {if $customPrice.discount > 0}
+                                    {if $customPrice.discount > 0 && !$customPrice.volume}
                                         <div class="discountFlag">-{$customPrice.discount}%</div>
                                         <div class="productPrice">{$customPrice.original_price} €{$customPrice.tipologia nofilter}</div>
                                     {/if}
 
-                                    <div class="sellPrice">{$customPrice.price} €{$customPrice.tipologia nofilter}</div>
+                                    {if $customPrice.volume}
+                                        <div class="sellPrice">{$customPrice.original_price} €{$customPrice.tipologia nofilter}</div>
+                                    {else}
+                                        <div class="sellPrice">{$customPrice.price} €{$customPrice.tipologia nofilter}</div>
+                                    {/if}
                                 </div>
                             </div>
                         </div>

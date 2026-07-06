@@ -271,67 +271,6 @@ class CustomRelatedProducts extends Module
 
         Tools::redirectAdmin(AdminController::$currentIndex . '&configure=' . $this->name . '&token=' . Tools::getAdminTokenLite('AdminModules'));
     }
-/*
-    public function findRelatedProducts($idProduct, $allProductIds) 
-    {
-
-        $limit = (int) Configuration::get('PS_QUANTITY_RELATED_PRODUCTS');
-        $relatedIds = [];
-
-        // 1. Relacionados por colección 
-        $sqlCollection = '
-            SELECT fp2.id_product FROM ' . _DB_PREFIX_ . 'feature_product fp1
-            INNER JOIN ' . _DB_PREFIX_ . 'feature_product fp2 
-                ON fp1.id_feature_value = fp2.id_feature_value
-            WHERE fp1.id_feature = 57
-                AND fp1.id_product = ' . (int)$idProduct . '
-                AND fp2.id_product != ' . (int)$idProduct . '
-            GROUP BY fp2.id_product
-            LIMIT ' . $limit;
-
-        $collectionProducts = Db::getInstance()->executeS($sqlCollection);
-        foreach ($collectionProducts as $p) {
-            if (count($relatedIds) >= $limit) break;
-            $relatedId = (int)$p['id_product'];
-            if (!in_array($relatedId, $relatedIds)) {
-                $relatedIds[] = $relatedId;
-            }
-        }
-
-        // 2. Productos TOP 
-        if (count($relatedIds) < $limit) {
-            $remaining = $limit - count($relatedIds);
-            $sqlTop = '
-                SELECT DISTINCT fp.id_product FROM ' . _DB_PREFIX_ . 'feature_product fp
-                WHERE fp.id_feature = 69
-                AND fp.id_feature_value = 146347
-                AND fp.id_product != ' . (int)$idProduct . '
-                LIMIT ' . $remaining;
-
-            $topProducts = Db::getInstance()->executeS($sqlTop);
-            foreach ($topProducts as $p) {
-                $relatedId = (int)$p['id_product'];
-                if (!in_array($relatedId, $relatedIds)) {
-                    $relatedIds[] = $relatedId;
-                }
-            }
-        }
-
-        // 3. Productos aleatorios
-        if (count($relatedIds) < $limit) {
-            $remaining = $limit - count($relatedIds);
-            shuffle($allProductIds);
-            foreach ($allProductIds as $randomId) {
-                if ($randomId != $idProduct && !in_array($randomId, $relatedIds)) {
-                    $relatedIds[] = $randomId;
-                    if (count($relatedIds) >= $limit) break;
-                }
-            }
-        }
-
-        return $relatedIds;
-    }
-*/
 
     public function findRelatedProducts($idProduct, $allProductIds)
     {
