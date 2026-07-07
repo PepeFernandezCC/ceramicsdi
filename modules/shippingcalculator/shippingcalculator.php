@@ -173,15 +173,6 @@ class ShippingCalculator extends Module
             }
         }
 
-        // No mostrar si hay productos sin stock en el carrito
-        if (method_exists($cart, 'checkProductsOutOfStockInCart')) {
-            $products_out_of_stock = $cart->checkProductsOutOfStockInCart();
-
-            if ($products_out_of_stock > 0) {
-                return '';
-            }
-        }
-
         // Verificar que hay productos en el carrito
         $products = $cart->getProducts(true);
         if (empty($products)) {

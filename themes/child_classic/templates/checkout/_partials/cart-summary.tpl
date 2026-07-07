@@ -41,6 +41,12 @@
         {include file='checkout/_partials/cart-summary-totals.tpl' cart=$cart}
     {/block}
 
+    {block name='hook_shopping_cart_footer'}
+        <div id="shippingCalculatorDeliveryWrapper">
+            {hook h='displayShoppingCartFooter'}
+        </div>
+    {/block}
+
     {block name='cart_summary_voucher'}
         {include file='checkout/_partials/cart-voucher.tpl'}
     {/block}
