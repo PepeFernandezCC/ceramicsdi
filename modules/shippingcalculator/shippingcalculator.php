@@ -363,8 +363,8 @@ class ShippingCalculator extends Module
             foreach ($products_preparation as $product_prep) {
                 $prep_days = $product_prep['preparation_days'];
                 $total_days = $prep_days + $shipping_days;
-                $start_date = date('Y-m-d', strtotime('+' . $prep_days . ' days'));
-                $end_date = date('Y-m-d', strtotime('+' . $total_days . ' days'));
+                $start_date = date('Y-m-d', strtotime('+' . ($prep_days + $shipping_days_min) . ' days'));
+                $end_date = date('Y-m-d', strtotime('+' . ($prep_days + $shipping_days_max) . ' days'));
                 
                 $products_delivery[] = [
                     'id_product' => $product_prep['id_product'],
@@ -395,8 +395,8 @@ class ShippingCalculator extends Module
         // Modo máximo o suma: cálculo combinado
         $preparation_days = $this->getCartPreparationDays($cart);
         $total_days = $preparation_days + $shipping_days;
-        $start_date = date('Y-m-d', strtotime('+' . $preparation_days . ' days'));
-        $end_date = date('Y-m-d', strtotime('+' . $total_days . ' days'));
+        $start_date = date('Y-m-d', strtotime('+' . ($preparation_days + $shipping_days_min) . ' days'));
+        $end_date = date('Y-m-d', strtotime('+' . ($preparation_days + $shipping_days_max) . ' days'));
 
         return [
             'mode' => 'combined',
