@@ -9,18 +9,11 @@
             </div>
 
             <div class="col-lg-4 col-xs-12">
-                {if $language.id != 1 && $language.id != 5}
-                    <div id="huelga">
-                        <div class="transport-warning-cart">
-                            {l s='Important Notice: Due to the transport and logistics strike in France, European transit times may be affected and delivery deadlines extended. Thank you for your understanding.' d='Shop.Theme.Global'}
-                        </div>
-                    </div>
-                {else}
-                    <!-- shipping informations -->
-                    {block name='hook_shopping_cart_footer'}
-                        {hook h='displayShoppingCartFooter'}
-                    {/block}
-                {/if}
+           
+                        <!-- shipping informations -->
+                        {block name='hook_shopping_cart_footer'}
+                            {hook h='displayShoppingCartFooter'}
+                        {/block}
             </div>
             
             <div class="card-block cart-detailed-subtotals js-cart-detailed-subtotals col-lg-4 col-xs-12">

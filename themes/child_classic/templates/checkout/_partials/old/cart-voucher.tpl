@@ -46,85 +46,58 @@
 
                 {assign var="countryList" value=country::getCountries($language.id)}
                 
-                <style>
-                    @media (min-width: 768px) {
-                        .cart-calculator-and-delivery { display: flex; align-items: center; gap: 0px; justify-content: space-between; width: 100%; }
-                        .cart-calculator-and-delivery .cart-calculator-box { flex: 0 0 50%; }
-                        .cart-calculator-and-delivery .cart-delivery-box { flex: 0 0 48%; }
-                    }
-                    @media (max-width: 767px) {
-                        .cart-calculator-and-delivery { display: block; }
-                    }
-                    .cart-calculator-and-delivery .cart-delivery-box { min-width: 220px; }
-                </style>
-
-                <div class="cart-calculator-and-delivery">
-                    <div class="cart-calculator-box">
-                        <div id="deliveryPriceCalculator" class="form-group row " {if isset($psc_visible)}style="display:none"{/if}>
-                            <div style="margin-bottom: 10px">
-                                <span class="scc-title">{l s='calculate your shipping costs' d='Shop.Theme.Checkout'}</span>
-                            </div>
-
-                            <div class="deliveryPriceCalculatorFormBox">
-                                {if !$configuration.display_prices_tax_incl && $configuration.taxes_enabled}
-                                    <input type="hidden" id="showTaxes" value="0">
-                                {else}
-                                    <input type="hidden" id="showTaxes" value="1">
-                                {/if}
-                                <input type="hidden" id="language" value="{$language.id}">
-                                <input type="hidden" id="packageWeight" name="packageWeight" value="{Context::getContext()->cart->getTotalWeight()}" />
-                                <input type="hidden" id="cartId" name="cartId" value="{Context::getContext()->cart->id}" />
-
-                                <div id="country-selector-box">
-                                    <select id="field-id_country" class="form-control form-control-select scc-select" name="id_country">
-                                        <option value="">{l s='Select a country' d='Shop.Theme.Checkout'}</option>
-                                        {foreach from=$countryList item=$country}
-                                            {if in_array($country.id_country, $VALID_COUNTRIES)}
-                                                <option value="{$country.id_country}">{$country.name}</option>
-                                            {/if}
-                                        {/foreach}
-                                    </select>
-                                </div>
-                               
-                                <div id="province-selector-box">
-                                    <select id="field-id_state" class="form-control form-control-select scc-select" name="id_state">
-                                        <option value="">{l s='Select a state' d='Shop.Theme.Checkout'}</option>
-                                    </select>
-                                </div>
-                                
-                                <div>
-                                    <input type="text" name="postalzip" id="postalzip" inputmode="numeric" value="" 
-                                    class="input-group scc-postalcode-input" aria-label="Total" data-price="0" placeholder="{l s='Postal code' d='Shop.Forms.Labels'}">
-                                </div>
-                               
-                            </div>
-                            <div class="deliveryPriceCalculatorResult d-flex scc-result" style="position:relative">
-                                
-                                <button id="calculateMyDeliveryButton" class="scc-button">{l s='Get shipping costs' d='Shop.Theme.Checkout'}</button>
-
-                                <input type="number" name="euros" id="euros-input" inputmode="numeric" step="0.01" min="0.00" value="0.00" 
-                                class="input-group boxInput cc-background-color-secondary" aria-label="Total" readonly="readonly" data-price="0" 
-                                style="font-weight: bold; font-size: 17px; max-height:40px">
-                                <div class="scc-coin">€</div>
-                            </div>
-
-                            <div id="messageContainer" class="alert alert-danger" style="display: none">{l s='Please, complete all the form fields' d='Shop.Theme.Checkout'}</div>
-                        </div>
+                <div id="deliveryPriceCalculator" class="form-group row scc-main" {if isset($psc_visible)}style="display:none"{/if}>
+                    <div style="margin-bottom: 10px">
+                        <span class="scc-title">{l s='calculate your shipping costs' d='Shop.Theme.Checkout'}</span>
                     </div>
 
-                    <div class="cart-delivery-box">
-                        {* Plazo estimado de entrega - justo al lado del calculador de gastos de envío *}
-                        {if isset($page.page_name) && $page.page_name == 'cart'}
-                            {assign var=products_out_of_stock value=Context::getContext()->cart->checkProductsOutOfStockInCart()}   
-                            {if $products_out_of_stock <= 0}
-                                <div class="shipping-estimate-wrapper">
-                                    {hook h='displayShoppingCartFooter'}
-                                </div>
-                            {/if}
+                    <div class="deliveryPriceCalculatorFormBox">
+                        {if !$configuration.display_prices_tax_incl && $configuration.taxes_enabled}
+                            <input type="hidden" id="showTaxes" value="0">
+                        {else}
+                            <input type="hidden" id="showTaxes" value="1">
                         {/if}
+                        <input type="hidden" id="language" value="{$language.id}">
+                        <input type="hidden" id="packageWeight" name="packageWeight" value="{Context::getContext()->cart->getTotalWeight()}" />
+                        <input type="hidden" id="cartId" name="cartId" value="{Context::getContext()->cart->id}" />
+
+                        <div id="country-selector-box">
+                            <select id="field-id_country" class="form-control form-control-select scc-select" name="id_country">
+                                <option value="">{l s='Select a country' d='Shop.Theme.Checkout'}</option>
+                                {foreach from=$countryList item=$country}
+                                    {if in_array($country.id_country, $VALID_COUNTRIES)}
+                                        <option value="{$country.id_country}">{$country.name}</option>
+                                    {/if}
+                                {/foreach}
+                            </select>
+                        </div>
+                       
+                        <div id="province-selector-box">
+                            <select id="field-id_state" class="form-control form-control-select scc-select" name="id_state">
+                                <option value="">{l s='Select a state' d='Shop.Theme.Checkout'}</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <input type="text" name="postalzip" id="postalzip" inputmode="numeric" value="" 
+                            class="input-group scc-postalcode-input" aria-label="Total" data-price="0" placeholder="{l s='Postal code' d='Shop.Forms.Labels'}">
+                        </div>
+                       
                     </div>
+                    <div class="deliveryPriceCalculatorResult d-flex scc-result" style="position:relative">
+                        
+                        <button id="calculateMyDeliveryButton" class="scc-button">{l s='Get shipping costs' d='Shop.Theme.Checkout'}</button>
+
+                        <input type="number" name="euros" id="euros-input" inputmode="numeric" step="0.01" min="0.00" value="0.00" 
+                        class="input-group boxInput cc-background-color-secondary" aria-label="Total" readonly="readonly" data-price="0" 
+                        style="font-weight: bold; font-size: 17px; max-height:40px">
+                        <div class="scc-coin">€</div>
+                    </div>
+
+                    <div id="messageContainer" class="alert alert-danger" style="display: none">{l s='Please, complete all the form fields' d='Shop.Theme.Checkout'}</div>
                 </div>
 
+ 
                     <div id="promo-code" class="{if $cart.discounts|count > 0} in{/if}">
                         <div class="promo-code">
                             <div class="row">
