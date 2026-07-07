@@ -50,3 +50,11 @@
     width: 90%;
   }
 }
+
+div#deliveryPriceCalculator {
+    display: none;
+}
+
+body#cart div#deliveryPriceCalculator {
+    display: block !important;
+}

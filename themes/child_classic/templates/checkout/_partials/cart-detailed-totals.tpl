@@ -8,8 +8,8 @@
                 {/block}
             </div>
 
-            <div class="col-lg-4 col-xs-12">
-           
+            <div class="col-lg-4 col-xs-12" id="shippingCalculatorDeliveryWrapper">
+
                         <!-- shipping informations -->
                         {block name='hook_shopping_cart_footer'}
                             {hook h='displayShoppingCartFooter'}

@@ -237,6 +237,29 @@ class DeliverypricecalculatorPriceModuleFrontController extends ModuleFrontContr
 
         $carrier = new Carrier($idCarrier);
 
+        $shippingEstimateHtml = '';
+        $shippingCalculatorModule = Module::getInstanceByName('shippingcalculator');
+
+        if ($shippingCalculatorModule && Validate::isLoadedObject($shippingCalculatorModule) && method_exists($shippingCalculatorModule, 'calculateEstimatedDelivery')) {
+            $estimatedDelivery = $shippingCalculatorModule->calculateEstimatedDelivery($tmpCart);
+
+            if (is_array($estimatedDelivery)) {
+                // Usamos el coste real calculado por transportistas en vez del que calcula shippingcalculator
+                $estimatedDelivery['shipping_cost'] = $result;
+                $estimatedDelivery['shipping_cost_formatted'] = Tools::displayPrice($result);
+            }
+
+            $this->context->smarty->assign([
+                'has_delivery_info' => (bool) $estimatedDelivery,
+                'estimated_delivery' => $estimatedDelivery,
+            ]);
+
+            $shippingEstimateHtml = $shippingCalculatorModule->display(
+                _PS_MODULE_DIR_ . 'shippingcalculator/shippingcalculator.php',
+                'views/templates/hook/shopping_cart_delivery.tpl'
+            );
+        }
+
         $tmpCart->delete();
         $address->delete();
 
@@ -245,6 +268,8 @@ class DeliverypricecalculatorPriceModuleFrontController extends ModuleFrontContr
             'id_carrier' => $idCarrier,
             'carrier_name' => Validate::isLoadedObject($carrier) ? $carrier->name : null,
             'shipping_cost' => $result,
+            'shipping_cost_formatted' => Tools::displayPrice($result),
+            'shipping_estimate_html' => $shippingEstimateHtml,
         ]));
     }
 }

@@ -2,8 +2,6 @@ $(document).ready(function () {
 
     if (document.getElementById('deliveryPriceCalculator')) {
 
-        $('#deliveryPriceCalculator').css('display', 'block');
-
         const countrySelector = document.getElementById('field-id_country');
         const deliverySearchButton = document.getElementById('calculateMyDeliveryButton');
         const provinceSelector = document.getElementById('field-id_state');
@@ -75,6 +73,11 @@ $(document).ready(function () {
                     success: function (response) {
                         if (response.shipping_cost) {
                             document.getElementById('euros-input').value = response.shipping_cost;
+
+                            const shippingCalculatorWrapper = document.getElementById('shippingCalculatorDeliveryWrapper');
+                            if (shippingCalculatorWrapper && response.shipping_estimate_html) {
+                                shippingCalculatorWrapper.innerHTML = response.shipping_estimate_html;
+                            }
                         } else if (response.error) {
                             console.error('Error:', response.error);
                         }
