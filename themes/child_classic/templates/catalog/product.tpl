@@ -695,18 +695,15 @@
                                         {if $texto_muestra !== ''}
                                                                 
                                            <a href="#" id="openModal" data-toggle="modal" data-target="#sampleModal">
-                                                <div class="modalBanner" style="font-weight:bold; padding-top:10px; padding-bottom:10px">
+                                                <div class="modalBanner">
                                                     <div style="width: 50px;"> 
                                                         <span>
                                                             <img class="baner-icon" loading="lazy" src="/themes/child_classic/assets/img/web/icons/sample-ico.png" alt="icon sample"/>
                                                         </span> 
                                                     </div>
-                                                    <div class="whyordersampletext">
+                                                    <div class="whyordersampletext" style="font-weight:500">
                                                         <div>
                                                             {l s='Why request a sample?' d='Shop.Theme.Catalog'}
-                                                        </div>
-                                                        <div>
-                                                            <span style="color:#eac133; font-size:30px"><i class="fa-solid fa-angle-right"></i></span>  
                                                         </div>
                                                     </div>    
                                                 </div>
@@ -714,7 +711,38 @@
                                       
                                         {/if}
                                         
+                                        <div>
 
+                                            {*
+                                            <p class="h6 terms-condition-title">
+                                                <span style="color:#eac133; font-size:21px; padding-right: 10px;"><i class="fa-solid fa-angle-right"></i></span> {l s='Terms of Purchase' d='Shop.Theme.Catalog'}
+                                            </p>
+                                            *}
+
+                                           
+                                            <a href="#" id="openModal" data-toggle="modal" data-target="#transportModal">
+                                                <div class="modalBanner" style="padding: 15px">
+                                                    <div style="width: 50px;"> 
+                                                        <span style="font-size:30px">
+                                                            <i class="fa-regular fa-file-lines"></i>
+                                                        </span> 
+                                                    </div>
+                                                    <div style="font-weight:500">{l s='Sales Conditions' d='Shop.Theme.Catalog'} </div>
+                                                </div>
+                                            </a>
+                                            
+                                            <a href="#" id="openModal" data-toggle="modal" data-target="#refundModal">
+                                                <div class="modalBanner">
+                                                    <div style="width: 50px;"> 
+                                                        <span>
+                                                            <img loading="lazy" class="baner-icon" src="/themes/child_classic/assets/img/web/icons/refund-ico.png" alt="icon refund"/>
+                                                        </span>
+                                                    </div>
+                                                    <div style="font-weight:500">{l s='Returns / issues' d='Shop.Theme.Catalog'} </div>                                              
+                                                </div>
+                                            </a>
+
+                                        </div>
 
                                         {if !empty($junta_recomendada) && $junta_recomendada != 0}
                                             {$cardBoard = Product::getProductCard($junta_recomendada)}
@@ -821,38 +849,6 @@
 
                                         {/if}
 
-                                       
-                                        <div class="modals-block">
-
-                                            
-                                            <p class="h6 terms-condition-title">
-                                                <span style="color:#eac133; font-size:21px; padding-right: 10px;"><i class="fa-solid fa-angle-right"></i></span> {l s='Terms of Purchase' d='Shop.Theme.Catalog'}
-                                            </p>
-
-                                           
-                                            <a href="#" id="openModal" data-toggle="modal" data-target="#transportModal">
-                                                <div class="modalBanner" style="padding: 15px">
-                                                    <div style="width: 50px;"> 
-                                                        <span style="font-size:30px">
-                                                            <i class="fa-regular fa-file-lines"></i>
-                                                        </span> 
-                                                    </div>
-                                                    <div style="font-weight:500">{l s='Sales Conditions' d='Shop.Theme.Catalog'} </div>
-                                                </div>
-                                            </a>
-                                            
-                                            <a href="#" id="openModal" data-toggle="modal" data-target="#refundModal">
-                                                <div class="modalBanner">
-                                                    <div style="width: 50px;"> 
-                                                        <span>
-                                                            <img loading="lazy" class="baner-icon" src="/themes/child_classic/assets/img/web/icons/refund-ico.png" alt="icon refund"/>
-                                                        </span>
-                                                    </div>
-                                                    <div style="font-weight:500">{l s='Returns / issues' d='Shop.Theme.Catalog'} </div>                                              
-                                                </div>
-                                            </a>
-
-                                        </div>
                                     </div>
                                 </div>
                             </div>
