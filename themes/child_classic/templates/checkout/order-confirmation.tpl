@@ -56,25 +56,25 @@
 
                     {block name='order_details'}
                         <div id="order-details" class="row">
-                            <div class="col-md-4 col-xs-12">
+                            <div class="col-md-3 col-xs-12">
                                 {l s='Order reference' d='Shop.Theme.Checkout'}:
                             </div>
-                            <div class="col-md-8 col-xs-12">
+                            <div class="col-md-9 col-xs-12">
                                 {$order.details.reference}
                             </div>
 
-                            <div class="col-md-4 col-xs-12">
+                            <div class="col-md-3 col-xs-12">
                                 {l s='Payment method' d='Shop.Theme.Checkout'}:
                             </div>
-                            <div class="col-md-8 col-xs-12">
+                            <div class="col-md-9 col-xs-12">
                                 {$order.details.payment}
                             </div>
 
                             {if !$order.details.is_virtual}
-                                <div class="col-md-4 col-xs-12">
+                                <div class="col-md-3 col-xs-12">
                                     {l s='Shipping method' d='Shop.Theme.Checkout'}:
                                 </div>
-                                <div class="col-md-8 col-xs-12">
+                                <div class="col-md-9 col-xs-12">
                                     {$order.carrier.name} <em>({$order.carrier.delay})</em>
                                 </div>
                             {/if}
@@ -94,6 +94,70 @@
                             </section>
                         {/if}
                     {/block}
+
+                    {if $order.totals.total_including_tax.amount > 25}
+                        <div class="instrucciones-recepcion-pedido">
+                            {if $language.id == 1}
+                                <div class="instrucciones-recepcion-titulo"> Aviso importante sobre recepción de material cerámico</div>
+                                <div class="instrucciones-recepcion-contenido">
+                                    <p>Nuestros productos son pesados, frágiles y se entregan habitualmente paletizados.</p>
+                                    <p>Antes de desembalar o mover el pedido, <strong>es necesario hacer fotografías del palet completo</strong> desde varios ángulos, incluyendo embalaje, etiquetas y cualquier daño visible.</p>
+                                    <p>Si observas golpes, humedad, cajas rotas, retractilado manipulado o cualquier anomalía, <strong> se debe indicar por escrito en el albarán del transportista antes de firmar.</strong></p>
+                                    <p>Sin fotografías del palet en el momento de la recepción y antes de su manipulación, puede resultar imposible verificar si una rotura se produjo durante el transporte o por manipulaciones posteriores.</p>
+                                </div>
+                            {/if}
+
+                            {if $language.id == 2}
+                                <div class="instrucciones-recepcion-titulo"> Avis important concernant la réception du matériel céramique</div>
+                                <div class="instrucciones-recepcion-contenido">
+                                    <p>Nos produits sont lourds, fragiles et sont généralement livrés sur palette.</p>
+                                    <p>Avant de déballer ou de déplacer la commande, <strong>il est nécessaire de prendre des photographies de la palette complète</strong> sous plusieurs angles, y compris l'emballage, les étiquettes et tout dommage visible.</p>
+                                    <p>Si vous constatez des chocs, de l'humidité, des cartons cassés, un film rétractable manipulé ou toute autre anomalie, <strong>indiquez-le par écrit sur le bon de livraison du transporteur avant de signer.</strong></p>
+                                    <p>Sans photographies de la palette au moment de la réception et avant sa manipulation, il peut être impossible de vérifier si une casse s'est produite pendant le transport ou en raison de manipulations ultérieures.</p>
+                                </div>
+                            {/if}
+
+                            {if $language.id == 3}
+                                <div class="instrucciones-recepcion-titulo"> Important notice regarding receipt of ceramic material</div>
+                                <div class="instrucciones-recepcion-contenido">
+                                    <p>Our products are heavy, fragile and are usually delivered palletised.</p>
+                                    <p>Before unpacking or moving the order, <strong>it is necessary to take photographs of the complete pallet</strong> from several angles, including the packaging, labels and any visible damage.</p>
+                                    <p>If you notice impacts, moisture, broken boxes, tampered shrink wrap or any other anomaly, <strong>state this in writing on the carrier's delivery note before signing.</strong></p>
+                                    <p>Without photographs of the pallet at the time of receipt and before it is handled, it may be impossible to verify whether breakage occurred during transport or due to subsequent handling.</p>
+                                </div>
+                            {/if}
+
+                            {if $language.id == 4}
+                                <div class="instrucciones-recepcion-titulo"> Wichtiger Hinweis zum Empfang von keramischem Material</div>
+                                <div class="instrucciones-recepcion-contenido">
+                                    <p>Unsere Produkte sind schwer, zerbrechlich und werden in der Regel palettiert geliefert.</p>
+                                    <p>Bevor Sie die Bestellung auspacken oder bewegen, <strong>ist es erforderlich, Fotos der vollständigen Palette</strong> aus mehreren Blickwinkeln zu machen, einschließlich Verpackung, Etiketten und eventueller sichtbarer Schäden.</p>
+                                    <p>Wenn Sie Stöße, Feuchtigkeit, zerbrochene Kartons, manipulierte Schrumpffolie oder sonstige Auffälligkeiten feststellen, <strong>vermerken Sie dies vor der Unterschrift schriftlich auf dem Lieferschein des Transportunternehmens.</strong></p>
+                                    <p>Ohne Fotos der Palette zum Zeitpunkt des Empfangs und vor deren Handhabung kann es unmöglich sein zu überprüfen, ob ein Bruch während des Transports oder durch spätere Handhabung entstanden ist.</p>
+                                </div>
+                            {/if}
+
+                            {if $language.id == 5}
+                                <div class="instrucciones-recepcion-titulo"> Aviso importante sobre a receção de material cerâmico</div>
+                                <div class="instrucciones-recepcion-contenido">
+                                    <p>Os nossos produtos são pesados, frágeis e costumam ser entregues paletizados.</p>
+                                    <p>Antes de desembalar ou mover o pedido, <strong>é necessário tirar fotografias do palete completo</strong> a partir de vários ângulos, incluindo embalagem, etiquetas e qualquer dano visível.</p>
+                                    <p>Se observar golpes, humidade, caixas partidas, retrátil manipulado ou qualquer anomalia, <strong>indique-o por escrito na guia de transporte antes de assinar.</strong></p>
+                                    <p>Sem fotografias do palete no momento da receção e antes da sua manipulação, pode ser impossível verificar se uma quebra ocorreu durante o transporte ou devido a manipulações posteriores.</p>
+                                </div>
+                            {/if}
+
+                            {if $language.id == 6}
+                                <div class="instrucciones-recepcion-titulo"> Belangrijke mededeling over de ontvangst van keramisch materiaal</div>
+                                <div class="instrucciones-recepcion-contenido">
+                                    <p>Onze producten zijn zwaar, breekbaar en worden meestal gepalletiseerd geleverd.</p>
+                                    <p>Voordat u de bestelling uitpakt of verplaatst, <strong>is het noodzakelijk om foto's te maken van de volledige pallet</strong> vanuit verschillende hoeken, inclusief de verpakking, etiketten en eventuele zichtbare schade.</p>
+                                    <p>Als u stoten, vocht, gebroken dozen, gemanipuleerde krimpfolie of enige andere afwijking vaststelt, <strong>vermeld dit dan schriftelijk op de leveringsbon van de vervoerder voordat u tekent.</strong></p>
+                                    <p>Zonder foto's van de pallet op het moment van ontvangst en vóór de hantering ervan kan het onmogelijk zijn te verifiëren of een breuk tijdens het transport is ontstaan of door latere hantering.</p>
+                                </div>
+                            {/if}
+                        </div>
+                    {/if}
 
                     {block name='customer_registration_form'}
                         {if $customer.is_guest}

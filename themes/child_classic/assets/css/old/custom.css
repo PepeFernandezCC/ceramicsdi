@@ -6193,59 +6193,7 @@ body#checkout .card-block.cart-summary-totals .cart-total, body#order-confirmati
 
 
 /*# sourceMappingURL=custom.css.map */
-/* SHIPPING COST CALCULATOR */
-.scc-main {
-  margin-bottom: 15px;
-}
-
-.scc-button {
-  background: black;
-  color: white;
-  width: 80%;
-  border: none;
-  text-transform: uppercase;
-  font-size: 12px;
-  font-weight: 500;
-}
-
-.scc-select{
-  background: #FFF url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAQAAAD9CzEMAAAAPklEQVR4Ae3TwREAEBQD0V/6do4SXPZg7EsBhsQ8IEmSMOsiuEfg3gL3oXC7wK0bd1G4o8X9F4yIkyQfSrIByQBjp7QuND8AAAAASUVORK5CYII=) no-repeat scroll right .5rem center / 1.25rem 1.25rem;
-
-}
-
-#province-selector-box {
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-
-.scc-postalcode-input {
-  height: 38px;
-  padding: 5px;
-}
-
-.scc-title {
-  font-size: 15px;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.scc-coin {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  font-size: 20px;
-  font-weight: bolder;
-}
-
-.scc-result {
-  margin-top: 10px;
-}
-
 @media (max-width: 1024px) {
-  .scc-main {
-    width: 90%;
-  }
-
   .fix-height-477-mobile {
     height: 477px;
   }
@@ -7753,12 +7701,21 @@ body#contact div#content-wrapper {
   z-index: 99;
   top: 145px
 }
-
+/*
 div#search_filters_wrapper {
     position: sticky;
     top: 148px;
     align-self: flex-start;
     height: fit-content;
+    z-index: 95;
+}
+*/
+div#search_filters_wrapper {
+    position: sticky;
+    top: 148px;
+    align-self: flex-start;
+    max-height: calc(100vh - 148px - 20px);
+    overflow-y: auto;
     z-index: 95;
 }
 
@@ -7825,3 +7782,16 @@ div#ps_checkout-payment-method-logo-block-container {
 
 }
 
+.instrucciones-recepcion-pedido {
+    border: 2px solid;
+    padding: 15px 15px 0 15px;
+    margin-bottom: 25px;
+    background: antiquewhite;
+}
+
+.instrucciones-recepcion-titulo {
+    font-weight: 600;
+    padding-bottom: 15px;
+    text-transform: uppercase;
+    text-align: center;
+}

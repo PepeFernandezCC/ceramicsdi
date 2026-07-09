@@ -7701,12 +7701,21 @@ body#contact div#content-wrapper {
   z-index: 99;
   top: 145px
 }
-
+/*
 div#search_filters_wrapper {
     position: sticky;
     top: 148px;
     align-self: flex-start;
     height: fit-content;
+    z-index: 95;
+}
+*/
+div#search_filters_wrapper {
+    position: sticky;
+    top: 148px;
+    align-self: flex-start;
+    max-height: calc(100vh - 148px - 20px);
+    overflow-y: auto;
     z-index: 95;
 }
 
@@ -7773,3 +7782,19 @@ div#ps_checkout-payment-method-logo-block-container {
 
 }
 
+.instrucciones-recepcion-pedido {
+    border: 2px solid;
+    padding: 15px 15px 0 15px;
+    margin-bottom: 25px;
+}
+
+.instrucciones-recepcion-titulo {
+    font-weight: 600;
+    padding-bottom: 15px;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+body#order-confirmation .block-left {
+    padding: 50px 50px 50px 50px;
+}
