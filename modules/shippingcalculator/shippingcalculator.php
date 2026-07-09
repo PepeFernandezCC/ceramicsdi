@@ -363,8 +363,8 @@ class ShippingCalculator extends Module
             foreach ($products_preparation as $product_prep) {
                 $prep_days = $product_prep['preparation_days'];
                 $total_days = $prep_days + $shipping_days;
-                $start_date = date('Y-m-d', strtotime('+' . ($prep_days + $shipping_days_min) . ' days'));
-                $end_date = date('Y-m-d', strtotime('+' . ($prep_days + $shipping_days_max) . ' days'));
+                $start_date = $this->addBusinessDays($prep_days + $shipping_days_min);
+                $end_date = $this->addBusinessDays($prep_days + $shipping_days_max);
                 
                 $products_delivery[] = [
                     'id_product' => $product_prep['id_product'],
@@ -395,8 +395,8 @@ class ShippingCalculator extends Module
         // Modo máximo o suma: cálculo combinado
         $preparation_days = $this->getCartPreparationDays($cart);
         $total_days = $preparation_days + $shipping_days;
-        $start_date = date('Y-m-d', strtotime('+' . ($preparation_days + $shipping_days_min) . ' days'));
-        $end_date = date('Y-m-d', strtotime('+' . ($preparation_days + $shipping_days_max) . ' days'));
+        $start_date = $this->addBusinessDays($preparation_days + $shipping_days_min);
+        $end_date = $this->addBusinessDays($preparation_days + $shipping_days_max);
 
         return [
             'mode' => 'combined',
@@ -413,6 +413,23 @@ class ShippingCalculator extends Module
             'shipping_cost' => $shipping_cost,
             'shipping_cost_formatted' => Tools::displayPrice($shipping_cost),
         ];
+    }
+
+    /**
+     * Suma días hábiles (excluyendo sábados y domingos) a la fecha actual
+     * y devuelve el resultado en formato Y-m-d
+     */
+    private function addBusinessDays($days)
+    {
+        $date = new DateTime();
+        $added = 0;
+        while ($added < $days) {
+            $date->modify('+1 day');
+            if ((int)$date->format('N') < 6) {
+                $added++;
+            }
+        }
+        return $date->format('Y-m-d');
     }
 
     /**
