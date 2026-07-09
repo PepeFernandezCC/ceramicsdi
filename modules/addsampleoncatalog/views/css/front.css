@@ -567,7 +567,7 @@ h2.accordion-item-h2 {
 }
 
 .product-miniature-title-box {
-  height: 85px;
+  height: 60px;
 }
 .product-miniature-title {
   width: 67%;
@@ -597,7 +597,7 @@ h2.accordion-item-h2 {
 }
 @media (max-width: 1420px) {
   .product-miniature-title-box {
-    height: 65px;
+    height: 60px;
   }
 
   .share-dropdown {

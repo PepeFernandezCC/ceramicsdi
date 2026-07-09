@@ -915,9 +915,9 @@ iframe#redsys-hosted-pay-button {
 }
 /* Ajustes para móvil */
 @media (max-width: 1223px) {
-  .bf-banner{
-    position: relative;
-    top: auto;
+    .bf-banner{
+    position: fixed;
+    top: 0;
   }
 
   .bf-banner__text{
@@ -940,9 +940,24 @@ iframe#redsys-hosted-pay-button {
 
 
 @media (min-width: 1224px) {
+    .bf-banner{
+      position: fixed;
+      top: auto;
+    }
+
     .bf-separation {
       padding-left:40px;
     }
 }
 
 /**********************/
+
+:root { --bf-banner-h: 0px; }
+
+/* Móvil: el banner es fixed, así que empujamos el header completo */
+@media (max-width: 1223px) {
+  #header{
+    padding-top: var(--bf-banner-h) !important;
+    margin-top: 0 !important;
+  }
+}
