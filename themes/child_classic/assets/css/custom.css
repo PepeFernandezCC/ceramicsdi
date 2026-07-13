@@ -7699,17 +7699,9 @@ body#contact div#content-wrapper {
 .catalog-description-sticky {
   position: sticky;
   z-index: 99;
-  top: 145px
+  top: -20px
 }
-/*
-div#search_filters_wrapper {
-    position: sticky;
-    top: 148px;
-    align-self: flex-start;
-    height: fit-content;
-    z-index: 95;
-}
-*/
+
 div#search_filters_wrapper {
     position: sticky;
     top: 148px;
@@ -7726,13 +7718,13 @@ body#checkout #deliveryPriceCalculator {
 
 @media (max-width: 1252px) {
   .catalog-description-sticky {
-    top: 145px
+    top: -60px
   }
 }
 
 @media (max-width: 1223px) {
   .catalog-description-sticky {
-    top: 102px
+    top: -109px
   }
   div#search_filters_wrapper {
     top: 100px;
@@ -7745,7 +7737,7 @@ body#checkout #deliveryPriceCalculator {
     padding: 35px;
   }
   .catalog-description-sticky {
-    top: 130px
+    top: -37px
   }
 }
 

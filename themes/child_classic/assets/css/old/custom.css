@@ -7786,7 +7786,6 @@ div#ps_checkout-payment-method-logo-block-container {
     border: 2px solid;
     padding: 15px 15px 0 15px;
     margin-bottom: 25px;
-    background: antiquewhite;
 }
 
 .instrucciones-recepcion-titulo {
@@ -7794,4 +7793,8 @@ div#ps_checkout-payment-method-logo-block-container {
     padding-bottom: 15px;
     text-transform: uppercase;
     text-align: center;
+}
+
+body#order-confirmation .block-left {
+    padding: 50px 50px 50px 50px;
 }
