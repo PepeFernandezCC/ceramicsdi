@@ -416,7 +416,27 @@ class ShippingCalculator extends Module
     }
 
     /**
-     * Suma días hábiles (excluyendo sábados y domingos) a la fecha actual
+     * Festivos nacionales de España (fijos; Semana Santa no se incluye por ser variable)
+     */
+    private function isSpanishHoliday(DateTime $date)
+    {
+        $fixedHolidays = [
+            '01-01', // Año Nuevo
+            '01-06', // Epifanía del Señor
+            '05-01', // Fiesta del Trabajo
+            '08-15', // Asunción de la Virgen
+            '10-12', // Fiesta Nacional de España
+            '11-01', // Todos los Santos
+            '12-06', // Día de la Constitución
+            '12-08', // Inmaculada Concepción
+            '12-25', // Natividad del Señor
+        ];
+
+        return in_array($date->format('m-d'), $fixedHolidays);
+    }
+
+    /**
+     * Suma días hábiles (excluyendo sábados, domingos y festivos nacionales) a la fecha actual
      * y devuelve el resultado en formato Y-m-d
      */
     private function addBusinessDays($days)
@@ -425,7 +445,7 @@ class ShippingCalculator extends Module
         $added = 0;
         while ($added < $days) {
             $date->modify('+1 day');
-            if ((int)$date->format('N') < 6) {
+            if ((int)$date->format('N') < 6 && !$this->isSpanishHoliday($date)) {
                 $added++;
             }
         }

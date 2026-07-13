@@ -156,18 +156,23 @@ class ShippingCalculator extends Module
             return '';
         }
 
-        // Obtener el carrito del contexto (más confiable)
+        // Obtener el carrito del contexto
         $cart = $this->context->cart;
-        
+
         // Si no hay carrito en el contexto, intentar obtenerlo de params
         if (!$cart || !$cart->id) {
-            if (isset($params['cart']) && is_object($params['cart']) && isset($params['cart']->id) && $params['cart']->id) {
+            if (
+                isset($params['cart']) &&
+                is_object($params['cart']) &&
+                isset($params['cart']->id) &&
+                $params['cart']->id
+            ) {
                 $cart = $params['cart'];
             } else {
                 return '';
             }
         }
-        
+
         // Verificar que hay productos en el carrito
         $products = $cart->getProducts(true);
         if (empty($products)) {
@@ -177,17 +182,20 @@ class ShippingCalculator extends Module
         // Calcular el plazo estimado
         $estimated_delivery = $this->calculateEstimatedDelivery($cart);
 
+        // No mostrar el tpl si no hay información de entrega
+        if (empty($estimated_delivery)) {
+            return '';
+        }
+
         // Asignar variables a Smarty
         $this->context->smarty->assign([
             'estimated_delivery' => $estimated_delivery,
             'module_dir' => $this->_path,
-            'has_delivery_info' => !empty($estimated_delivery),
+            'has_delivery_info' => true,
         ]);
 
-        // Siempre mostrar el template (incluso si no hay datos, para debugging)
         return $this->display(__FILE__, 'views/templates/hook/shopping_cart_delivery.tpl');
     }
-
     /**
      * Hook: Añadir CSS/JS en el front
      */
@@ -355,8 +363,8 @@ class ShippingCalculator extends Module
             foreach ($products_preparation as $product_prep) {
                 $prep_days = $product_prep['preparation_days'];
                 $total_days = $prep_days + $shipping_days;
-                $start_date = date('Y-m-d', strtotime('+' . $prep_days . ' days'));
-                $end_date = date('Y-m-d', strtotime('+' . $total_days . ' days'));
+                $start_date = $this->addBusinessDays($prep_days + $shipping_days_min);
+                $end_date = $this->addBusinessDays($prep_days + $shipping_days_max);
                 
                 $products_delivery[] = [
                     'id_product' => $product_prep['id_product'],
@@ -387,8 +395,8 @@ class ShippingCalculator extends Module
         // Modo máximo o suma: cálculo combinado
         $preparation_days = $this->getCartPreparationDays($cart);
         $total_days = $preparation_days + $shipping_days;
-        $start_date = date('Y-m-d', strtotime('+' . $preparation_days . ' days'));
-        $end_date = date('Y-m-d', strtotime('+' . $total_days . ' days'));
+        $start_date = $this->addBusinessDays($preparation_days + $shipping_days_min);
+        $end_date = $this->addBusinessDays($preparation_days + $shipping_days_max);
 
         return [
             'mode' => 'combined',
@@ -405,6 +413,23 @@ class ShippingCalculator extends Module
             'shipping_cost' => $shipping_cost,
             'shipping_cost_formatted' => Tools::displayPrice($shipping_cost),
         ];
+    }
+
+    /**
+     * Suma días hábiles (excluyendo sábados y domingos) a la fecha actual
+     * y devuelve el resultado en formato Y-m-d
+     */
+    private function addBusinessDays($days)
+    {
+        $date = new DateTime();
+        $added = 0;
+        while ($added < $days) {
+            $date->modify('+1 day');
+            if ((int)$date->format('N') < 6) {
+                $added++;
+            }
+        }
+        return $date->format('Y-m-d');
     }
 
     /**
