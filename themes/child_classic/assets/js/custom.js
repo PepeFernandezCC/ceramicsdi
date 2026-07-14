@@ -3119,7 +3119,27 @@ $( document ).ready( function () {
       var step = document.getElementById('checkout-delivery-step');
       if (!step) return;
 
-      // Solo si el paso está activo/visible
+      var updateConfirmButtonState = function () {
+         var confirmButton = step.querySelector('#js-confirm-delivery');
+         if (!confirmButton) return;
+
+         var anyChecked = step.querySelector('input[name^="delivery_option["]:checked') !== null;
+         confirmButton.disabled = !anyChecked;
+      };
+
+      // Reacciona a la selección manual, aunque el radio se haya vuelto a pintar por AJAX
+      step.addEventListener('change', function (event) {
+         if (event.target.matches('input[name^="delivery_option["]')) {
+            updateConfirmButtonState();
+         }
+      });
+
+      // Reacciona cuando el paso se vuelve a pintar (p.ej. al volver de otro paso del checkout)
+      new MutationObserver(updateConfirmButtonState).observe(step, { childList: true, subtree: true });
+
+      updateConfirmButtonState();
+
+      // Solo si el paso está activo/visible al cargar la página
       if (!step.classList.contains('-current') && !step.classList.contains('js-current-step')) return;
 
       var inputs = step.querySelectorAll('input[name^="delivery_option["]');
@@ -3131,7 +3151,7 @@ $( document ).ready( function () {
       input.checked = true;
       input.dispatchEvent(new Event('change', { bubbles: true }));
       })();
-      
+
 
          /* END CHECKOUT */
 

@@ -1942,115 +1942,6 @@ $( document ).ready( function () {
 
       } );
 
-      //DELIVERY PRICE CALCULATOR
-
-      if (document.getElementById('deliveryPriceCalculator')) {
-
-         if (!document.getElementById('cart')) {
-
-            $('#deliveryPriceCalculator').css('display', 'none');
-
-         }else{
-
-            $('#deliveryPriceCalculator').css('display', 'block');
-
-            const countrySelector = document.getElementById("field-id_country");
-            const deliverySearchButton = document.getElementById("calculateMyDeliveryButton");
-            const provinceSelector = document.getElementById("field-id_state");
-            const language = document.getElementById('language').value;
-            let provinceMessage = 'Select a state';
-
-            if(language == 1) {
-               provinceMessage = 'Selecciona una provincia';
-            }
-            if(language == 2) {
-               provinceMessage = 'Sélectionnez une province';
-            }
-            if(language == 4) {
-               provinceMessage = 'Wählen Sie eine Provinz';
-            }
-            if(language == 5) {
-               provinceMessage = 'Selecione uma província';
-            }
-            if(language == 6) {
-               provinceMessage = 'Selecteer een provincie';
-            }
-        
-            countrySelector.addEventListener("change", function () {
-                let countryId = this.value;
-
-        
-                // Limpia las opciones anteriores
-                provinceSelector.innerHTML = '<option value=""> ... </option>';
-        
-                // Realiza la llamada AJAX al nuevo endpoint
-                fetch(`/ajax/getProvinces.php?id_country=${countryId}`)
-                  .then((response) => response.json())
-                  .then((data) => {
-                     // Limpia el selector y agrega las nuevas provincias
-                     provinceSelector.innerHTML = "<option value=''>" + provinceMessage + "</option>";
-                     data.forEach((province) => {
-                        const option = document.createElement("option");
-                        option.value = province.id_state;
-                        option.textContent = province.name;
-                        provinceSelector.appendChild(option);
-                     });
-                  })
-                  .catch((error) => {
-                     console.error("Error cargando provincias:", error);
-                     provinceSelector.innerHTML = '<option value=""> - . Error . - </option>';
-                  });
-            });
-   
-            deliverySearchButton.addEventListener("click", function () {
-               // Obtener los valores de los campos de formulario
-               let countryId = document.getElementById('field-id_country').value;
-               let stateId = document.getElementById('field-id_state').value;
-               let postal = document.getElementById('postalzip').value;
-               let cartId = document.getElementById('cartId').value;
-               let packageWeight = document.getElementById('packageWeight').value;
-               let showTaxes = document.getElementById('showTaxes').value;
-               
-               if (!countryId.trim() || !stateId.trim() || !postal.trim()){
-                  document.getElementById('messageContainer').style.display = 'block'
-               }else{
-                  //si hay error limpiarlo
-                   document.getElementById('messageContainer').style.display = 'none'
-                  // Realizar la solicitud AJAX utilizando jQuery
-                  console.log('enviando ajax, calculo precios...');
-                  $.ajax({
-                     url: '/ajax/getDeliveryPrice.php', // Ruta al archivo PHP
-                     method: 'POST', // Usamos POST para enviar los datos
-                     data: {
-                        id_country: countryId,
-                        id_state: stateId,
-                        postal: postal,
-                        id_cart: cartId,
-                        weight: packageWeight,
-                        taxes: showTaxes
-                     },
-                     success: function(response) {
-                        // Si la respuesta es válida, puedes usar el resultado (por ejemplo, el costo de envío)
-                        console.log('respuesta obtenida');
-                        if (response.shipping_cost) {
-                           document.getElementById('euros-input').value = response.shipping_cost;
-                        } else if (response.error) {
-                           console.error('Error:', response.error);
-                        }
-                     },
-                     error: function(err) {
-                        // Manejo de errores en caso de que algo falle en la solicitud
-                        console.error('Error en la solicitud AJAX:', err);
-                     }
-                  });
-               }
-
-           });
-
-         }
-
-      }
-
       //CUSTOM LOAD COUNTRIES
       if (document.getElementById("field-id_country")) {
 
@@ -3232,6 +3123,23 @@ $( document ).ready( function () {
       if (!step.classList.contains('-current') && !step.classList.contains('js-current-step')) return;
 
       var inputs = step.querySelectorAll('input[name^="delivery_option["]');
+
+      var confirmButton = step.querySelector('#js-confirm-delivery');
+      if (confirmButton) {
+         var updateConfirmButtonState = function () {
+            var anyChecked = Array.prototype.some.call(inputs, function (el) {
+               return el.checked;
+            });
+            confirmButton.disabled = !anyChecked;
+         };
+
+         inputs.forEach(function (el) {
+            el.addEventListener('change', updateConfirmButtonState);
+         });
+
+         updateConfirmButtonState();
+      }
+
       if (inputs.length !== 1) return;
 
       var input = inputs[0];
@@ -3240,7 +3148,7 @@ $( document ).ready( function () {
       input.checked = true;
       input.dispatchEvent(new Event('change', { bubbles: true }));
       })();
-      
+
 
          /* END CHECKOUT */
 

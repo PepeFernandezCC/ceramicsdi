@@ -51,13 +51,12 @@
                         {* END PLANATEC *}
                         <div class="delivery-options">
                             {foreach from=$delivery_options item=carrier key=carrier_id name=count}
-                                {if $carrier.id != 44}
                                     <div class="row delivery-option js-delivery-option">
                                         <div class="col-sm-1">
                                           <span class="custom-radio float-xs-left">
                                             <input type="radio" name="delivery_option[{$id_address}]"
                                                    id="delivery_option_{$carrier.id}"
-                                                   value="{$carrier_id}"{if $smarty.foreach.count.index == 1} checked{/if}>
+                                                   value="{$carrier_id}">
                                             <span></span>
                                           </span>
                                         </div>
@@ -96,57 +95,7 @@
                                         {$carrier.extraContent nofilter}
                                     </div>
                                     <div class="clearfix"></div>
-                                {/if}
                             {/foreach}
-                            {* PLANATEC *}
-                            {foreach from=$delivery_options item=carrier key=carrier_id}
-                                {if $carrier.id == 44}
-                                    <div class="row delivery-option js-delivery-option">
-                                        <div class="col-sm-1">
-                      <span class="custom-radio float-xs-left">
-                        <input type="radio" name="delivery_option[{$id_address}]" id="delivery_option_{$carrier.id}"
-                               value="{$carrier_id}">
-                        <span></span>
-                      </span>
-                                        </div>
-                                        <label for="delivery_option_{$carrier.id}"
-                                               class="col-xs-9 col-sm-11 delivery-option-2">
-                                            <div class="row">
-                                                <div class="col-sm-5 col-xs-12">
-                                                    <div class="row carrier{if $carrier.logo} carrier-hasLogo{/if}">
-                                                        {if $carrier.logo}
-                                                            <div class="col-xs-12 col-md-4 carrier-logo">
-                                                                <img src="{$carrier.logo}" alt="{l s=$carrier.name d='Shop.Pdf' pdf='true'}"
-                                                                     loading="lazy"/>
-                                                            </div>
-                                                        {/if}
-                                                        <div class="col-xs-12 carriere-name-container{if $carrier.logo} col-md-8{/if}">
-                                                            <span class="h6 carrier-name">{l s=$carrier.name d='Shop.Pdf' pdf='true'}</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-4 col-xs-12">
-                                                    <span class="carrier-delay">{$carrier.delay}</span>
-                                                </div>
-                                                <div class="col-sm-3 col-xs-12 text-align-left-mobile">
-                                                    <span class="carrier-price">
-                                                        {if $carrier.id == "48"}
-                                                            {l s='Free of charge' d='Shop.Theme.Checkout'}
-                                                        {else}
-                                                            {$carrier.price}
-                                                        {/if}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </label>
-                                    </div>
-                                    <div class="row carrier-extra-content js-carrier-extra-content"{if $delivery_option != $carrier_id} style="display:none;"{/if}>
-                                        {$carrier.extraContent nofilter}
-                                    </div>
-                                    <div class="clearfix"></div>
-                                {/if}
-                            {/foreach}
-                            {* END PLANATEC *}
                         </div>
                     {/block}
                     <div class="order-options">
@@ -184,13 +133,13 @@
 
                     </div>
                 </div>
-                <button type="submit" class="continue btn btn-primary float-xs-right" name="confirmDeliveryOption"
-                        value="1">
+                <button type="submit" id="js-confirm-delivery" class="continue btn btn-primary float-xs-right" name="confirmDeliveryOption"
+                        value="1" disabled>
                     {l s='Continue' d='Shop.Theme.Actions'}
                 </button>
             </form>
         {else}
-            <p class="alert alert-danger">{l s='Unfortunately, there are no carriers available for your delivery address.' d='Shop.Theme.Checkout'}</p>
+            <p class="alert alert-success">{l s='Unfortunately, there are no carriers available for your delivery address.' d='Shop.Theme.Checkout'}</p>
         {/if}
     </div>
     <div id="hook-display-after-carrier">
