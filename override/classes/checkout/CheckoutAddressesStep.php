@@ -32,8 +32,15 @@ class CheckoutAddressesStep extends CheckoutAddressesStepCore
         $idDelivery = (int) $session->getIdAddressDelivery();
         $idInvoice  = (int) $session->getIdAddressInvoice();
 
-        // 4) Si falta alguna de las dos, bloqueamos y nos quedamos en direcciones
-        if (!$idDelivery || !$idInvoice) {
+        // Comprobamos que la dirección de facturación esté realmente marcada como tal
+        $invoiceAddressIsValid = false;
+        if ($idInvoice) {
+            $invoiceAddress = new Address($idInvoice);
+            $invoiceAddressIsValid = (int) $invoiceAddress->is_invoice !== 0;
+        }
+
+        // 4) Si falta alguna de las dos, o la de facturación no es válida, bloqueamos y nos quedamos en direcciones
+        if (!$idDelivery || !$idInvoice || !$invoiceAddressIsValid) {
             $this->getCheckoutProcess()->setHasErrors(true);
             $this->context->controller->errors[] = $this->getTranslator()->trans(
                 'Missing delivery or invoice address.',
