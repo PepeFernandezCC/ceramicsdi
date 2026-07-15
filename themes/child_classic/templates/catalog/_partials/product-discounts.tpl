@@ -32,7 +32,7 @@
 
             {assign var="discount_quantity" value=$quantity_discount.quantity}
             {assign var="discount_unit" value=""}
-            {assign var="discount_clean" value=$quantity_discount.discount|replace:'€':''|replace:' ':''|replace:'.':''|replace:',':'.'|floatval}
+            {assign var="discount_clean" value=$quantity_discount.discount_raw}
             {assign var="unit_price_m2" value=$discount_clean}
             {if !$isByPiece && $m2_caja > 0}
               {assign var="discount_quantity" value=$quantity_discount.quantity * $m2_caja}
@@ -54,7 +54,7 @@
                   <span style="font-weight:700">{$quantity_discount.real_value}%</span>
                 </td>
 
-                <td>
+                <td >
                   {$unit_price_m2|string_format:"%.2f"} €
                   {if !$isByPiece && $m2_caja > 0}
                     / m²
