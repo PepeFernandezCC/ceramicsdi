@@ -229,22 +229,21 @@ $(document).ready(function () {
                 return '<div class="alert alert-danger" style="margin-top:10px">' + title + ': ' + data.error + '</div>';
             }
 
-            let html = '<div style="margin-top:10px; padding-top:10px; border-top:1px solid #eee">';
-            html += '<strong>' + title + '</strong><br>';
+            let html = '<div style="margin-top:15px; padding-top:15px; border-top:1px solid #eee">';
+            html += '<div style="text-align:center; font-weight:600; margin-bottom:5px">' + title + '</div>';
 
-            if (data.has_delivery_info && data.estimated_delivery) {
-                const delivery = data.estimated_delivery;
-                html += deliveryEstimateI18n.preparation + ': ' + delivery.preparation_days + ' ' + deliveryEstimateI18n.days + '<br>';
-                html += deliveryEstimateI18n.shipping + ': ' + delivery.shipping_days + ' ' + deliveryEstimateI18n.days + '<br>';
-                html += deliveryEstimateI18n.estimatedDelivery + ': ' + delivery.start_date_formatted + ' - ' + delivery.end_date_formatted + '<br>';
+            if (data.estimated_delivery_html) {
+                html += data.estimated_delivery_html;
             }
 
             if (data.shipping_cost_formatted) {
-                html += deliveryEstimateI18n.shippingCost + ': ' + data.shipping_cost_formatted;
+                html += '<div style="text-align:center; margin-top:5px">' + deliveryEstimateI18n.shippingCost + ': ' + data.shipping_cost_formatted;
 
                 if (data.carrier_name) {
                     html += ' (' + data.carrier_name + ')';
                 }
+
+                html += '</div>';
             }
 
             html += '</div>';

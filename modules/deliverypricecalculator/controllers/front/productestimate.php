@@ -208,10 +208,24 @@ class DeliverypricecalculatorProductestimateModuleFrontController extends Module
         $tmpCart->update();
 
         $estimatedDelivery = null;
+        $estimatedDeliveryHtml = '';
         $shippingCalculatorModule = Module::getInstanceByName('shippingcalculator');
 
         if ($shippingCalculatorModule && Validate::isLoadedObject($shippingCalculatorModule) && method_exists($shippingCalculatorModule, 'calculateEstimatedDelivery')) {
             $estimatedDelivery = $shippingCalculatorModule->calculateEstimatedDelivery($tmpCart);
+
+            if (is_array($estimatedDelivery)) {
+                $this->context->smarty->assign([
+                    'has_delivery_info' => true,
+                    'estimated_delivery' => $estimatedDelivery,
+                    'module_dir' => _MODULE_DIR_ . 'shippingcalculator/',
+                ]);
+
+                $estimatedDeliveryHtml = $shippingCalculatorModule->display(
+                    _PS_MODULE_DIR_ . 'shippingcalculator/shippingcalculator.php',
+                    'views/templates/hook/shopping_cart_delivery.tpl'
+                );
+            }
         }
 
         $shipping_cost = $tmpCart->getPackageShippingCost($idCarrier, true);
@@ -226,6 +240,7 @@ class DeliverypricecalculatorProductestimateModuleFrontController extends Module
             'quantity' => $quantity,
             'has_delivery_info' => (bool) $estimatedDelivery,
             'estimated_delivery' => $estimatedDelivery,
+            'estimated_delivery_html' => $estimatedDeliveryHtml,
             'shipping_cost' => $shipping_cost,
             'shipping_cost_formatted' => $shipping_cost !== null ? Tools::displayPrice($shipping_cost) : null,
             'carrier_name' => Validate::isLoadedObject($carrier) ? $carrier->name : null,
