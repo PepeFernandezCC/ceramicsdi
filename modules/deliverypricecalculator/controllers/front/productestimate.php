@@ -28,12 +28,6 @@ class DeliverypricecalculatorProductestimateModuleFrontController extends Module
             'product' => $this->estimateForProduct($id_product, $boxes, $id_country, $id_state, $postal),
         ];
 
-        $id_sample = Product::checkSampleVinculation($id_product);
-
-        if ($id_sample) {
-            $result['sample'] = $this->estimateForProduct((int) $id_sample, 1, $id_country, $id_state, $postal);
-        }
-
         $this->ajaxDie(json_encode($result));
     }
 
@@ -228,10 +222,6 @@ class DeliverypricecalculatorProductestimateModuleFrontController extends Module
             }
         }
 
-        $shipping_cost = $tmpCart->getPackageShippingCost($idCarrier, true);
-        $shipping_cost = $shipping_cost !== false ? (float) Tools::ps_round((float) $shipping_cost, 2) : null;
-
-        $carrier = new Carrier($idCarrier);
         $productObj = new Product($idProduct, false, $this->context->language->id);
 
         $response = [
@@ -241,9 +231,6 @@ class DeliverypricecalculatorProductestimateModuleFrontController extends Module
             'has_delivery_info' => (bool) $estimatedDelivery,
             'estimated_delivery' => $estimatedDelivery,
             'estimated_delivery_html' => $estimatedDeliveryHtml,
-            'shipping_cost' => $shipping_cost,
-            'shipping_cost_formatted' => $shipping_cost !== null ? Tools::displayPrice($shipping_cost) : null,
-            'carrier_name' => Validate::isLoadedObject($carrier) ? $carrier->name : null,
         ];
 
         $tmpCart->delete();

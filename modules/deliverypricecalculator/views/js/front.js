@@ -118,66 +118,12 @@ $(document).ready(function () {
         }
 
         const deliveryEstimateTranslations = {
-            1: {
-                product: 'Producto',
-                sample: 'Muestra',
-                preparation: 'Preparación',
-                shipping: 'Envío',
-                days: 'día(s)',
-                estimatedDelivery: 'Entrega estimada',
-                shippingCost: 'Coste de envío',
-                requestError: 'Error al calcular el plazo de entrega'
-            },
-            2: {
-                product: 'Produit',
-                sample: 'Échantillon',
-                preparation: 'Préparation',
-                shipping: 'Livraison',
-                days: 'jour(s)',
-                estimatedDelivery: 'Livraison estimée',
-                shippingCost: "Frais d'expédition",
-                requestError: "Erreur lors du calcul du délai de livraison"
-            },
-            3: {
-                product: 'Product',
-                sample: 'Sample',
-                preparation: 'Preparation',
-                shipping: 'Shipping',
-                days: 'day(s)',
-                estimatedDelivery: 'Estimated delivery',
-                shippingCost: 'Shipping cost',
-                requestError: 'Error calculating the estimated delivery'
-            },
-            4: {
-                product: 'Produkt',
-                sample: 'Muster',
-                preparation: 'Vorbereitung',
-                shipping: 'Versand',
-                days: 'Tag(e)',
-                estimatedDelivery: 'Geschätzte Lieferung',
-                shippingCost: 'Versandkosten',
-                requestError: 'Fehler bei der Berechnung der Lieferzeit'
-            },
-            5: {
-                product: 'Produto',
-                sample: 'Amostra',
-                preparation: 'Preparação',
-                shipping: 'Envio',
-                days: 'dia(s)',
-                estimatedDelivery: 'Entrega estimada',
-                shippingCost: 'Custo de envio',
-                requestError: 'Erro ao calcular o prazo de entrega'
-            },
-            6: {
-                product: 'Product',
-                sample: 'Monster',
-                preparation: 'Voorbereiding',
-                shipping: 'Verzending',
-                days: 'dag(en)',
-                estimatedDelivery: 'Geschatte levering',
-                shippingCost: 'Verzendkosten',
-                requestError: 'Fout bij het berekenen van de levertijd'
-            }
+            1: { requestError: 'Error al calcular el plazo de entrega' },
+            2: { requestError: "Erreur lors du calcul du délai de livraison" },
+            3: { requestError: 'Error calculating the estimated delivery' },
+            4: { requestError: 'Fehler bei der Berechnung der Lieferzeit' },
+            5: { requestError: 'Erro ao calcular o prazo de entrega' },
+            6: { requestError: 'Fout bij het berekenen van de levertijd' }
         };
 
         const deliveryEstimateI18n = deliveryEstimateTranslations[productEstimateLanguage] || deliveryEstimateTranslations[3];
@@ -220,35 +166,16 @@ $(document).ready(function () {
                 });
         });
 
-        function renderDeliveryEstimateBlock(title, data) {
+        function renderDeliveryEstimateBlock(data) {
             if (!data) {
                 return '';
             }
 
             if (data.error) {
-                return '<div class="alert alert-danger" style="margin-top:10px">' + title + ': ' + data.error + '</div>';
+                return '<div class="alert alert-danger" style="margin-top:10px">' + data.error + '</div>';
             }
 
-            let html = '<div style="margin-top:15px; padding-top:15px; border-top:1px solid #eee">';
-            html += '<div style="text-align:center; font-weight:600; margin-bottom:5px">' + title + '</div>';
-
-            if (data.estimated_delivery_html) {
-                html += data.estimated_delivery_html;
-            }
-
-            if (data.shipping_cost_formatted) {
-                html += '<div style="text-align:center; margin-top:5px">' + deliveryEstimateI18n.shippingCost + ': ' + data.shipping_cost_formatted;
-
-                if (data.carrier_name) {
-                    html += ' (' + data.carrier_name + ')';
-                }
-
-                html += '</div>';
-            }
-
-            html += '</div>';
-
-            return html;
+            return data.estimated_delivery_html || '';
         }
 
         productEstimateButton.addEventListener('click', function () {
@@ -277,9 +204,7 @@ $(document).ready(function () {
                     postal: postal
                 },
                 success: function (response) {
-                    let html = renderDeliveryEstimateBlock(deliveryEstimateI18n.product, response.product);
-                    html += renderDeliveryEstimateBlock(deliveryEstimateI18n.sample, response.sample);
-                    productEstimateResults.innerHTML = html;
+                    productEstimateResults.innerHTML = renderDeliveryEstimateBlock(response.product);
                 },
                 error: function (err) {
                     console.error('Error en la solicitud AJAX:', err);
