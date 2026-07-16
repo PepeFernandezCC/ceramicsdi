@@ -40,6 +40,7 @@ class DeliveryPriceCalculator extends Module
         Media::addJsDef([
             'deliveryPriceCalculatorPriceUrl' => $this->context->link->getModuleLink($this->name, 'price'),
             'deliveryPriceCalculatorProvincesUrl' => $this->context->link->getModuleLink($this->name, 'provinces'),
+            'deliveryPriceCalculatorProductEstimateUrl' => $this->context->link->getModuleLink($this->name, 'productestimate'),
         ]);
     }
 

@@ -360,10 +360,11 @@
                     </div>
 
                     <div>
-                        <i class="fa-regular fa-clock" style="font-size: 14px; padding-left: 2px; color:orange"></i> 
+                        <i class="fa-regular fa-clock" style="font-size: 14px; padding-left: 2px; color:orange"></i>
                         <span style="font-size:14px; padding-left:3px;">
-                            <span style="text-transform: uppercase">{l s='estimated delivery' d='Shop.Theme.Catalog'}:</span>
-                            <strong>{$dias_plazo nofilter}</strong>
+                            <a href="#" id="openModal" data-toggle="modal" data-target="#deliveryEstimateModal" style="text-decoration: underline; color: inherit;">
+                                <span style="text-transform: uppercase">{l s='¿Cuando lo recibiré?' d='Shop.Theme.Catalog'}</span>
+                            </a>
                         </span>
                     </div>
 
@@ -935,6 +936,10 @@
 
         {block name='payment_modal'}
             {include file='catalog/_partials/_modal-payment.tpl'}
+        {/block}
+
+        {block name='delivery_estimate_modal'}
+            {include file='catalog/_partials/_modal-delivery-estimate.tpl'}
         {/block}
 
 
