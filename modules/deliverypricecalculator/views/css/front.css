@@ -66,6 +66,12 @@ body#cart div#deliveryPriceCalculator {
     margin: 0 auto;
 }
 
+#deliveryEstimateModal .modal-text {
+    padding: 15px;
+    padding-top: 0;
+    margin-top: 0;
+}
+
 #deliveryEstimateModal .scc-modal-form .form-group {
     text-align: left;
 }

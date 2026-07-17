@@ -3154,8 +3154,14 @@ body.noscroll .ets_mm_megamenu::before {
   color: black;
   font-weight: bold;
 }
+.my-menu .ets_mm_megamenu_content .ets_mm_megamenu_content_content .mm_menus_ul .mm_menus_li.active > .ets_mm_url {
+  text-decoration: underline !important;
+}
 .my-menu .ets_mm_megamenu_content .ets_mm_megamenu_content_content .mm_menus_ul .mm_menus_li:hover > .ets_mm_url span, .my-menu .ets_mm_megamenu_content .ets_mm_megamenu_content_content .mm_menus_ul .mm_menus_li.active > .ets_mm_url span {
   color: black;
+}
+.my-menu .ets_mm_megamenu_content .ets_mm_megamenu_content_content .mm_menus_ul .mm_menus_li.active > .ets_mm_url span {
+  text-decoration: underline !important;
 }
 .my-menu .ets_mm_megamenu_content .ets_mm_megamenu_content_content .mm_menus_ul .mm_menus_li:hover:not(.active) > .ets_mm_url {
   font-weight: normal;
