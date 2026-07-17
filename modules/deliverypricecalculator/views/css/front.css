@@ -70,16 +70,6 @@ body#cart div#deliveryPriceCalculator {
     text-align: left;
 }
 
-#deliveryEstimateBoxes {
-    max-width: 120px;
-    margin: 0 auto;
-}
-
-#deliveryEstimateBoxes::-webkit-inner-spin-button,
-#deliveryEstimateBoxes::-webkit-outer-spin-button {
-    -webkit-appearance: auto;
-    margin: 0;
-}
 .scc-button{
   cursor:pointer;
 }

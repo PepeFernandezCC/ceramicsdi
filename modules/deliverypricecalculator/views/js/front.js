@@ -130,20 +130,6 @@ $(document).ready(function () {
 
         const deliveryEstimateBoxesInput = document.getElementById('deliveryEstimateBoxes');
 
-        function normalizeBoxesValue() {
-            let value = parseInt(deliveryEstimateBoxesInput.value, 10);
-
-            if (isNaN(value) || value < 1) {
-                value = 1;
-            }
-
-            deliveryEstimateBoxesInput.value = value;
-
-            return value;
-        }
-
-        deliveryEstimateBoxesInput.addEventListener('change', normalizeBoxesValue);
-
         productCountrySelector.addEventListener('change', function () {
             let countryId = this.value;
 
@@ -180,12 +166,12 @@ $(document).ready(function () {
 
         productEstimateButton.addEventListener('click', function () {
             const idProduct = document.getElementById('deliveryEstimateIdProduct').value;
-            const boxes = normalizeBoxesValue();
+            const boxes = deliveryEstimateBoxesInput.value;
             const countryId = productCountrySelector.value;
             const stateId = productStateSelector.value;
             const postal = document.getElementById('deliveryEstimatePostal').value;
 
-            if (!countryId.trim() || !stateId.trim() || !postal.trim() || !boxes || boxes < 1) {
+            if (!countryId.trim() || !stateId.trim() || !postal.trim()) {
                 productEstimateMessage.style.display = 'block';
                 return;
             }

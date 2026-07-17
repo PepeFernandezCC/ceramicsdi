@@ -19,13 +19,9 @@
 
                 <input type="hidden" id="deliveryEstimateIdProduct" value="{$product.id}">
                 <input type="hidden" id="deliveryEstimateLanguage" value="{$language.id}">
+                <input type="hidden" id="deliveryEstimateBoxes" value="2">
 
                 <div class="scc-modal-form">
-
-                    <div class="form-group">
-                        <label for="deliveryEstimateBoxes">{l s='Number of boxes' d='Shop.Theme.Catalog'}</label>
-                        <input type="number" min="1" step="1" value="1" inputmode="numeric" id="deliveryEstimateBoxes">
-                    </div>
 
                     <div class="form-group">
                         <label for="deliveryEstimateCountry">{l s='Country' d='Shop.Theme.Catalog'}</label>
