@@ -363,7 +363,7 @@
                         <i class="fa-regular fa-clock" style="font-size: 14px; padding-left: 2px; color:orange"></i>
                         <span style="font-size:14px; padding-left:3px;">
                             <a href="#" id="openModal" data-toggle="modal" data-target="#deliveryEstimateModal" style="text-decoration: underline; color: inherit;">
-                                <span style="text-transform: uppercase">{l s='¿Cuando lo recibiré?' d='Shop.Theme.Catalog'}</span>
+                                <span style="text-transform: uppercase">{l s='Estimación plazo de entrega' d='Shop.Theme.Catalog'}</span>
                             </a>
                         </span>
                     </div>

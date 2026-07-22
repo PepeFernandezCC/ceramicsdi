@@ -12,10 +12,10 @@
 
         <div class="modal-text">
             <div class="modal-text-title">
-                <h2>{l s='Estimated delivery calculator' d='Shop.Theme.Catalog'}</h2>
+                <h2>{l s='Delivery Time Calculator' d='Shop.Theme.Catalog'}</h2>
             </div>
             <div class="modal-text-content">
-                <p>{l s='Enter your shipping details to calculate the estimated delivery time for this product and, if available, for its sample.' d='Shop.Theme.Catalog'}</p>
+                <p>{l s='Enter your shipping details to calculate the estimated preparation and delivery time for this product.' d='Shop.Theme.Catalog'}</p>
 
                 <input type="hidden" id="deliveryEstimateIdProduct" value="{$product.id}">
                 <input type="hidden" id="deliveryEstimateLanguage" value="{$language.id}">
@@ -58,7 +58,11 @@
 
                 </div>
 
-                <div id="deliveryEstimateResults" style="margin-top:20px; text-align:left"></div>
+                <div id="deliveryEstimateResults" style="text-align:left"></div>
+                <div class="additionalDeliveryInfo">
+                    <p> <i class="fa-solid fa-angle-right" style="color:#eac133; padding-right:5px"></i>{l s='Delivery times are approximate and ultimately depend on the carrier and the local delivery office.' d='Shop.Theme.Catalog'}</p>
+                    <p> <i class="fa-solid fa-angle-right" style="color:#eac133; padding-right:5px"></i>{l s='For sample orders, the delivery time is 3 to 7 business days.' d='Shop.Theme.Catalog'}</p>
+                </div>
             </div>
         </div>
 

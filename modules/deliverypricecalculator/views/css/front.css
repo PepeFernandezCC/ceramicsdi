@@ -79,3 +79,18 @@ body#cart div#deliveryPriceCalculator {
 .scc-button{
   cursor:pointer;
 }
+
+.additionalDeliveryInfo {
+    margin-top: 50px;
+    padding: 20px;
+    padding-bottom: 5px;
+    background: #f0f0f0;
+}
+
+.additionalDeliveryInfo p{
+    font-weight: 500 !important;
+}
+
+div#deliveryEstimateResults {
+    margin-top: 50px;
+}
