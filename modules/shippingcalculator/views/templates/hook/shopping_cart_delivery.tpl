@@ -17,14 +17,14 @@
                             <img src="{$module_dir}views/img/icon-preparation.png" alt="Preparación" class="shipping-icon">
                             <div class="shipping-meta">
                                 <span class="shipping-label">{l s='Preparación:' mod='shippingcalculator'}</span>
-                                <span class="shipping-value">{$product_delivery.preparation_days} {if $product_delivery.preparation_days == 1}{l s='día' mod='shippingcalculator'}{else}{l s='días' mod='shippingcalculator'}{/if}</span>
+                                <span class="shipping-value">{$product_delivery.preparation_days} {if $product_delivery.preparation_days == 1}{l s='día hábil' mod='shippingcalculator'}{else}{l s='días hábiles' mod='shippingcalculator'}{/if}</span>
                             </div>
                         </div>
                     <div class="shipping-step">
                         <img src="{$module_dir}views/img/icon-shipping.png" alt="Envío" class="shipping-icon">
                         <div class="shipping-meta">
                             <span class="shipping-label">{l s='Envío:' mod='shippingcalculator'}</span>
-                            <span class="shipping-value">{$product_delivery.shipping_days} {if $product_delivery.shipping_days == 1}{l s='día' mod='shippingcalculator'}{else}{l s='días' mod='shippingcalculator'}{/if}</span>
+                            <span class="shipping-value">{$product_delivery.shipping_days} {if $product_delivery.shipping_days == 1}{l s='día hábil' mod='shippingcalculator'}{else}{l s='días hábiles' mod='shippingcalculator'}{/if}</span>
                         </div>
                     </div>
                 </div>
@@ -41,14 +41,14 @@
                     <img src="{$module_dir}views/img/icon-preparation.png" alt="Preparación" class="shipping-icon">
                     <div class="shipping-meta">
                         <span class="shipping-label">{l s='Preparación:' mod='shippingcalculator'}</span>
-                        <span class="shipping-value">{$estimated_delivery.preparation_days} {if $estimated_delivery.preparation_days == 1}{l s='día' mod='shippingcalculator'}{else}{l s='días' mod='shippingcalculator'}{/if}</span>
+                        <span class="shipping-value">{$estimated_delivery.preparation_days} {if $estimated_delivery.preparation_days == 1}{l s='día hábil' mod='shippingcalculator'}{else}{l s='días hábiles' mod='shippingcalculator'}{/if}</span>
                     </div>
                 </div>
                 <div class="shipping-step">
                     <img src="{$module_dir}views/img/icon-shipping.png" alt="Envío" class="shipping-icon">
                     <div class="shipping-meta">
                         <span class="shipping-label">{l s='Envío:' mod='shippingcalculator'}</span>
-                        <span class="shipping-value">{if isset($estimated_delivery.shipping_days_min) && isset($estimated_delivery.shipping_days_max)}{$estimated_delivery.shipping_days_min} - {$estimated_delivery.shipping_days_max}{else}{$estimated_delivery.shipping_days}{/if} {l s='días' mod='shippingcalculator'}</span>
+                        <span class="shipping-value">{if isset($estimated_delivery.shipping_days_min) && isset($estimated_delivery.shipping_days_max)}{$estimated_delivery.shipping_days_min} - {$estimated_delivery.shipping_days_max}{else}{$estimated_delivery.shipping_days}{/if} {l s='días hábiles' mod='shippingcalculator'}</span>
                     </div>
                 </div>
             </div>

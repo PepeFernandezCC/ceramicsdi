@@ -12,6 +12,8 @@ $_MODULE['<{shippingcalculator}prestashop>shopping_cart_delivery_486373455a167ce
 $_MODULE['<{shippingcalculator}prestashop>shopping_cart_delivery_e9a78e5ca390e4c8bec9cb6e7faf050b'] = 'Preparation:';
 $_MODULE['<{shippingcalculator}prestashop>shopping_cart_delivery_9ae6e063e269320735c1f470d68c4179'] = 'day';
 $_MODULE['<{shippingcalculator}prestashop>shopping_cart_delivery_79b6ae4ce99e33b634a24499333a04bc'] = 'days';
+$_MODULE['<{shippingcalculator}prestashop>shopping_cart_delivery_d290b128bc1361f5be58cf37acf5ea49'] = 'business day';
+$_MODULE['<{shippingcalculator}prestashop>shopping_cart_delivery_c03de3704707ed1416b0e9782e6d7e51'] = 'business days';
 $_MODULE['<{shippingcalculator}prestashop>shopping_cart_delivery_c4c8e9cc008c1035ae673f1c4d4fdba2'] = 'ESTIMATED DELIVERY:';
 $_MODULE['<{shippingcalculator}prestashop>shopping_cart_delivery_58fc4b411a52f8cec786c7ee16a2b7e7'] = 'ESTIMATED DELIVERY:';
 $_MODULE['<{shippingcalculator}prestashop>shopping_cart_delivery_fa4a4d39af8d62e33961d74795614695'] = 'The delivery time indicated is approximate and may vary.';
