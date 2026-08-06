@@ -22,13 +22,13 @@
     <img src="{$moduleLogoUri|escape:'html':'UTF-8'}" alt="{$moduleName|escape:'html':'UTF-8'}" width="15" height="15">
     {$moduleName|escape:'html':'UTF-8'}
   </div>
-  <div class="paypal-order-notifications">
-  </div>
-  <div class="paypal-order-container">
-  </div>
+  <div class="paypal-order-notifications"></div>
+  <div class="paypal-order-container"></div>
   <div class="paypal-order-loader">
     <i class="process-icon-loading"></i>
   </div>
+  <div id="ps-checkout-merchant-order-view"></div>
 </div>
 
 {include file='./partials/adminOrderView.tpl' legacy=true orderPrestaShopId=$orderPrestaShopId orderPayPalBaseUrl=$orderPayPalBaseUrl}
+{include file='./partials/adminOrderViewSdk.tpl' containerId='ps-checkout-merchant-order-view' orderPrestaShopId=$orderPrestaShopId orderPayPalBaseUrl=$orderPayPalBaseUrl locale=$locale}

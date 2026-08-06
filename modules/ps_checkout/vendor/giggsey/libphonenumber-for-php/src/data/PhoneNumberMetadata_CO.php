@@ -14,12 +14,11 @@
 return array (
   'generalDesc' => 
   array (
-    'NationalNumberPattern' => '(?:(?:1\\d|[36])\\d{3}|9101)\\d{6}|[124-8]\\d{7}',
+    'NationalNumberPattern' => '60\\d{8}|(?:1\\d|[39])\\d{9}',
     'PossibleLength' => 
     array (
-      0 => 8,
-      1 => 10,
-      2 => 11,
+      0 => 10,
+      1 => 11,
     ),
     'PossibleLengthLocalOnly' => 
     array (
@@ -28,12 +27,11 @@ return array (
   ),
   'fixedLine' => 
   array (
-    'NationalNumberPattern' => '60[124-8][2-9]\\d{6}|[124-8][2-9]\\d{6}',
-    'ExampleNumber' => '12345678',
+    'NationalNumberPattern' => '601055(?:[0-4]\\d|50)\\d\\d|6010(?:[0-4]\\d|5[0-4])\\d{4}|60(?:[124-7][2-9]|8[1-9])\\d{6}',
+    'ExampleNumber' => '6012345678',
     'PossibleLength' => 
     array (
-      0 => 8,
-      1 => 10,
+      0 => 10,
     ),
     'PossibleLengthLocalOnly' => 
     array (
@@ -42,7 +40,7 @@ return array (
   ),
   'mobile' => 
   array (
-    'NationalNumberPattern' => '3333(?:0(?:0\\d|1[0-5])|[4-9]\\d\\d)\\d{3}|(?:3(?:24[1-9]|3(?:00|3[0-24-9]))|9101)\\d{6}|3(?:0[0-5]|1\\d|2[0-3]|5[01]|70)\\d{7}',
+    'NationalNumberPattern' => '333301[0-5]\\d{3}|3333(?:00|2[5-9]|[3-9]\\d)\\d{4}|(?:3(?:24[1-9]|3(?:00|3[0-24-9]))|9101)\\d{6}|3(?:0[0-5]|1\\d|2[0-3]|5[01]|70)\\d{7}',
     'ExampleNumber' => '3211234567',
     'PossibleLength' => 
     array (
@@ -66,11 +64,10 @@ return array (
   ),
   'premiumRate' => 
   array (
-    'NationalNumberPattern' => '19(?:0[01]|4[78])\\d{7}',
+    'NationalNumberPattern' => '(?:19(?:0[01]|4[78])|901)\\d{7}',
     'ExampleNumber' => '19001234567',
     'PossibleLength' => 
     array (
-      0 => 11,
     ),
     'PossibleLengthLocalOnly' => 
     array (
@@ -156,11 +153,11 @@ return array (
   array (
     0 => 
     array (
-      'pattern' => '(\\d)(\\d{7})',
+      'pattern' => '(\\d{3})(\\d{7})',
       'format' => '$1 $2',
       'leadingDigitsPatterns' => 
       array (
-        0 => '[146][2-9]|[2578]',
+        0 => '6|90',
       ),
       'nationalPrefixFormattingRule' => '($1)',
       'domesticCarrierCodeFormattingRule' => '0$CC $1',
@@ -172,25 +169,13 @@ return array (
       'format' => '$1 $2',
       'leadingDigitsPatterns' => 
       array (
-        0 => '6',
-      ),
-      'nationalPrefixFormattingRule' => '($1)',
-      'domesticCarrierCodeFormattingRule' => '',
-      'nationalPrefixOptionalWhenFormatting' => false,
-    ),
-    2 => 
-    array (
-      'pattern' => '(\\d{3})(\\d{7})',
-      'format' => '$1 $2',
-      'leadingDigitsPatterns' => 
-      array (
-        0 => '[39]',
+        0 => '3[0-357]|91',
       ),
       'nationalPrefixFormattingRule' => '',
       'domesticCarrierCodeFormattingRule' => '0$CC $1',
       'nationalPrefixOptionalWhenFormatting' => false,
     ),
-    3 => 
+    2 => 
     array (
       'pattern' => '(\\d)(\\d{3})(\\d{7})',
       'format' => '$1-$2-$3',
@@ -207,11 +192,11 @@ return array (
   array (
     0 => 
     array (
-      'pattern' => '(\\d)(\\d{7})',
+      'pattern' => '(\\d{3})(\\d{7})',
       'format' => '$1 $2',
       'leadingDigitsPatterns' => 
       array (
-        0 => '[146][2-9]|[2578]',
+        0 => '6|90',
       ),
       'nationalPrefixFormattingRule' => '($1)',
       'domesticCarrierCodeFormattingRule' => '0$CC $1',
@@ -223,25 +208,13 @@ return array (
       'format' => '$1 $2',
       'leadingDigitsPatterns' => 
       array (
-        0 => '6',
-      ),
-      'nationalPrefixFormattingRule' => '($1)',
-      'domesticCarrierCodeFormattingRule' => '',
-      'nationalPrefixOptionalWhenFormatting' => false,
-    ),
-    2 => 
-    array (
-      'pattern' => '(\\d{3})(\\d{7})',
-      'format' => '$1 $2',
-      'leadingDigitsPatterns' => 
-      array (
-        0 => '[39]',
+        0 => '3[0-357]|91',
       ),
       'nationalPrefixFormattingRule' => '',
       'domesticCarrierCodeFormattingRule' => '0$CC $1',
       'nationalPrefixOptionalWhenFormatting' => false,
     ),
-    3 => 
+    2 => 
     array (
       'pattern' => '(\\d)(\\d{3})(\\d{7})',
       'format' => '$1 $2 $3',
@@ -252,6 +225,5 @@ return array (
     ),
   ),
   'mainCountryForCode' => false,
-  'leadingZeroPossible' => false,
   'mobileNumberPortableRegion' => true,
 );

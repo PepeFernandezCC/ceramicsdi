@@ -47,7 +47,7 @@ return array (
   ),
   'tollFree' => 
   array (
-    'NationalNumberPattern' => '800[256]\\d{4}',
+    'NationalNumberPattern' => '800[1256]\\d{4}',
     'ExampleNumber' => '80021234',
     'PossibleLength' => 
     array (
@@ -159,6 +159,5 @@ return array (
   array (
   ),
   'mainCountryForCode' => false,
-  'leadingZeroPossible' => false,
   'mobileNumberPortableRegion' => false,
 );

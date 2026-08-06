@@ -16,8 +16,28 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  *}
+{if isset($hasRequiredDependencies) && !$hasRequiredDependencies}
+  <script src="https://assets.prestashop3.com/dst/mbo/v1/mbo-cdc-dependencies-resolver.umd.js"></script>
+  <div id="mbo-cdc-container"></div>
 
-<div id="app"></div>
+  <script defer>
+    const renderMboCdcDependencyResolver = window?.mboCdcDependencyResolver?.render
+    const context = {
+      ...{$requiredDependencies|json_encode},
+      onDependenciesResolved: () => {
+        setTimeout(() => {
+          window.location.reload()
+        }, 2000);
+      },
+      onDependencyResolved: (dependencyData) => console.log('Dependency installed', dependencyData),
+      onDependencyFailed: (dependencyData) => console.log('Failed to install dependency', dependencyData),
+      onDependenciesFailed: () => console.log('There are some errors'),
+    }
+    renderMboCdcDependencyResolver(context, '#mbo-cdc-container')
+  </script>
+{/if}
+
+<div id="app"{if isset($hasRequiredDependencies) && !$hasRequiredDependencies} style="display:none;"{/if}></div>
 
 <style>
   /** Hide native multistore module activation panel, because of visual regressions on non-bootstrap content */
@@ -25,3 +45,16 @@
     display: none;
   }
 </style>
+
+<script>
+    // Enhance page subtitle with module version
+    const pageSubtitles = document.querySelectorAll('#content.nobootstrap .page-head .page-subtitle, #content.bootstrap .page-head .page-subtitle');
+    const moduleVersion = window?.store?.context?.moduleVersion ? ' v' + window.store.context.moduleVersion : '';
+
+    pageSubtitles?.forEach((pageSubtitle) => {
+        if (pageSubtitle) {
+            pageSubtitle.textContent = pageSubtitle.textContent
+                + moduleVersion;
+        }
+    });
+</script>

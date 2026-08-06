@@ -11,10 +11,12 @@
  */
 
 return array (
+  97790 => 'NCell',
   977960 => 'STM Telecom',
   977961 => 'Smart Telecom',
   977962 => 'Smart Telecom',
   977963 => 'NSTPL',
+  977970 => 'NCell',
   977972 => 'UTL',
   977974 => 'NDCL',
   977975 => 'NDCL',

@@ -17,10 +17,18 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
-use PrestaShop\Module\PrestashopCheckout\Controller\AbstractFrontController;
-use PrestaShop\Module\PrestashopCheckout\Exception\PsCheckoutException;
-use PrestaShop\Module\PrestashopCheckout\Handler\CreatePaypalOrderHandler;
+use PsCheckout\Core\Exception\PsCheckoutException;
+use PsCheckout\Core\PayPal\Order\Action\CancelPayPalOrderAction;
+use PsCheckout\Core\PayPal\Order\Processor\UpdateExternalPayPalOrderProcessor;
+use PsCheckout\Core\PayPal\Order\Request\ValueObject\CancelPayPalOrderRequest;
+use PsCheckout\Core\PayPal\Order\Request\ValueObject\CheckPayPalOrderRequest;
+use PsCheckout\Infrastructure\Controller\AbstractFrontController;
+use PsCheckout\Utility\Common\InputStreamUtility;
+use Psr\Log\LoggerInterface;
 
 /**
  * This controller receive ajax call on customer click on a payment button
@@ -28,62 +36,64 @@ use PrestaShop\Module\PrestashopCheckout\Handler\CreatePaypalOrderHandler;
 class Ps_CheckoutCheckModuleFrontController extends AbstractFrontController
 {
     /**
-     * @var Ps_checkout
-     */
-    public $module;
-
-    /**
      * @see FrontController::postProcess()
-     *
-     * @todo Move logic to a Service
      */
     public function postProcess()
     {
+        /** @var LoggerInterface $logger */
+        $logger = $this->module->getService(LoggerInterface::class);
+
         try {
-            if (false === Validate::isLoadedObject($this->context->cart)) {
-                throw new PsCheckoutException('No cart found.', PsCheckoutException::PRESTASHOP_CONTEXT_INVALID);
+            if (!Validate::isLoadedObject($this->context->cart)) {
+                $this->exitWithResponse([
+                    'httpCode' => 400,
+                    'body' => 'No cart found.',
+                ]);
             }
 
-            $bodyContent = file_get_contents('php://input');
-
-            if (empty($bodyContent)) {
-                throw new PsCheckoutException('Payload invalid', PsCheckoutException::PSCHECKOUT_WEBHOOK_BODY_EMPTY);
-            }
+            /** @var InputStreamUtility $inputStreamUtility */
+            $inputStreamUtility = $this->module->getService(InputStreamUtility::class);
+            $bodyContent = $inputStreamUtility->getBodyContent();
 
             $bodyValues = json_decode($bodyContent, true);
 
-            if (empty($bodyValues)) {
-                throw new PsCheckoutException('Payload invalid', PsCheckoutException::PSCHECKOUT_WEBHOOK_BODY_EMPTY);
+            if (empty($bodyContent) || empty($bodyValues)) {
+                $this->exitWithResponse([
+                    'httpCode' => 400,
+                    'body' => 'Payload invalid',
+                ]);
             }
 
-            /** @var \PrestaShop\Module\PrestashopCheckout\Repository\PsCheckoutCartRepository $psCheckoutCartRepository */
-            $psCheckoutCartRepository = $this->module->getService('ps_checkout.repository.pscheckoutcart');
+            $checkOrderRequest = new CheckPayPalOrderRequest($this->context->cart->id, $bodyValues);
 
-            /** @var PsCheckoutCart|false $psCheckoutCart */
-            $psCheckoutCart = $psCheckoutCartRepository->findOneByPayPalOrderId($bodyValues['orderID']);
-
-            if (false === $psCheckoutCart) {
-                $psCheckoutCart = new PsCheckoutCart();
-                $psCheckoutCart->id_cart = (int) $this->context->cart->id;
+            if (!$checkOrderRequest->getOrderId()) {
+                $this->exitWithResponse([
+                    'httpCode' => 400,
+                    'body' => 'Missing PayPal Order Id',
+                ]);
             }
 
-            if (false === empty($bodyValues['fundingSource'])) {
-                $psCheckoutCart->paypal_funding = $bodyValues['fundingSource'];
-            }
+            try {
+                /** @var UpdateExternalPayPalOrderProcessor $updateExternalPayPalOrderProcessor */
+                $updateExternalPayPalOrderProcessor = $this->module->getService(UpdateExternalPayPalOrderProcessor::class);
 
-            $psCheckoutCart->isExpressCheckout = isset($bodyValues['isExpressCheckout']) && (bool) $bodyValues['isExpressCheckout'];
-            $psCheckoutCart->isHostedFields = isset($bodyValues['isHostedFields']) && (bool) $bodyValues['isHostedFields'];
-            $psCheckoutCartRepository->save($psCheckoutCart);
+                $updateExternalPayPalOrderProcessor->execute($checkOrderRequest);
+            } catch (Exception $exception) {
 
-            if (false === empty($psCheckoutCart->paypal_order)) {
-                $isExpressCheckout = (isset($bodyValues['express_checkout']) && $bodyValues['express_checkout']) || empty($this->context->cart->id_address_delivery);
-                $paypalOrder = new CreatePaypalOrderHandler($this->context);
-                $response = $paypalOrder->handle($isExpressCheckout, true, $psCheckoutCart->paypal_order);
+                $logger->error(
+                    'Failed to patch PayPal Order',
+                    [
+                        'PayPalOrderId' => $checkOrderRequest->getOrderId(),
+                        'FundingSource' => $checkOrderRequest->getFundingSource(),
+                        'isExpressCheckout' => $checkOrderRequest->isExpressCheckout(),
+                        'isHostedFields' => $checkOrderRequest->isHostedFields(),
+                        'id_cart' => (int) $this->context->cart->id,
+                    ]
+                );
 
-                if (false === $response['status']) {
-                    $psCheckoutCartRepository->remove($psCheckoutCart);
-                    throw new PsCheckoutException(sprintf('Unable to patch PayPal Order - Exception %s : %s', $response['exceptionCode'], $response['exceptionMessage']), PsCheckoutException::PSCHECKOUT_UPDATE_ORDER_HANDLE_ERROR);
-                }
+                /** @var CancelPayPalOrderAction $cancelPayPalOrderAction */
+                $cancelPayPalOrderAction = $this->module->getService(CancelPayPalOrderAction::class);
+                $cancelPayPalOrderAction->execute(new CancelPayPalOrderRequest($bodyValues, $this->context->cart->id));
             }
 
             $this->exitWithResponse([
@@ -94,10 +104,7 @@ class Ps_CheckoutCheckModuleFrontController extends AbstractFrontController
                 'exceptionMessage' => null,
             ]);
         } catch (Exception $exception) {
-            $this->handleExceptionSendingToSentry($exception);
 
-            /* @var \Psr\Log\LoggerInterface logger */
-            $logger = $this->module->getService('ps_checkout.logger');
             $logger->error(
                 sprintf(
                     'CheckController - Exception %s : %s',
@@ -107,6 +114,12 @@ class Ps_CheckoutCheckModuleFrontController extends AbstractFrontController
             );
 
             $this->exitWithExceptionMessage($exception);
+        } catch (Throwable $exception) {
+            $this->exitWithExceptionMessage(new PsCheckoutException(
+                'An error occurred while checking the PayPal order.',
+                PsCheckoutException::UNKNOWN,
+                $exception
+            ));
         }
     }
 }

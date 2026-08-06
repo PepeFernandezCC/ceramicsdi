@@ -28,7 +28,7 @@ return array (
   ),
   'fixedLine' => 
   array (
-    'NationalNumberPattern' => '(?:(?:4[34]|5[14])[0-8]\\d|7(?:173|3[0-8]\\d)|8(?:10[05689]|6(?:0[06-9]|1[6-9]|29)|7(?:0[569]|[56]0)))\\d{4}|(?:1[0-8]|4[12]|5[236]|6[1-7]|7[246]|8[2-4])\\d{6}',
+    'NationalNumberPattern' => '(?:(?:(?:4[34]|5[14])[0-8]|687)\\d|7(?:173|(?:3[0-8]|55)\\d)|8(?:10[05689]|6(?:0[06-9]|1[6-9]|29)|7(?:0[0569]|[56]0)))\\d{4}|(?:1[0-8]|4[12]|5[236]|6[1-7]|7[246]|8[2-4])\\d{6}',
     'ExampleNumber' => '11234567',
     'PossibleLength' => 
     array (
@@ -152,7 +152,8 @@ return array (
   ),
   'id' => 'PE',
   'countryCode' => 51,
-  'internationalPrefix' => '19(?:1[124]|77|90)00',
+  'internationalPrefix' => '00|19(?:1[124]|77|90)00',
+  'preferredInternationalPrefix' => '00',
   'nationalPrefix' => '0',
   'preferredExtnPrefix' => ' Anexo ',
   'nationalPrefixForParsing' => '0',
@@ -212,6 +213,5 @@ return array (
   array (
   ),
   'mainCountryForCode' => false,
-  'leadingZeroPossible' => false,
   'mobileNumberPortableRegion' => true,
 );

@@ -16,25 +16,36 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
+.payment__option.ps_checkout-payment-option input[type="radio"] {
+  margin-top: .7rem;
+}
+
 .payment-options > div.payment-option[id$="card-container"] > span.custom-radio {
   margin-top: .25rem;
 }
+
 .payment-options > div.payment-option[id$="paypal-container"] > span.custom-radio {
   margin-top: .5rem;
 }
 
 .product-add-to-cart #ps-checkout-express-button div.paypal-buttons-context-iframe {
-  margin-top: 1.25rem;
-  width: 45%;
-  margin-left: 78px;
+  margin-top: .5rem;
+  width: 60%;
 }
+
 #checkout-personal-information-step #ps-checkout-express-button {
   display: flex;
   flex-flow: row wrap;
+
+  /*Fixes z-index problem on hummingbird*/
+  position: relative;
+  z-index: 1;
 }
+
 .product-add-to-cart #ps-checkout-express-button.disabled{
   display: none!important;
 }
+
 @media screen and (min-width: 768px) {
   #checkout-personal-information-step #ps-checkout-express-button div.paypal-buttons-context-iframe {
     float: left;
@@ -45,7 +56,6 @@
   }
 }
 
-
 .buttons-approve {
   margin-right: 10px;
 }
@@ -55,6 +65,8 @@
   visibility: hidden !important;
 }
 
+#conditions-to-approve label,
+.payment-options label,
 .paypal-label {
   cursor: pointer;
 }
@@ -144,18 +156,23 @@
 #card-image.visa {
   background-position: 0 -398px;
 }
+
 #card-image.master-card {
   background-position: 0 -281px;
 }
+
 #card-image.american-express {
   background-position: 0 -370px;
 }
+
 #card-image.maestro {
   background-position: 0 -251px;
 }
+
 #card-image.jcb {
   background-position: 0 -221px;
 }
+
 #card-image.diners-club {
   background-position: 0 -133px;
 }
@@ -181,7 +198,7 @@
   backface-visibility: hidden;
 }
 
-.defautl-credit-card {
+.default-credit-card {
   position: absolute;
   top: 2px;
   right: 10px;
@@ -222,6 +239,7 @@
   margin-bottom: 10px;
   width: 80px;
 }
+
 .express-checkout-label {
   color: inherit;
 }
@@ -257,7 +275,7 @@
   transition: opacity 0.5s linear;
 
   background-color: rgba(0, 0, 0, 0.15);
-  z-index: 100;
+  z-index: 9999;
 }
 
 .ps-checkout.overlay.visible {
@@ -265,7 +283,7 @@
   opacity: 100;
 }
 
-.ps-checkout.popup {
+.ps-checkout.popup, .ps-checkout.ps-checkout-modal {
   position: absolute;
   top: 0;
   left: 0;
@@ -281,33 +299,101 @@
   border-radius: 15px;
 }
 
+.ps-checkout.ps-checkout-modal {
+  border-radius: 0;
+  height: fit-content;
+}
+
 @media (max-width: 992px) {
-  .ps-checkout.popup {
+  .ps-checkout.popup, .ps-checkout.ps-checkout-modal {
     width: 600px;
   }
 }
 
 @media (max-width: 768px) {
-  .ps-checkout.popup {
+  .ps-checkout.popup, .ps-checkout.ps-checkout-modal {
     width: 500px;
   }
 }
 
 @media (max-width: 576px) {
-  .ps-checkout.popup {
+  .ps-checkout.popup, .ps-checkout.ps-checkout-modal {
     width: 350px;
   }
 
-  .ps-checkout.text {
+  .ps-checkout.text, .ps-checkout.header, .ps-checkout.content {
     font-size: 20px;
   }
 }
 
-.ps-checkout.text, .ps-checkout.loader {
+.ps-checkout-modal .close-button {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.ps-checkout.text, .ps-checkout.header, .ps-checkout.loader {
   display: block;
   margin: 0 auto;
   margin-top: 45px;
   text-align: center;
+}
+
+.ps-checkout.header {
+  text-align: left;
+}
+
+.ps-checkout-modal .ps-checkout.header .ps-checkout-modal-icon{
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  vertical-align: middle;
+  border-radius: 34px;
+  margin-right: 20px;
+  padding: 5px;
+}
+
+.ps-checkout-modal .ps-checkout.header .ps-checkout-modal-icon.icon-danger {
+  background-color: #FFE4E6;
+}
+
+.ps-checkout-modal .ps-checkout.header .ps-checkout-modal-icon.icon-alert {
+  background-color: #FFF5E5;
+}
+
+.ps-checkout-modal .ps-checkout.header .ps-checkout-modal-icon.icon-success {
+  background-color: #EAF8EF;
+}
+
+.ps-checkout-modal .ps-checkout.header .ps-checkout-modal-icon.icon-info {
+  background-color: #E8EDFD;
+}
+
+.ps-checkout.ps-checkout-modal .ps-checkout.header {
+  margin: 40px 15px;
+}
+
+.ps-checkout.content {
+  margin: 15px;
+}
+
+.ps-checkout.footer {
+  padding: 15px;
+  width: 100%;
+  text-align: right;
+}
+
+.ps-checkout.footer > button + button{
+  margin-left: 10px;
+}
+
+.ps-checkout.footer button.ps-checkout.btn.danger {
+  color: #fff;
+  background-color: #ff4c4c;
+  border-color: #ff4c4c;
 }
 
 .ps-checkout.subtext {
@@ -323,27 +409,30 @@
   margin: 0 0.25em;
 }
 
-#ps_checkout-hosted-fields-card-number {
+#ps_checkout-hosted-fields-card-name {
   position: relative;
-  height: 45px;
-  margin-top: 6px;
-}
-#ps_checkout-hosted-fields-card-expiration-date {
-  height: 45px;
-  margin-top: 6px;
-}
-#ps_checkout-hosted-fields-card-cvv {
-  height: 45px;
   margin-top: 6px;
 }
 
-label[for="ps_checkout-hosted-fields-card-cvv"] {
+#ps_checkout-hosted-fields-card-number {
+  position: relative;
+  margin-top: 6px;
+}
+
+#ps_checkout-hosted-fields-card-expiration-date {
+  margin-top: 6px;
+}
+
+#ps_checkout-hosted-fields-card-cvv {
+  margin-top: 6px;
+}
+
+#ps_checkout-card-fields-form label[for="ps_checkout-card-fields-cvv"] {
   white-space: nowrap;
 }
 
 .ps_checkout-payment-option span.custom-radio {
   float: none !important;
-  margin-right: 1.0rem !important;
 }
 
 .ps_checkout-payment-option label {
@@ -351,72 +440,17 @@ label[for="ps_checkout-hosted-fields-card-cvv"] {
   line-height: 2.5;
 }
 
-.js-payment-ps_checkout.disabled .ps_checkout-button[data-funding-source="card"] button:disabled {
-  opacity: initial;
-}
-
-.ps_checkout.payment-method-logo-block {
-  margin-top: 1rem;
-
-  text-align: center;
-}
-
-.ps_checkout.payment-method-logo-block.left {
+.ps_checkout-vault-fields .ps_checkout-vault-label {
   text-align: left;
-
-  margin-left: 74px;
+  white-space: normal;
 }
 
-.ps_checkout.payment-method-logo-block-title {
-  margin-bottom: 0.5rem;
-  color: #666;
-
-  margin-left: 4px;
+.ps_checkout-vault-fields, .ps_checkout-favorite-payment{
+  margin-bottom: 1rem;
 }
 
-.ps_checkout.payment-method-logo {
-  display: inline-block;
-
-  padding: 4px 2px;
-
-  height: 3rem;
-}
-
-.ps_checkout.payment-method-logo.w-fixed {
-  height: 2.5rem;
-  width: 3.5rem;
-}
-
-/* TODO: Check why % dont match ??? */
-.ps_checkout.payment-method-logo.w-25 {
-  width: 20%;
-}
-
-/* TODO: Check why % dont match ??? */
-.ps_checkout.payment-method-logo.w-33 {
-  width: 25%;
-}
-
-/* TODO: Check why % dont match ??? */
-.ps_checkout.payment-method-logo.w-20 {
-  width: 18%;
-}
-
-.ps_checkout.payment-method-logo .wrapper {
-  width: 100%;
-  height: 100%;
-
-  padding: 4px;
-
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  background-color: #fff;
-}
-
-.ps_checkout.payment-method-logo img {
-  height: 100%;
-  width: 100%;
-  object-fit: contain;
+.ps_checkout-vault-token-form .ps_checkout-token-explanation {
+  font-size: 0.75rem;
 }
 
 .ps_checkout-info-wrapper {
@@ -512,4 +546,79 @@ label[for="ps_checkout-hosted-fields-card-cvv"] {
 
 .cart-detailed-totals + #ps-checkout-pp-message-container{
   padding: 0 1rem 1rem;
+}
+
+#ps_checkout-card-fields-form.loading > *:not(#ps_checkout-card-fields-form-loader),
+#ps_checkout-card-fields-form:not(.loading) > #ps_checkout-card-fields-form-loader {
+  display: none;
+}
+
+#ps_checkout-card-fields-name-error.hidden,
+#ps_checkout-card-fields-number-error.hidden,
+#ps_checkout-card-fields-vendor-error.hidden,
+#ps_checkout-card-fields-expiry-error.hidden,
+#ps_checkout-card-fields-cvv-error.hidden {
+  display: none;
+}
+
+#ps_checkout-card-fields-form-loader {
+  text-align: center;
+}
+
+#product #ps_checkout-payment-method-logo-block-title {
+  padding: 0.5rem 0;
+  color: #666;
+  margin-left: 4px;
+}
+
+#cart #ps_checkout-payment-method-logo-block-title {
+  text-align: center;
+  padding: 0.5rem 0;
+  color: #666;
+}
+
+#ps_checkout-payment-method-logo-block-img {
+  margin: 0 2px 3px 2px;
+}
+
+#ps_checkout-payment-method-logos-container {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+#cart #ps_checkout-payment-method-logo-block-container {
+  text-align: center;
+}
+
+form button.ps_checkout-vault-token-delete {
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 0.75rem;
+  margin-bottom: 0.75rem;
+  display: inline-block;
+  background-color: transparent;
+  border: none;
+  padding: 0;
+}
+
+#ps_checkout-card-fields-form .ps_checkout-card-fields-cvv-label-wrapper {
+  display: table;
+}
+
+#ps_checkout-card-fields-form .ps_checkout-card-fields-cvv-label-wrapper>label {
+  display: table-cell;
+}
+
+.paypal-pay-later-banner {
+  margin: 0.5em auto;
+}
+
+.paypal-pay-later-banner > span {
+  margin: auto;
+}
+
+.ps-checkout.icon-favorite {
+  width: 20px;
+  height: 20px;
 }

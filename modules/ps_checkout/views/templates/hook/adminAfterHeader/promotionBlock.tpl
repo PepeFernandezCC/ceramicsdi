@@ -16,11 +16,10 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  *}
-
 <div class="container">
     <div class="row">
         <div class="col">
-            <div class="card">
+            <div class="card" data-test="ps-checkout-card">
                 <h3 class="card-header">
                     <i class="material-icons">extension</i> {l s='One module, all payments methods.' mod='ps_checkout'}
                 </h3>
@@ -44,9 +43,9 @@
                                         {l s='Including:' mod='ps_checkout'}
                                     </label>
                                     <div>
-                                        <img class="payment-icon" src="{$imgPath|escape:'htmlall':'UTF-8'}paypal.jpg" alt="">
-                                        <img class="payment-icon" src="{$imgPath|escape:'htmlall':'UTF-8'}visa.jpg" alt="">
-                                        <img class="payment-icon" src="{$imgPath|escape:'htmlall':'UTF-8'}mastercard.jpg" alt="">
+                                        <img class="payment-icon" src="{$modulePath|escape:'htmlall':'UTF-8'}views/img/paypal.jpg" alt="">
+                                        <img class="payment-icon" src="{$modulePath|escape:'htmlall':'UTF-8'}views/img/visa.jpg" alt="">
+                                        <img class="payment-icon" src="{$modulePath|escape:'htmlall':'UTF-8'}views/img/mastercard.jpg" alt="">
                                     </div>
                                 </div>
                             </div>
