@@ -5690,6 +5690,19 @@ body#order-confirmation .checkout-grid .cart-grid-tabs #checkout-payment-step .c
   margin-bottom: 0;
   align-items: center;
 }
+/* Anula el !important que views/css/payments.css de ps_checkout aplica a
+   .ps_checkout-payment-option (span.custom-radio { float:none } / label { display:inline; line-height:2.5 }),
+   sin tocar el módulo ni impedir que le siga añadiendo la clase por JS. */
+.payment-options .payment-option.ps_checkout-payment-option span.custom-radio {
+  float: left !important;
+}
+.payment-options .payment-option.ps_checkout-payment-option label {
+  display: flex !important;
+  justify-content: space-between !important;
+  margin-bottom: 0 !important;
+  align-items: center !important;
+  line-height: inherit !important;
+}
 body#checkout .checkout-grid .cart-grid-body #checkout-payment-step .content .payment-options > div:first-child .payment-option,
 body#checkout .checkout-grid .cart-grid-tabs #checkout-payment-step .content .payment-options > div:first-child .payment-option, body#order-confirmation .checkout-grid .cart-grid-body #checkout-payment-step .content .payment-options > div:first-child .payment-option,
 body#order-confirmation .checkout-grid .cart-grid-tabs #checkout-payment-step .content .payment-options > div:first-child .payment-option {
