@@ -36,7 +36,7 @@ class CcDesistimiento extends Module
             && $this->registerHook('displayHeader')
             && Configuration::updateValue('CC_DESISTIMIENTO_DAYS', 14)
             && Configuration::updateValue('CC_DESISTIMIENTO_EMAIL', 'support@ceramicconnection.es')
-            && Configuration::updateValue('CC_DESISTIMIENTO_PHONE', '+34 623 240 148')
+            && Configuration::updateValue('CC_DESISTIMIENTO_PHONE', '+34 964 188 917')
             && Configuration::updateValue('CC_DESISTIMIENTO_RETURN_ADDRESS', 'Avenida Real de Extremadura, 9, Onda 12200, Espana')
             && Configuration::updateValue('CC_DESISTIMIENTO_DELIVERED_STATES', '5')
             && Configuration::updateValue('CC_DESISTIMIENTO_EXCLUDED_CATEGORIES', '');

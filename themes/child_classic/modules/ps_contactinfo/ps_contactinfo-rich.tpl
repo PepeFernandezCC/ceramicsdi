@@ -70,9 +70,9 @@
                 <div style="padding-bottom: 5px">
                     <i class="fas fa-phone-alt contact-phone"></i>
                     <span class="contact-phone-number">
-                        <a href="https://wa.me/34623240148" target="_BLANK">
-                            +34 647 145 062
-                        </a> 
+                    
+                            +34 964 188 917
+                       
                     </span>
                 </div>
                 <div >
@@ -107,9 +107,9 @@
                 <div style="padding-bottom: 5px">
                     <i class="fas fa-phone-alt contact-phone"></i>
                     <span class="contact-phone-number">
-                        <a href="https://wa.me/34623240148" target="_BLANK">
-                            +34 623 240 148
-                        </a>
+                      
+                            +34 964 188 917
+                        
                     </span>
                 </div>
                 <div >

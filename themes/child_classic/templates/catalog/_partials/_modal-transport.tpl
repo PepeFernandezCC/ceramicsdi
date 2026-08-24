@@ -23,7 +23,7 @@
                                 <p>Los productos que muestran su precio por metro cuadrado se venden por cajas completas. Por este motivo, la cantidad final del pedido se redondeará automáticamente durante el proceso de compra al número de cajas enteras necesarias.</p>
                                 <p>La equivalencia entre cajas y metros cuadrados puede variar según el producto, ya que una caja no equivale necesariamente a un metro cuadrado exacto. El cliente podrá revisar la cantidad final de cajas y metros cuadrados antes de confirmar el pedido.</p>
                                 <p>Las características técnicas de cada producto, incluyendo formato, acabado, uso recomendado, metros cuadrados por caja y demás información relevante, se indican en la ficha de producto.</p>
-                                <p>En caso de duda sobre el producto, cantidades necesarias, disponibilidad o proceso de compra, el cliente puede contactar con nuestro equipo de atención al cliente por teléfono o WhatsApp en el número +34 623 240 148, o por correo electrónico en info@ceramicconnection.es.</p>
+                                <p>En caso de duda sobre el producto, cantidades necesarias, disponibilidad o proceso de compra, el cliente puede contactar con nuestro equipo de atención al cliente por teléfono o WhatsApp en el número +34 964 188 917, o por correo electrónico en info@ceramicconnection.es.</p>
                             </div>
                         </div>
 
@@ -112,7 +112,7 @@
                                 <p>Les produits dont le prix est affiché au mètre carré sont vendus par cartons complets. Pour cette raison, la quantité finale de la commande sera automatiquement arrondie, lors du processus d'achat, au nombre de cartons entiers nécessaires.</p>
                                 <p>L'équivalence entre cartons et mètres carrés peut varier selon le produit, un carton ne correspondant pas nécessairement à un mètre carré exact. Le client pourra vérifier la quantité finale de cartons et de mètres carrés avant de confirmer la commande.</p>
                                 <p>Les caractéristiques techniques de chaque produit, notamment le format, la finition, l'usage recommandé, les mètres carrés par carton et toute autre information pertinente, sont indiquées sur la fiche produit.</p>
-                                <p>En cas de doute sur le produit, les quantités nécessaires, la disponibilité ou le processus d'achat, le client peut contacter notre service client par téléphone ou WhatsApp au +34 623 240 148, ou par e-mail à info@ceramicconnection.es.</p>
+                                <p>En cas de doute sur le produit, les quantités nécessaires, la disponibilité ou le processus d'achat, le client peut contacter notre service client par téléphone ou WhatsApp au +34 964 188 917, ou par e-mail à info@ceramicconnection.es.</p>
                             </div>
                         </div>
 
@@ -201,7 +201,7 @@
                                 <p>Products whose price is displayed per square metre are sold in full boxes. For this reason, the final order quantity will be automatically rounded up during the purchase process to the number of whole boxes required.</p>
                                 <p>The ratio between boxes and square metres may vary by product, since one box does not necessarily equal an exact square metre. The customer may review the final quantity of boxes and square metres before confirming the order.</p>
                                 <p>The technical specifications of each product, including format, finish, recommended use, square metres per box and other relevant information, are shown on the product page.</p>
-                                <p>If you have any questions about the product, required quantities, availability or the purchase process, you can contact our customer service team by phone or WhatsApp at +34 623 240 148, or by email at info@ceramicconnection.es.</p>
+                                <p>If you have any questions about the product, required quantities, availability or the purchase process, you can contact our customer service team by phone or WhatsApp at +34 964 188 917, or by email at info@ceramicconnection.es.</p>
                             </div>
                         </div>
 
@@ -290,7 +290,7 @@
                                 <p>Produkte, deren Preis pro Quadratmeter angegeben wird, werden in vollständigen Kartons verkauft. Aus diesem Grund wird die endgültige Bestellmenge während des Kaufvorgangs automatisch auf die erforderliche Anzahl ganzer Kartons aufgerundet.</p>
                                 <p>Das Verhältnis zwischen Kartons und Quadratmetern kann je nach Produkt variieren, da ein Karton nicht zwangsläufig genau einem Quadratmeter entspricht. Der Kunde kann die endgültige Anzahl an Kartons und Quadratmetern vor Bestätigung der Bestellung überprüfen.</p>
                                 <p>Die technischen Eigenschaften jedes Produkts, einschließlich Format, Oberfläche, empfohlener Verwendung, Quadratmeter pro Karton und sonstiger relevanter Informationen, sind auf der Produktseite angegeben.</p>
-                                <p>Bei Fragen zum Produkt, zu benötigten Mengen, zur Verfügbarkeit oder zum Kaufprozess kann sich der Kunde telefonisch oder per WhatsApp unter +34 623 240 148 oder per E-Mail an info@ceramicconnection.es an unser Kundenserviceteam wenden.</p>
+                                <p>Bei Fragen zum Produkt, zu benötigten Mengen, zur Verfügbarkeit oder zum Kaufprozess kann sich der Kunde telefonisch oder per WhatsApp unter +34 964 188 917 oder per E-Mail an info@ceramicconnection.es an unser Kundenserviceteam wenden.</p>
                             </div>
                         </div>
 
@@ -379,7 +379,7 @@
                                 <p>Os produtos cujo preço é apresentado por metro quadrado são vendidos em caixas completas. Por este motivo, a quantidade final do pedido será automaticamente arredondada durante o processo de compra para o número de caixas inteiras necessárias.</p>
                                 <p>A equivalência entre caixas e metros quadrados pode variar consoante o produto, uma vez que uma caixa não corresponde necessariamente a um metro quadrado exato. O cliente poderá verificar a quantidade final de caixas e metros quadrados antes de confirmar o pedido.</p>
                                 <p>As características técnicas de cada produto, incluindo formato, acabamento, uso recomendado, metros quadrados por caixa e demais informações relevantes, são indicadas na ficha do produto.</p>
-                                <p>Em caso de dúvida sobre o produto, quantidades necessárias, disponibilidade ou processo de compra, o cliente pode contactar a nossa equipa de apoio ao cliente por telefone ou WhatsApp através do número +34 623 240 148, ou por e-mail em info@ceramicconnection.es.</p>
+                                <p>Em caso de dúvida sobre o produto, quantidades necessárias, disponibilidade ou processo de compra, o cliente pode contactar a nossa equipa de apoio ao cliente por telefone ou WhatsApp através do número +34 964 188 917, ou por e-mail em info@ceramicconnection.es.</p>
                             </div>
                         </div>
 
@@ -468,7 +468,7 @@
                                 <p>Producten waarvan de prijs per vierkante meter wordt weergegeven, worden per volledige doos verkocht. Om deze reden wordt de uiteindelijke bestelhoeveelheid tijdens het aankoopproces automatisch afgerond naar het aantal benodigde hele dozen.</p>
                                 <p>De verhouding tussen dozen en vierkante meters kan per product verschillen, aangezien één doos niet altijd precies gelijk is aan één vierkante meter. De klant kan de uiteindelijke hoeveelheid dozen en vierkante meters controleren voordat de bestelling wordt bevestigd.</p>
                                 <p>De technische kenmerken van elk product, waaronder formaat, afwerking, aanbevolen gebruik, vierkante meters per doos en overige relevante informatie, staan vermeld op de productpagina.</p>
-                                <p>Bij twijfel over het product, benodigde hoeveelheden, beschikbaarheid of het aankoopproces kan de klant contact opnemen met onze klantenservice via telefoon of WhatsApp op +34 623 240 148, of per e-mail via info@ceramicconnection.es.</p>
+                                <p>Bij twijfel over het product, benodigde hoeveelheden, beschikbaarheid of het aankoopproces kan de klant contact opnemen met onze klantenservice via telefoon of WhatsApp op +34 964 188 917, of per e-mail via info@ceramicconnection.es.</p>
                             </div>
                         </div>
 

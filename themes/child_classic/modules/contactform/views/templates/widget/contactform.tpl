@@ -80,7 +80,7 @@
 
               <li>
                 <i class="fas fa-phone-alt"></i>
-                <a href="tel:+34647145062">+34 647 145 062</a>
+                <a href="tel:+34964188917">+34 964 188 917</a>
               </li>
 
               <li>
@@ -113,7 +113,7 @@
 
               <li>
                 <i class="fas fa-phone-alt"></i>
-                <a href="tel:+34623240148">+34 623 240 148</a>
+                <a href="tel:+34964188917">+34 964 188 917</a>
               </li>
 
               <li>
