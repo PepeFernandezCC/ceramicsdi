@@ -57,14 +57,13 @@
                         </form>
 
                         <label for="{$option.id}" style="text-align: left">
+                            {assign var="bankTransferSpan" value=["Pago por transferencia bancaria", "Payer par virement bancaire", "Pay by bank wire", "Zahlung per Überweisung", "Pagar por transferência bancária", "Bankoverschrijving"]}
                             <span>{$option.call_to_action_text nofilter}</span>
                             <div>
                             {if $option.logo}
-                                <img src="{$option.logo}" loading="lazy" alt="logo number {$option.id}">
-                            {elseif $option.id == "payment-option-1"}
-                                <img src="/themes/child_classic/assets/img/web/icons/bank_transfer_icon.png" style="width:25px" loading="lazy" alt="logo number {$option.id}">
-                            {elseif $option.id == "payment-option-3"}
-                                <img src="/themes/child_classic/assets/img/web/icons/cards-icon-visa-mc.png" loading="lazy" alt="logo number {$option.id}">
+                                <img src="{$option.logo}" loading="lazy" alt="logo number {$option.id}" style="height: 20px">
+                            {elseif $option.call_to_action_text|in_array:$bankTransferSpan}
+                                <img src="/themes/child_classic/assets/img/web/icons/bank_transfer_icon.png" style="height: 20px" loading="lazy" alt="logo number {$option.id}">
                             {/if}
                             </div>
                         </label>

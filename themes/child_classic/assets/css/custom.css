@@ -7809,3 +7809,9 @@ div#ps_checkout-payment-method-logo-block-container {
 body#order-confirmation .block-left {
     padding: 50px 50px 50px 50px;
 }
+
+.paypal-mark {
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+}
