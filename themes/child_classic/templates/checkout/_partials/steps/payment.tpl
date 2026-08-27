@@ -31,7 +31,7 @@
         {foreach from=$payment_options item="module_options"}
             {foreach from=$module_options item="option"}
                 <div>
-                    <div id="{$option.id}-container" class="payment-option clearfix">
+                    <div id="{$option.id}-container" class="payment-option clearfix" data-mname="{$option.module_name}">
                         {* This is the way an option should be selected when Javascript is enabled *}
                         <span class="custom-radio float-xs-left">
                         <input
@@ -60,7 +60,26 @@
                             {assign var="bankTransferSpan" value=["Pago por transferencia bancaria", "Payer par virement bancaire", "Pay by bank wire", "Zahlung per Überweisung", "Pagar por transferência bancária", "Bankoverschrijving"]}
                             <span>{$option.call_to_action_text nofilter}</span>
                             <div>
-                            {if $option.logo}
+                            {if $option.module_name === 'ps_checkout-paylater'}
+                                {if $language.id == 1}
+                                    <img src="/themes/child_classic/assets/img/web/icons/paypal_paylater_icon.png" loading="lazy" alt="PayPal Pay Later" style="height: 25px">
+                                {/if}
+                                {if $language.id == 2}
+                                    <img src="/themes/child_classic/assets/img/web/icons/paypal_paylater_icon_fr.png" loading="lazy" alt="PayPal Pay Later" style="height: 25px">
+                                {/if}
+                                {if $language.id == 3}
+                                    <img src="/themes/child_classic/assets/img/web/icons/paypal_paylater_icon_en.png" loading="lazy" alt="PayPal Pay Later" style="height: 25px">
+                                {/if}
+                                {if $language.id == 4}
+                                    <img src="/themes/child_classic/assets/img/web/icons/paypal_paylater_icon_de.png" loading="lazy" alt="PayPal Pay Later" style="height: 25px">
+                                {/if}
+                                {if $language.id == 5}
+                                    <img src="/themes/child_classic/assets/img/web/icons/paypal_paylater_icon_pt.png" loading="lazy" alt="PayPal Pay Later" style="height: 25px">
+                                {/if}
+                                {if $language.id == 6}
+                                    <img src="/themes/child_classic/assets/img/web/icons/paypal_paylater_icon_nl.png" loading="lazy" alt="PayPal Pay Later" style="height: 25px">
+                                {/if}
+                            {elseif $option.logo}
                                 <img src="{$option.logo}" loading="lazy" alt="logo number {$option.id}" style="height: 20px">
                             {elseif $option.call_to_action_text|in_array:$bankTransferSpan}
                                 <img src="/themes/child_classic/assets/img/web/icons/bank_transfer_icon.png" style="height: 20px" loading="lazy" alt="logo number {$option.id}">
@@ -104,10 +123,6 @@
 
     {if $conditions_to_approve|count}
         <p class="ps-hidden-by-js">
-            {* At the moment, we're not showing the checkboxes when JS is disabled
-               because it makes ensuring they were checked very tricky and overcomplicates
-               the template. Might change later.
-            *}
             {l s='By confirming the order, you certify that you have read and agree with all of the conditions below:' d='Shop.Theme.Checkout'}
         </p>
 
@@ -142,9 +157,6 @@
 
     <div id="show-promo-code"></div>
 
-    {if $show_final_summary}
-        {include file='checkout/_partials/order-final-summary.tpl'}
-    {/if}
 
     <div id="payment-confirmation" class="js-payment-confirmation">
         <div class="ps-shown-by-js">
@@ -174,4 +186,8 @@
     </div>
 
     {hook h='displayPaymentByBinaries'}
+
+    {if $show_final_summary}
+        {include file='checkout/_partials/order-final-summary.tpl'}
+    {/if}
 {/block}

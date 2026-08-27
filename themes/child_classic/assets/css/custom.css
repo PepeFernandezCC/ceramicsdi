@@ -5973,6 +5973,17 @@ body#checkout .card-block.cart-summary-totals .cart-total, body#order-confirmati
   display: flex;
 }
 */
+/* Oculta el "mark" (logo) que la SDK de PayPal (ps_checkout) inyecta por JS
+   dentro del label de la opción Pay Later, para dejar solo nuestro icono propio. */
+.payment-options .ps_checkout-mark[data-funding-source=paylater] {
+  display: none !important;
+}
+/* El JS de ps_checkout sobrescribe el atributo style="" del contenedor de la
+   opción tras pintarlo, por eso el padding inline del .tpl nunca llega a verse.
+   Se aplica aquí por CSS usando data-mname, que sí sobrevive al re-render. */
+.payment-options [data-mname="ps_checkout-paylater"] {
+  padding: 15px 0;
+}
 /* AMPLIACIÓN MODIFICACIÓN PÁGINA DEL CARRITO */
 @media (min-width: 1024px) {
   #cart .cart-grid .cart-grid-body,

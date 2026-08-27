@@ -7,25 +7,7 @@ class CheckoutPaymentStep extends CheckoutPaymentStepCore {
 	
 	public function handleRequest(array $requestParams = [])
 	{
-		$cart = $this->getCheckoutSession()->getCart();
-		
-		/* PLANATEC 
-		if (count($cart->getProducts()) > 10) {
-			$cartShowUrl = $this->context->link->getPageLink(
-				'cart',
-				null,
-				$this->context->language->id,
-				[
-					'action' => 'show',
-				],
-				false,
-				null,
-				false
-			);
-			Tools::redirect($cartShowUrl);
-		}
-		 END PLANATEC */
-		
+		$cart = $this->getCheckoutSession()->getCart();		
 		$allProductsInStock = $cart->isAllProductsInStock();
 		$allProductsExist = $cart->checkAllProductsAreStillAvailableInThisState();
 		$allProductsHaveMinimalQuantity = $cart->checkAllProductsHaveMinimalQuantities();

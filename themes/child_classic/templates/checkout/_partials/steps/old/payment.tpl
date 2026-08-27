@@ -27,19 +27,20 @@
     </div>
 
     <div class="payment-options {if $is_free}hidden-xs-up{/if}">
+
         {foreach from=$payment_options item="module_options"}
             {foreach from=$module_options item="option"}
                 <div>
                     <div id="{$option.id}-container" class="payment-option clearfix">
                         {* This is the way an option should be selected when Javascript is enabled *}
                         <span class="custom-radio float-xs-left">
-              <input
-                      class="ps-shown-by-js {if $option.binary} binary {/if}"
-                      id="{$option.id}"
-                      data-module-name="{$option.module_name}"
-                      name="payment-option"
-                      type="radio"
-                      required
+                        <input
+                            class="ps-shown-by-js {if $option.binary} binary {/if}"
+                            id="{$option.id}"
+                            data-module-name="{$option.module_name}"
+                            name="payment-option"
+                            type="radio"
+                            required
                 {if ($selected_payment_option == $option.id || $is_free) || ($payment_options|@count === 1 && $module_options|@count === 1)} checked {/if}
               >
               <span></span>
@@ -56,14 +57,15 @@
                         </form>
 
                         <label for="{$option.id}" style="text-align: left">
+                            {assign var="bankTransferSpan" value=["Pago por transferencia bancaria", "Payer par virement bancaire", "Pay by bank wire", "Zahlung per Überweisung", "Pagar por transferência bancária", "Bankoverschrijving"]}
                             <span>{$option.call_to_action_text nofilter}</span>
+                            <div>
                             {if $option.logo}
-                                <img src="{$option.logo}" loading="lazy" alt="logo number {$option.id}">
-                            {elseif $option.id == "payment-option-1"}
-                                <img src="/themes/child_classic/assets/img/web/icons/bank_transfer_icon.png" style="width:25px" loading="lazy" alt="logo number {$option.id}">
-                            {elseif $option.id == "payment-option-3"}
-                                <img src="/themes/child_classic/assets/img/web/icons/cards-icon-visa-mc.png" loading="lazy" alt="logo number {$option.id}">
+                                <img src="{$option.logo}" loading="lazy" alt="logo number {$option.id}" style="height: 20px">
+                            {elseif $option.call_to_action_text|in_array:$bankTransferSpan}
+                                <img src="/themes/child_classic/assets/img/web/icons/bank_transfer_icon.png" style="height: 20px" loading="lazy" alt="logo number {$option.id}">
                             {/if}
+                            </div>
                         </label>
                         {if $option.additionalInformation}
                             <div
@@ -97,8 +99,6 @@
             {foreachelse}
             <p class="alert alert-danger">{l s='Unfortunately, there are no payment method available.' d='Shop.Theme.Checkout'}</p>
         {/foreach}
-
-
 
     </div>
 

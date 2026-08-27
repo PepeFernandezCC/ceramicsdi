@@ -6950,6 +6950,13 @@ label[for=field-vat_number] {
 		width: 20px;
 	}
 }
+.payment-options {
+	// Oculta el "mark" (logo) que la SDK de PayPal (ps_checkout) inyecta por JS
+	// dentro del label de la opcion Pay Later, para dejar solo nuestro icono propio.
+	.ps_checkout-mark[data-funding-source="paylater"] {
+		display: none !important;
+	}
+}
 #payment-option-4-container {
 	display: flex;
 	align-items: center;
