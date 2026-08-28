@@ -215,7 +215,7 @@ class Cart extends CartCore {
 	public function getTotalShippingCost($delivery_option = null, $use_tax = true, Country $default_country = null)
     {
         // Si NO hay transportista seleccionado, no sumar envío
-        if ((int) $this->id_carrier <= 0) {
+        if ((int) $this->id_carrier <= 0 && empty($this->getDeliveryOption())) {
             return 0.0;
         }
 
