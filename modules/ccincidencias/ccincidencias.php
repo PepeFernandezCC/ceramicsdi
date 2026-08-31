@@ -620,6 +620,24 @@ class CcIncidencias extends Module
             return '';
         }
 
+        // Validacion en el navegador antes de enviar: si falta algun
+        // campo obligatorio no se llega a mandar el formulario, asi el
+        // input de fotos no se vacia (los navegadores no permiten
+        // rellenar de nuevo un <input type="file"> tras recargar la
+        // pagina). La validacion real y definitiva sigue siendo la del
+        // servidor; esto es solo para evitar recargas evitables.
+        Media::addJsDef(array(
+            'ccIncidenciasL10n' => array(
+                'error_required_tipo' => $this->ccL('error_required_tipo'),
+                'error_required_referencia' => $this->ccL('error_required_referencia'),
+                'error_required_nombre' => $this->ccL('error_required_nombre'),
+                'error_required_email' => $this->ccL('error_required_email'),
+                'error_invalid_email' => $this->ccL('error_invalid_email'),
+                'error_required_descripcion' => $this->ccL('error_required_descripcion'),
+                'error_required_consentimiento' => $this->ccL('error_required_consentimiento'),
+            ),
+        ));
+
         $this->context->controller->registerStylesheet(
             'module-ccincidencias-front',
             'modules/' . $this->name . '/views/css/front.css',
@@ -665,6 +683,6 @@ class CcIncidencias extends Module
 
         $url = $this->getFormUrl($this->context->language->id, $idOrder);
 
-        return '<a class="btn btn-secondary" href="' . htmlspecialchars($url) . '">' . htmlspecialchars($this->ccL('order_button_label')) . '</a>';
+        return '<a class="cc-desistimiento-history-btn" href="' . htmlspecialchars($url) . '">' . htmlspecialchars($this->ccL('order_button_label')) . '</a>';
     }
 }

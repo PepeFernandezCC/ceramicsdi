@@ -68,7 +68,7 @@
             </td>
             <td class="text-sm-center order-actions">
 
-              
+
               <a href="{$order.details.details_url}" data-link-action="view-order-details">
                 {l s='Details' d='Shop.Theme.Customeraccount'}
               </a>
@@ -76,6 +76,10 @@
               {if $order.details.reorder_url}
                 <a href="{$order.details.reorder_url}">{l s='Reorder' d='Shop.Theme.Actions'}</a>
               {/if}
+
+              <div class="orderOutButton">
+                {hook h='displayCustomerOrderWithdrawalButton' order=$order}
+              </div>
 
             </td>
           </tr>

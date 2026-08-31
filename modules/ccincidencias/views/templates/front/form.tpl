@@ -7,7 +7,7 @@
     {if $cc_success}
       <div class="alert alert-success cc-success">
         <p>{$cc_t.success_message|escape:'htmlall':'UTF-8'}</p>
-        <a class="btn btn-primary" href="{$link->getPageLink('index')|escape:'htmlall':'UTF-8'}">{$cc_t.back_home|escape:'htmlall':'UTF-8'}</a>
+        <a class="cc-desistimiento-history-btn" href="{$link->getPageLink('index')|escape:'htmlall':'UTF-8'}">{$cc_t.back_home|escape:'htmlall':'UTF-8'}</a>
       </div>
     {else}
 
@@ -26,6 +26,8 @@
       {if $cc_photos_dropped}
         <div class="alert alert-warning">{$cc_t.fotos_too_big_notice|escape:'htmlall':'UTF-8'}</div>
       {/if}
+
+      <div class="alert alert-danger cc-client-errors" style="display:none"><ul></ul></div>
 
       <form action="{$cc_action|escape:'htmlall':'UTF-8'}" method="post" enctype="multipart/form-data" class="cc-form" novalidate>
         <input type="hidden" name="cc_ts" value="{$cc_ts|intval}">
@@ -48,7 +50,7 @@
           <input type="hidden" name="id_order" value="{$cc_locked_id_order|intval}">
           <div class="form-group cc-field">
             <label>{$cc_t.label_referencia|escape:'htmlall':'UTF-8'}</label>
-            <p class="form-control-static cc-locked-reference">{$cc_t.from_order_note|sprintf:$cc_locked_reference|escape:'htmlall':'UTF-8'}</p>
+            <p class="form-control-static cc-locked-reference"><strong>{$cc_locked_reference|escape:'htmlall':'UTF-8'}</strong></p>
           </div>
         {else}
           <div class="form-group cc-field">
