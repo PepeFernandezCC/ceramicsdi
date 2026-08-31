@@ -2,7 +2,7 @@
 <module>
     <name>ccincidencias</name>
     <displayName><![CDATA[Formulario de incidencias]]></displayName>
-    <version><![CDATA[1.1.0]]></version>
+    <version><![CDATA[1.2.0]]></version>
     <description><![CDATA[Formulario publico para que el cliente comunique una incidencia con un pedido. Genera un correo a incidencias@ceramicconnection.es; no escribe en ninguna base de datos ni consulta el ERP.]]></description>
     <author><![CDATA[Ceramic Connection]]></author>
     <tab><![CDATA[front_office_features]]></tab>

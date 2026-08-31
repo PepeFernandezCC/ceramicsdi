@@ -1,11 +1,35 @@
 # ccincidencias — Formulario de incidencias
 
 Implementa la especificacion `Formulario - CC.pdf` (Nodex Project, sistema de
-incidencias). Formulario publico, multi-idioma (ES/FR/EN/DE/PT/NL), que envia
-un correo con un bloque de datos a `incidencias@ceramicconnection.es`. **No**
-escribe en ninguna base de datos de negocio, no llama a ninguna API del
-sistema de incidencias, no consulta Odoo/ERP y no valida si el pedido existe.
-El correo ES la entrega.
+incidencias), con una diferencia importante sobre el PDF original: **el
+formulario solo esta disponible para clientes logueados** (decision del
+negocio, no del PDF). Multi-idioma (ES/FR/EN/DE/PT/NL), envia un correo con
+un bloque de datos a `incidencias@ceramicconnection.es` (o al email propio
+del tipo de incidencia, ver mas abajo). **No** escribe en ninguna base de
+datos de negocio, no llama a ninguna API del sistema de incidencias, no
+consulta Odoo/ERP. El correo ES la entrega.
+
+## Acceso y pedido asociado
+
+- **Requiere estar logueado.** Si un visitante sin sesion abre el enlace, se
+  le manda a login y, tras entrar, vuelve automaticamente al formulario (con
+  el pedido preseleccionado si venia de uno).
+- **Desde el historial de pedidos** (`Mi cuenta > Pedidos`): cada pedido
+  tiene un boton ("Comunicar incidencia") que abre el formulario con
+  `?id_order=X`. En ese caso el campo de referencia no se muestra: se usa la
+  referencia del pedido directamente (verificada server-side contra
+  `id_customer` en cada carga y de nuevo al enviar).
+- **Acceso directo** (sin `id_order`, p. ej. desde el enlace publico): se
+  muestra el campo de referencia de toda la vida, pero al enviar se valida
+  contra la tabla `orders`:
+  1. Si la referencia no corresponde a ningun pedido → error "la referencia
+     no corresponde a ningun pedido".
+  2. Si corresponde a un pedido pero de otro cliente → error "inicia sesion
+     con la cuenta que hizo ese pedido".
+  Solo si pasa las dos comprobaciones se envia el correo. Esto es una
+  validacion **adicional** a la del formato de 9 letras del PDF (que sigue
+  siendo informativa/no bloqueante, ver mas abajo): aqui se bloquea el envio
+  de verdad si la referencia no es un pedido real del cliente logueado.
 
 ## Instalacion
 

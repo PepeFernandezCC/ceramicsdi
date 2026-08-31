@@ -44,13 +44,21 @@
           </select>
         </div>
 
-        <div class="form-group cc-field">
-          <label for="cc_referencia">{$cc_t.label_referencia|escape:'htmlall':'UTF-8'} <span class="cc-required">{$cc_t.required_mark|escape:'htmlall':'UTF-8'}</span></label>
-          <input type="text" id="cc_referencia" name="referencia" class="form-control" maxlength="40"
-                 placeholder="{$cc_t.referencia_placeholder|escape:'htmlall':'UTF-8'}"
-                 value="{if isset($cc_old.referencia)}{$cc_old.referencia|escape:'htmlall':'UTF-8'}{/if}" required>
-          <small class="cc-help cc-referencia-warning" style="display:none">{$cc_t.referencia_warning|escape:'htmlall':'UTF-8'}</small>
-        </div>
+        {if $cc_locked_order}
+          <input type="hidden" name="id_order" value="{$cc_locked_id_order|intval}">
+          <div class="form-group cc-field">
+            <label>{$cc_t.label_referencia|escape:'htmlall':'UTF-8'}</label>
+            <p class="form-control-static cc-locked-reference">{$cc_t.from_order_note|sprintf:$cc_locked_reference|escape:'htmlall':'UTF-8'}</p>
+          </div>
+        {else}
+          <div class="form-group cc-field">
+            <label for="cc_referencia">{$cc_t.label_referencia|escape:'htmlall':'UTF-8'} <span class="cc-required">{$cc_t.required_mark|escape:'htmlall':'UTF-8'}</span></label>
+            <input type="text" id="cc_referencia" name="referencia" class="form-control" maxlength="40"
+                   placeholder="{$cc_t.referencia_placeholder|escape:'htmlall':'UTF-8'}"
+                   value="{if isset($cc_old.referencia)}{$cc_old.referencia|escape:'htmlall':'UTF-8'}{/if}" required>
+            <small class="cc-help cc-referencia-warning" style="display:none">{$cc_t.referencia_warning|escape:'htmlall':'UTF-8'}</small>
+          </div>
+        {/if}
 
         <div class="form-group cc-field">
           <label for="cc_seguimiento">{$cc_t.label_seguimiento|escape:'htmlall':'UTF-8'}</label>

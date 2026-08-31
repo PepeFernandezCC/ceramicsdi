@@ -64,10 +64,14 @@ return array(
         'error_photos_type' => 'Alguna foto no tiene un formato admitido (JPG, PNG, WEBP, PDF, HEIC).',
         'error_send_failed' => 'No hemos podido enviar tu incidencia. Intentalo de nuevo en unos minutos o escribenos directamente.',
         'error_rate_limited' => 'Hemos recibido demasiadas solicitudes desde tu conexion. Intentalo de nuevo mas tarde.',
+        'error_referencia_not_found' => 'La referencia no corresponde a ningun pedido.',
+        'error_referencia_wrong_customer' => 'Por favor, inicia sesion con la cuenta que hizo ese pedido.',
 
         'success_title' => 'Incidencia recibida',
         'success_message' => 'Hemos recibido tu incidencia. Te responderemos por correo en cuanto la revisemos.',
         'back_home' => 'Volver a la tienda',
+        'order_button_label' => 'Comunicar incidencia',
+        'from_order_note' => 'Incidencia del pedido %s',
 
         // Bloque de texto legible por personas dentro del correo (libre, ver apartado 9.4 del PDF)
         'email_heading' => 'Nueva incidencia recibida desde el formulario web',
@@ -146,10 +150,14 @@ return array(
         'error_photos_type' => 'Une photo n a pas un format accepte (JPG, PNG, WEBP, PDF, HEIC).',
         'error_send_failed' => 'Nous n avons pas pu envoyer votre litige. Reessayez dans quelques minutes ou ecrivez-nous directement.',
         'error_rate_limited' => 'Nous avons recu trop de demandes depuis votre connexion. Reessayez plus tard.',
+        'error_referencia_not_found' => 'La reference ne correspond a aucune commande.',
+        'error_referencia_wrong_customer' => 'Veuillez vous connecter avec le compte qui a passe cette commande.',
 
         'success_title' => 'Litige recu',
         'success_message' => 'Nous avons bien recu votre litige. Nous vous repondrons par e-mail des que nous l aurons examine.',
         'back_home' => 'Retour a la boutique',
+        'order_button_label' => 'Signaler un litige',
+        'from_order_note' => 'Litige de la commande %s',
 
         'email_heading' => 'Nouveau litige recu depuis le formulaire web',
         'email_label_tipo' => 'Type',
@@ -227,10 +235,14 @@ return array(
         'error_photos_type' => 'One of the photos is not an accepted format (JPG, PNG, WEBP, PDF, HEIC).',
         'error_send_failed' => 'We could not send your report. Please try again in a few minutes or contact us directly.',
         'error_rate_limited' => 'We have received too many requests from your connection. Please try again later.',
+        'error_referencia_not_found' => 'The reference does not match any order.',
+        'error_referencia_wrong_customer' => 'Please log in with the account that placed that order.',
 
         'success_title' => 'Report received',
         'success_message' => 'We have received your report. We will reply by email once we have reviewed it.',
         'back_home' => 'Back to the store',
+        'order_button_label' => 'Report an issue',
+        'from_order_note' => 'Issue for order %s',
 
         'email_heading' => 'New incident received from the web form',
         'email_label_tipo' => 'Type',
@@ -308,10 +320,14 @@ return array(
         'error_photos_type' => 'Ein Foto hat kein zulaessiges Format (JPG, PNG, WEBP, PDF, HEIC).',
         'error_send_failed' => 'Wir konnten Ihre Meldung nicht senden. Versuchen Sie es in ein paar Minuten erneut oder kontaktieren Sie uns direkt.',
         'error_rate_limited' => 'Wir haben zu viele Anfragen von Ihrer Verbindung erhalten. Versuchen Sie es spaeter erneut.',
+        'error_referencia_not_found' => 'Die Referenz gehoert zu keiner Bestellung.',
+        'error_referencia_wrong_customer' => 'Bitte melden Sie sich mit dem Konto an, mit dem diese Bestellung aufgegeben wurde.',
 
         'success_title' => 'Meldung erhalten',
         'success_message' => 'Wir haben Ihre Meldung erhalten. Wir antworten per E-Mail, sobald wir sie geprueft haben.',
         'back_home' => 'Zurueck zum Shop',
+        'order_button_label' => 'Problem melden',
+        'from_order_note' => 'Problem zu Bestellung %s',
 
         'email_heading' => 'Neue Schadensmeldung ueber das Webformular erhalten',
         'email_label_tipo' => 'Art',
@@ -389,10 +405,14 @@ return array(
         'error_photos_type' => 'Uma das fotos nao tem um formato aceite (JPG, PNG, WEBP, PDF, HEIC).',
         'error_send_failed' => 'Nao foi possivel enviar a sua incidencia. Tente novamente dentro de alguns minutos ou contacte-nos diretamente.',
         'error_rate_limited' => 'Recebemos demasiados pedidos a partir da sua ligacao. Tente novamente mais tarde.',
+        'error_referencia_not_found' => 'A referencia nao corresponde a nenhuma encomenda.',
+        'error_referencia_wrong_customer' => 'Inicie sessao com a conta que fez essa encomenda.',
 
         'success_title' => 'Incidencia recebida',
         'success_message' => 'Recebemos a sua incidencia. Responderemos por email assim que a analisarmos.',
         'back_home' => 'Voltar a loja',
+        'order_button_label' => 'Comunicar incidencia',
+        'from_order_note' => 'Incidencia da encomenda %s',
 
         'email_heading' => 'Nova incidencia recebida atraves do formulario web',
         'email_label_tipo' => 'Tipo',
@@ -470,10 +490,14 @@ return array(
         'error_photos_type' => 'Een van de foto s heeft geen toegestaan formaat (JPG, PNG, WEBP, PDF, HEIC).',
         'error_send_failed' => 'We konden uw melding niet verzenden. Probeer het over een paar minuten opnieuw of neem rechtstreeks contact met ons op.',
         'error_rate_limited' => 'We hebben te veel aanvragen ontvangen vanaf uw verbinding. Probeer het later opnieuw.',
+        'error_referencia_not_found' => 'De referentie komt niet overeen met een bestelling.',
+        'error_referencia_wrong_customer' => 'Log in met het account waarmee die bestelling is geplaatst.',
 
         'success_title' => 'Melding ontvangen',
         'success_message' => 'We hebben uw melding ontvangen. We reageren per e-mail zodra we deze hebben beoordeeld.',
         'back_home' => 'Terug naar de winkel',
+        'order_button_label' => 'Incident melden',
+        'from_order_note' => 'Incident voor bestelling %s',
 
         'email_heading' => 'Nieuw incident ontvangen via het webformulier',
         'email_label_tipo' => 'Type',

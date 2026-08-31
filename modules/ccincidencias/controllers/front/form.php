@@ -2,13 +2,13 @@
 /**
  * Controlador del formulario publico de incidencias.
  *
- * No auth, sin SSL forzado propio (usa el general de la tienda). No
- * escribe en ninguna tabla de negocio: solo registra intentos en
- * ccincidencias_log (antibot) y envia un correo. Ver "Formulario - CC.pdf".
+ * Solo para clientes logueados ($auth = true). No escribe en ninguna
+ * tabla de negocio: solo registra intentos en ccincidencias_log
+ * (antibot) y envia un correo. Ver "Formulario - CC.pdf".
  */
 class CcIncidenciasFormModuleFrontController extends ModuleFrontController
 {
-    public $auth = false;
+    public $auth = true;
     public $ssl = true;
 
     /** @var CcIncidencias */
@@ -21,9 +21,27 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
     private $ccSuccess = false;
     private $photosDroppedForSize = false;
 
+    /** @var Order|null Pedido resuelto cuando se llega desde el historial (id_order en la URL). */
+    private $lockedOrder = null;
+
+    /**
+     * Antes de que ModuleFrontController::init() compruebe $auth y
+     * redirija a login, le decimos a donde volver (incluye el
+     * ?id_order= si venimos del boton del historial de pedidos).
+     */
+    public function init()
+    {
+        $scheme = Tools::usingSecureMode() ? 'https://' : 'http://';
+        $this->authRedirection = urlencode($scheme . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+
+        parent::init();
+    }
+
     public function initContent()
     {
         parent::initContent();
+
+        $this->resolveLockedOrder();
 
         if (Tools::isSubmit('submitCcIncidencia')) {
             $this->processSubmission();
@@ -31,6 +49,28 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
 
         $this->assignTemplateVars();
         $this->setTemplate('module:ccincidencias/views/templates/front/form.tpl');
+    }
+
+    /**
+     * Si llegamos con ?id_order=X (boton del historial de pedidos), lo
+     * validamos: debe existir y pertenecer al cliente logueado. Si no
+     * cumple alguna de las dos, simplemente se ignora y el formulario
+     * se comporta como si se hubiera accedido directamente (con el
+     * campo de referencia visible).
+     */
+    private function resolveLockedOrder()
+    {
+        $idOrder = (int) Tools::getValue('id_order');
+        if (!$idOrder) {
+            return;
+        }
+
+        $order = new Order($idOrder);
+        if (!Validate::isLoadedObject($order) || (int) $order->id_customer !== (int) $this->context->customer->id) {
+            return;
+        }
+
+        $this->lockedOrder = $order;
     }
 
     private function assignTemplateVars()
@@ -42,23 +82,32 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
             'label_es_muestra', 'label_descripcion', 'descripcion_placeholder', 'label_fotos', 'fotos_help',
             'fotos_too_big_notice', 'consentimiento_prefix', 'consentimiento_link_text', 'honeypot_label',
             'btn_submit', 'required_mark', 'tipo_placeholder', 'success_title', 'success_message', 'back_home',
+            'from_order_note',
         ) as $key) {
             $t[$key] = $this->module->ccL($key);
         }
 
         $old = Tools::getAllValues();
 
+        $lockedReference = null;
+        if ($this->lockedOrder) {
+            list($lockedReference,) = $this->module->normalizeReference($this->lockedOrder->reference);
+        }
+
         $this->context->smarty->assign(array(
             'cc_t' => $t,
             'cc_tipo_options' => $this->module->getTipoOptions(),
             'cc_privacy_url' => $this->module->getPrivacyPolicyUrl(),
-            'cc_action' => $this->module->getFormUrl($this->context->language->id),
+            'cc_action' => $this->module->getFormUrl($this->context->language->id, $this->lockedOrder ? (int) $this->lockedOrder->id : null),
             'cc_errors' => $this->ccErrors,
             'cc_success' => $this->ccSuccess,
             'cc_photos_dropped' => $this->photosDroppedForSize,
             'cc_ts' => time(),
             'cc_old' => $old,
             'cc_max_mb' => round(CcIncidencias::MAX_PHOTOS_BYTES / 1048576),
+            'cc_locked_order' => (bool) $this->lockedOrder,
+            'cc_locked_id_order' => $this->lockedOrder ? (int) $this->lockedOrder->id : 0,
+            'cc_locked_reference' => $lockedReference,
         ));
     }
 
@@ -101,7 +150,10 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
             $this->ccErrors[] = $this->module->ccL('error_required_tipo');
         }
 
-        $referenciaRaw = (string) Tools::getValue('referencia');
+        // Si venimos del historial de pedidos, la referencia la ponemos
+        // nosotros (pedido ya verificado en resolveLockedOrder()); si no,
+        // la escribe el cliente y hay que validarla mas abajo.
+        $referenciaRaw = $this->lockedOrder ? $this->lockedOrder->reference : (string) Tools::getValue('referencia');
         if (trim($referenciaRaw) === '') {
             $this->ccErrors[] = $this->module->ccL('error_required_referencia');
         }
@@ -138,6 +190,19 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
 
         list($referenciaNorm, $referenciaValida) = $this->module->normalizeReference($referenciaRaw);
         $referenciaNorm = $this->module->truncateField($referenciaNorm, 40);
+
+        // Si la referencia la ha escrito el cliente (no viene del boton del
+        // historial), hay que comprobar que el pedido existe y que es
+        // suyo antes de dejar enviar. Si viene del historial ya esta
+        // verificado en resolveLockedOrder().
+        if (!$this->lockedOrder) {
+            $ownershipError = $this->checkReferenceOwnership($referenciaNorm);
+            if ($ownershipError) {
+                $this->ccErrors[] = $ownershipError;
+
+                return;
+            }
+        }
 
         $seguimiento = $this->module->truncateField(trim((string) Tools::getValue('seguimiento')), 60);
         $nombre = $this->module->truncateField($nombre, 120);
@@ -208,6 +273,36 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
         }
 
         $this->ccSuccess = true;
+    }
+
+    /**
+     * Comprueba que la referencia escrita a mano corresponde a un
+     * pedido real y que ese pedido es del cliente logueado. Un pedido
+     * puede tener varias filas con la misma referencia (envios
+     * partidos), asi que se comprueba contra todas.
+     *
+     * @return string|null Mensaje de error, o null si esta todo bien.
+     */
+    private function checkReferenceOwnership($referenciaNorm)
+    {
+        $existsCount = (int) Db::getInstance()->getValue(
+            'SELECT COUNT(*) FROM `' . _DB_PREFIX_ . 'orders` WHERE reference = "' . pSQL($referenciaNorm) . '"'
+        );
+
+        if (!$existsCount) {
+            return $this->module->ccL('error_referencia_not_found');
+        }
+
+        $ownCount = (int) Db::getInstance()->getValue(
+            'SELECT COUNT(*) FROM `' . _DB_PREFIX_ . 'orders`
+             WHERE reference = "' . pSQL($referenciaNorm) . '" AND id_customer = ' . (int) $this->context->customer->id
+        );
+
+        if (!$ownCount) {
+            return $this->module->ccL('error_referencia_wrong_customer');
+        }
+
+        return null;
     }
 
     /**

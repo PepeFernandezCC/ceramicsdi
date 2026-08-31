@@ -104,7 +104,7 @@ class CcIncidencias extends Module
     {
         $this->name = 'ccincidencias';
         $this->tab = 'front_office_features';
-        $this->version = '1.1.0';
+        $this->version = '1.2.0';
         $this->author = 'Ceramic Connection';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -124,6 +124,7 @@ class CcIncidencias extends Module
             && $this->installAdminTab()
             && $this->registerHook('moduleRoutes')
             && $this->registerHook('displayHeader')
+            && $this->installOrderButtonHook()
             && Configuration::updateValue('CCINCIDENCIAS_TO_EMAIL', 'incidencias@ceramicconnection.es')
             && Configuration::updateValue('CCINCIDENCIAS_FROM_EMAIL', 'web@ceramicconnection.es')
             && Configuration::updateValue('CCINCIDENCIAS_FROM_NAME', 'Ceramic Connection Web')
@@ -270,6 +271,32 @@ class CcIncidencias extends Module
     }
 
     /**
+     * "displayCustomerOrderWithdrawalButton" es un hook propio de este
+     * proyecto (lo dio de alta ccdesistimiento), ya pintado en cada
+     * pedido del historial del cliente (themes/child_classic/templates/
+     * customer/history.tpl). Lo reutilizamos aqui para no tocar el
+     * theme: cualquier modulo que quiera un boton por pedido en esa
+     * misma zona se engancha a el. Si por lo que sea la definicion del
+     * hook no existe todavia (p. ej. ccdesistimiento desinstalado), la
+     * creamos nosotros.
+     */
+    public function installOrderButtonHook()
+    {
+        $hookName = 'displayCustomerOrderWithdrawalButton';
+
+        if (!(int) Hook::getIdByName($hookName)) {
+            $hook = new Hook();
+            $hook->name = $hookName;
+            $hook->title = 'Display customer order withdrawal button';
+            $hook->description = 'Shows per-order action buttons in customer order history';
+            $hook->position = 1;
+            $hook->add();
+        }
+
+        return $this->registerHook($hookName);
+    }
+
+    /**
      * Registra las rutas amigables del formulario, una por idioma. Todas
      * apuntan al mismo controlador para que el enlace funcione sea cual
      * sea el idioma en el que el cliente lo abra.
@@ -300,7 +327,7 @@ class CcIncidencias extends Module
      * tienda en sus enlaces cuando el multi-idioma con URLs amigables
      * esta activo.
      */
-    public function getFormUrl($idLang = null)
+    public function getFormUrl($idLang = null, $idOrder = null)
     {
         if ($idLang === null) {
             $idLang = $this->context->language->id;
@@ -310,8 +337,13 @@ class CcIncidencias extends Module
         $slug = isset(self::SLUGS[$iso]) ? self::SLUGS[$iso] : self::SLUGS['en'];
 
         $base = rtrim($this->context->link->getBaseLink(null, null, false), '/');
+        $url = $base . '/' . $this->getLangPrefix((int) $idLang) . $slug;
 
-        return $base . '/' . $this->getLangPrefix((int) $idLang) . $slug;
+        if ((int) $idOrder > 0) {
+            $url .= '?id_order=' . (int) $idOrder;
+        }
+
+        return $url;
     }
 
     /**
@@ -601,5 +633,38 @@ class CcIncidencias extends Module
         );
 
         return '';
+    }
+
+    /**
+     * Boton "Comunicar incidencia" en cada pedido del historial del
+     * cliente. Ver installOrderButtonHook() para de donde sale el
+     * nombre del hook.
+     */
+    public function hookDisplayCustomerOrderWithdrawalButton($params)
+    {
+        if (empty($params['order']) || !$this->context->customer || !$this->context->customer->isLogged()) {
+            return '';
+        }
+
+        $orderPresenter = $params['order'];
+
+        if (empty($orderPresenter['details']['reference'])) {
+            return '';
+        }
+
+        $reference = pSQL($orderPresenter['details']['reference']);
+
+        $idOrder = (int) Db::getInstance()->getValue(
+            'SELECT id_order FROM `' . _DB_PREFIX_ . 'orders`
+             WHERE reference = "' . $reference . '" AND id_customer = ' . (int) $this->context->customer->id
+        );
+
+        if (!$idOrder) {
+            return '';
+        }
+
+        $url = $this->getFormUrl($this->context->language->id, $idOrder);
+
+        return '<a class="btn btn-secondary" href="' . htmlspecialchars($url) . '">' . htmlspecialchars($this->ccL('order_button_label')) . '</a>';
     }
 }
