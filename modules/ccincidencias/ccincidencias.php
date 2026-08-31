@@ -15,6 +15,8 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+require_once dirname(__FILE__) . '/classes/CcIncidenciasTipo.php';
+
 class CcIncidencias extends Module
 {
     /**
@@ -38,14 +40,51 @@ class CcIncidencias extends Module
         'nl' => 'incidentenformulier',
     );
 
-    /** Mapeo opcion->valor TIPO del correo. El valor NUNCA se traduce. */
-    const TIPO_VALUES = array(
-        'rotura' => 'ROTURA',
-        'falta' => 'FALTA MAT',
-        'erroneo' => 'MAT ERRONEO',
-        'perdido' => 'PERDIDO?',
-        'tte' => 'TTE',
-        'otro' => 'SIN CLASIFICAR',
+    /**
+     * Tipos de incidencia por defecto, solo para sembrar la tabla
+     * `ccincidencias_tipo` en la instalacion. A partir de ahi el equipo
+     * web los gestiona (crear/editar/borrar/reordenar/activar) desde
+     * Admin > Clientes > Tipos de incidencia, sin tocar codigo. El
+     * "code" es el valor que viaja en el correo como "tipo:"; ver
+     * apartados 2 y 7 del PDF.
+     */
+    const DEFAULT_TIPOS = array(
+        array(
+            'code' => 'ROTURA',
+            'es' => 'Material roto o dañado', 'fr' => 'Materiel casse ou endommage',
+            'en' => 'Damaged or broken material', 'de' => 'Beschaedigtes oder zerbrochenes Material',
+            'pt' => 'Material partido ou danificado', 'nl' => 'Beschadigd of gebroken materiaal',
+        ),
+        array(
+            'code' => 'FALTA MAT',
+            'es' => 'Falta material', 'fr' => 'Materiel manquant',
+            'en' => 'Missing material', 'de' => 'Fehlendes Material',
+            'pt' => 'Falta material', 'nl' => 'Ontbrekend materiaal',
+        ),
+        array(
+            'code' => 'MAT ERRONEO',
+            'es' => 'Material equivocado', 'fr' => 'Materiel errone',
+            'en' => 'Wrong material', 'de' => 'Falsches Material',
+            'pt' => 'Material incorreto', 'nl' => 'Verkeerd materiaal',
+        ),
+        array(
+            'code' => 'PERDIDO?',
+            'es' => 'El pedido no ha llegado', 'fr' => 'La commande n est pas arrivee',
+            'en' => 'The order has not arrived', 'de' => 'Die Bestellung ist nicht angekommen',
+            'pt' => 'A encomenda nao chegou', 'nl' => 'De bestelling is niet aangekomen',
+        ),
+        array(
+            'code' => 'TTE',
+            'es' => 'Problema con la entrega', 'fr' => 'Probleme de livraison',
+            'en' => 'Delivery problem', 'de' => 'Problem bei der Zustellung',
+            'pt' => 'Problema com a entrega', 'nl' => 'Probleem met de levering',
+        ),
+        array(
+            'code' => 'SIN CLASIFICAR',
+            'es' => 'Otro', 'fr' => 'Autre',
+            'en' => 'Other', 'de' => 'Sonstiges',
+            'pt' => 'Outro', 'nl' => 'Anders',
+        ),
     );
 
     /** Formatos de foto aceptados (extension => mimes válidos). */
@@ -65,7 +104,7 @@ class CcIncidencias extends Module
     {
         $this->name = 'ccincidencias';
         $this->tab = 'front_office_features';
-        $this->version = '1.0.0';
+        $this->version = '1.1.0';
         $this->author = 'Ceramic Connection';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -81,6 +120,8 @@ class CcIncidencias extends Module
     {
         return parent::install()
             && $this->installDb()
+            && $this->seedDefaultTipos()
+            && $this->installAdminTab()
             && $this->registerHook('moduleRoutes')
             && $this->registerHook('displayHeader')
             && Configuration::updateValue('CCINCIDENCIAS_TO_EMAIL', 'incidencias@ceramicconnection.es')
@@ -93,6 +134,9 @@ class CcIncidencias extends Module
 
     public function uninstall()
     {
+        $this->uninstallAdminTab();
+        $this->uninstallDb();
+
         return Configuration::deleteByName('CCINCIDENCIAS_TO_EMAIL')
             && Configuration::deleteByName('CCINCIDENCIAS_FROM_EMAIL')
             && Configuration::deleteByName('CCINCIDENCIAS_FROM_NAME')
@@ -102,20 +146,127 @@ class CcIncidencias extends Module
             && parent::uninstall();
     }
 
-    private function installDb()
+    public function installDb()
     {
-        // Solo se usa para el limite de envios por IP (antibot). No es
-        // el sistema de incidencias: eso vive en el correo, no aqui.
-        $sql = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'ccincidencias_log` (
-            `id_ccincidencias_log` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-            `ip` VARCHAR(45) NOT NULL,
-            `sent` TINYINT(1) NOT NULL DEFAULT 0,
-            `date_add` DATETIME NOT NULL,
-            PRIMARY KEY (`id_ccincidencias_log`),
-            KEY `ip_date` (`ip`, `date_add`)
-        ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8mb4;';
+        return $this->runSqlFile('install.sql');
+    }
 
-        return Db::getInstance()->execute($sql);
+    private function uninstallDb()
+    {
+        return $this->runSqlFile('uninstall.sql');
+    }
+
+    /**
+     * Ejecuta un fichero sql/*.sql, un statement por bloque separado por
+     * ";" a final de linea, sustituyendo el placeholder PREFIX_ por el
+     * prefijo real de tablas de la tienda. Mismo patron que usan otros
+     * modulos propios del proyecto (p. ej. inspiration).
+     */
+    private function runSqlFile($fileName)
+    {
+        $path = dirname(__FILE__) . '/sql/' . $fileName;
+
+        if (!file_exists($path)) {
+            return false;
+        }
+
+        $sql = str_replace('PREFIX_', _DB_PREFIX_, file_get_contents($path));
+
+        foreach (array_filter(array_map('trim', preg_split('/;\s*\n/', $sql))) as $statement) {
+            if ($statement && !Db::getInstance()->execute($statement)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Siembra los 6 tipos de incidencia originales del PDF la primera
+     * vez que se instala. No hace nada si ya hay tipos (reinstalacion).
+     */
+    public function seedDefaultTipos()
+    {
+        if ((int) Db::getInstance()->getValue('SELECT COUNT(*) FROM `' . _DB_PREFIX_ . 'ccincidencias_tipo`')) {
+            return true;
+        }
+
+        $toEmail = Configuration::get('CCINCIDENCIAS_TO_EMAIL');
+        if (!$toEmail) {
+            $toEmail = 'incidencias@ceramicconnection.es';
+        }
+
+        $languages = Language::getLanguages(false);
+        $position = 0;
+
+        foreach (self::DEFAULT_TIPOS as $seedTipo) {
+            $tipo = new CcIncidenciasTipo();
+            $tipo->code = $seedTipo['code'];
+            $tipo->email = $toEmail;
+            $tipo->active = true;
+            $tipo->position = $position++;
+            $tipo->descripcion = array();
+
+            foreach ($languages as $lang) {
+                $iso = Tools::strtolower($lang['iso_code']);
+                $tipo->descripcion[(int) $lang['id_lang']] = isset($seedTipo[$iso]) ? $seedTipo[$iso] : $seedTipo['en'];
+            }
+
+            if (!$tipo->add()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public function installAdminTab()
+    {
+        $className = 'AdminCcIncidenciasTipos';
+
+        if ((int) Tab::getIdFromClassName($className)) {
+            return true;
+        }
+
+        $parentId = (int) Tab::getIdFromClassName('AdminParentCustomer');
+        if (!$parentId) {
+            $parentId = (int) Tab::getIdFromClassName('AdminCustomers');
+        }
+
+        $tab = new Tab();
+        $tab->active = 1;
+        $tab->class_name = $className;
+        $tab->id_parent = $parentId;
+        $tab->module = $this->name;
+
+        $names = array(
+            'es' => 'Tipos de incidencia', 'fr' => 'Types de litige', 'en' => 'Incident types',
+            'de' => 'Schadensarten', 'pt' => 'Tipos de incidencia', 'nl' => 'Incidenttypen',
+        );
+
+        foreach (Language::getLanguages(false) as $language) {
+            $iso = Tools::strtolower(substr((string) $language['iso_code'], 0, 2));
+            $tab->name[(int) $language['id_lang']] = isset($names[$iso]) ? $names[$iso] : $names['en'];
+        }
+
+        return (bool) $tab->add();
+    }
+
+    private function uninstallAdminTab()
+    {
+        $idTab = (int) Tab::getIdFromClassName('AdminCcIncidenciasTipos');
+
+        if (!$idTab) {
+            return true;
+        }
+
+        $tab = new Tab($idTab);
+
+        if (!Validate::isLoadedObject($tab)) {
+            return true;
+        }
+
+        return (bool) $tab->delete();
     }
 
     /**
@@ -283,16 +434,23 @@ class CcIncidencias extends Module
         return Tools::substr($value, 0, $limit);
     }
 
-    public function getTipoOptions()
+    /**
+     * Tipos de incidencia activos para el desplegable del formulario,
+     * en el idioma indicado. Gestionados por el equipo web (CRUD en
+     * Admin > Clientes > Tipos de incidencia), no en codigo.
+     */
+    public function getTipoOptions($idLang = null)
     {
-        return array(
-            'rotura' => $this->ccL('tipo_rotura'),
-            'falta' => $this->ccL('tipo_falta'),
-            'erroneo' => $this->ccL('tipo_erroneo'),
-            'perdido' => $this->ccL('tipo_perdido'),
-            'tte' => $this->ccL('tipo_tte'),
-            'otro' => $this->ccL('tipo_otro'),
-        );
+        if ($idLang === null) {
+            $idLang = $this->context->language->id;
+        }
+
+        return CcIncidenciasTipo::getActiveForFront((int) $idLang);
+    }
+
+    public function getAdminTiposUrl()
+    {
+        return $this->context->link->getAdminLink('AdminCcIncidenciasTipos');
     }
 
     public function getPrivacyPolicyUrl()
@@ -354,9 +512,20 @@ class CcIncidencias extends Module
             $output .= $this->displayConfirmation($this->ccL('config_saved'));
         }
 
+        $output .= $this->renderTiposPanel();
         $output .= $this->renderUrlsPanel();
 
         return $output . $this->renderForm();
+    }
+
+    private function renderTiposPanel()
+    {
+        $url = $this->getAdminTiposUrl();
+
+        return '<div class="panel"><h3>' . $this->ccL('manage_tipos') . '</h3>'
+            . '<p>' . $this->ccL('manage_tipos_help') . '</p>'
+            . '<a class="btn btn-default" href="' . htmlspecialchars($url) . '"><i class="icon-tags"></i> ' . $this->ccL('manage_tipos_button') . '</a>'
+            . '</div>';
     }
 
     private function renderUrlsPanel()

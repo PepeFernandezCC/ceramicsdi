@@ -38,8 +38,8 @@
           <label for="cc_tipo">{$cc_t.label_tipo|escape:'htmlall':'UTF-8'} <span class="cc-required">{$cc_t.required_mark|escape:'htmlall':'UTF-8'}</span></label>
           <select id="cc_tipo" name="tipo" class="form-control" required>
             <option value="">{$cc_t.tipo_placeholder|escape:'htmlall':'UTF-8'}</option>
-            {foreach from=$cc_tipo_options key=cc_key item=cc_label}
-              <option value="{$cc_key|escape:'htmlall':'UTF-8'}"{if isset($cc_old.tipo) && $cc_old.tipo == $cc_key} selected{/if}>{$cc_label|escape:'htmlall':'UTF-8'}</option>
+            {foreach from=$cc_tipo_options item=cc_tipo_row}
+              <option value="{$cc_tipo_row.id_ccincidencias_tipo|intval}"{if isset($cc_old.tipo) && $cc_old.tipo == $cc_tipo_row.id_ccincidencias_tipo} selected{/if}>{$cc_tipo_row.descripcion|escape:'htmlall':'UTF-8'}</option>
             {/foreach}
           </select>
         </div>

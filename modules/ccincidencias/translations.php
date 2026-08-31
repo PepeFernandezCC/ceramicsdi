@@ -25,6 +25,9 @@ return array(
         'save' => 'Guardar',
         'form_urls' => 'Enlaces del formulario por idioma',
         'language' => 'Idioma',
+        'manage_tipos' => 'Tipos de incidencia',
+        'manage_tipos_help' => 'Gestiona los tipos de incidencia (texto que ve el cliente, a que email va cada uno, orden y si estan activos) sin tocar codigo.',
+        'manage_tipos_button' => 'Gestionar tipos de incidencia',
 
         'page_title' => 'Formulario de incidencias',
         'intro' => 'Si ha habido algun problema con tu pedido, cuentanoslo aqui. Revisaremos tu incidencia y te responderemos por correo.',
@@ -50,12 +53,6 @@ return array(
         'required_mark' => '*',
 
         'tipo_placeholder' => 'Selecciona una opcion',
-        'tipo_rotura' => 'Material roto o dañado',
-        'tipo_falta' => 'Falta material',
-        'tipo_erroneo' => 'Material equivocado',
-        'tipo_perdido' => 'El pedido no ha llegado',
-        'tipo_tte' => 'Problema con la entrega',
-        'tipo_otro' => 'Otro',
 
         'error_required_tipo' => 'Selecciona el tipo de incidencia.',
         'error_required_referencia' => 'Indica la referencia del pedido.',
@@ -110,6 +107,9 @@ return array(
         'save' => 'Enregistrer',
         'form_urls' => 'Liens du formulaire par langue',
         'language' => 'Langue',
+        'manage_tipos' => 'Types de litige',
+        'manage_tipos_help' => 'Gerez les types de litige (texte vu par le client, e-mail de destination, ordre et statut actif) sans toucher au code.',
+        'manage_tipos_button' => 'Gerer les types de litige',
 
         'page_title' => 'Formulaire de litige',
         'intro' => 'Si vous avez rencontre un probleme avec votre commande, dites-le-nous ici. Nous examinerons votre litige et vous repondrons par e-mail.',
@@ -135,12 +135,6 @@ return array(
         'required_mark' => '*',
 
         'tipo_placeholder' => 'Choisissez une option',
-        'tipo_rotura' => 'Materiel casse ou endommage',
-        'tipo_falta' => 'Materiel manquant',
-        'tipo_erroneo' => 'Materiel errone',
-        'tipo_perdido' => 'La commande n est pas arrivee',
-        'tipo_tte' => 'Probleme de livraison',
-        'tipo_otro' => 'Autre',
 
         'error_required_tipo' => 'Choisissez le type de litige.',
         'error_required_referencia' => 'Indiquez la reference de la commande.',
@@ -194,6 +188,9 @@ return array(
         'save' => 'Save',
         'form_urls' => 'Form links by language',
         'language' => 'Language',
+        'manage_tipos' => 'Incident types',
+        'manage_tipos_help' => 'Manage the incident types (customer-facing text, destination email, order and active status) without touching any code.',
+        'manage_tipos_button' => 'Manage incident types',
 
         'page_title' => 'Incident form',
         'intro' => 'If something went wrong with your order, let us know here. We will review your report and reply by email.',
@@ -219,12 +216,6 @@ return array(
         'required_mark' => '*',
 
         'tipo_placeholder' => 'Select an option',
-        'tipo_rotura' => 'Damaged or broken material',
-        'tipo_falta' => 'Missing material',
-        'tipo_erroneo' => 'Wrong material',
-        'tipo_perdido' => 'The order has not arrived',
-        'tipo_tte' => 'Delivery problem',
-        'tipo_otro' => 'Other',
 
         'error_required_tipo' => 'Select the type of incident.',
         'error_required_referencia' => 'Enter the order reference.',
@@ -278,6 +269,9 @@ return array(
         'save' => 'Speichern',
         'form_urls' => 'Formular-Links je Sprache',
         'language' => 'Sprache',
+        'manage_tipos' => 'Schadensarten',
+        'manage_tipos_help' => 'Verwalten Sie die Schadensarten (Kundentext, Ziel-E-Mail, Reihenfolge und Aktivstatus), ohne Code zu andern.',
+        'manage_tipos_button' => 'Schadensarten verwalten',
 
         'page_title' => 'Schadensformular',
         'intro' => 'Wenn bei Ihrer Bestellung etwas schiefgelaufen ist, teilen Sie es uns hier mit. Wir pruefen Ihre Meldung und antworten per E-Mail.',
@@ -303,12 +297,6 @@ return array(
         'required_mark' => '*',
 
         'tipo_placeholder' => 'Option auswaehlen',
-        'tipo_rotura' => 'Beschaedigtes oder zerbrochenes Material',
-        'tipo_falta' => 'Fehlendes Material',
-        'tipo_erroneo' => 'Falsches Material',
-        'tipo_perdido' => 'Die Bestellung ist nicht angekommen',
-        'tipo_tte' => 'Problem bei der Zustellung',
-        'tipo_otro' => 'Sonstiges',
 
         'error_required_tipo' => 'Waehlen Sie die Art des Problems.',
         'error_required_referencia' => 'Geben Sie die Bestellreferenz an.',
@@ -362,6 +350,9 @@ return array(
         'save' => 'Guardar',
         'form_urls' => 'Links do formulario por idioma',
         'language' => 'Idioma',
+        'manage_tipos' => 'Tipos de incidencia',
+        'manage_tipos_help' => 'Gira os tipos de incidencia (texto visto pelo cliente, email de destino, ordem e estado ativo) sem tocar em codigo.',
+        'manage_tipos_button' => 'Gerir tipos de incidencia',
 
         'page_title' => 'Formulario de incidencia',
         'intro' => 'Se algo correu mal com a sua encomenda, diga-nos aqui. Analisaremos a sua incidencia e responderemos por email.',
@@ -387,12 +378,6 @@ return array(
         'required_mark' => '*',
 
         'tipo_placeholder' => 'Selecione uma opcao',
-        'tipo_rotura' => 'Material partido ou danificado',
-        'tipo_falta' => 'Falta material',
-        'tipo_erroneo' => 'Material incorreto',
-        'tipo_perdido' => 'A encomenda nao chegou',
-        'tipo_tte' => 'Problema com a entrega',
-        'tipo_otro' => 'Outro',
 
         'error_required_tipo' => 'Selecione o tipo de incidencia.',
         'error_required_referencia' => 'Indique a referencia da encomenda.',
@@ -446,6 +431,9 @@ return array(
         'save' => 'Opslaan',
         'form_urls' => 'Formulierlinks per taal',
         'language' => 'Taal',
+        'manage_tipos' => 'Incidenttypen',
+        'manage_tipos_help' => 'Beheer de incidenttypen (tekst voor de klant, bestemmings-e-mail, volgorde en actieve status) zonder code aan te passen.',
+        'manage_tipos_button' => 'Incidenttypen beheren',
 
         'page_title' => 'Incidentenformulier',
         'intro' => 'Als er iets misging met uw bestelling, laat het ons hier weten. We beoordelen uw melding en reageren per e-mail.',
@@ -471,12 +459,6 @@ return array(
         'required_mark' => '*',
 
         'tipo_placeholder' => 'Selecteer een optie',
-        'tipo_rotura' => 'Beschadigd of gebroken materiaal',
-        'tipo_falta' => 'Ontbrekend materiaal',
-        'tipo_erroneo' => 'Verkeerd materiaal',
-        'tipo_perdido' => 'De bestelling is niet aangekomen',
-        'tipo_tte' => 'Probleem met de levering',
-        'tipo_otro' => 'Anders',
 
         'error_required_tipo' => 'Selecteer het type incident.',
         'error_required_referencia' => 'Vul de bestelreferentie in.',

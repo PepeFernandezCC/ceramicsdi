@@ -93,9 +93,11 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
             return;
         }
 
-        $tipoKey = (string) Tools::getValue('tipo');
-        $tipoOptions = CcIncidencias::TIPO_VALUES;
-        if (!isset($tipoOptions[$tipoKey])) {
+        // El tipo es una fila de ccincidencias_tipo (CRUD en Admin), no
+        // una clave fija en codigo: se carga ya en el idioma del cliente.
+        $idTipo = (int) Tools::getValue('tipo');
+        $tipoObj = new CcIncidenciasTipo($idTipo, $this->context->language->id);
+        if (!Validate::isLoadedObject($tipoObj) || !$tipoObj->active) {
             $this->ccErrors[] = $this->module->ccL('error_required_tipo');
         }
 
@@ -147,7 +149,11 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
 
         $idioma = $this->module->getCurrentIsoCode();
         $idiomaUpper = Tools::strtoupper($idioma);
-        $tipoValue = $tipoOptions[$tipoKey];
+        $tipoValue = $tipoObj->code;
+        $tipoLabel = $tipoObj->descripcion;
+        $toEmail = $tipoObj->email !== '' && $tipoObj->email !== null
+            ? $tipoObj->email
+            : Configuration::get('CCINCIDENCIAS_TO_EMAIL');
 
         // Total de fotos: si supera el limite, se envia sin adjuntos
         // pero la incidencia se manda igual (apartado 7 del PDF).
@@ -174,7 +180,7 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
         ));
 
         $humanText = $this->buildHumanText(array(
-            'tipo_label' => $this->tipoLabelFor($tipoKey),
+            'tipo_label' => $tipoLabel,
             'referencia' => $referenciaNorm,
             'seguimiento' => $seguimiento,
             'nombre' => $nombre,
@@ -191,7 +197,7 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
         $replyToEmail = $this->module->stripHeaderBreaks($email);
         $replyToName = $this->module->stripHeaderBreaks($nombre);
 
-        $sent = $this->sendIncidentEmail($subject, $body, $replyToEmail, $replyToName, $photos);
+        $sent = $this->sendIncidentEmail($subject, $body, $replyToEmail, $replyToName, $toEmail, $photos);
 
         $this->module->logAttempt($ip, $sent);
 
@@ -202,13 +208,6 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
         }
 
         $this->ccSuccess = true;
-    }
-
-    private function tipoLabelFor($tipoKey)
-    {
-        $options = $this->module->getTipoOptions();
-
-        return isset($options[$tipoKey]) ? $options[$tipoKey] : $tipoKey;
     }
 
     /**
@@ -331,7 +330,7 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
      * la misma configuracion de transporte (SMTP/sendmail) que el resto
      * de la tienda, para salir autenticado por el dominio.
      */
-    private function sendIncidentEmail($subject, $plainBody, $replyToEmail, $replyToName, array $photos)
+    private function sendIncidentEmail($subject, $plainBody, $replyToEmail, $replyToName, $toEmail, array $photos)
     {
         if (!class_exists('Swift_Message')) {
             require_once _PS_ROOT_DIR_ . '/vendor/swiftmailer/swiftmailer/lib/swift_required.php';
@@ -339,9 +338,8 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
 
         $fromEmail = Configuration::get('CCINCIDENCIAS_FROM_EMAIL');
         $fromName = Configuration::get('CCINCIDENCIAS_FROM_NAME');
-        $toEmail = Configuration::get('CCINCIDENCIAS_TO_EMAIL');
 
-        if (!$fromEmail || !$toEmail) {
+        if (!$fromEmail || !$toEmail || !Validate::isEmail($toEmail)) {
             return false;
         }
 

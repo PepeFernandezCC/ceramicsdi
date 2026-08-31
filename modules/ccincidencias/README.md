@@ -45,6 +45,38 @@ cual sea el idioma actual de la pagina):
 También se pueden consultar (y abrir) desde la configuración del módulo en
 el admin.
 
+## Esquema de base de datos
+
+Las tablas se crean desde `sql/install.sql` (y se borran desde
+`sql/uninstall.sql`) mediante `installDb()`/`uninstallDb()` en
+`ccincidencias.php`, que cargan el fichero, sustituyen el placeholder
+`PREFIX_` por el prefijo real de la tienda y ejecutan cada sentencia. Mismo
+patron que usa el modulo `inspiration` de este proyecto. Para cambiar el
+esquema, edita el `.sql`, no el PHP.
+
+## Tipos de incidencia (CRUD, sin tocar codigo)
+
+Admin > Clientes > **Tipos de incidencia** (`AdminCcIncidenciasTipos`, tambien
+enlazado desde la configuracion del modulo). Cada tipo tiene:
+
+- **Codigo**: el valor EXACTO que viaja en el correo como `tipo:` (se guarda
+  siempre en mayusculas). Si cambias el codigo de un tipo que el sistema de
+  incidencias ya reconoce, avisa antes al responsable de ese sistema — es la
+  misma regla del apartado 11 del PDF, ahora aplicada a datos en vez de a
+  codigo.
+- **Descripcion**: traducible, una por idioma de la tienda — es lo que ve el
+  cliente en el desplegable del formulario.
+- **Email destino**: a donde se envia el correo de las incidencias de *ese*
+  tipo. Vacio = usa el email general del modulo (`CCINCIDENCIAS_TO_EMAIL`).
+  Esto es lo que permite enrutar, p. ej., las incidencias de "El pedido no ha
+  llegado" a logistica y las de "Material equivocado" a otro buzon.
+- **Posicion** / **Activo**: orden y visibilidad en el formulario publico.
+
+En la instalacion se siembran los 6 tipos originales del PDF (`ROTURA`,
+`FALTA MAT`, `MAT ERRONEO`, `PERDIDO?`, `TTE`, `SIN CLASIFICAR`), todos con el
+email general por defecto. A partir de ahi el equipo web puede crear, editar,
+reordenar, activar/desactivar o borrar tipos libremente desde ese listado.
+
 ## Formato del correo
 
 Ver `ccincidencias.php` (metodo `buildDataBlock` en

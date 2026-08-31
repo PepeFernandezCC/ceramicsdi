@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>deliverypricecalculator</name>
+    <displayName><![CDATA[Calculadora de Precio de Env&iacute;o]]></displayName>
+    <version><![CDATA[1.0.0]]></version>
+    <description><![CDATA[Calculadora de coste de env&iacute;o por pa&iacute;s/provincia/c&oacute;digo postal en el carrito]]></description>
+    <author><![CDATA[Ceramic Connection]]></author>
+    <tab><![CDATA[shipping_logistics]]></tab>
+	<confirmUninstall><![CDATA[¿Estás seguro de que quieres desinstalar?]]></confirmUninstall>
+    <is_configurable>0</is_configurable>
+    <need_instance>0</need_instance>
+	<limited_countries></limited_countries>
+</module>
