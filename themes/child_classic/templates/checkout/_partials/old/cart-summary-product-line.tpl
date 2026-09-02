@@ -25,7 +25,6 @@
 {block name='cart_summary_product_line'}
     {* PLANATEC *}
     {assign var="esMuestra" value=false}
-    {assign var="isByPiece" value=false}
     {foreach from=$product.attributes key="attribute" item="value"}
         {if ($attribute == 'Muestra' and $value == 'Sí')
             || ($attribute == 'Échantillon' and $value == 'Oui')
@@ -35,14 +34,6 @@
             || ($attribute == 'Voorbeeld' and $value == 'Ja')
         }
             {$esMuestra = true}
-        {/if}
-    {/foreach}
-    {foreach from=$product.features item='feature'}
-
-        {if $feature.id_feature === $FEATURE_M2_PIEZA_ID}
-
-            {assign var="isByPiece" value=true}
-
         {/if}
     {/foreach}
 
@@ -85,9 +76,8 @@
                     {/foreach}
 
                     {if !$normalSell}
-                        <span class="label" {if $esMuestra}style="display: none;"{/if}>
-                            {l s='Quantity' d='Shop.Theme.Catalog'}:&nbsp;<strong>{($product.quantity * $m2Caja)|replace:'.':','} {if $isByPiece}{l s='pieces' d='Shop.Theme.Catalog'}{else}m<sup>2</sup>{/if}</strong>
-                        </span>
+                        <span class="label"
+                              {if $esMuestra}style="display: none;"{/if}>{l s='Quantity' d='Shop.Theme.Catalog'}:&nbsp;<strong>{($product.quantity * $m2Caja)|replace:'.':','}m<sup>2</sup></strong></span>
                     {/if}
 
                     <div class="row" {if $esMuestra}style="display: none;"{/if}>
@@ -128,4 +118,31 @@
     </div>
     {* END PLANATEC *}
 
+    {* PLANATEC
+
+    <div class="media-left">
+        <a href="{$product.url}" title="{$product.name}">
+            {if $product.default_image}
+                <img class="media-object" src="{$product.default_image.small.url}" alt="{$product.name}" loading="lazy">
+            {else}
+                <img src="{$urls.no_picture_image.bySize.small_default.url}" loading="lazy" alt ="default image"/>
+            {/if}
+        </a>
+    </div>
+    <div class="media-body">
+    <span class="product-name">
+        <a href="{$product.url}" target="_blank" rel="noopener noreferrer nofollow">{$product.name}</a>
+    </span>
+        <span class="product-quantity">x{$product.quantity}</span>
+        <span class="product-price float-xs-right">{$product.price}</span>
+        {hook h='displayProductPriceBlock' product=$product type="unit_price"}
+        {foreach from=$product.attributes key="attribute" item="value"}
+            <div class="product-line-info product-line-info-secondary text-muted">
+                <span class="label">{$attribute}:</span>
+                <span class="value">{$value}</span>
+            </div>
+        {/foreach}
+        <br/>
+    </div>
+    *}
 {/block}
