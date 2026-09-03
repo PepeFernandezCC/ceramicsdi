@@ -31,12 +31,34 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
+    // Fotos obligatorias o no segun el tipo elegido (campo "Requiere
+    // fotos" del tipo de incidencia, gestionado en Admin). Se refleja
+    // tanto en el asterisco de obligatoriedad como en la validacion.
+    var tipoSelect = form.querySelector('#cc_tipo');
+    var fotosRequiredMark = document.getElementById('cc_fotos_required');
+
+    var tipoRequiresPhotos = function () {
+        if (!tipoSelect || !tipoSelect.value) {
+            return false;
+        }
+        var selectedOption = tipoSelect.options[tipoSelect.selectedIndex];
+
+        return !!selectedOption && selectedOption.getAttribute('data-require-photos') === '1';
+    };
+
+    var syncFotosRequiredMark = function () {
+        if (fotosRequiredMark) {
+            fotosRequiredMark.style.display = tipoRequiresPhotos() ? '' : 'none';
+        }
+    };
+
+    if (tipoSelect) {
+        tipoSelect.addEventListener('change', syncFotosRequiredMark);
+        syncFotosRequiredMark();
+    }
+
     var errorsBox = document.querySelector('#cc-incidencias .cc-client-errors');
     var errorsList = errorsBox ? errorsBox.querySelector('ul') : null;
-
-    var isEmailLike = function (value) {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-    };
 
     var collectErrors = function () {
         var errors = [];
@@ -51,21 +73,6 @@ document.addEventListener('DOMContentLoaded', function () {
             errors.push({ field: referencia, message: l10n.error_required_referencia });
         }
 
-        var nombre = form.querySelector('#cc_nombre');
-        if (nombre && !nombre.value.trim()) {
-            errors.push({ field: nombre, message: l10n.error_required_nombre });
-        }
-
-        var email = form.querySelector('#cc_email');
-        if (email) {
-            var emailValue = email.value.trim();
-            if (!emailValue) {
-                errors.push({ field: email, message: l10n.error_required_email });
-            } else if (!isEmailLike(emailValue)) {
-                errors.push({ field: email, message: l10n.error_invalid_email });
-            }
-        }
-
         var descripcion = form.querySelector('#cc_descripcion');
         if (descripcion && !descripcion.value.trim()) {
             errors.push({ field: descripcion, message: l10n.error_required_descripcion });
@@ -74,6 +81,11 @@ document.addEventListener('DOMContentLoaded', function () {
         var consentimiento = form.querySelector('input[name="consentimiento"]');
         if (consentimiento && !consentimiento.checked) {
             errors.push({ field: consentimiento, message: l10n.error_required_consentimiento });
+        }
+
+        var fotos = form.querySelector('#cc_fotos');
+        if (fotos && tipoRequiresPhotos() && fotos.files.length === 0) {
+            errors.push({ field: fotos, message: l10n.error_required_fotos });
         }
 
         return errors;

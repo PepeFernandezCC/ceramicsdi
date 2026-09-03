@@ -54,6 +54,14 @@ class AdminCcIncidenciasTiposController extends ModuleAdminController
                 'type' => 'bool',
                 'class' => 'fixed-width-xs',
             ),
+            'require_photos' => array(
+                'title' => $this->l('Requiere fotos'),
+                'align' => 'center',
+                'type' => 'bool',
+                'class' => 'fixed-width-xs',
+                'orderby' => false,
+                'search' => false,
+            ),
         );
 
         $this->addRowAction('edit');
@@ -96,6 +104,16 @@ class AdminCcIncidenciasTiposController extends ModuleAdminController
                     'values' => array(
                         array('id' => 'active_on', 'value' => 1, 'label' => $this->l('Si')),
                         array('id' => 'active_off', 'value' => 0, 'label' => $this->l('No')),
+                    ),
+                ),
+                array(
+                    'type' => 'switch',
+                    'label' => $this->l('Requiere fotos'),
+                    'name' => 'require_photos',
+                    'desc' => $this->l('Si esta activo, el apartado de fotos del formulario publico sera obligatorio cuando el cliente elija este tipo de incidencia.'),
+                    'values' => array(
+                        array('id' => 'require_photos_on', 'value' => 1, 'label' => $this->l('Si')),
+                        array('id' => 'require_photos_off', 'value' => 0, 'label' => $this->l('No')),
                     ),
                 ),
             ),

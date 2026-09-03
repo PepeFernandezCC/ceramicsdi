@@ -12,6 +12,9 @@
  *  - email: direccion a la que se envia el correo para ese tipo. Vacio
  *    = se usa el email general del modulo (CCINCIDENCIAS_TO_EMAIL).
  *  - active / position: visibilidad y orden en el formulario publico.
+ *  - require_photos: si esta activo, el apartado de fotos del
+ *    formulario publico pasa a ser obligatorio cuando el cliente
+ *    elige este tipo (validado en cliente y en servidor).
  */
 if (!defined('_PS_VERSION_')) {
     exit;
@@ -22,6 +25,7 @@ class CcIncidenciasTipo extends ObjectModel
     public $code;
     public $email;
     public $active;
+    public $require_photos;
     public $position;
 
     /** @var string traducible */
@@ -44,6 +48,10 @@ class CcIncidenciasTipo extends ObjectModel
                 'size' => 150,
             ),
             'active' => array(
+                'type' => self::TYPE_BOOL,
+                'validate' => 'isBool',
+            ),
+            'require_photos' => array(
                 'type' => self::TYPE_BOOL,
                 'validate' => 'isBool',
             ),
@@ -102,7 +110,7 @@ class CcIncidenciasTipo extends ObjectModel
     public static function getActiveForFront($idLang)
     {
         $rows = Db::getInstance()->executeS(
-            'SELECT t.id_ccincidencias_tipo, t.code, t.email, tl.descripcion
+            'SELECT t.id_ccincidencias_tipo, t.code, t.email, t.require_photos, tl.descripcion
              FROM `' . _DB_PREFIX_ . 'ccincidencias_tipo` t
              INNER JOIN `' . _DB_PREFIX_ . 'ccincidencias_tipo_lang` tl
                 ON tl.id_ccincidencias_tipo = t.id_ccincidencias_tipo AND tl.id_lang = ' . (int) $idLang . '

@@ -78,7 +78,7 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
         $t = array();
         foreach (array(
             'page_title', 'intro', 'label_tipo', 'label_referencia', 'referencia_placeholder',
-            'referencia_warning', 'label_seguimiento', 'label_nombre', 'label_email', 'label_telefono',
+            'referencia_warning', 'label_seguimiento', 'label_telefono',
             'label_es_muestra', 'label_descripcion', 'descripcion_placeholder', 'label_fotos', 'fotos_help',
             'fotos_too_big_notice', 'consentimiento_prefix', 'consentimiento_link_text', 'honeypot_label',
             'btn_submit', 'required_mark', 'tipo_placeholder', 'success_title', 'success_message', 'back_home',
@@ -158,17 +158,11 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
             $this->ccErrors[] = $this->module->ccL('error_required_referencia');
         }
 
-        $nombre = trim((string) Tools::getValue('nombre'));
-        if ($nombre === '') {
-            $this->ccErrors[] = $this->module->ccL('error_required_nombre');
-        }
-
-        $email = trim((string) Tools::getValue('email'));
-        if ($email === '') {
-            $this->ccErrors[] = $this->module->ccL('error_required_email');
-        } elseif (!Validate::isEmail($email)) {
-            $this->ccErrors[] = $this->module->ccL('error_invalid_email');
-        }
+        // Nombre y email ya no los escribe el cliente: salen directamente
+        // de la cuenta con la que ha iniciado sesion (siempre valida, no
+        // hace falta comprobarla).
+        $nombre = trim($this->context->customer->firstname . ' ' . $this->context->customer->lastname);
+        $email = trim((string) $this->context->customer->email);
 
         $descripcion = trim((string) Tools::getValue('descripcion'));
         if ($descripcion === '') {
@@ -182,6 +176,8 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
         $photos = $this->collectValidPhotos();
         if ($photos === false) {
             $this->ccErrors[] = $this->module->ccL('error_photos_type');
+        } elseif (Validate::isLoadedObject($tipoObj) && $tipoObj->require_photos && empty($photos)) {
+            $this->ccErrors[] = $this->module->ccL('error_required_fotos');
         }
 
         if (!empty($this->ccErrors)) {
@@ -203,6 +199,11 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
                 return;
             }
         }
+
+        // Pedido resuelto: el del historial si venimos de ahi, o el que
+        // corresponde a la referencia (ya comprobada como del cliente
+        // logueado) si la ha escrito el propio cliente.
+        $order = $this->lockedOrder ?: $this->resolveOrderByReference($referenciaNorm);
 
         $seguimiento = $this->module->truncateField(trim((string) Tools::getValue('seguimiento')), 60);
         $nombre = $this->module->truncateField($nombre, 120);
@@ -254,6 +255,7 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
             'idioma' => $idioma,
             'es_muestra' => $esMuestra,
             'comentario' => $descripcion,
+            'order_details' => $order ? $this->buildOrderDetails($order) : null,
         ));
 
         $body = $block . "\n\n" . $humanText;
@@ -306,6 +308,91 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
     }
 
     /**
+     * Pedido real correspondiente a una referencia ya comprobada como
+     * del cliente logueado (checkReferenceOwnership la valido antes de
+     * llamar aqui). Si hay envios partidos con la misma referencia, nos
+     * quedamos con el mas antiguo. Devuelve null solo si algo raro pasa
+     * entre medias (pedido borrado, etc.); nunca debe impedir el envio
+     * de la incidencia.
+     */
+    private function resolveOrderByReference($referenciaNorm)
+    {
+        $idOrder = (int) Db::getInstance()->getValue(
+            'SELECT id_order FROM `' . _DB_PREFIX_ . 'orders`
+             WHERE reference = "' . pSQL($referenciaNorm) . '" AND id_customer = ' . (int) $this->context->customer->id . '
+             ORDER BY id_order ASC'
+        );
+
+        if (!$idOrder) {
+            return null;
+        }
+
+        $order = new Order($idOrder);
+
+        return Validate::isLoadedObject($order) ? $order : null;
+    }
+
+    /**
+     * Datos del pedido a incluir en el correo (solo en el texto legible
+     * por personas, no en el bloque de datos de maquina: ese bloque
+     * tiene un formato pactado que no se toca sin acordar antes una
+     * nueva version, ver CcIncidencias::BLOCK_VERSION). Si algo falla al
+     * calcular alguno de estos datos, simplemente se omite: nunca debe
+     * impedir el envio de la incidencia.
+     */
+    private function buildOrderDetails(Order $order)
+    {
+        $details = array(
+            'total_paid' => null,
+            'carrier_name' => null,
+            'fecha_entrega' => null,
+            'lineas' => array(),
+        );
+
+        try {
+            $details['total_paid'] = Tools::displayPrice((float) $order->total_paid, new Currency((int) $order->id_currency));
+        } catch (Exception $e) {
+        }
+
+        if ((int) $order->id_carrier) {
+            $carrier = new Carrier((int) $order->id_carrier);
+            if (Validate::isLoadedObject($carrier)) {
+                $details['carrier_name'] = $carrier->name;
+            }
+        }
+
+        $deliveredDate = Db::getInstance()->getValue(
+            'SELECT oh.date_add FROM `' . _DB_PREFIX_ . 'order_history` oh
+             INNER JOIN `' . _DB_PREFIX_ . 'order_state` os ON os.id_order_state = oh.id_order_state
+             WHERE oh.id_order = ' . (int) $order->id . ' AND os.delivery = 1
+             ORDER BY oh.date_add DESC'
+        );
+        if ($deliveredDate) {
+            $details['fecha_entrega'] = date('d/m/Y', strtotime($deliveredDate));
+        }
+
+        $rows = Db::getInstance()->executeS(
+            'SELECT product_reference, product_name, product_quantity, unit_price_tax_incl, total_price_tax_incl
+             FROM `' . _DB_PREFIX_ . 'order_detail`
+             WHERE id_order = ' . (int) $order->id
+        );
+        if (is_array($rows)) {
+            $currency = new Currency((int) $order->id_currency);
+            foreach ($rows as $row) {
+                $details['lineas'][] = array(
+                    'referencia' => (string) $row['product_reference'],
+                    'nombre' => (string) $row['product_name'],
+                    'cantidad' => (int) $row['product_quantity'],
+                    'precio_unidad' => Tools::displayPrice((float) $row['unit_price_tax_incl'], $currency),
+                    'precio_total' => Tools::displayPrice((float) $row['total_price_tax_incl'], $currency),
+                );
+            }
+        }
+
+        return $details;
+    }
+
+    /**
      * Bloque de datos legible por maquina. Formato exacto (apartado 5-6
      * del PDF): una linea por clave en clave: valor, todas las claves y
      * en este orden, comentario siempre la ultima y puede ocupar varias
@@ -352,6 +439,34 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
         $lines[] = $this->module->ccL('email_label_telefono') . ': ' . $d['telefono'];
         $lines[] = $this->module->ccL('email_label_idioma') . ': ' . $langLabel;
         $lines[] = $this->module->ccL('email_label_muestras') . ': ' . $yesNo;
+
+        if (!empty($d['order_details'])) {
+            $od = $d['order_details'];
+            $lines[] = '';
+            if ($od['total_paid'] !== null) {
+                $lines[] = $this->module->ccL('email_label_total_pedido') . ': ' . $od['total_paid'];
+            }
+            if ($od['carrier_name'] !== null) {
+                $lines[] = $this->module->ccL('email_label_transportista') . ': ' . $od['carrier_name'];
+            }
+            if ($od['fecha_entrega'] !== null) {
+                $lines[] = $this->module->ccL('email_label_fecha_entrega') . ': ' . $od['fecha_entrega'];
+            }
+            if (!empty($od['lineas'])) {
+                $lines[] = $this->module->ccL('email_label_lineas_pedido') . ':';
+                foreach ($od['lineas'] as $linea) {
+                    $lines[] = sprintf(
+                        '- [%s] %s x%d - %s/ud - %s',
+                        $linea['referencia'],
+                        $linea['nombre'],
+                        $linea['cantidad'],
+                        $linea['precio_unidad'],
+                        $linea['precio_total']
+                    );
+                }
+            }
+        }
+
         $lines[] = '';
         $lines[] = $this->module->ccL('email_label_comentario') . ':';
         $lines[] = $d['comentario'];

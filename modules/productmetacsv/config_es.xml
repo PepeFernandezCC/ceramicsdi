@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>productmetacsv</name>
+    <displayName><![CDATA[Exportar Metadatos de Productos (CSV)]]></displayName>
+    <version><![CDATA[1.0.0]]></version>
+    <description><![CDATA[Genera un CSV con los metadatos (Google/Facebook feed) de todos los productos activos, por idioma.]]></description>
+    <author><![CDATA[Ceramic Connection]]></author>
+    <tab><![CDATA[administration]]></tab>
+    <is_configurable>1</is_configurable>
+    <need_instance>0</need_instance>
+	<limited_countries></limited_countries>
+</module>

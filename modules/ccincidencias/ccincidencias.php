@@ -104,7 +104,7 @@ class CcIncidencias extends Module
     {
         $this->name = 'ccincidencias';
         $this->tab = 'front_office_features';
-        $this->version = '1.2.0';
+        $this->version = '1.3.0';
         $this->author = 'Ceramic Connection';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -630,11 +630,9 @@ class CcIncidencias extends Module
             'ccIncidenciasL10n' => array(
                 'error_required_tipo' => $this->ccL('error_required_tipo'),
                 'error_required_referencia' => $this->ccL('error_required_referencia'),
-                'error_required_nombre' => $this->ccL('error_required_nombre'),
-                'error_required_email' => $this->ccL('error_required_email'),
-                'error_invalid_email' => $this->ccL('error_invalid_email'),
                 'error_required_descripcion' => $this->ccL('error_required_descripcion'),
                 'error_required_consentimiento' => $this->ccL('error_required_consentimiento'),
+                'error_required_fotos' => $this->ccL('error_required_fotos'),
             ),
         ));
 
