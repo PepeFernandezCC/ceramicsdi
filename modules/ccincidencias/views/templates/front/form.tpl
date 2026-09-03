@@ -37,7 +37,7 @@
         </div>
 
         <div class="form-group cc-field">
-          <label for="cc_tipo">{$cc_t.label_tipo|escape:'htmlall':'UTF-8'} <span class="cc-required">{$cc_t.required_mark|escape:'htmlall':'UTF-8'}</span></label>
+          <label for="cc_tipo"><span class="cc-required">{$cc_t.required_mark|escape:'htmlall':'UTF-8'}</span> {$cc_t.label_tipo|escape:'htmlall':'UTF-8'}</label>
           <select id="cc_tipo" name="tipo" class="form-control" required>
             <option value="">{$cc_t.tipo_placeholder|escape:'htmlall':'UTF-8'}</option>
             {foreach from=$cc_tipo_options item=cc_tipo_row}
@@ -54,7 +54,7 @@
           </div>
         {else}
           <div class="form-group cc-field">
-            <label for="cc_referencia">{$cc_t.label_referencia|escape:'htmlall':'UTF-8'} <span class="cc-required">{$cc_t.required_mark|escape:'htmlall':'UTF-8'}</span></label>
+            <label for="cc_referencia"><span class="cc-required">{$cc_t.required_mark|escape:'htmlall':'UTF-8'}</span> {$cc_t.label_referencia|escape:'htmlall':'UTF-8'}</label>
             <input type="text" id="cc_referencia" name="referencia" class="form-control" maxlength="40"
                    placeholder="{$cc_t.referencia_placeholder|escape:'htmlall':'UTF-8'}"
                    value="{if isset($cc_old.referencia)}{$cc_old.referencia|escape:'htmlall':'UTF-8'}{/if}" required>
@@ -82,13 +82,24 @@
         </div>
 
         <div class="form-group cc-field">
-          <label for="cc_descripcion">{$cc_t.label_descripcion|escape:'htmlall':'UTF-8'} <span class="cc-required">{$cc_t.required_mark|escape:'htmlall':'UTF-8'}</span></label>
+          <label for="cc_descripcion"><span class="cc-required">{$cc_t.required_mark|escape:'htmlall':'UTF-8'}</span> {$cc_t.label_descripcion|escape:'htmlall':'UTF-8'}</label>
           <textarea id="cc_descripcion" name="descripcion" class="form-control" rows="6" maxlength="4000"
                     placeholder="{$cc_t.descripcion_placeholder|escape:'htmlall':'UTF-8'}" required>{if isset($cc_old.descripcion)}{$cc_old.descripcion|escape:'htmlall':'UTF-8'}{/if}</textarea>
         </div>
 
         <div class="form-group cc-field" id="cc_fotos_group">
-          <label for="cc_fotos">{$cc_t.label_fotos|escape:'htmlall':'UTF-8'} <span class="cc-required" id="cc_fotos_required" style="display:none">{$cc_t.required_mark|escape:'htmlall':'UTF-8'}</span></label>
+          <div class="cc-fotos-requirements">
+            <p class="cc-fotos-requirements-title">
+              <span class="cc-required" id="cc_fotos_required" style="display:none">{$cc_t.required_mark|escape:'htmlall':'UTF-8'}</span>
+               {$cc_t.fotos_requirements_title|escape:'htmlall':'UTF-8'}
+            </p>
+            <ul>
+              <li>{$cc_t.fotos_requirements_item1|escape:'htmlall':'UTF-8'}</li>
+              <li>{$cc_t.fotos_requirements_item2|escape:'htmlall':'UTF-8'}</li>
+              <li>{$cc_t.fotos_requirements_item3|escape:'htmlall':'UTF-8'}</li>
+            </ul>
+          </div>
+         
           <input type="file" id="cc_fotos" name="fotos[]" multiple
                  accept=".jpg,.jpeg,.png,.webp,.pdf,.heic,.heif,image/jpeg,image/png,image/webp,application/pdf,image/heic,image/heif">
           <small class="cc-help">{$cc_t.fotos_help|escape:'htmlall':'UTF-8'}</small>

@@ -79,7 +79,8 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
         foreach (array(
             'page_title', 'intro', 'label_tipo', 'label_referencia', 'referencia_placeholder',
             'referencia_warning', 'label_seguimiento', 'label_telefono',
-            'label_es_muestra', 'label_descripcion', 'descripcion_placeholder', 'label_fotos', 'fotos_help',
+            'label_es_muestra', 'label_descripcion', 'descripcion_placeholder', 'label_fotos',
+            'fotos_requirements_title', 'fotos_requirements_item1', 'fotos_requirements_item2', 'fotos_requirements_item3', 'fotos_help',
             'fotos_too_big_notice', 'consentimiento_prefix', 'consentimiento_link_text', 'honeypot_label',
             'btn_submit', 'required_mark', 'tipo_placeholder', 'success_title', 'success_message', 'back_home',
             'from_order_note',
