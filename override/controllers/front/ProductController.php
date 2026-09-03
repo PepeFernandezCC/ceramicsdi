@@ -86,7 +86,22 @@ class ProductController extends ProductControllerCore
 				}
 			}
 		}
+
+		// Los productos de la categoría "muestras" no deben ser accesibles
+		// directamente a través de su ficha de producto (en ningún idioma):
+		// forzamos id_product a 0 para que el core devuelva un 404 estándar.
+		$resolved_id_product = (int)Tools::getValue('id_product');
+		if ($resolved_id_product > 0 && $this->isInMuestrasCategory($resolved_id_product)) {
+			unset($_POST['id_product'], $_GET['id_product']);
+		}
+
 		parent::init();
+	}
+
+	protected function isInMuestrasCategory($id_product)
+	{
+		$categories = Product::getProductCategories((int)$id_product);
+		return !empty($categories) && in_array(CartController::MUESTRAS_CATEGORY_ID, $categories);
 	}
 	
 	public function getTemplateVarProduct()

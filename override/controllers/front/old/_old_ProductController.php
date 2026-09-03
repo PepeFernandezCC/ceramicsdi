@@ -372,7 +372,33 @@ class ProductController extends ProductControllerCore
             'customer_group_without_tax' => Group::getPriceDisplayMethod($this->context->customer->id_default_group),
         ));
     }
-	
+
+    /**
+     * Core's formatQuantityDiscounts() only exposes a locale-formatted 'discount' string
+     * (e.g. "163,23 €" in es, "163.23" in en, "€ 163,94" in nl). The theme needs the raw
+     * numeric value, so we add 'discount_raw' here instead of re-parsing the formatted
+     * string per-locale in the template.
+     */
+    protected function formatQuantityDiscounts($specific_prices, $price, $tax_rate, $ecotax_amount)
+    {
+        $specific_prices = parent::formatQuantityDiscounts($specific_prices, $price, $tax_rate, $ecotax_amount);
+
+        $displayDiscountPrice = (bool) Configuration::get('PS_DISPLAY_DISCOUNT_PRICE');
+
+        foreach ($specific_prices as &$row) {
+            if ($row['price'] >= 0 || $row['reduction_type'] == 'amount') {
+                $discountPrice = $displayDiscountPrice ? $price - $row['real_value'] : $row['real_value'];
+            } else {
+                $reduction = ($row['reduction_tax'] == 0) ? $row['reduction_with_tax'] : $row['reduction'];
+                $discountPrice = $displayDiscountPrice ? $price - $price * $reduction : null;
+            }
+            $row['discount_raw'] = isset($discountPrice) ? (float) $discountPrice : 0;
+        }
+        unset($row);
+
+        return $specific_prices;
+    }
+
 	protected function crawlDbForId($rew)
 	{
 		$id_lang = $this->context->language->id;
