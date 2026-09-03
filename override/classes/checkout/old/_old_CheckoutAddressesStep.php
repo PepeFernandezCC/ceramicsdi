@@ -63,18 +63,17 @@ class CheckoutAddressesStep extends CheckoutAddressesStepCore
 
         $vat_input = preg_replace('/[^A-Za-z0-9]/', '', strtoupper($vat_input));
 
-        // Si no hay VAT, no hacemos nada y dejamos que el core avance normal
-        if ($vat_input === '') {
-            return $this;
-        }
-
         $country   = new Country($idCountry);
         $FRANCE_ID = 8;
 
-        // Si ya desde Address::getVatApiData nos dicen que NO es apto, lo tratamos
-        // como "no intracomunitario" pero NO bloqueamos el checkout
+        // Si no hay VAT/DNI, o Address::getVatApiData nos dice que NO es apto, o el VAT es demasiado corto,
+        // tratamos al cliente como "no intracomunitario": lo sacamos del grupo y le borramos el siret
+        // guardado de una validación anterior, para que no se quede "pegado" como intracomunitario
+        // con direcciones que ya no tienen VAT/DNI válido. NO bloqueamos el checkout.
 
-        if (!$validate || strlen($vat_input) < 3) {
+        if ($vat_input === '' || !$validate || strlen($vat_input) < 3) {
+            Customer::removeIntracomunitaryGroup($customer_id);
+            Customer::updateCustomerSiret($customer_id, '');
             Customer::insertIntracomunitaryLog(false, 'DIRECCIONES: Cliente no apto o VAT inválido', $vat_input, $customer_id, $idCountry);
 
             // SOLO avanzamos a envío si NO estamos en edit/new

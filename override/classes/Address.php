@@ -2,6 +2,10 @@
 
 class Address extends AddressCore
 {
+    /** Importe (subtotal de productos) a partir del cual una dirección de
+     *  facturación extranjera necesita DNI/CIF. */
+    const FOREIGN_ID_MIN_AMOUNT = 2200;
+
     /** @var int */
     public $is_invoice;
 
@@ -195,7 +199,7 @@ class Address extends AddressCore
         
         $isInvoice = (int)$address['is_invoice'] !== 0;
         $isSpanish = (int)$address['id_country'] === 6;
-        $totalNeedsID = $cart['subtotals']['products']['amount'] >= 2200;
+        $totalNeedsID = $cart['subtotals']['products']['amount'] >= self::FOREIGN_ID_MIN_AMOUNT;
         $hasDni = !empty(trim((string) $address['dni']));
 
         $requiresForeignID = $isInvoice && !$isSpanish && $totalNeedsID;
