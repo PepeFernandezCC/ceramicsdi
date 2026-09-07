@@ -48,6 +48,7 @@
 
 {block name='cart_detailed_actions'}
 
+{assign var="samplesInCart" value=Cart::getSamplesNumberInCartStatic($cart.id)}
 
 <div class="checkout cart-detailed-actions js-cart-detailed-actions card-block">
 
@@ -74,6 +75,19 @@
                     <button type="button" class="btn btn-primary disabled"
 
                             disabled>{l s='Proceed to checkout' d='Shop.Theme.Actions'}</button>
+
+                </div>
+
+            {elseif $samplesInCart > 8}
+
+                <div class="text-sm-center">
+
+                    <div class="alert alert-danger" role="alert">
+
+                        {l s='Para continuar con la compra solo puede tener un máximo de 8 muestras en el carrito.' d='Shop.Theme.Checkout'}
+
+                    </div>
+
 
                 </div>
 

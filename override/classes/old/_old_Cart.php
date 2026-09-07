@@ -211,6 +211,17 @@ class Cart extends CartCore {
 		
 		return true;
 	}
+	
+	public function getTotalShippingCost($delivery_option = null, $use_tax = true, Country $default_country = null)
+    {
+        // Si NO hay transportista seleccionado, no sumar envío
+        if ((int) $this->id_carrier <= 0 && empty($this->getDeliveryOption())) {
+            return 0.0;
+        }
+
+        return parent::getTotalShippingCost($delivery_option, $use_tax, $default_country);
+    }
+
     /*
     * module: orderfees_shipping
     * date: 2024-02-02 08:19:55
@@ -289,6 +300,7 @@ class Cart extends CartCore {
 			$keepOrderPrices
 		);
 	}
+	
 	
 	/*
     * module: orderfees_shipping
@@ -463,4 +475,40 @@ class Cart extends CartCore {
 
 	}
 	
+	public function checkProductsOutOfStockInCart()
+	{
+		$count = 0;
+
+		foreach ($this->getProducts() as $product) {
+			$idProduct = (int) $product['id_product'];
+			$idProductAttribute = isset($product['id_product_attribute'])
+				? (int) $product['id_product_attribute']
+				: 0;
+
+			$availableQuantity = StockAvailable::getQuantityAvailableByProduct(
+				$idProduct,
+				$idProductAttribute
+			);
+
+			$cartQuantity = isset($product['cart_quantity'])
+				? (int) $product['cart_quantity']
+				: (int) $product['quantity'];
+
+			$isOutOfStock = $availableQuantity < $cartQuantity;
+
+			$hasSpecialFeature = (bool) Db::getInstance()->getValue('
+				SELECT 1
+				FROM ' . _DB_PREFIX_ . 'feature_product
+				WHERE id_product = ' . (int) $idProduct . '
+				AND id_feature = 76
+				AND id_feature_value = 168467
+			');
+
+			if ($isOutOfStock || $hasSpecialFeature) {
+				$count++;
+			}
+		}
+
+		return $count;
+	}
 }

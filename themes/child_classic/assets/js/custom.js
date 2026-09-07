@@ -3143,13 +3143,20 @@ $( document ).ready( function () {
       if (!step.classList.contains('-current') && !step.classList.contains('js-current-step')) return;
 
       var inputs = step.querySelectorAll('input[name^="delivery_option["]');
-      if (inputs.length !== 1) return;
+      if (inputs.length === 0) return;
 
-      var input = inputs[0];
-      if (input.checked) return;
+      // Si hay una única opción y no viene premarcada, la forzamos.
+      if (inputs.length === 1 && !inputs[0].checked) {
+         inputs[0].checked = true;
+      }
 
-      input.checked = true;
-      input.dispatchEvent(new Event('change', { bubbles: true }));
+      // Disparamos el "change" sobre la opción premarcada (la más barata por defecto)
+      // para que se confirme/persista en el carrito y el precio de envío se muestre
+      // en cuanto el cliente llega a este paso, sin esperar a que haga clic.
+      var checkedInput = step.querySelector('input[name^="delivery_option["]:checked');
+      if (checkedInput) {
+         checkedInput.dispatchEvent(new Event('change', { bubbles: true }));
+      }
       })();
 
 

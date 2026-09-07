@@ -123,6 +123,11 @@
         <target>Free</target>
         <note>Line: 534</note>
       </trans-unit>
+      <trans-unit id="d3f1c9a2b4e5407a8b6c1234567890ab">
+        <source>Pending</source>
+        <target>Pending</target>
+        <note>Line: 44</note>
+      </trans-unit>
       <trans-unit id="96b0141273eabab320119c467cdcaf17">
         <source>Total</source>
         <target>Total</target>

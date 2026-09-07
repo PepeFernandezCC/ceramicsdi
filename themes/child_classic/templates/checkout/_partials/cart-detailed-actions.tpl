@@ -48,7 +48,7 @@
 
 {block name='cart_detailed_actions'}
 
-{assign var="samplesInCart" value=Cart::getSamplesNumberInCartStatic($cart.id)}
+{assign var="samplesInCart" value=Cart::getSamplesNumberInCartStatic(Context::getContext()->cart->id)}
 
 <div class="checkout cart-detailed-actions js-cart-detailed-actions card-block">
 

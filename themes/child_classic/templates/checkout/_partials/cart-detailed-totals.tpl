@@ -25,7 +25,7 @@
                 {* END PLANATEC *}
 
                 {foreach from=$cart.subtotals item="subtotal"}
-                    {if $subtotal && $subtotal.value|count_characters > 0 && $subtotal.type !== 'tax'}
+                    {if $subtotal && ($subtotal.value|count_characters > 0 || $subtotal.type === 'shipping') && $subtotal.type !== 'tax'}
                         <div class="cart-summary-line" id="cart-subtotal-{$subtotal.type}">
                             <span class="label{if 'products' === $subtotal.type} js-subtotal{/if}">
                                 {if 'products' == $subtotal.type}
@@ -37,13 +37,13 @@
                             <span class="value">
 
                                 {assign var=free_fields value=["Gratis", "gratuit", "Free", "kostenlos", "Grátis", "Gratuit"]}
-                                      
+
                                 {if $subtotal.type === 'shipping'}
 
-                                    {if ' ' == $subtotal.value || in_array($subtotal.value, $free_fields)}
+                                    {if $subtotal.value|count_characters == 0 || ' ' == $subtotal.value || in_array($subtotal.value, $free_fields)}
                                         {l s='Pending' d='Shop.Theme.Checkout'}
-                                    {else} 
-                                        {$subtotal.value}  
+                                    {else}
+                                        {$subtotal.value}
                                     {/if}
 
                                 {else}

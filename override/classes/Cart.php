@@ -214,12 +214,38 @@ class Cart extends CartCore {
 	
 	public function getTotalShippingCost($delivery_option = null, $use_tax = true, Country $default_country = null)
     {
-        // Si NO hay transportista seleccionado, no sumar envío
-        if ((int) $this->id_carrier <= 0 && empty($this->getDeliveryOption())) {
+      
+        if ($delivery_option === null && !$this->isShippingCostVisibleInCurrentContext()) {
             return 0.0;
         }
 
         return parent::getTotalShippingCost($delivery_option, $use_tax, $default_country);
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isShippingCostVisibleInCurrentContext()
+    {
+        $controller = Context::getContext()->controller;
+
+        if ($controller instanceof CartController) {
+            return false;
+        }
+
+        if ($controller instanceof OrderController && method_exists($controller, 'getCheckoutProcess')) {
+            $checkoutProcess = $controller->getCheckoutProcess();
+
+            if ($checkoutProcess) {
+                foreach ($checkoutProcess->getSteps() as $step) {
+                    if ($step instanceof CheckoutDeliveryStep) {
+                        return $step->isCurrent() || $step->isComplete();
+                    }
+                }
+            }
+        }
+
+        return true;
     }
 
     /*
