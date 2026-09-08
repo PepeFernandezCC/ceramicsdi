@@ -74,6 +74,14 @@
                  value="{if isset($cc_old.telefono)}{$cc_old.telefono|escape:'htmlall':'UTF-8'}{/if}">
         </div>
 
+        <div class="form-group cc-field">
+          <label for="cc_fecha_recepcion">{$cc_t.label_fecha_recepcion|escape:'htmlall':'UTF-8'}</label>
+          <input type="date" id="cc_fecha_recepcion" name="fecha_recepcion" class="form-control"
+                 max="{$cc_today|escape:'htmlall':'UTF-8'}"
+                 value="{if isset($cc_old.fecha_recepcion)}{$cc_old.fecha_recepcion|escape:'htmlall':'UTF-8'}{/if}">
+          <small class="cc-help">{$cc_t.fecha_recepcion_help|escape:'htmlall':'UTF-8'}</small>
+        </div>
+
         <div class="form-group cc-field cc-checkbox">
           <label>
             <input type="checkbox" name="es_muestra" value="1"{if isset($cc_old.es_muestra)} checked{/if}>

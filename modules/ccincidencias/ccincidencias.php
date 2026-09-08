@@ -3,7 +3,7 @@
  * Ceramic Connection - Formulario publico de incidencias.
  *
  * Genera un correo con un bloque de datos legible por maquina
- * (ver especificacion "Formulario - CC.pdf", version del bloque = 1)
+ * (ver especificacion "Formulario - CC.pdf", version del bloque = 2)
  * a incidencias@ceramicconnection.es. El formulario no escribe en
  * ninguna base de datos de negocio, no llama a ninguna API externa,
  * no consulta Odoo/ERP y no valida si el pedido existe: solo envia
@@ -19,15 +19,14 @@ require_once dirname(__FILE__) . '/classes/CcIncidenciasTipo.php';
 
 class CcIncidencias extends Module
 {
-    /**
-     * Version del bloque de datos del correo (ver apartado 11 del PDF).
-     * Cualquier cambio de formato del bloque, de las claves o del From
-     * exige acordar antes una nueva version con el responsable del
-     * sistema de incidencias.
-     */
-    const BLOCK_VERSION = 1;
 
-    /** Idiomas soportados por el formulario y por el bloque de datos. */
+    const BLOCK_VERSION = 2;
+
+    const CARRIER_VALUES = array(
+        'DSV', 'XPO', 'SEUR', 'Correos', 'Transaher', 'UCX',
+        'Recogido en almacén', 'Otro', 'Desconocido',
+    );
+
     const SUPPORTED_ISO = array('es', 'fr', 'en', 'de', 'pt', 'nl');
 
     /** Slug amigable del formulario, uno por idioma. */
@@ -41,12 +40,7 @@ class CcIncidencias extends Module
     );
 
     /**
-     * Tipos de incidencia por defecto, solo para sembrar la tabla
-     * `ccincidencias_tipo` en la instalacion. A partir de ahi el equipo
-     * web los gestiona (crear/editar/borrar/reordenar/activar) desde
-     * Admin > Clientes > Tipos de incidencia, sin tocar codigo. El
-     * "code" es el valor que viaja en el correo como "tipo:"; ver
-     * apartados 2 y 7 del PDF.
+     * Tipos de incidencia por defecto
      */
     const DEFAULT_TIPOS = array(
         array(
@@ -104,7 +98,7 @@ class CcIncidencias extends Module
     {
         $this->name = 'ccincidencias';
         $this->tab = 'front_office_features';
-        $this->version = '1.3.0';
+        $this->version = '1.4.0';
         $this->author = 'Ceramic Connection';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -416,6 +410,99 @@ class CcIncidencias extends Module
         $valid = (bool) preg_match('/^[A-Z]{9}$/', $ref);
 
         return array($ref, $valid);
+    }
+
+    /**
+     * Traduce el nombre de un transportista de Prestashop a uno de los 9
+     * valores cerrados que acepta el bloque de datos (apartado 4 del PDF
+     * v2). Los transportistas "de siempre" (DSV, XPO, SEUR, Correos,
+     * Transaher, UCX) y la recogida en almacen se reconocen por el
+     * nombre (sin distinguir mayusculas/tildes, igual que hacen ellos al
+     * leerlo). Cualquier otro nombre real -la tienda usa nombres
+     * genericos tipo "Envio en camion con entrega concertada" para varias
+     * de sus zonas/tarifas- cae en "Otro", que es EXACTAMENTE para lo que
+     * esta pensado ese valor segun el propio PDF ("avisadnos y lo
+     * anadimos"), nunca se inventa una marca.
+     *
+     * @param string|null $carrierName Nombre del transportista (Carrier::$name), o null/vacio si el pedido no tiene transportista asignado.
+     *
+     * @return string Uno de CcIncidencias::CARRIER_VALUES.
+     */
+    public function normalizeCarrierValue($carrierName)
+    {
+        $carrierName = trim((string) $carrierName);
+
+        if ($carrierName === '') {
+            return 'Desconocido';
+        }
+
+        $normalized = Tools::strtolower($carrierName);
+        if (function_exists('iconv')) {
+            $transliterated = @iconv('UTF-8', 'ASCII//TRANSLIT', $normalized);
+            if ($transliterated !== false) {
+                $normalized = $transliterated;
+            }
+        }
+
+        if (strpos($normalized, 'recogi') !== false && strpos($normalized, 'almac') !== false) {
+            return 'Recogido en almacén';
+        }
+
+        $brands = array(
+            'correos' => 'Correos',
+            'transaher' => 'Transaher',
+            'seur' => 'SEUR',
+            'dsv' => 'DSV',
+            'xpo' => 'XPO',
+            'ucx' => 'UCX',
+        );
+
+        foreach ($brands as $needle => $value) {
+            if (strpos($normalized, $needle) !== false) {
+                return $value;
+            }
+        }
+
+        return 'Otro';
+    }
+
+    /**
+     * Valida la fecha de recepcion del pedido que escribe el cliente en el
+     * formulario (campo `fecha_recepcion`, `<input type="date">"). Es la
+     * fuente de la clave `fecha_entrega` del bloque de datos: Prestashop no
+     * tiene la fecha real de entrega -eso lo gestiona Outvio fuera de la
+     * tienda-, asi que en vez de adivinarla se le pregunta directamente al
+     * cliente. Opcional: el pedido puede no haber llegado todavia.
+     *
+     * @param string|null $raw Valor tal cual llega del formulario.
+     *
+     * @return array array($fechaIso, $esValida). $fechaIso va vacio si el
+     *               campo se dejo en blanco (valido) o si el valor no es
+     *               una fecha real (no valido).
+     */
+    public function validateReceiptDate($raw)
+    {
+        $raw = trim((string) $raw);
+
+        if ($raw === '') {
+            return array('', true);
+        }
+
+        if (!preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $raw, $m)) {
+            return array('', false);
+        }
+
+        if (!checkdate((int) $m[2], (int) $m[3], (int) $m[1])) {
+            return array('', false);
+        }
+
+        // No puede ser una fecha futura: no se puede haber recibido algo
+        // que todavia no ha pasado.
+        if ($raw > date('Y-m-d')) {
+            return array('', false);
+        }
+
+        return array($raw, true);
     }
 
     /**

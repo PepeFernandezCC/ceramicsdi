@@ -104,21 +104,72 @@ reordenar, activar/desactivar o borrar tipos libremente desde ese listado.
 ## Formato del correo
 
 Ver `ccincidencias.php` (metodo `buildDataBlock` en
-`controllers/front/form.php`) y `Formulario - CC.pdf` apartados 5 y 6. Resumen:
+`controllers/front/form.php`) y `Formulario_CC_v2.pdf` apartados 3 a 6.
+Resumen:
 
 - Asunto exacto: `[TICKET] {REFERENCIA} - {TIPO}`.
 - Remitente fijo, destinatario `incidencias@ceramicconnection.es`,
   `Reply-To` = email del cliente.
 - Cuerpo `text/plain`: bloque `---DATOS-TICKET-INICIO---` ... `---DATOS-TICKET-FIN---`
   sin indentar, seguido del texto legible para personas.
-- `version: 1` siempre. **Cualquier cambio de formato exige acordar antes una
-  nueva version con el responsable del sistema de incidencias** (no tocar
-  `BLOCK_VERSION`, las claves del bloque, ni el email remitente sin avisar).
+- `version: 2` siempre (desde 07-09-2026). **Cualquier cambio de formato
+  exige acordar antes una nueva version con el responsable del sistema de
+  incidencias** (no tocar `BLOCK_VERSION`, las claves del bloque, ni el
+  email remitente sin avisar).
 - Fotos como adjuntos reales del correo (nunca enlaces). Si superan 20 MB en
   total se descartan y se avisa al cliente en pantalla, pero el correo se
   envia igual.
 - Se envia siempre, aunque la referencia no haya validado
   (`referencia_valida: no`).
+
+### Claves nuevas de la v2 (van justo antes de `comentario`)
+
+Sacadas del pedido resuelto (`buildOrderDetails()` en
+`controllers/front/form.php`), nunca inventadas: si no hay pedido que
+consultar (referencia invalida o sin pedido asociado), las 6 se mandan
+vacias (excepto `lineas`, que en ese caso tambien va vacia, no `[]`: `[]`
+es solo para "hay pedido pero sin lineas").
+
+| Clave | Como se calcula |
+|---|---|
+| `fecha_entrega` | `AAAA-MM-DD` de la primera fecha en que el pedido paso a un estado con `delivery = 1` en `order_history`. Vacia si no ha llegado. |
+| `importe_total` | `order.total_paid` (IVA y portes incluidos) formateado con `number_format(...,2,'.','')`: punto decimal, sin simbolo, sin miles. |
+| `transportista` | Nombre de `Carrier` del pedido normalizado a uno de los 9 valores cerrados via `CcIncidencias::normalizeCarrierValue()`. Ver tabla de mapeo abajo. |
+| `pais_entrega` | ISO de 2 letras del pais de la **direccion de entrega** del pedido (`id_address_delivery`, no facturacion). |
+| `marketplace` | `si` si `order.module === 'manomanoimportpayment'` (unica via de pedidos de marketplace en la tienda hoy, modulo `manomanoorders`); `no` en cualquier otro caso. |
+| `lineas` | JSON de una sola linea (`json_encode` con `JSON_UNESCAPED_UNICODE`) por cada fila de `order_detail`: `ref`, `desc`, `uds`, `precio`, `total`. |
+
+**`uds` con decimales**: `order_detail.product_quantity` es siempre un
+entero (cajas/piezas), pero muchos articulos se venden por m². `uds` se
+recupera como `total_price_tax_incl / unit_price_tax_incl` (redondeado a 3
+decimales), que da el mismo `12.5` que el ejemplo del PDF (`177.50 / 14.20`).
+Si el precio unitario es 0 (articulo gratis), cae a `product_quantity`.
+
+**Mapeo de `transportista`** (`CcIncidencias::normalizeCarrierValue()`,
+case/tilde-insensitive sobre `Carrier::$name`):
+
+| Si el nombre contiene... | Se manda |
+|---|---|
+| "recogi" + "almac" | `Recogido en almacén` |
+| "correos" | `Correos` |
+| "transaher" | `Transaher` |
+| "seur" | `SEUR` |
+| "dsv" | `DSV` |
+| "xpo" | `XPO` |
+| "ucx" | `UCX` |
+| (nada de lo anterior) | `Otro` |
+| pedido sin transportista asignado | `Desconocido` |
+
+**Ojo con esto**: varios de los transportistas activos hoy en la tienda
+tienen nombres genericos de zona/tarifa (p. ej. "Envío en camión con
+entrega concertada", "Paquetería postal internacional") en vez del nombre
+de la marca real. Esos caen en `Otro`, que es exactamente el valor que el
+PDF define para "un transportista que no está en la lista" — no es un bug,
+es la opcion segura hasta que el equipo de incidencias confirme a que
+marca corresponde cada uno. Si se identifica cual es cual, añadir el
+nombre real de esos `Carrier` (o un alias reconocible) al mapeo de arriba
+en vez de renombrar el `Carrier` en el admin (rompería otras cosas que sí
+dependen de ese nombre).
 
 ## Antibot
 
@@ -129,9 +180,9 @@ Ver `ccincidencias.php` (metodo `buildDataBlock` en
   defecto), tabla `ps_ccincidencias_log` (solo guarda IP+fecha, no datos de
   la incidencia).
 
-## Prueba de aceptación (apartado 12 del PDF)
+## Prueba de aceptación (apartado 12 del PDF v1 + apartado 9 del PDF v2)
 
-Antes de publicar el enlace, enviar estos 5 correos de prueba y comprobar que
+Antes de publicar el enlace, enviar estos correos de prueba y comprobar que
 llegan a la bandeja de entrada (no a spam) de `incidencias@ceramicconnection.es`:
 
 1. Caso completo valido, con 2 fotos y todos los campos rellenos.
@@ -142,3 +193,9 @@ llegan a la bandeja de entrada (no a spam) de `incidencias@ceramicconnection.es`
 4. Campos opcionales vacios y comentario de varias lineas con acentos y
    caracteres especiales (ñ, ß, ç, ã).
 5. Una foto en formato HEIC desde un iPhone.
+6. **(v2)** Un pedido ya entregado, con importe y una linea → `fecha_entrega`
+   debe llegar con la fecha real (`AAAA-MM-DD`) y no vacia.
+7. **(v2)** Un pedido con tres lineas, una de ellas por m² (con decimales) y
+   con una tilde o una comilla en el nombre del articulo → las tres lineas
+   deben llegar en `lineas`, con los decimales y el nombre intactos (JSON
+   valido, una sola linea fisica).

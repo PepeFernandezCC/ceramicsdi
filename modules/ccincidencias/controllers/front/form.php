@@ -79,6 +79,7 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
         foreach (array(
             'page_title', 'intro', 'label_tipo', 'label_referencia', 'referencia_placeholder',
             'referencia_warning', 'label_seguimiento', 'label_telefono',
+            'label_fecha_recepcion', 'fecha_recepcion_help',
             'label_es_muestra', 'label_descripcion', 'descripcion_placeholder', 'label_fotos',
             'fotos_requirements_title', 'fotos_requirements_item1', 'fotos_requirements_item2', 'fotos_requirements_item3', 'fotos_help',
             'fotos_too_big_notice', 'consentimiento_prefix', 'consentimiento_link_text', 'honeypot_label',
@@ -105,6 +106,7 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
             'cc_photos_dropped' => $this->photosDroppedForSize,
             'cc_ts' => time(),
             'cc_old' => $old,
+            'cc_today' => date('Y-m-d'),
             'cc_max_mb' => round(CcIncidencias::MAX_PHOTOS_BYTES / 1048576),
             'cc_locked_order' => (bool) $this->lockedOrder,
             'cc_locked_id_order' => $this->lockedOrder ? (int) $this->lockedOrder->id : 0,
@@ -170,6 +172,16 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
             $this->ccErrors[] = $this->module->ccL('error_required_descripcion');
         }
 
+        // fecha_recepcion: la escribe el cliente con un <input type="date">
+        // (Prestashop no tiene la fecha real de entrega -eso lo gestiona
+        // Outvio fuera de la tienda-). Opcional (el pedido puede no haber
+        // llegado todavia), pero si viene rellena tiene que ser una fecha
+        // real en formato AAAA-MM-DD y no puede ser futura.
+        list($fechaRecepcion, $fechaRecepcionValida) = $this->module->validateReceiptDate(Tools::getValue('fecha_recepcion'));
+        if (!$fechaRecepcionValida) {
+            $this->ccErrors[] = $this->module->ccL('error_invalid_fecha_recepcion');
+        }
+
         if (!Tools::getValue('consentimiento')) {
             $this->ccErrors[] = $this->module->ccL('error_required_consentimiento');
         }
@@ -233,6 +245,10 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
             $this->photosDroppedForSize = true;
         }
 
+        // Se calcula una sola vez y se reparte entre el bloque de datos
+        // (claves nuevas de la v2) y el texto legible por personas.
+        $orderDetails = $order ? $this->buildOrderDetails($order) : null;
+
         $block = $this->buildDataBlock(array(
             'tipo' => $tipoValue,
             'referencia' => $referenciaNorm,
@@ -243,6 +259,15 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
             'telefono' => $telefono,
             'idioma' => $idiomaUpper,
             'es_muestra' => $esMuestra,
+            // fecha_entrega la escribe el cliente (ver fecha_recepcion mas
+            // arriba): no depende de si hay pedido resuelto, igual que
+            // telefono o seguimiento.
+            'fecha_entrega' => $fechaRecepcion,
+            'importe_total' => $orderDetails ? $orderDetails['importe_total_raw'] : '',
+            'transportista' => $orderDetails ? $orderDetails['transportista'] : '',
+            'pais_entrega' => $orderDetails ? $orderDetails['pais_entrega'] : '',
+            'marketplace' => $orderDetails ? $orderDetails['marketplace'] : '',
+            'lineas' => $orderDetails ? $this->buildLineasJson($orderDetails['lineas_json']) : '',
             'comentario' => $descripcion,
         ));
 
@@ -256,7 +281,8 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
             'idioma' => $idioma,
             'es_muestra' => $esMuestra,
             'comentario' => $descripcion,
-            'order_details' => $order ? $this->buildOrderDetails($order) : null,
+            'fecha_recepcion' => $fechaRecepcion,
+            'order_details' => $orderDetails,
         ));
 
         $body = $block . "\n\n" . $humanText;
@@ -334,43 +360,77 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
     }
 
     /**
-     * Datos del pedido a incluir en el correo (solo en el texto legible
-     * por personas, no en el bloque de datos de maquina: ese bloque
-     * tiene un formato pactado que no se toca sin acordar antes una
-     * nueva version, ver CcIncidencias::BLOCK_VERSION). Si algo falla al
-     * calcular alguno de estos datos, simplemente se omite: nunca debe
-     * impedir el envio de la incidencia.
+     * Datos del pedido a incluir en el correo. Alimentan tanto el texto
+     * legible por personas (total_paid, carrier_name, lineas -formato
+     * display-) como, desde la v2 del PDF, el bloque de datos de maquina
+     * (importe_total_raw, transportista, pais_entrega, marketplace,
+     * lineas_json). El formato del bloque esta pactado y no se toca sin
+     * acordar antes una nueva version, ver CcIncidencias::BLOCK_VERSION.
+     * Si algo falla al calcular alguno de estos datos, simplemente se
+     * omite/deja vacio: nunca debe impedir el envio de la incidencia.
+     *
+     * NOTA: fecha_entrega/fecha_recepcion NO sale de aqui. Prestashop no
+     * tiene la fecha real de entrega (la gestiona Outvio fuera de la
+     * tienda, el estado "entregado" de order_history no es fiable): la
+     * escribe el propio cliente en el formulario (ver fecha_recepcion en
+     * processSubmission()).
      */
     private function buildOrderDetails(Order $order)
     {
         $details = array(
             'total_paid' => null,
             'carrier_name' => null,
-            'fecha_entrega' => null,
             'lineas' => array(),
+            // Claves nuevas del bloque de datos (PDF v2, apartados 3-6).
+            'importe_total_raw' => '',
+            'transportista' => '',
+            'pais_entrega' => '',
+            'marketplace' => '',
+            'lineas_json' => array(),
         );
 
         try {
-            $details['total_paid'] = Tools::displayPrice((float) $order->total_paid, new Currency((int) $order->id_currency));
+            $currency = new Currency((int) $order->id_currency);
+            $details['total_paid'] = Tools::displayPrice((float) $order->total_paid, $currency);
+            // importe_total: lo que pago el cliente, IVA y portes
+            // incluidos, punto decimal, sin simbolo ni separador de miles.
+            $details['importe_total_raw'] = number_format((float) $order->total_paid, 2, '.', '');
         } catch (Exception $e) {
         }
 
+        // transportista: siempre uno de los 9 valores cerrados del PDF,
+        // "Desconocido" si el pedido no tiene transportista asignado.
+        $carrierName = '';
         if ((int) $order->id_carrier) {
             $carrier = new Carrier((int) $order->id_carrier);
             if (Validate::isLoadedObject($carrier)) {
+                $carrierName = $carrier->name;
                 $details['carrier_name'] = $carrier->name;
             }
         }
+        $details['transportista'] = $this->module->normalizeCarrierValue($carrierName);
 
-        $deliveredDate = Db::getInstance()->getValue(
-            'SELECT oh.date_add FROM `' . _DB_PREFIX_ . 'order_history` oh
-             INNER JOIN `' . _DB_PREFIX_ . 'order_state` os ON os.id_order_state = oh.id_order_state
-             WHERE oh.id_order = ' . (int) $order->id . ' AND os.delivery = 1
-             ORDER BY oh.date_add DESC'
-        );
-        if ($deliveredDate) {
-            $details['fecha_entrega'] = date('d/m/Y', strtotime($deliveredDate));
+        // pais_entrega: ISO de 2 letras del pais de la direccion de
+        // ENTREGA (no la de facturacion).
+        try {
+            if ((int) $order->id_address_delivery) {
+                $addressDelivery = new Address((int) $order->id_address_delivery);
+                if (Validate::isLoadedObject($addressDelivery) && (int) $addressDelivery->id_country) {
+                    $iso = Country::getIsoById((int) $addressDelivery->id_country);
+                    if ($iso) {
+                        $details['pais_entrega'] = Tools::strtoupper($iso);
+                    }
+                }
+            }
+        } catch (Exception $e) {
         }
+
+        // marketplace: los pedidos importados desde ManoMano se validan
+        // siempre con este modulo "dummy" de pago (ver
+        // ManoManoImportPayment); es la unica via de pedidos de
+        // marketplace que existe hoy en la tienda, asi que "no" es un
+        // valor fiable para el resto (no es una suposicion).
+        $details['marketplace'] = ($order->module === 'manomanoimportpayment') ? 'si' : 'no';
 
         $rows = Db::getInstance()->executeS(
             'SELECT product_reference, product_name, product_quantity, unit_price_tax_incl, total_price_tax_incl
@@ -380,12 +440,34 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
         if (is_array($rows)) {
             $currency = new Currency((int) $order->id_currency);
             foreach ($rows as $row) {
+                $unitPrice = (float) $row['unit_price_tax_incl'];
+                $totalPrice = (float) $row['total_price_tax_incl'];
+
                 $details['lineas'][] = array(
                     'referencia' => (string) $row['product_reference'],
                     'nombre' => (string) $row['product_name'],
                     'cantidad' => (int) $row['product_quantity'],
-                    'precio_unidad' => Tools::displayPrice((float) $row['unit_price_tax_incl'], $currency),
-                    'precio_total' => Tools::displayPrice((float) $row['total_price_tax_incl'], $currency),
+                    'precio_unidad' => Tools::displayPrice($unitPrice, $currency),
+                    'precio_total' => Tools::displayPrice($totalPrice, $currency),
+                );
+
+                // uds: las unidades reales vendidas de la linea. Muchos
+                // articulos se venden por m2 y no por piezas, asi que no
+                // vale product_quantity (siempre entero): se recupera
+                // dividiendo el total entre el precio unitario, que es
+                // el mismo calculo que hace que 177.50 / 14.20 = 12.5 en
+                // el ejemplo del PDF. Si el precio unitario es 0 (articulo
+                // gratis), caemos a product_quantity.
+                $uds = $unitPrice > 0
+                    ? round($totalPrice / $unitPrice, 3)
+                    : (int) $row['product_quantity'];
+
+                $details['lineas_json'][] = array(
+                    'ref' => (string) $row['product_reference'],
+                    'desc' => (string) $row['product_name'],
+                    'uds' => $uds,
+                    'precio' => round($unitPrice, 2),
+                    'total' => round($totalPrice, 2),
                 );
             }
         }
@@ -394,11 +476,15 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
     }
 
     /**
-     * Bloque de datos legible por maquina. Formato exacto (apartado 5-6
-     * del PDF): una linea por clave en clave: valor, todas las claves y
-     * en este orden, comentario siempre la ultima y puede ocupar varias
-     * lineas, version: 1 siempre, sin indentar y sin nada delante de
-     * cada linea.
+     * Bloque de datos legible por maquina. Formato exacto (apartados 5-6
+     * del PDF v2): una linea por clave en clave: valor, todas las claves
+     * y en este orden, comentario siempre la ultima y puede ocupar varias
+     * lineas, version: 2, sin indentar y sin nada delante de cada linea.
+     *
+     * Las 6 claves nuevas de la v2 (fecha_entrega...lineas) van siempre,
+     * aunque el valor vaya vacio (igual que telefono o seguimiento) -ver
+     * apartado 6 del PDF: si no hay pedido que consultar, se mandan
+     * vacias y no se inventa nada.
      */
     private function buildDataBlock(array $d)
     {
@@ -414,10 +500,27 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
         $lines[] = 'telefono: ' . $d['telefono'];
         $lines[] = 'idioma: ' . $d['idioma'];
         $lines[] = 'es_muestra: ' . ($d['es_muestra'] ? 'si' : 'no');
+        $lines[] = 'fecha_entrega: ' . $d['fecha_entrega'];
+        $lines[] = 'importe_total: ' . $d['importe_total'];
+        $lines[] = 'transportista: ' . $d['transportista'];
+        $lines[] = 'pais_entrega: ' . $d['pais_entrega'];
+        $lines[] = 'marketplace: ' . $d['marketplace'];
+        $lines[] = 'lineas: ' . $d['lineas'];
         $lines[] = 'comentario: ' . $d['comentario'];
         $lines[] = '---DATOS-TICKET-FIN---';
 
         return implode("\n", $lines);
+    }
+
+    /**
+     * lineas en JSON de una sola linea fisica (apartado 5 del PDF v2):
+     * ref/desc/uds/precio/total por cada linea del pedido, sin espacios
+     * ni saltos que rompan el "una linea por clave" del bloque. []
+     * cuando el pedido no tiene lineas (o no hay pedido que consultar).
+     */
+    private function buildLineasJson(array $lineasJson)
+    {
+        return json_encode($lineasJson, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     }
 
     /**
@@ -440,6 +543,12 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
         $lines[] = $this->module->ccL('email_label_telefono') . ': ' . $d['telefono'];
         $lines[] = $this->module->ccL('email_label_idioma') . ': ' . $langLabel;
         $lines[] = $this->module->ccL('email_label_muestras') . ': ' . $yesNo;
+        // fecha_recepcion la escribe el cliente en el formulario (Prestashop
+        // no tiene la fecha real de entrega: la gestiona Outvio fuera de la
+        // tienda), asi que no depende de si hay pedido resuelto.
+        if (!empty($d['fecha_recepcion'])) {
+            $lines[] = $this->module->ccL('email_label_fecha_entrega') . ': ' . $d['fecha_recepcion'];
+        }
 
         if (!empty($d['order_details'])) {
             $od = $d['order_details'];
@@ -449,9 +558,6 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
             }
             if ($od['carrier_name'] !== null) {
                 $lines[] = $this->module->ccL('email_label_transportista') . ': ' . $od['carrier_name'];
-            }
-            if ($od['fecha_entrega'] !== null) {
-                $lines[] = $this->module->ccL('email_label_fecha_entrega') . ': ' . $od['fecha_entrega'];
             }
             if (!empty($od['lineas'])) {
                 $lines[] = $this->module->ccL('email_label_lineas_pedido') . ':';
