@@ -47,7 +47,7 @@ class Seur extends CarrierModule
     {
         $this->name = 'seur';
         $this->tab = 'shipping_logistics';
-        $this->version = '2.5.24';
+        $this->version = '2.5.25';
         $this->author = 'Seur';
         $this->need_instance = 0;
 
@@ -123,6 +123,9 @@ class Seur extends CarrierModule
 
         if (!$this->isRegisteredInHook('displayCarrierExtraContent'))
             $this->registerHook('displayCarrierExtraContent');
+        
+        // Verificar permisos de directorios en cada carga
+        $this->ensureFileDirectoriesPermissions();
     }
 
     /*************************************************************************************
@@ -265,15 +268,44 @@ class Seur extends CarrierModule
         Configuration::updateValue('SEUR2_AUTO_CREATE_LABELS_PAYMENTS_METHODS_AVAILABLE', '');
         Configuration::updateValue('SEUR2_AUTO_CALCULATE_PACKAGES', 0);
 
-
+        // Asegurar permisos correctos en directorios críticos
+        $this->ensureFileDirectoriesPermissions();
 
         return true;
     }
 
+    /**
+     * Asegura que los directorios de archivos tengan los permisos correctos
+     * para evitar problemas después de actualizaciones
+     */
+    private function ensureFileDirectoriesPermissions()
+    {
+        $filesDir = dirname(__FILE__) . '/files';
+        $directories = array(
+            $filesDir,
+            $filesDir . '/deliveries_invoices',
+            $filesDir . '/deliveries_labels',
+            $filesDir . '/deliveries_notes',
+            $filesDir . '/deliveries_xml',
+            $filesDir . '/logs'
+        );
+
+        foreach ($directories as $dir) {
+            if (is_dir($dir)) {
+                // Intentar establecer permisos 0775 (lectura/escritura para owner y group)
+                @chmod($dir, 0775);
+            } else {
+                // Si el directorio no existe, crearlo con los permisos correctos
+                @mkdir($dir, 0775, true);
+            }
+        }
+    }
+
     public function createAdminTab()
     {
-        $this->uninstallTab();
-
+        // NO borramos los tabs existentes si ya están creados correctamente
+        // Solo los recreamos si faltan
+        
         $flagInstall = true;
         // Build menu tabs
         foreach ($this->tabs as $className => $data) {
@@ -518,7 +550,7 @@ class Seur extends CarrierModule
         }
 
         @mkdir($target);
-        chmod($target, 0755);
+        chmod($target, 0775);  // Cambiado de 0755 a 0775 para permitir escritura al grupo
         $d = dir($source);
         $nav_folders = array('.', '..');
         while (false !== ($file_entry = $d->read())) {
@@ -1026,6 +1058,15 @@ class Seur extends CarrierModule
             $pudo_address2 = $pickup_point_info['address'];
             $pudo_city = $pickup_point_info['city'];
             $pudo_postcode = $pickup_point_info['postal_code'];
+            $forbiddenAddressChars = array('!', '<', '>', '?', '=', '+', '@', '{', '}', '_', '$', '%');
+
+            $pudo_address1 = Tools::substr(trim(preg_replace('/\s+/', ' ', str_replace($forbiddenAddressChars, ' ', $pudo_address1))), 0, 128);
+            $pudo_address2 = Tools::substr(trim(preg_replace('/\s+/', ' ', str_replace($forbiddenAddressChars, ' ', $pudo_address2))), 0, 128);
+
+            if (!Validate::isAddress($pudo_address1)) {
+                PrestaShopLogger::addLog('SEUR pickup address1 invalid after cleanup for order ' . (int) $order->id . ', using pickup code fallback', 3);
+                $pudo_address1 = 'Pickup ' . Tools::substr((string) $pickup_point_info['id_seur_pos'], 0, 121);
+            }
 
             // Verificar si ya existe una dirección con los datos deseados
             $id_address_pudo = SeurLib::getCustomerAddressId($order->id_customer, [
@@ -1057,18 +1098,27 @@ class Seur extends CarrierModule
                 $newAddress->active = 1;
                 $newAddress->deleted = 1;
 
-                if ($newAddress->add()) {
-                    $id_address_pudo = $newAddress->id;
+                try {
+                    if ($newAddress->add()) {
+                        $id_address_pudo = $newAddress->id;
+                    }
+                } catch (Exception $e) {
+                    PrestaShopLogger::addLog('SEUR pickup address creation failed for order ' . (int) $order->id . ': ' . $e->getMessage(), 3);
                 }
             }
-            $order->id_address_delivery = $id_address_pudo;
-            $order->update();
 
-            $seurOrder->id_address_delivery = $id_address_pudo;
-            $seurOrder->address1 = $pudo_address1;
-            $seurOrder->address2 = $pudo_address2;
-            $seurOrder->postcode = $pudo_postcode;
-            $seurOrder->city = $pudo_city;
+            if ($id_address_pudo) {
+                $order->id_address_delivery = $id_address_pudo;
+                $order->update();
+
+                $seurOrder->id_address_delivery = $id_address_pudo;
+                $seurOrder->address1 = $pudo_address1;
+                $seurOrder->address2 = $pudo_address2;
+                $seurOrder->postcode = $pudo_postcode;
+                $seurOrder->city = $pudo_city;
+            } else {
+                PrestaShopLogger::addLog('SEUR pickup address was not created for order ' . (int) $order->id . '; keeping original delivery address', 2);
+            }
         }
 
         $seurOrder->cashondelivery = 0;

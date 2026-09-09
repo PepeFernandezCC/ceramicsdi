@@ -28,6 +28,18 @@ let infoWindow = new google.maps.InfoWindow({
 
 let id_seur_RESTO_array;
 
+// Guardas contra el bucle "carrier change" <-> "recarga de puntos/mapa":
+// Prestashop vuelve a disparar 'change' sobre el radio del transportista ya
+// seleccionado cada vez que reprocesa el bloque de transportistas (p.ej.
+// tras el ajax de selectDeliveryOption), sin que el cliente haya elegido
+// nada nuevo. Sin esta guarda, cada uno de esos "change" repetidos relanza
+// las llamadas a Google/SEUR de initSeurCarriers(), y si eso vuelve a
+// disparar por su parte un refresco del bloque de transportistas, el ciclo
+// no termina nunca (visible en el Network como el mismo grupo de peticiones
+// repitiendose sin parar).
+let seurCarriersRunning = false;
+let lastSeurCarriersKey = null;
+
 $(document).ready(function()
 {
 	const form = document.getElementById('js-delivery');
@@ -74,13 +86,36 @@ async function initSeurCarriers() {
 	if (!seurInitialized) {
 		seurAssignGlobalVariables();
 	}
-	if (seurInitialized) {
+	if (!seurInitialized) {
+		return;
+	}
+
+	// Reentrada: si ya hay una ejecucion en curso (llamadas async a Google/
+	// SEUR todavia sin resolver), ignoramos este "change" en vez de
+	// solaparla con otra.
+	if (seurCarriersRunning) {
+		return;
+	}
+
+	getCurrentCarrierId();
+	const seurCarriersKey = currentCarrierId + '|' + id_address_delivery_seur.val();
+	if (seurCarriersKey === lastSeurCarriersKey) {
+		// Mismo transportista y misma direccion que la ultima vez: este
+		// "change" no es una eleccion nueva del cliente, es Prestashop
+		// re-sincronizando el bloque de transportistas (pasa tras el ajax
+		// de selectDeliveryOption). Repetir aqui las llamadas a Google/SEUR
+		// es lo que producia el bucle de peticiones sin fin.
+		return;
+	}
+	lastSeurCarriersKey = seurCarriersKey;
+
+	seurCarriersRunning = true;
+	try {
 		validGoogleApiKey = await isGoogleApiKeyValid(seurGoogleApiKey);
 		usrAddress = getUserAddress(id_address_delivery_seur.val());
 		points = getSeurCollectionPoints();
 
 		cleanSeurMaps();
-		getCurrentCarrierId();
 		if (getDisplaySeurCarriers() && currentCarrierIsSeurPickup()) {
 			initContainers();
 			if (validGoogleApiKey) {
@@ -92,6 +127,8 @@ async function initSeurCarriers() {
 				noSelectedPointInfo.show();
 			}
 		}
+	} finally {
+		seurCarriersRunning = false;
 	}
 }
 

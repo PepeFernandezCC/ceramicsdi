@@ -57,6 +57,26 @@ class SeurGetpickuppointsModuleFrontController extends ModuleFrontController
         $address = new Address($idAddr, (int)$cookie->id_lang);
         $country = new Country((int)$address->id_country, (int)$cookie->id_lang);
 
+        // Si la dirección no existe (borrada, id caducado en el front, etc.)
+        // o le falta pais/codigo postal, no tiene sentido llamar al WS de
+        // SEUR: siempre nos va a devolver error (peticion sin datos reales)
+        // y el front la repetira identica en cada cambio de transportista.
+        // Cortamos aqui y lo dejamos registrado para poder diagnosticarlo.
+        if (!Validate::isLoadedObject($address) || !Validate::isLoadedObject($country)
+            || trim((string)$address->postcode) === '' || trim((string)$country->iso_code) === ''
+        ) {
+            if (class_exists('SeurLib') && method_exists('SeurLib', 'showMessageError')) {
+                SeurLib::showMessageError(
+                    null,
+                    'GET PICKUPS: direccion invalida o incompleta (id_address_delivery='.$idAddr.')',
+                    true
+                );
+            }
+            header('Content-Type: application/json; charset=utf-8');
+            echo '[]';
+            exit;
+        }
+
         $data = [
             'postalCode'  => str_pad((string)$address->postcode, 4, '0', STR_PAD_LEFT),
             'countryCode' => (string)$country->iso_code,
@@ -88,10 +108,22 @@ class SeurGetpickuppointsModuleFrontController extends ModuleFrontController
 
         $response = SeurLib::sendCurl($urlws, $headers, $data, 'GET');
 
-        // Manejo de errores
+        // Manejo de errores. $response->errors[0]->detail solo existe si
+        // SEUR ha devuelto ese formato de error concreto: se comprueba paso
+        // a paso para no generar un warning de PHP (y perder el detalle
+        // real) cuando la respuesta viene vacia o con otra forma.
         if (isset($response->errors) || !isset($response->data)) {
+            $detail = 'sin detalle (respuesta: '.substr(json_encode($response), 0, 300).')';
+            if (isset($response->errors) && is_array($response->errors) && isset($response->errors[0]->detail)) {
+                $detail = (string) $response->errors[0]->detail;
+            }
+
             if (method_exists('SeurLib', 'showMessageError')) {
-                SeurLib::showMessageError(null, 'GET PICKUPS Error: '.$response->errors[0]->detail, true);
+                SeurLib::showMessageError(
+                    null,
+                    'GET PICKUPS Error (id_address_delivery='.$idAddr.'): '.$detail,
+                    true
+                );
             }
             header('Content-Type: application/json; charset=utf-8');
             echo '[]';

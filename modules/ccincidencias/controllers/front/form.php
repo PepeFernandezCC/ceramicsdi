@@ -387,6 +387,11 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
             'pais_entrega' => '',
             'marketplace' => '',
             'lineas_json' => array(),
+            // fecha_envio: NO forma parte del bloque de datos (no esta en el
+            // PDF), solo se añade al texto legible por personas, encima de
+            // fecha_entrega. Se calcula aqui porque, a diferencia de
+            // fecha_entrega, si sale de Prestashop.
+            'fecha_envio' => '',
         );
 
         try {
@@ -431,6 +436,22 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
         // marketplace que existe hoy en la tienda, asi que "no" es un
         // valor fiable para el resto (no es una suposicion).
         $details['marketplace'] = ($order->module === 'manomanoimportpayment') ? 'si' : 'no';
+
+        // fecha_envio: fecha en la que el pedido paso al estado "Enviado"
+        // (id_order_state = 4), segun order_history. Si el pedido ha
+        // pasado por ese estado mas de una vez, se usa la primera fecha
+        // (la primera vez que se puso, no la ultima). Vacio si nunca
+        // ha estado en ese estado.
+        try {
+            $shippedDate = Db::getInstance()->getValue(
+                'SELECT MIN(date_add) FROM `' . _DB_PREFIX_ . 'order_history`
+                 WHERE id_order = ' . (int) $order->id . ' AND id_order_state = 4'
+            );
+            if ($shippedDate) {
+                $details['fecha_envio'] = date('Y-m-d', strtotime($shippedDate));
+            }
+        } catch (Exception $e) {
+        }
 
         $rows = Db::getInstance()->executeS(
             'SELECT product_reference, product_name, product_quantity, unit_price_tax_incl, total_price_tax_incl
@@ -543,6 +564,12 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
         $lines[] = $this->module->ccL('email_label_telefono') . ': ' . $d['telefono'];
         $lines[] = $this->module->ccL('email_label_idioma') . ': ' . $langLabel;
         $lines[] = $this->module->ccL('email_label_muestras') . ': ' . $yesNo;
+        // fecha_envio: cuando el pedido paso al estado "Enviado" (id 4),
+        // segun order_history (ver buildOrderDetails()). Va siempre encima
+        // de fecha_entrega y en el mismo formato (AAAA-MM-DD).
+        if (!empty($d['order_details']) && !empty($d['order_details']['fecha_envio'])) {
+            $lines[] = $this->module->ccL('email_label_fecha_envio') . ': ' . $d['order_details']['fecha_envio'];
+        }
         // fecha_recepcion la escribe el cliente en el formulario (Prestashop
         // no tiene la fecha real de entrega: la gestiona Outvio fuera de la
         // tienda), asi que no depende de si hay pedido resuelto.

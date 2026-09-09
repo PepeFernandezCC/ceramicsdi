@@ -1,7 +1,14 @@
 $( document ).ready( function () {
 
    let myGlobal = [];
-   
+
+   // Ultima opcion de entrega para la que ya forzamos el "change" sintetico
+   // (ver el bloque de #checkout-delivery-step mas abajo). Se declara aqui
+   // fuera, en el cierre de initializeCustom, para que sobreviva a las
+   // llamadas repetidas de initializeCustom() disparadas por los eventos
+   // updateDeliveryForm/updatedDeliveryForm de Prestashop.
+   let lastForcedDeliveryOption = null;
+
    let initializeCustom = function () {
       if(document.getElementById('desktop-product-images')) {
          $(document).on('click', '.images-container .layer', function () {
@@ -3134,8 +3141,15 @@ $( document ).ready( function () {
          }
       });
 
-      // Reacciona cuando el paso se vuelve a pintar (p.ej. al volver de otro paso del checkout)
-      new MutationObserver(updateConfirmButtonState).observe(step, { childList: true, subtree: true });
+      // Reacciona cuando el paso se vuelve a pintar (p.ej. al volver de otro paso del checkout).
+      // Se observa solo una vez por elemento #checkout-delivery-step (dataset como
+      // marca): initializeCustom() se vuelve a ejecutar en cada updatedDeliveryForm,
+      // y sin esta comprobación se creaba un MutationObserver nuevo cada vez, apilados
+      // sobre el mismo nodo.
+      if (!step.dataset.ccDeliveryObserverBound) {
+         step.dataset.ccDeliveryObserverBound = '1';
+         new MutationObserver(updateConfirmButtonState).observe(step, { childList: true, subtree: true });
+      }
 
       updateConfirmButtonState();
 
@@ -3153,8 +3167,18 @@ $( document ).ready( function () {
       // Disparamos el "change" sobre la opción premarcada (la más barata por defecto)
       // para que se confirme/persista en el carrito y el precio de envío se muestre
       // en cuanto el cliente llega a este paso, sin esperar a que haga clic.
+      //
+      // OJO: este "change" sintético es exactamente lo que provocaba el bucle
+      // infinito de peticiones a selectDeliveryOption. Prestashop, al procesar
+      // el "change", llama a selectDeliveryOption por ajax y al terminar emite
+      // updatedDeliveryForm/updateDeliveryForm; initializeCustom() está suscrita
+      // a esos dos eventos (más abajo) y se volvía a ejecutar, volvía a encontrar
+      // el mismo radio marcado y volvía a disparar "change" sobre él sin parar,
+      // sin que el cliente hiciera nada. Por eso solo lo disparamos si la opción
+      // marcada es distinta de la última vez que ya la forzamos.
       var checkedInput = step.querySelector('input[name^="delivery_option["]:checked');
-      if (checkedInput) {
+      if (checkedInput && checkedInput.value !== lastForcedDeliveryOption) {
+         lastForcedDeliveryOption = checkedInput.value;
          checkedInput.dispatchEvent(new Event('change', { bubbles: true }));
       }
       })();
