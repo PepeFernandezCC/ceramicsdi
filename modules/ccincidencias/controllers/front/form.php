@@ -259,9 +259,7 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
             'telefono' => $telefono,
             'idioma' => $idiomaUpper,
             'es_muestra' => $esMuestra,
-            // fecha_entrega la escribe el cliente (ver fecha_recepcion mas
-            // arriba): no depende de si hay pedido resuelto, igual que
-            // telefono o seguimiento.
+            'fecha_envio' => $orderDetails ? $orderDetails['fecha_envio'] : '',
             'fecha_entrega' => $fechaRecepcion,
             'importe_total' => $orderDetails ? $orderDetails['importe_total_raw'] : '',
             'transportista' => $orderDetails ? $orderDetails['transportista'] : '',
@@ -381,16 +379,11 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
             'total_paid' => null,
             'carrier_name' => null,
             'lineas' => array(),
-            // Claves nuevas del bloque de datos (PDF v2, apartados 3-6).
             'importe_total_raw' => '',
             'transportista' => '',
             'pais_entrega' => '',
             'marketplace' => '',
             'lineas_json' => array(),
-            // fecha_envio: NO forma parte del bloque de datos (no esta en el
-            // PDF), solo se añade al texto legible por personas, encima de
-            // fecha_entrega. Se calcula aqui porque, a diferencia de
-            // fecha_entrega, si sale de Prestashop.
             'fecha_envio' => '',
         );
 
@@ -430,18 +423,8 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
         } catch (Exception $e) {
         }
 
-        // marketplace: los pedidos importados desde ManoMano se validan
-        // siempre con este modulo "dummy" de pago (ver
-        // ManoManoImportPayment); es la unica via de pedidos de
-        // marketplace que existe hoy en la tienda, asi que "no" es un
-        // valor fiable para el resto (no es una suposicion).
         $details['marketplace'] = ($order->module === 'manomanoimportpayment') ? 'si' : 'no';
 
-        // fecha_envio: fecha en la que el pedido paso al estado "Enviado"
-        // (id_order_state = 4), segun order_history. Si el pedido ha
-        // pasado por ese estado mas de una vez, se usa la primera fecha
-        // (la primera vez que se puso, no la ultima). Vacio si nunca
-        // ha estado en ese estado.
         try {
             $shippedDate = Db::getInstance()->getValue(
                 'SELECT MIN(date_add) FROM `' . _DB_PREFIX_ . 'order_history`
@@ -521,6 +504,7 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
         $lines[] = 'telefono: ' . $d['telefono'];
         $lines[] = 'idioma: ' . $d['idioma'];
         $lines[] = 'es_muestra: ' . ($d['es_muestra'] ? 'si' : 'no');
+        $lines[] = 'fecha_envio: ' . $d['fecha_envio'];
         $lines[] = 'fecha_entrega: ' . $d['fecha_entrega'];
         $lines[] = 'importe_total: ' . $d['importe_total'];
         $lines[] = 'transportista: ' . $d['transportista'];
@@ -564,10 +548,8 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
         $lines[] = $this->module->ccL('email_label_telefono') . ': ' . $d['telefono'];
         $lines[] = $this->module->ccL('email_label_idioma') . ': ' . $langLabel;
         $lines[] = $this->module->ccL('email_label_muestras') . ': ' . $yesNo;
-        // fecha_envio: cuando el pedido paso al estado "Enviado" (id 4),
-        // segun order_history (ver buildOrderDetails()). Va siempre encima
-        // de fecha_entrega y en el mismo formato (AAAA-MM-DD).
-        if (!empty($d['order_details']) && !empty($d['order_details']['fecha_envio'])) {
+
+        if (!empty($d['order_details'])) {
             $lines[] = $this->module->ccL('email_label_fecha_envio') . ': ' . $d['order_details']['fecha_envio'];
         }
         // fecha_recepcion la escribe el cliente en el formulario (Prestashop

@@ -82,11 +82,12 @@
           <small class="cc-help">{$cc_t.fecha_recepcion_help|escape:'htmlall':'UTF-8'}</small>
         </div>
 
-        <div class="form-group cc-field cc-checkbox">
-          <label>
-            <input type="checkbox" name="es_muestra" value="1"{if isset($cc_old.es_muestra)} checked{/if}>
-            {$cc_t.label_es_muestra|escape:'htmlall':'UTF-8'}
-          </label>
+        <div class="form-group cc-field cc-checkbox cc-switch-row">
+          <div class="wasteSwitch">
+            <input class="toggleMin" type="checkbox" id="cc_es_muestra" name="es_muestra" value="1"{if isset($cc_old.es_muestra)} checked{/if}>
+            <label class="switch" for="cc_es_muestra"></label>
+          </div>
+          <label for="cc_es_muestra" class="cc-switch-label">{$cc_t.label_es_muestra|escape:'htmlall':'UTF-8'}</label>
         </div>
 
         <div class="form-group cc-field">
@@ -113,9 +114,12 @@
           <small class="cc-help">{$cc_t.fotos_help|escape:'htmlall':'UTF-8'}</small>
         </div>
 
-        <div class="form-group cc-field cc-checkbox">
-          <label>
-            <input type="checkbox" name="consentimiento" value="1" required>
+        <div class="form-group cc-field cc-checkbox cc-switch-row">
+          <div class="wasteSwitch">
+            <input class="toggleMin" type="checkbox" id="cc_consentimiento" name="consentimiento" value="1" required>
+            <label class="switch" for="cc_consentimiento"></label>
+          </div>
+          <label for="cc_consentimiento" class="cc-switch-label">
             {$cc_t.consentimiento_prefix|escape:'htmlall':'UTF-8'}<a href="{$cc_privacy_url|escape:'htmlall':'UTF-8'}" target="_blank" rel="noopener">{$cc_t.consentimiento_link_text|escape:'htmlall':'UTF-8'}</a>
           </label>
         </div>

@@ -17,6 +17,24 @@ document.addEventListener('DOMContentLoaded', function () {
         referenciaInput.addEventListener('input', checkReferencia);
     }
 
+    // El input type="date" nativo solo abre el calendario al pinchar en el
+    // icono. Con showPicker() se abre al pinchar en cualquier parte del
+    // campo (Chrome/Edge lo soportan; en el resto se degrada a un focus
+    // normal, sin romper nada).
+    var fechaInput = document.getElementById('cc_fecha_recepcion');
+
+    if (fechaInput) {
+        fechaInput.addEventListener('click', function () {
+            if (typeof fechaInput.showPicker === 'function') {
+                try {
+                    fechaInput.showPicker();
+                } catch (e) {
+                    // Ignorar: algunos navegadores lanzan si el picker ya esta abierto.
+                }
+            }
+        });
+    }
+
     // Validacion antes de enviar: si falta algo, no se llega a mandar el
     // formulario. Asi el <input type="file"> de fotos no se pierde (los
     // navegadores no dejan rellenar de nuevo un campo de fichero tras

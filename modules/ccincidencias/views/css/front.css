@@ -20,6 +20,31 @@
     font-weight: normal;
 }
 
+/* Checkboxes es_muestra/consentimiento con el mismo estilo switch que el
+   resto de la web (ver .toggleMin/.switch en el custom.css del tema). */
+#cc-incidencias .cc-switch-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#cc-incidencias .cc-switch-row .wasteSwitch {
+    flex: 0 0 auto;
+    /* .toggleMin + .switch mide 20px de alto (ver custom.css del tema);
+       fijamos la altura del contenedor a eso para que el flex centre
+       el switch contra la altura real, no contra la del input oculto. */
+    height: 20px;
+}
+
+#cc-incidencias .cc-switch-label {
+    margin: 0 !important;
+    padding: 0;
+    /* Iguala la altura del switch para que el texto quede centrado con
+       el pill en vez de con la caja de linea por defecto del label. */
+    line-height: 20px;
+    cursor: pointer;
+}
+
 #cc-incidencias .cc-help {
     display: block;
     color: #777;
