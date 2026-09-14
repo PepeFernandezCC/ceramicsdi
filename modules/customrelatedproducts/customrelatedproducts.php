@@ -283,21 +283,29 @@ class CustomRelatedProducts extends Module
 
         $relatedIds = [];
 
+        // No sugerir como relacionados productos de la categoría "muestras"
+        // (ver CartController::MUESTRAS_CATEGORY_ID en override/controllers/front/CartController.php).
+        $muestrasCategoryId = (int) CartController::MUESTRAS_CATEGORY_ID;
+        $excludeMuestrasProductSql = ' AND p.id_product NOT IN (
+                SELECT id_product FROM ' . _DB_PREFIX_ . 'category_product WHERE id_category = ' . $muestrasCategoryId . '
+            )';
+
         /*
         * 1. Productos relacionados por colección (feature = 57)
-        *    Solo productos activos (p.active = 1)
+        *    Solo productos activos (p.active = 1), excluyendo muestras
         */
         $sqlCollection = '
-            SELECT fp2.id_product 
+            SELECT fp2.id_product
             FROM ' . _DB_PREFIX_ . 'feature_product fp1
-            INNER JOIN ' . _DB_PREFIX_ . 'feature_product fp2 
+            INNER JOIN ' . _DB_PREFIX_ . 'feature_product fp2
                 ON fp1.id_feature_value = fp2.id_feature_value
             INNER JOIN ' . _DB_PREFIX_ . 'product p
                 ON p.id_product = fp2.id_product
             WHERE fp1.id_feature = 57
                 AND fp1.id_product = ' . $idProduct . '
                 AND fp2.id_product != ' . $idProduct . '
-                AND p.active = 1
+                AND p.active = 1'
+                . $excludeMuestrasProductSql . '
             GROUP BY fp2.id_product
             LIMIT ' . $limit;
 
@@ -323,14 +331,15 @@ class CustomRelatedProducts extends Module
             $remaining = $limit - count($relatedIds);
 
             $sqlTop = '
-                SELECT DISTINCT fp.id_product 
+                SELECT DISTINCT fp.id_product
                 FROM ' . _DB_PREFIX_ . 'feature_product fp
                 INNER JOIN ' . _DB_PREFIX_ . 'product p
                     ON p.id_product = fp.id_product
                 WHERE fp.id_feature = 69
                     AND fp.id_feature_value = 146347
                     AND fp.id_product != ' . $idProduct . '
-                    AND p.active = 1
+                    AND p.active = 1'
+                    . $excludeMuestrasProductSql . '
                 LIMIT ' . (int) $remaining;
 
             $topProducts = Db::getInstance()->executeS($sqlTop);
@@ -368,7 +377,8 @@ class CustomRelatedProducts extends Module
                     SELECT p.id_product
                     FROM ' . _DB_PREFIX_ . 'product p
                     WHERE p.active = 1
-                        AND p.id_product IN (' . $inIds . ')';
+                        AND p.id_product IN (' . $inIds . ')'
+                        . $excludeMuestrasProductSql;
 
                 // Evitamos repetir los que ya están en $relatedIds
                 if (!empty($relatedIds)) {
@@ -613,6 +623,12 @@ class CustomRelatedProducts extends Module
 
         $relatedArray = [];
 
+        // No mostrar como relacionados productos de la categoría "muestras"
+        // (ver CartController::MUESTRAS_CATEGORY_ID en override/controllers/front/CartController.php).
+        $excludeMuestrasSql = ' AND crp.id_product_related NOT IN (
+                    SELECT id_product FROM ps_category_product WHERE id_category = ' . (int) CartController::MUESTRAS_CATEGORY_ID . '
+                )';
+
         if (self::getIfNormalSell($idProduct)) {
 
             $sql = 'SELECT
@@ -621,11 +637,12 @@ class CustomRelatedProducts extends Module
                     crp.position
                 FROM ps_customrelatedproducts crp
                 LEFT JOIN ps_product_lang pl ON pl.id_product = crp.id_product_related AND pl.id_lang = '.$idLang.'
-                WHERE crp.id_product = '.$idProduct.'
+                WHERE crp.id_product = '.$idProduct.
+                $excludeMuestrasSql.'
                 ORDER BY crp.position';
 
         }else{
-            
+
             $sql = 'SELECT
                     crp.id_product_related AS id_product,
                     pl.name,
@@ -633,17 +650,18 @@ class CustomRelatedProducts extends Module
                     material.value AS material,
                     crp.position
                 FROM ps_customrelatedproducts crp
-                LEFT JOIN ps_product_lang pl 
+                LEFT JOIN ps_product_lang pl
                     ON pl.id_product = crp.id_product_related AND pl.id_lang = '.$idLang.'
-                LEFT JOIN ps_feature_product fp_formato 
+                LEFT JOIN ps_feature_product fp_formato
                     ON fp_formato.id_product = crp.id_product_related AND fp_formato.id_feature = 4
-                LEFT JOIN ps_feature_value_lang formato 
+                LEFT JOIN ps_feature_value_lang formato
                     ON formato.id_feature_value = fp_formato.id_feature_value AND formato.id_lang = '.$idLang.'
-                LEFT JOIN ps_feature_product fp_material 
+                LEFT JOIN ps_feature_product fp_material
                     ON fp_material.id_product = crp.id_product_related AND fp_material.id_feature = 45
-                LEFT JOIN ps_feature_value_lang material 
+                LEFT JOIN ps_feature_value_lang material
                     ON material.id_feature_value = fp_material.id_feature_value AND material.id_lang = '.$idLang.'
-                WHERE crp.id_product = '.$idProduct.'
+                WHERE crp.id_product = '.$idProduct.
+                $excludeMuestrasSql.'
                 ORDER BY crp.position';
         }
         // Obtener resultados
