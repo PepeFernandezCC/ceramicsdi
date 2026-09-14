@@ -749,6 +749,10 @@ class SeurLib
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 
+        // Tiempos máximos de espera
+        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 15);
+
         $result = curl_exec($curl);
 
         if (json_decode($result) !== null) {

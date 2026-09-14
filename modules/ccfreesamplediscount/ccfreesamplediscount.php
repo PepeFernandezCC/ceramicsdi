@@ -199,11 +199,71 @@ class CcFreeSampleDiscount extends Module
         }
 
         $this->syncCartRuleForCart($cart);
+        $this->garbageCollectExpiredRules();
     }
 
     /**
-     * Once the order is validated, detach the module rule from the cart.
-     * The discount remains copied into the order by PrestaShop.
+     * Best-effort cleanup for rules left behind by ABANDONED carts (never
+     * validated into an order, so hookActionValidateOrder() never runs for
+     * them): once a rule is past its date_to it can never be used again
+     * (quantity_per_user=1, single cart), so it is safe to delete.
+     *
+     * No cron/scheduled task infrastructure is assumed here, so this piggy-
+     * backs on the actionCartSave hook (already very frequent) instead, but
+     * only runs ~0.5% of the time and only deletes a small batch, so it
+     * stays cheap per-request while still keeping the table from growing
+     * unbounded again like it did before the 2026-09-14 incident.
+     */
+    protected function garbageCollectExpiredRules($batchSize = 50)
+    {
+        if (mt_rand(1, 200) !== 1) {
+            return;
+        }
+
+        try {
+            $ids = Db::getInstance()->executeS('
+                SELECT id_cart_rule
+                FROM `' . _DB_PREFIX_ . 'cart_rule`
+                WHERE code LIKE "' . pSQL(self::CART_RULE_CODE_PREFIX) . '%"
+                  AND date_to < NOW()
+                ORDER BY id_cart_rule ASC
+                LIMIT ' . (int) $batchSize
+            );
+
+            if (empty($ids)) {
+                return;
+            }
+
+            foreach ($ids as $row) {
+                $cartRule = new CartRule((int) $row['id_cart_rule']);
+                if (Validate::isLoadedObject($cartRule)) {
+                    $cartRule->delete();
+                }
+            }
+        } catch (Exception $e) {
+            PrestaShopLogger::addLog(
+                sprintf('[%s] garbageCollectExpiredRules: %s', $this->name, $e->getMessage()),
+                2,
+                null,
+                null,
+                null,
+                true
+            );
+        }
+    }
+
+    /**
+     * Once the order is validated, delete the module's cart rule.
+     *
+     * Safe to delete even though the order already used it: ps_order_cart_rule
+     * keeps its own snapshot (name/value/value_tax_excl) to render order
+     * history/invoices, it does not need this row to keep existing (see
+     * classes/order/OrderCartRule.php). Earlier this only deactivated the
+     * rule "to avoid interfering with order history" - that caution was not
+     * actually needed, and it left thousands of expired, never-reusable
+     * (quantity_per_user=1) rules piling up in ps_cart_rule (and, via
+     * cart_rule_combination, a multi-million-row table) - see the
+     * performance incident report from 2026-09-14.
      *
      * @param array $params
      */
@@ -219,11 +279,7 @@ class CcFreeSampleDiscount extends Module
             return;
         }
 
-        // Do not delete the cart rule here, to avoid interfering with order history.
-        // Just make it unusable after this cart has become an order.
-        $cartRule->active = 0;
-        $cartRule->date_to = date('Y-m-d H:i:s', strtotime('-1 minute'));
-        $cartRule->update();
+        $cartRule->delete();
     }
 
     /**
