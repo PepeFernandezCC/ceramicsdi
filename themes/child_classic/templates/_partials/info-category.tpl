@@ -32,7 +32,7 @@
 
                             {if $condition}
                                 
-                                <div id="bread-crumps-container" class="bread-crumps" data-father="{$normalized_father_title}" data-title="{$normalized_title}" data-color="none" data-location="category" data-dadcategory="{$category.id_parent}" style="padding-bottom:15px"></div> 
+                                <div id="bread-crumps-container" class="bread-crumps" style="padding-bottom:15px">{CcBreadcrumbs::renderCategory($category, $normalized_title, $normalized_father_title) nofilter}</div>
                             {/if}
 
 
