@@ -46,7 +46,19 @@ $(document).ready(function () {
                 });
         });
 
+        let deliverySearchRequestInFlight = false;
+        const deliverySearchButtonOriginalText = deliverySearchButton.textContent;
+
         deliverySearchButton.addEventListener('click', function () {
+            // Evita que varios clics (doble clic, usuario impaciente mientras
+            // la petición tarda) disparen varias llamadas en paralelo al
+            // mismo tiempo - eso es justo lo que vimos en produccion en el
+            // incidente de rendimiento (dos peticiones identicas a 1s de
+            // diferencia). Se reactiva siempre, tanto en exito como en error.
+            if (deliverySearchRequestInFlight) {
+                return;
+            }
+
             let countryId = document.getElementById('field-id_country').value;
             let stateId = document.getElementById('field-id_state').value;
             let postal = document.getElementById('postalzip').value;
@@ -59,9 +71,14 @@ $(document).ready(function () {
             } else {
                 document.getElementById('messageContainer').style.display = 'none';
 
+                deliverySearchRequestInFlight = true;
+                deliverySearchButton.disabled = true;
+                deliverySearchButton.textContent = '...';
+
                 $.ajax({
                     url: deliveryPriceCalculatorPriceUrl,
                     method: 'POST',
+                    timeout: 15000,
                     data: {
                         id_country: countryId,
                         id_state: stateId,
@@ -84,6 +101,11 @@ $(document).ready(function () {
                     },
                     error: function (err) {
                         console.error('Error en la solicitud AJAX:', err);
+                    },
+                    complete: function () {
+                        deliverySearchRequestInFlight = false;
+                        deliverySearchButton.disabled = false;
+                        deliverySearchButton.textContent = deliverySearchButtonOriginalText;
                     }
                 });
             }
@@ -164,7 +186,17 @@ $(document).ready(function () {
             return data.estimated_delivery_html || '';
         }
 
+        let productEstimateRequestInFlight = false;
+        const productEstimateButtonOriginalText = productEstimateButton.textContent;
+
         productEstimateButton.addEventListener('click', function () {
+            // Igual que en el otro formulario: sin esto, un clic repetido
+            // mientras la peticion anterior sigue en curso (p.ej. porque
+            // tarda) lanza varias llamadas en paralelo al mismo endpoint.
+            if (productEstimateRequestInFlight) {
+                return;
+            }
+
             const idProduct = document.getElementById('deliveryEstimateIdProduct').value;
             const boxes = deliveryEstimateBoxesInput.value;
             const countryId = productCountrySelector.value;
@@ -179,9 +211,14 @@ $(document).ready(function () {
             productEstimateMessage.style.display = 'none';
             productEstimateResults.innerHTML = '';
 
+            productEstimateRequestInFlight = true;
+            productEstimateButton.disabled = true;
+            productEstimateButton.textContent = '...';
+
             $.ajax({
                 url: deliveryPriceCalculatorProductEstimateUrl,
                 method: 'POST',
+                timeout: 15000,
                 data: {
                     id_product: idProduct,
                     boxes: boxes,
@@ -195,6 +232,11 @@ $(document).ready(function () {
                 error: function (err) {
                     console.error('Error en la solicitud AJAX:', err);
                     productEstimateResults.innerHTML = '<div class="alert alert-danger">' + deliveryEstimateI18n.requestError + '</div>';
+                },
+                complete: function () {
+                    productEstimateRequestInFlight = false;
+                    productEstimateButton.disabled = false;
+                    productEstimateButton.textContent = productEstimateButtonOriginalText;
                 }
             });
         });
