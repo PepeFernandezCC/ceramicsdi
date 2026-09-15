@@ -303,8 +303,6 @@ class DeliverypricecalculatorPriceModuleFrontController extends ModuleFrontContr
                 );
             }
 
-            $timings['shippingcalculator_calculado'] = microtime(true) - $tStart;
-
             return [
                 'show_taxes' => $showTaxes,
                 'id_carrier' => $idCarrier,

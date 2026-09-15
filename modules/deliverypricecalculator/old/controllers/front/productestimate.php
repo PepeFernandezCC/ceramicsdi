@@ -268,8 +268,6 @@ class DeliverypricecalculatorProductestimateModuleFrontController extends Module
                 }
             }
 
-            $timings['shippingcalculator_calculado'] = microtime(true) - $tStart;
-
             $productObj = new Product($idProduct, false, $this->context->language->id);
 
             return [
