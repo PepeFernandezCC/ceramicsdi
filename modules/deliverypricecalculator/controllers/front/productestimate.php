@@ -93,6 +93,14 @@ class DeliverypricecalculatorProductestimateModuleFrontController extends Module
                 5 => 'Não há transportadoras disponíveis para este destino',
                 6 => 'Er zijn geen vervoerders beschikbaar voor deze bestemming',
             ],
+            'calc_error' => [
+                1 => 'No se pudo calcular el envío para este destino',
+                2 => "Impossible de calculer les frais de livraison pour cette destination",
+                3 => 'Could not calculate shipping for this destination',
+                4 => 'Der Versand für dieses Ziel konnte nicht berechnet werden',
+                5 => 'Não foi possível calcular o envio para este destino',
+                6 => 'De verzendkosten voor deze bestemming konden niet worden berekend',
+            ],
         ];
 
         $idLang = (int) $this->context->language->id;
@@ -135,107 +143,121 @@ class DeliverypricecalculatorProductestimateModuleFrontController extends Module
             return ['error' => $this->translateError('address_error')];
         }
 
-        $tmpCart = new Cart();
-        $tmpCart->id_shop_group = (int) $this->context->shop->id_shop_group;
-        $tmpCart->id_shop = (int) $this->context->shop->id;
-        $tmpCart->id_lang = (int) $this->context->language->id;
-        $tmpCart->id_currency = (int) $this->context->currency->id;
-        $tmpCart->id_customer = (int) $fakeCustomer->id;
-        $tmpCart->id_guest = 0;
-        $tmpCart->id_address_delivery = (int) $address->id;
-        $tmpCart->id_address_invoice = (int) $address->id;
-        $tmpCart->id_carrier = 0;
-        $tmpCart->delivery_option = '';
-        $tmpCart->secure_key = $fakeCustomer->secure_key;
-        $tmpCart->recyclable = 0;
-        $tmpCart->gift = 0;
-        $tmpCart->allow_seperated_package = 0;
+        // A partir de aqui existen recursos temporales (la direccion ya
+        // creada, y en un momento el carrito) que SIEMPRE hay que borrar,
+        // incluso si algo lanza una excepcion a mitad de camino. Antes el
+        // borrado solo estaba duplicado en cada rama de error conocida, asi
+        // que un fallo inesperado (p.ej. Carrier::getCheapestDeliveryOptionByCart
+        // lanzando una excepcion porque un transportista externo no responde)
+        // dejaba el carrito/direccion huerfanos para siempre - ver informe
+        // de incidencia de rendimiento del 14/09/2026.
+        $tmpCart = null;
 
-        if (!$tmpCart->add()) {
-            $address->delete();
+        try {
+            $tmpCart = new Cart();
+            $tmpCart->id_shop_group = (int) $this->context->shop->id_shop_group;
+            $tmpCart->id_shop = (int) $this->context->shop->id;
+            $tmpCart->id_lang = (int) $this->context->language->id;
+            $tmpCart->id_currency = (int) $this->context->currency->id;
+            $tmpCart->id_customer = (int) $fakeCustomer->id;
+            $tmpCart->id_guest = 0;
+            $tmpCart->id_address_delivery = (int) $address->id;
+            $tmpCart->id_address_invoice = (int) $address->id;
+            $tmpCart->id_carrier = 0;
+            $tmpCart->delivery_option = '';
+            $tmpCart->secure_key = $fakeCustomer->secure_key;
+            $tmpCart->recyclable = 0;
+            $tmpCart->gift = 0;
+            $tmpCart->allow_seperated_package = 0;
 
-            return ['error' => $this->translateError('cart_error')];
-        }
-
-        $added = $tmpCart->updateQty($quantity, $idProduct, 0, 0, 'up', (int) $address->id);
-
-        if (!$added) {
-            $tmpCart->delete();
-            $address->delete();
-
-            return ['error' => $this->translateError('add_product_error')];
-        }
-
-        Db::getInstance()->execute('
-            UPDATE `' . _DB_PREFIX_ . 'cart_product`
-            SET `id_address_delivery` = ' . (int) $address->id . '
-            WHERE `id_cart` = ' . (int) $tmpCart->id
-        );
-
-        $tmpCart = new Cart((int) $tmpCart->id);
-
-        $context = $this->context;
-        $context->cart = $tmpCart;
-        $context->customer = $fakeCustomer;
-        $context->country = new Country($idCountry);
-        $context->currency = new Currency((int) $tmpCart->id_currency);
-
-        $tmpCart->id_carrier = 0;
-        $tmpCart->delivery_option = '';
-        $tmpCart->update();
-
-        $bestOption = Carrier::getCheapestDeliveryOptionByCart($tmpCart, true);
-
-        if (!$bestOption || empty($bestOption['id_carrier'])) {
-            $tmpCart->delete();
-            $address->delete();
-
-            return ['error' => $this->translateError('no_carrier_error')];
-        }
-
-        $idCarrier = (int) $bestOption['id_carrier'];
-
-        $tmpCart->id_carrier = $idCarrier;
-        $tmpCart->delivery_option = json_encode([
-            (int) $address->id => $bestOption['option_key'],
-        ]);
-        $tmpCart->update();
-
-        $estimatedDelivery = null;
-        $estimatedDeliveryHtml = '';
-        $shippingCalculatorModule = Module::getInstanceByName('shippingcalculator');
-
-        if ($shippingCalculatorModule && Validate::isLoadedObject($shippingCalculatorModule) && method_exists($shippingCalculatorModule, 'calculateEstimatedDelivery')) {
-            $estimatedDelivery = $shippingCalculatorModule->calculateEstimatedDelivery($tmpCart);
-
-            if (is_array($estimatedDelivery)) {
-                $this->context->smarty->assign([
-                    'has_delivery_info' => true,
-                    'estimated_delivery' => $estimatedDelivery,
-                    'module_dir' => _MODULE_DIR_ . 'shippingcalculator/',
-                ]);
-
-                $estimatedDeliveryHtml = $shippingCalculatorModule->display(
-                    _PS_MODULE_DIR_ . 'shippingcalculator/shippingcalculator.php',
-                    'views/templates/hook/shopping_cart_delivery.tpl'
-                );
+            if (!$tmpCart->add()) {
+                return ['error' => $this->translateError('cart_error')];
             }
+
+            $added = $tmpCart->updateQty($quantity, $idProduct, 0, 0, 'up', (int) $address->id);
+
+            if (!$added) {
+                return ['error' => $this->translateError('add_product_error')];
+            }
+
+            Db::getInstance()->execute('
+                UPDATE `' . _DB_PREFIX_ . 'cart_product`
+                SET `id_address_delivery` = ' . (int) $address->id . '
+                WHERE `id_cart` = ' . (int) $tmpCart->id
+            );
+
+            $tmpCart = new Cart((int) $tmpCart->id);
+
+            $context = $this->context;
+            $context->cart = $tmpCart;
+            $context->customer = $fakeCustomer;
+            $context->country = new Country($idCountry);
+            $context->currency = new Currency((int) $tmpCart->id_currency);
+
+            $tmpCart->id_carrier = 0;
+            $tmpCart->delivery_option = '';
+            $tmpCart->update();
+
+            $bestOption = Carrier::getCheapestDeliveryOptionByCart($tmpCart, true);
+
+            if (!$bestOption || empty($bestOption['id_carrier'])) {
+                return ['error' => $this->translateError('no_carrier_error')];
+            }
+
+            $idCarrier = (int) $bestOption['id_carrier'];
+
+            $tmpCart->id_carrier = $idCarrier;
+            $tmpCart->delivery_option = json_encode([
+                (int) $address->id => $bestOption['option_key'],
+            ]);
+            $tmpCart->update();
+
+            $estimatedDelivery = null;
+            $estimatedDeliveryHtml = '';
+            $shippingCalculatorModule = Module::getInstanceByName('shippingcalculator');
+
+            if ($shippingCalculatorModule && Validate::isLoadedObject($shippingCalculatorModule) && method_exists($shippingCalculatorModule, 'calculateEstimatedDelivery')) {
+                $estimatedDelivery = $shippingCalculatorModule->calculateEstimatedDelivery($tmpCart);
+
+                if (is_array($estimatedDelivery)) {
+                    $this->context->smarty->assign([
+                        'has_delivery_info' => true,
+                        'estimated_delivery' => $estimatedDelivery,
+                        'module_dir' => _MODULE_DIR_ . 'shippingcalculator/',
+                    ]);
+
+                    $estimatedDeliveryHtml = $shippingCalculatorModule->display(
+                        _PS_MODULE_DIR_ . 'shippingcalculator/shippingcalculator.php',
+                        'views/templates/hook/shopping_cart_delivery.tpl'
+                    );
+                }
+            }
+
+            $productObj = new Product($idProduct, false, $this->context->language->id);
+
+            return [
+                'id_product' => $idProduct,
+                'name' => $productObj->name,
+                'quantity' => $quantity,
+                'has_delivery_info' => (bool) $estimatedDelivery,
+                'estimated_delivery' => $estimatedDelivery,
+                'estimated_delivery_html' => $estimatedDeliveryHtml,
+            ];
+        } catch (\Throwable $e) {
+            PrestaShopLogger::addLog(
+                'deliverypricecalculator: fallo calculando estimacion de envio - ' . $e->getMessage(),
+                3
+            );
+
+            return ['error' => $this->translateError('calc_error')];
+        } finally {
+            // Se ejecuta siempre: camino feliz, cualquier "return" de arriba,
+            // o una excepcion no prevista. Nunca deja el carrito/direccion
+            // temporales sin borrar.
+            if ($tmpCart instanceof Cart && Validate::isLoadedObject($tmpCart)) {
+                $tmpCart->delete();
+            }
+            $address->delete();
         }
-
-        $productObj = new Product($idProduct, false, $this->context->language->id);
-
-        $response = [
-            'id_product' => $idProduct,
-            'name' => $productObj->name,
-            'quantity' => $quantity,
-            'has_delivery_info' => (bool) $estimatedDelivery,
-            'estimated_delivery' => $estimatedDelivery,
-            'estimated_delivery_html' => $estimatedDeliveryHtml,
-        ];
-
-        $tmpCart->delete();
-        $address->delete();
-
-        return $response;
     }
 }
