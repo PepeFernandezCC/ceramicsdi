@@ -113,6 +113,31 @@ class DeliverypricecalculatorProductestimateModuleFrontController extends Module
     }
 
     /**
+     * Acota a un valor bajo cualquier espera de red o de consulta SQL sin
+     * timeout propio durante este calculo, en vez de dejar que se quede
+     * colgado hasta el limite de Cloudflare (100s) o de PHP (120s) - ver
+     * informe de incidencia de rendimiento del 14/09/2026 (la consulta a
+     * SEUR se quedaba colgada). No usamos set_time_limit() porque un corte
+     * por tiempo maximo de ejecucion de PHP es un fatal que NO pasa por
+     * catch/finally, y dejaria otra vez el carrito/direccion huerfanos.
+     */
+    private function limitExternalWaitTime()
+    {
+        $timeoutSeconds = 10;
+
+        ini_set('default_socket_timeout', $timeoutSeconds);
+
+        try {
+            Db::getInstance()->execute('SET SESSION MAX_EXECUTION_TIME=' . ($timeoutSeconds * 1000));
+        } catch (\Throwable $e) {
+            // MariaDB no soporta MAX_EXECUTION_TIME (usa max_statement_time,
+            // sintaxis distinta) - si falla, seguimos sin este limite extra
+            // en vez de romper el calculo por algo que es solo una red de
+            // seguridad adicional.
+        }
+    }
+
+    /**
      * Crea un carrito temporal con el producto indicado y calcula el
      * plazo estimado de entrega y el coste de envío para un destino dado.
      */
@@ -152,8 +177,12 @@ class DeliverypricecalculatorProductestimateModuleFrontController extends Module
         // dejaba el carrito/direccion huerfanos para siempre - ver informe
         // de incidencia de rendimiento del 14/09/2026.
         $tmpCart = null;
+        $timings = [];
+        $tStart = microtime(true);
 
         try {
+            $this->limitExternalWaitTime();
+
             $tmpCart = new Cart();
             $tmpCart->id_shop_group = (int) $this->context->shop->id_shop_group;
             $tmpCart->id_shop = (int) $this->context->shop->id;
@@ -174,11 +203,15 @@ class DeliverypricecalculatorProductestimateModuleFrontController extends Module
                 return ['error' => $this->translateError('cart_error')];
             }
 
+            $timings['cart_creado'] = microtime(true) - $tStart;
+
             $added = $tmpCart->updateQty($quantity, $idProduct, 0, 0, 'up', (int) $address->id);
 
             if (!$added) {
                 return ['error' => $this->translateError('add_product_error')];
             }
+
+            $timings['producto_anadido'] = microtime(true) - $tStart;
 
             Db::getInstance()->execute('
                 UPDATE `' . _DB_PREFIX_ . 'cart_product`
@@ -199,6 +232,8 @@ class DeliverypricecalculatorProductestimateModuleFrontController extends Module
             $tmpCart->update();
 
             $bestOption = Carrier::getCheapestDeliveryOptionByCart($tmpCart, true);
+
+            $timings['transportista_calculado'] = microtime(true) - $tStart;
 
             if (!$bestOption || empty($bestOption['id_carrier'])) {
                 return ['error' => $this->translateError('no_carrier_error')];
@@ -258,6 +293,16 @@ class DeliverypricecalculatorProductestimateModuleFrontController extends Module
                 $tmpCart->delete();
             }
             $address->delete();
+
+            $total = microtime(true) - $tStart;
+
+            if ($total > 1) {
+                $timings['total'] = $total;
+                PrestaShopLogger::addLog(
+                    'deliverypricecalculator TIMING productestimate (id_product=' . $idProduct . '): ' . json_encode($timings),
+                    1
+                );
+            }
         }
     }
 }

@@ -76,11 +76,40 @@ class DeliverypricecalculatorPriceModuleFrontController extends ModuleFrontContr
      * el carrito/dirección temporales quedaran huérfanos para siempre. Ver
      * informe de incidencia de rendimiento del 14/09/2026.
      */
+    /**
+     * Acota a un valor bajo cualquier espera de red o de consulta SQL sin
+     * timeout propio durante este calculo, en vez de dejar que se quede
+     * colgado hasta el limite de Cloudflare (100s) o de PHP (120s) - ver
+     * informe de incidencia de rendimiento del 14/09/2026 (la consulta a
+     * SEUR se quedaba colgada). No usamos set_time_limit() porque un corte
+     * por tiempo maximo de ejecucion de PHP es un fatal que NO pasa por
+     * catch/finally, y dejaria otra vez el carrito/direccion huerfanos.
+     */
+    private function limitExternalWaitTime()
+    {
+        $timeoutSeconds = 10;
+
+        ini_set('default_socket_timeout', $timeoutSeconds);
+
+        try {
+            Db::getInstance()->execute('SET SESSION MAX_EXECUTION_TIME=' . ($timeoutSeconds * 1000));
+        } catch (\Throwable $e) {
+            // MariaDB no soporta MAX_EXECUTION_TIME (usa max_statement_time,
+            // sintaxis distinta) - si falla, seguimos sin este limite extra
+            // en vez de romper el calculo por algo que es solo una red de
+            // seguridad adicional.
+        }
+    }
+
     private function calculateShippingPrice(Cart $realCart, array $products, Customer $fakeCustomer, Address $address, $id_country, $id_state, $showTaxes)
     {
         $tmpCart = null;
+        $timings = [];
+        $tStart = microtime(true);
 
         try {
+            $this->limitExternalWaitTime();
+
             $tmpCart = new Cart();
             $tmpCart->id_shop_group = (int) $realCart->id_shop_group;
             $tmpCart->id_shop = (int) $realCart->id_shop;
@@ -100,6 +129,8 @@ class DeliverypricecalculatorPriceModuleFrontController extends ModuleFrontContr
             if (!$tmpCart->add()) {
                 return ['error' => 'No se pudo crear el carrito temporal'];
             }
+
+            $timings['cart_creado'] = microtime(true) - $tStart;
 
             foreach ($products as $product) {
                 $idProduct = (int) $product['id_product'];
@@ -128,6 +159,8 @@ class DeliverypricecalculatorPriceModuleFrontController extends ModuleFrontContr
                 }
             }
 
+            $timings['productos_anadidos'] = microtime(true) - $tStart;
+
             /*
              * Forzar también la dirección en las líneas del carrito.
              */
@@ -153,6 +186,8 @@ class DeliverypricecalculatorPriceModuleFrontController extends ModuleFrontContr
             $tmpCart->update();
 
             $bestOption = Carrier::getCheapestDeliveryOptionByCart($tmpCart, $showTaxes);
+
+            $timings['transportista_calculado'] = microtime(true) - $tStart;
 
             if (!$bestOption || empty($bestOption['id_carrier'])) {
                 return ['error' => 'No hay transportistas disponibles'];
@@ -291,6 +326,16 @@ class DeliverypricecalculatorPriceModuleFrontController extends ModuleFrontContr
                 $tmpCart->delete();
             }
             $address->delete();
+
+            $total = microtime(true) - $tStart;
+
+            if ($total > 1) {
+                $timings['total'] = $total;
+                PrestaShopLogger::addLog(
+                    'deliverypricecalculator TIMING price (id_cart=' . (int) $realCart->id . '): ' . json_encode($timings),
+                    1
+                );
+            }
         }
     }
 }
