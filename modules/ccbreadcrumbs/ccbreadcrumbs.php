@@ -62,12 +62,26 @@ class CcBreadcrumbs extends Module
 
     public function install()
     {
-        return parent::install();
+        return parent::install() && $this->registerHook('displayHeader');
     }
 
     public function uninstall()
     {
         return parent::uninstall();
+    }
+
+    /**
+     * No pinta nada: el único propósito de engancharse a este hook es que
+     * PrestaShop cargue esta clase (via Module::getInstanceByName) en toda
+     * página de tienda, para que las plantillas puedan llamar a
+     * CcBreadcrumbs::renderCategory()/renderProduct() directamente. Sin un
+     * hook activo el fichero del módulo nunca se incluye (los módulos no
+     * están en el autoload de clases del core) y esas llamadas estáticas
+     * lanzan ClassNotFoundException.
+     */
+    public function hookDisplayHeader($params)
+    {
+        return '';
     }
 
     /**
