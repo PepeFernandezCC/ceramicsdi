@@ -4,22 +4,9 @@ require_once dirname(__FILE__) . '/FrontBase.php';
 
 class InspirationcardsmoduleListModuleFrontController extends InspirationcardsmoduleFrontControllerBase
 {
-    public const SLUGS = [
-        'es' => 'inspiraciones',
-        'fr' => 'inspirations',
-        'en' => 'inspirations',
-        'de' => 'inspirationen',
-        'pt' => 'inspiracoes',
-        'nl' => 'inspiraties',
-    ];
-
     public function initContent()
     {
         parent::initContent();
-
-        if ($this->blockRawModuleAccess()) {
-            return;
-        }
 
         $this->assignHeaderLanguages($this->getInspirationsLanguageUrls());
 
@@ -85,9 +72,18 @@ class InspirationcardsmoduleListModuleFrontController extends Inspirationcardsmo
         $languages = Language::getLanguages(true, $this->context->shop->id);
         $urls = [];
 
+        $slugs = [
+            'es' => 'inspiraciones',
+            'fr' => 'inspirations',
+            'en' => 'inspirations',
+            'de' => 'inspirationen',
+            'pt' => 'inspiracoes',
+            'nl' => 'inspiraties',
+        ];
+
         foreach ($languages as $lang) {
             $iso = $lang['iso_code'];
-            $slug = isset(self::SLUGS[$iso]) ? self::SLUGS[$iso] : 'inspirations';
+            $slug = isset($slugs[$iso]) ? $slugs[$iso] : 'inspirations';
 
             $urls[(int)$lang['id_lang']] = $this->context->link->getBaseLink(
                 $this->context->shop->id,
@@ -98,54 +94,6 @@ class InspirationcardsmoduleListModuleFrontController extends Inspirationcardsmo
         }
 
         return $urls;
-    }
-
-    /**
-     * URL canonica del listado general: la URL "bonita" del propio idioma
-     * actual (p.ej. /inspirations), no la URL cruda del controlador.
-     */
-    public function getCanonicalURL()
-    {
-        $iso = $this->context->language->iso_code;
-        $routeSlug = isset(self::SLUGS[$iso]) ? self::SLUGS[$iso] : 'inspirations';
-
-        return $this->context->link->getBaseLink(
-            $this->context->shop->id,
-            null,
-            null,
-            false
-        ) . $iso . '/' . $routeSlug;
-    }
-
-    /**
-     * hreflang del listado general - mismo motivo que en detail.php: el
-     * nucleo cae en la URL cruda del controlador al no encontrar una ruta
-     * registrada sin sufijo de idioma. Ver informe de incidencia SEO del
-     * 16/09/2026.
-     */
-    protected function getAlternativeLangsUrl()
-    {
-        $languages = Language::getLanguages(true, $this->context->shop->id);
-
-        if (count($languages) < 2) {
-            return [];
-        }
-
-        $alternativeLangs = [];
-
-        foreach ($languages as $lang) {
-            $iso = $lang['iso_code'];
-            $routeSlug = isset(self::SLUGS[$iso]) ? self::SLUGS[$iso] : 'inspirations';
-
-            $alternativeLangs[$lang['language_code']] = $this->context->link->getBaseLink(
-                $this->context->shop->id,
-                null,
-                null,
-                false
-            ) . $iso . '/' . $routeSlug;
-        }
-
-        return $alternativeLangs;
     }
 
     public function setMedia()

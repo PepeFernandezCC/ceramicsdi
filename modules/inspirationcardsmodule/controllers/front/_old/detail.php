@@ -17,10 +17,6 @@ class InspirationcardsmoduleDetailModuleFrontController extends Inspirationcards
     {
         parent::initContent();
 
-        if ($this->blockRawModuleAccess()) {
-            return;
-        }
-
         $slug = Tools::getValue('slug');
         $idLang = (int)$this->context->language->id;
 
@@ -192,96 +188,6 @@ class InspirationcardsmoduleDetailModuleFrontController extends Inspirationcards
         }
 
         return $moreInspirations;
-    }
-
-    /**
-     * URL canonica de esta ficha de inspiracion: la URL "bonita" del
-     * propio idioma actual, no la URL cruda del controlador (que es lo
-     * que $urls.current_url usaria por defecto si no sobrescribimos esto).
-     */
-    public function getCanonicalURL()
-    {
-        $slug = Tools::getValue('slug');
-
-        if (!$slug) {
-            return parent::getCanonicalURL();
-        }
-
-        $iso = $this->context->language->iso_code;
-        $routeSlug = isset(self::SLUGS[$iso]) ? self::SLUGS[$iso] : 'inspirations';
-
-        return $this->context->link->getBaseLink(
-            $this->context->shop->id,
-            null,
-            null,
-            false
-        ) . $iso . '/' . $routeSlug . '/' . $slug;
-    }
-
-    /**
-     * Version de las URLs alternativas por idioma (hreflang) especifica
-     * de esta ficha: la de nucleo (FrontController::getAlternativeLangsUrl)
-     * usa Link::getLanguageLink(), que para este controlador de modulo cae
-     * en la URL cruda /module/inspirationcardsmodule/detail (sin slug) al
-     * no encontrar una ruta registrada sin sufijo de idioma - ver informe
-     * de incidencia SEO del 16/09/2026. Aqui construimos directamente la
-     * URL bonita traducida de cada idioma, igual que ya hacia
-     * getInspirationDetailLanguageUrls() para el selector de idioma.
-     */
-    protected function getAlternativeLangsUrl()
-    {
-        $slug = Tools::getValue('slug');
-        $idLang = (int) $this->context->language->id;
-
-        if (!$slug) {
-            return parent::getAlternativeLangsUrl();
-        }
-
-        $idInspiration = Db::getInstance()->getValue('
-            SELECT il.id_inspiration
-            FROM ' . _DB_PREFIX_ . 'inspirationcards_lang il
-            INNER JOIN ' . _DB_PREFIX_ . 'inspirationcards i ON (i.id_inspiration = il.id_inspiration)
-            WHERE il.id_lang = ' . $idLang . '
-            AND il.slug = "' . pSQL($slug) . '"
-            AND i.active = 1
-        ');
-
-        if (!$idInspiration) {
-            return parent::getAlternativeLangsUrl();
-        }
-
-        $languages = Language::getLanguages(true, $this->context->shop->id);
-
-        if (count($languages) < 2) {
-            return [];
-        }
-
-        $alternativeLangs = [];
-
-        foreach ($languages as $lang) {
-            $translatedSlug = Db::getInstance()->getValue('
-                SELECT slug
-                FROM ' . _DB_PREFIX_ . 'inspirationcards_lang
-                WHERE id_inspiration = ' . (int) $idInspiration . '
-                AND id_lang = ' . (int) $lang['id_lang']
-            );
-
-            if (!$translatedSlug) {
-                continue;
-            }
-
-            $iso = $lang['iso_code'];
-            $routeSlug = isset(self::SLUGS[$iso]) ? self::SLUGS[$iso] : 'inspirations';
-
-            $alternativeLangs[$lang['language_code']] = $this->context->link->getBaseLink(
-                $this->context->shop->id,
-                null,
-                null,
-                false
-            ) . $iso . '/' . $routeSlug . '/' . $translatedSlug;
-        }
-
-        return $alternativeLangs;
     }
 
     protected function getLanguagesUrl($slugs = []) {
