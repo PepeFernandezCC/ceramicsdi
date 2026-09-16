@@ -1011,6 +1011,29 @@ class Ets_abandonedcart extends Module
 
     public function hookActionCartSave($params)
     {
+        // Ignorar al cliente "ghost" (id_customer=1 en produccion) que usan
+        // deliverypricecalculator y AdminShippingCalculatorController para
+        // crear carritos temporales de un solo uso (se crean y se borran
+        // en la misma peticion). Sin este filtro, EtsAbancartIndex::
+        // addCartIndex() volvia a calcular el total del carrito CON
+        // envio (Cart::BOTH) en cada $cart->add()/update() de esos
+        // carritos temporales - como nunca estan "ya indexados" (son
+        // nuevos cada vez), esto disparaba de nuevo todo el calculo caro
+        // de portes desde dentro de este hook, varias veces por cada
+        // estimacion. Ver informe de incidencia de rendimiento del
+        // 15/09/2026.
+        //
+        // IMPORTANTE: comprobamos el id_customer del propio carrito que
+        // llega en $params, NO el de Context::getContext()->customer -
+        // en la primera llamada (Cart::add(), justo al crear el carrito
+        // temporal) el contexto global todavia es el visitante real de
+        // la tienda, el cambio a customer=ghost ocurre mas tarde en el
+        // flujo de deliverypricecalculator/AdminShippingCalculatorController.
+        // El carrito en si ya tiene id_customer=1 desde el principio.
+        if (isset($params['cart']) && isset($params['cart']->id_customer) && (int) $params['cart']->id_customer === 1) {
+            return;
+        }
+
         if (isset($this->context->customer) && $this->context->customer->id > 0 //&& $this->context->customer->isLogged()
             && isset($params['cart']) && isset($params['cart']->id) && ($id_cart = (int)$params['cart']->id)
             && EtsAbancartReminder::campaignValid(EtsAbancartCampaign::CAMPAIGN_TYPE_EMAIL)

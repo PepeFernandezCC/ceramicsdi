@@ -54,11 +54,11 @@ class AdminShippingCalculatorController extends ModuleAdminController
         }
 
         $module = Module::getInstanceByName('shippingcalculator');
-        
+
         // Obtener cantidades de productos y guardarlas para mantenerlas después del POST
         $product_quantities = Tools::getValue('product_quantities', []);
         $this->product_quantities = $product_quantities; // Guardar para el template
-        
+
         $idFakeCustomer = 1;
         $fakeCustomer = new Customer((int)$idFakeCustomer);
         $state_id = State::getIdByIso($province_code, $country_id);
@@ -68,6 +68,45 @@ class AdminShippingCalculatorController extends ModuleAdminController
             return;
         }
 
+
+        $address = null;
+        $temp_cart = null;
+        $timings = [];
+        $tStart = microtime(true);
+
+        // register_shutdown_function SI se ejecuta tras un error fatal
+        // (memoria/tiempo agotado), a diferencia de catch/finally - ver
+        // informe de incidencia SDi del 15/09/2026, apartado 2.5.
+        register_shutdown_function(function () use (&$timings, &$tStart, &$temp_cart, &$address) {
+            $error = error_get_last();
+            $isFatal = $error && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR], true);
+
+            if ($isFatal) {
+                $timings['total'] = microtime(true) - $tStart;
+
+                try {
+                    PrestaShopLogger::addLog(
+                        'shippingcalculator FATAL AdminShippingCalculatorController: ' . $error['message']
+                            . ' en ' . $error['file'] . ':' . $error['line']
+                            . ' | timings parciales: ' . json_encode($timings),
+                        3
+                    );
+                } catch (\Throwable $loggerException) {
+                }
+
+                // El try/finally normal no se ejecuta tras un fatal, asi
+                // que la limpieza del carrito/direccion temporal se hace
+                // aqui tambien, para no dejar basura huerfana.
+                if ($temp_cart instanceof Cart && Validate::isLoadedObject($temp_cart)) {
+                    $temp_cart->delete();
+                }
+                if ($address instanceof Address && Validate::isLoadedObject($address)) {
+                    $address->delete();
+                }
+            }
+        });
+
+        try {
         // Crear dirección temporal igual que en el AJAX
         $address = new Address();
         $address->id_customer = (int)$fakeCustomer->id;
@@ -87,6 +126,8 @@ class AdminShippingCalculatorController extends ModuleAdminController
             $this->errors[] = $this->l('No se pudo crear la dirección temporal');
             return;
         }
+
+        $timings['direccion_creada'] = microtime(true) - $tStart;
 
         // Crear carrito temporal completo
         $temp_cart = new Cart();
@@ -110,6 +151,8 @@ class AdminShippingCalculatorController extends ModuleAdminController
             $this->errors[] = $this->l('No se pudo crear el carrito temporal');
             return;
         }
+
+        $timings['cart_creado'] = microtime(true) - $tStart;
 
         // Añadir productos al carrito temporal indicando dirección
         foreach ($selected_products as $id_product) {
@@ -137,6 +180,8 @@ class AdminShippingCalculatorController extends ModuleAdminController
             }
         }
 
+        $timings['productos_anadidos'] = microtime(true) - $tStart;
+
         // Muy importante: forzar dirección en las líneas del carrito
         Db::getInstance()->execute('
             UPDATE `' . _DB_PREFIX_ . 'cart_product`
@@ -146,7 +191,6 @@ class AdminShippingCalculatorController extends ModuleAdminController
 
         // Recargar carrito
         $temp_cart = new Cart((int)$temp_cart->id);
-
         // Actualizar contexto igual que en AJAX
         $this->context->cart = $temp_cart;
         $this->context->customer = $fakeCustomer;
@@ -156,7 +200,7 @@ class AdminShippingCalculatorController extends ModuleAdminController
         $temp_cart->id_carrier = 0;
         $temp_cart->delivery_option = '';
         $temp_cart->update();
-        
+
         // Verificar que el país existe y está activo
         $country = new Country($country_id);
         if (!Validate::isLoadedObject($country)) {
@@ -164,23 +208,20 @@ class AdminShippingCalculatorController extends ModuleAdminController
             $temp_cart->delete();
             return;
         }
-        
+
         if (!$country->active) {
             //$country_name = $country->name[$this->context->language->id] ?? $country->name[1] ?? 'el país';
             $this->errors[] = $this->l('El país seleccionado está inactivo. Por favor, actívalo en Internacional > Países.');
             $temp_cart->delete();
             return;
         }
-        
-       
-        
+
         if (!$state_id) {
             $this->errors[] = $this->l('La provincia/estado seleccionado no existe para este país');
             $temp_cart->delete();
             return;
         }
-        
-        
+
         // Obtener días de envío (horquilla)
         $shipping_range = $module->getShippingDaysRangeByProvince($province_code);
         if ($shipping_range) {
@@ -192,13 +233,27 @@ class AdminShippingCalculatorController extends ModuleAdminController
             $shipping_days_min = (int)$shipping_single;
             $shipping_days_max = (int)$shipping_single;
         }
-        
         // Determinar si mostrar impuestos (igual que en cart-voucher.tpl)
         $tax_config = new \TaxConfiguration();
         $show_taxes = $tax_config->includeTaxes() || !Configuration::get('PS_TAX');
-        
+
+        // Datos de contexto para diagnosticar el coste del calculo: peso
+        // total del pedido y cuantos transportistas activos son candidatos
+        // en la zona de destino.
+        $id_zone_debug = (int) Address::getZoneById((int) $address->id);
+        $timings['peso_total_kg'] = (float) $temp_cart->getTotalWeight();
+        $timings['id_zone'] = $id_zone_debug;
+        $timings['transportistas_candidatos_zona'] = (int) Db::getInstance()->getValue('
+            SELECT COUNT(DISTINCT c.id_carrier)
+            FROM ' . _DB_PREFIX_ . 'carrier c
+            INNER JOIN ' . _DB_PREFIX_ . 'carrier_zone cz ON cz.id_carrier = c.id_carrier
+            WHERE c.deleted = 0 AND c.active = 1 AND cz.id_zone = ' . $id_zone_debug
+        );
+
         $shipping_cost = $this->calculateShippingCostLikeCart($temp_cart, $show_taxes);
-        
+
+        $timings['transportista_calculado'] = microtime(true) - $tStart;
+
         $state = new State($state_id);
         
         // Limpiar carrito temporal (la dirección ID 1 se mantiene para otros usos)
@@ -293,6 +348,38 @@ class AdminShippingCalculatorController extends ModuleAdminController
         
         $this->selected_products = $selected_products;
         $this->selected_province = $province_code;
+        } catch (\Throwable $e) {
+            try {
+                PrestaShopLogger::addLog(
+                    'shippingcalculator AdminShippingCalculatorController: fallo calculando envio - ' . $e->getMessage() . ' en ' . $e->getFile() . ':' . $e->getLine() . ' | timings parciales: ' . json_encode($timings),
+                    3
+                );
+            } catch (\Throwable $loggerException) {
+            }
+
+            $this->errors[] = $this->l('No se pudo calcular el envío para este destino');
+        } finally {
+            if ($temp_cart instanceof Cart && Validate::isLoadedObject($temp_cart)) {
+                $temp_cart->delete();
+            }
+            if ($address instanceof Address && Validate::isLoadedObject($address)) {
+                $address->delete();
+            }
+
+            $total = microtime(true) - $tStart;
+
+            if ($total > 1) {
+                $timings['total'] = $total;
+
+                try {
+                    PrestaShopLogger::addLog(
+                        'shippingcalculator TIMING AdminShippingCalculatorController: ' . json_encode($timings),
+                        1
+                    );
+                } catch (\Throwable $loggerException) {
+                }
+            }
+        }
     }
 
     private function processSaveDelays()

@@ -180,6 +180,33 @@ class DeliverypricecalculatorProductestimateModuleFrontController extends Module
         $timings = [];
         $tStart = microtime(true);
 
+        // register_shutdown_function SI se ejecuta tras un error fatal
+        // (memoria/tiempo agotado), a diferencia de catch/finally - ver
+        // informe de incidencia SDi del 15/09/2026, apartado 2.5.
+        register_shutdown_function(function () use (&$timings, &$tStart, &$tmpCart, &$address) {
+            $error = error_get_last();
+            $isFatal = $error && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR], true);
+
+            if ($isFatal) {
+                $timings['total'] = microtime(true) - $tStart;
+
+                try {
+                    PrestaShopLogger::addLog(
+                        'deliverypricecalculator FATAL productestimate: ' . $error['message'] . ' en ' . $error['file'] . ':' . $error['line'] . ' | timings: ' . json_encode($timings),
+                        3
+                    );
+                } catch (\Throwable $loggerException) {
+                }
+
+                if ($tmpCart instanceof Cart && Validate::isLoadedObject($tmpCart)) {
+                    $tmpCart->delete();
+                }
+                if ($address instanceof Address && Validate::isLoadedObject($address)) {
+                    $address->delete();
+                }
+            }
+        });
+
         try {
             $this->limitExternalWaitTime();
 
@@ -251,8 +278,10 @@ class DeliverypricecalculatorProductestimateModuleFrontController extends Module
             $estimatedDeliveryHtml = '';
             $shippingCalculatorModule = Module::getInstanceByName('shippingcalculator');
 
+
             if ($shippingCalculatorModule && Validate::isLoadedObject($shippingCalculatorModule) && method_exists($shippingCalculatorModule, 'calculateEstimatedDelivery')) {
                 $estimatedDelivery = $shippingCalculatorModule->calculateEstimatedDelivery($tmpCart);
+
 
                 if (is_array($estimatedDelivery)) {
                     $this->context->smarty->assign([
@@ -272,6 +301,7 @@ class DeliverypricecalculatorProductestimateModuleFrontController extends Module
 
             $productObj = new Product($idProduct, false, $this->context->language->id);
 
+
             return [
                 'id_product' => $idProduct,
                 'name' => $productObj->name,
@@ -282,7 +312,7 @@ class DeliverypricecalculatorProductestimateModuleFrontController extends Module
             ];
         } catch (\Throwable $e) {
             PrestaShopLogger::addLog(
-                'deliverypricecalculator: fallo calculando estimacion de envio - ' . $e->getMessage(),
+                'deliverypricecalculator: fallo calculando estimacion de envio - ' . $e->getMessage() . ' en ' . $e->getFile() . ':' . $e->getLine(),
                 3
             );
 

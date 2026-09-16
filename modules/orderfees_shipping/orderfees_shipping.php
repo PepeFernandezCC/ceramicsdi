@@ -112,22 +112,36 @@ class OrderFees_Shipping extends MotionSeedModule
         }
         
         self::$weight_rules = array();
-        
+
         $object = $params['object'];
-        
-        $items = Db::getInstance()->executeS(
-            'SELECT sr.id_of_shipping_rule, GROUP_CONCAT(c.id_carrier SEPARATOR ",") AS carriers
-            FROM '._DB_PREFIX_.'of_shipping_rule sr
-            LEFT JOIN '._DB_PREFIX_.'of_shipping_rule_carrier src
-                ON sr.id_of_shipping_rule = src.id_of_shipping_rule 
-            LEFT JOIN '._DB_PREFIX_.'carrier c 
-                ON c.id_reference = src.id_carrier
-                    AND c.deleted = 0
-            WHERE sr.active = 1
-            GROUP BY sr.id_of_shipping_rule
-            ORDER BY sr.priority ASC'
-        );
-        
+
+        // Cache estatico: la lista de reglas activas (con sus transportistas
+        // asociados) no cambia dentro de la misma peticion, pero este hook
+        // se dispara una vez por cada llamada a Cart::getPackageShippingCost()
+        // - que a su vez puede llamarse cientos de veces por una sola
+        // estimacion de portes (ver informe de incidencia 15/09/2026, el
+        // reescaneo cuadratico de Cart::getPackageShippingCost() cuando un
+        // transportista concreto esta fuera de rango). Sin esta cache, la
+        // consulta de reglas activas se repetia cientos de veces por nada.
+        static $itemsCache = null;
+
+        if ($itemsCache === null) {
+            $itemsCache = Db::getInstance()->executeS(
+                'SELECT sr.id_of_shipping_rule, GROUP_CONCAT(c.id_carrier SEPARATOR ",") AS carriers
+                FROM '._DB_PREFIX_.'of_shipping_rule sr
+                LEFT JOIN '._DB_PREFIX_.'of_shipping_rule_carrier src
+                    ON sr.id_of_shipping_rule = src.id_of_shipping_rule
+                LEFT JOIN '._DB_PREFIX_.'carrier c
+                    ON c.id_reference = src.id_carrier
+                        AND c.deleted = 0
+                WHERE sr.active = 1
+                GROUP BY sr.id_of_shipping_rule
+                ORDER BY sr.priority ASC'
+            );
+        }
+
+        $items = $itemsCache;
+
         if (empty($items)) {
             return;
         }
@@ -159,24 +173,40 @@ class OrderFees_Shipping extends MotionSeedModule
         
         $items_disabled = array();
 
+        // Cache estatico del resultado de check()/checkCustom() por regla:
+        // no depende del transportista/impuestos/product_list concretos de
+        // esta llamada, solo del estado del carrito - que no cambia entre
+        // las distintas llamadas a getPackageShippingCost() de una misma
+        // estimacion. Evita repetir la evaluacion completa de la regla
+        // (que puede incluir sus propias consultas) cientos de veces.
+        static $checkCache = array();
+
         foreach ($items as &$item) {
             $total = 0;
-            
+
             if (in_array($item['id_of_shipping_rule'], $items_disabled)) {
                 continue;
             }
-            
+
             $shipping_rule = ShippingRule::factory($item['id_of_shipping_rule'], $object);
 
-            self::$disable_calculation = true;
-            
-            if($custom){
-                $shipping_rule_checked = $shipping_rule->checkCustom($object);
-            }else{
-                $shipping_rule_checked = $shipping_rule->check();
+            $checkCacheKey = $item['id_of_shipping_rule'] . '_' . ($custom ? 'custom' : 'normal') . '_' . (int) $object->id;
+
+            if (!array_key_exists($checkCacheKey, $checkCache)) {
+                self::$disable_calculation = true;
+
+                if ($custom) {
+                    $checkCache[$checkCacheKey] = $shipping_rule->checkCustom($object);
+                } else {
+                    $checkCache[$checkCacheKey] = $shipping_rule->check();
+                }
+
+                self::$disable_calculation = false;
             }
-            
-            
+
+            $shipping_rule_checked = $checkCache[$checkCacheKey];
+
+
             self::$disable_calculation = false;
                 
             if (!$shipping_rule_checked) {

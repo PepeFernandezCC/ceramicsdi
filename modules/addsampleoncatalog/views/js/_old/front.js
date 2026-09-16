@@ -181,15 +181,16 @@ $( document ).ready( function () {
             //DETERMINA CUANDO IGNORA UNA MIGA EN CATEGORÍAS
             ignore = false;
             
-            if (fatherCategory != 88 && index == 2) {
+            if ((fatherCategory != 88 && fatherCategory != 1770 && fatherCategory != 1771) && index == 2) {
                 ignore = true;
             }
             if (pathSegments.length >= 5 && index == 1){
                 ignore = true;
             }
-            if (fatherCategory == 88 && index == 1) {
+            if ((fatherCategory == 88 ||fatherCategory == 1770 || fatherCategory == 1771) && index == 1) {
                 ignore = true;
             }
+
             
             if(index != 0 ){
 
@@ -200,7 +201,7 @@ $( document ).ready( function () {
                 if (pathSegments.length >= 5 && index == 3){
                     bold = 'style="font-weight:bolder; color:black"';
                 }
-                if (fatherCategory == 88 && index == 2){
+                if ((fatherCategory == 88 ||fatherCategory == 1770 || fatherCategory == 1771) && index == 2){
                     bold = 'style="font-weight:bolder; color:black"';
                 }
 
