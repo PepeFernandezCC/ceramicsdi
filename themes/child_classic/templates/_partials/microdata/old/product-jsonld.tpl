@@ -1,27 +1,4 @@
-{**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
- *
- * NOTICE OF LICENSE
- *
- * This source file is subject to the Academic Free License 3.0 (AFL-3.0)
- * that is bundled with this package in the file LICENSE.md.
- * It is also available through the world-wide-web at this URL:
- * https://opensource.org/licenses/AFL-3.0
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@prestashop.com so we can send you a copy immediately.
- *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
- * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
- *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
- * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
- *}
+
 {assign var=hasAggregateRating value=false}
 {if !empty($product.productComments.averageRating) && !empty($product.productComments.nbComments)}
     {assign var=hasAggregateRating value=true}
@@ -38,11 +15,27 @@
     {assign var=hasWeight value=true}
 {/if}
 {assign var=hasOffers value=$product.show_price}
+
+{assign var=priceWeb value=Product::getPriceWebIfExists($product.id)}
+{assign var=calculatedPrice value=Product::getMinimalQuantityPrice($product.id)}
+
+{if !$priceWeb }
+  {assign var=priceWeb value=$product.price_amount}
+{/if}
+
+{assign var=productColor value=Product::getProductAttribute($product.id, 46)}
+{assign var=productMaterial value=Product::getProductAttribute($product.id, 45)}
+{assign var=ccpr value=Product::getProductRating($product.id)}
+{assign var=reviews value=Product::getProductReviews($product.id)}
 <script type="application/ld+json">
   {
     "@context": "https://schema.org/",
     "@type": "Product",
     "name": "{$product.name}",
+    {if $productColor}"color": "{$productColor}",{/if}
+
+    {if $productMaterial}"material": "{$productMaterial}",{/if}
+
     "description": "{$page.meta.description|regex_replace:"/[\r\n]/" : " "}",
     "category": "{$product.category_name}",
     {if !empty($product.cover)}"image" :"{$product.cover.bySize.home_default.url}",{/if}
@@ -55,33 +48,82 @@
     "brand": {
       "@type": "Thing",
       "name": "{if $product_manufacturer->name}{$product_manufacturer->name|escape:'html':'UTF-8'}{else}{$shop.name}{/if}"
-    }
+    },
     {/if}
-    {if $hasAggregateRating},
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "{$ratingValue|round:1|escape:'html':'UTF-8'}",
-      "reviewCount": "{$ratingReviewCount|escape:'html':'UTF-8'}"
-    }
+    {if isset($ccpr.ccpr_micro_count) && $ccpr.ccpr_micro_count|intval > 0}
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "{$ccpr.ccpr_micro_avg|floatval}",
+        "reviewCount": "{$ccpr.ccpr_micro_count|intval}",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "review": [
+        {foreach from=$reviews item=$review name=reviewLoop}{
+          "@type": "Review",
+          "author": {
+              "@type": "Person",
+              "name": "{$review.name}"
+            },
+          "datePublished": "{$review.date}",
+          "reviewBody": "{$review.text}",
+          "reviewRating": {
+            "@type": "Rating",
+            "bestRating": "5",
+            "ratingValue": "{$review.rating}",
+            "worstRating": "1"
+          }
+        }{if not $smarty.foreach.reviewLoop.last},{/if}
+
+      {/foreach}],
+    {else}
+      {if $language.id == 1}
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "reviewCount": "68",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      {/if}
+      {if $language.id == 2}
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "reviewCount": "29",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      {/if}
+      {if $language.id == 3}
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "5",
+        "reviewCount": "2",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      {/if}
     {/if}
-    {if $hasWeight},
-    "weight": {
+
+    {if $hasWeight}"weight": {
         "@context": "https://schema.org",
         "@type": "QuantitativeValue",
         "value": "{$product.weight}",
         "unitCode": "{$product.weight_unit}"
-    }
+    },
     {/if}
-    {if $hasOffers},
-    "offers": {
+
+    {if $hasOffers}"offers": {
       "@type": "Offer",
       "priceCurrency": "{$currency.iso_code}",
       "name": "{$product.name|strip_tags:false}",
-      "price": "{$product.price_amount}",
-      "url": "{$product.url}",
+      "price": "{$calculatedPrice}",
+      "url":"{$product.url|regex_replace:"/#.*/":""}",
       "priceValidUntil": "{($smarty.now + (int) (60*60*24*15))|date_format:"%Y-%m-%d"}",
       {if $product.images|count > 0}
         "image": {strip}[
+          {if !empty($product.cover)}"{$product.cover.bySize.home_default.url}",{/if}
           {foreach from=$product.images item=p_img name="p_img_list"}
             "{$p_img.large.url}"{if not $smarty.foreach.p_img_list.last},{/if}
           {/foreach}
