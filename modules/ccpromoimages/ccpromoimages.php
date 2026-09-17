@@ -48,7 +48,33 @@ class CcPromoImages extends Module
             && $this->installDb()
             && $this->installAdminTab()
             && $this->registerHook('displayAdminProductsMainStepLeftColumnMiddle')
-            && $this->registerHook('actionObjectProductDeleteAfter');
+            && $this->registerHook('actionObjectProductDeleteAfter')
+            && $this->installChannableFeedHook();
+    }
+
+    /**
+     * "channableFeed" es un hook propio del modulo Channable (patworx):
+     * lo llama el con Hook::exec() en controllers/front/feed.php justo
+     * antes de meter cada producto en el feed, pasando el array $row por
+     * referencia para que otros modulos puedan añadir campos propios.
+     * Channable no da de alta ese hook en ps_hook (solo lo ejecuta), asi
+     * que si no existe lo creamos nosotros - mismo patron que
+     * "displayCustomerOrderWithdrawalButton" en ccincidencias.
+     */
+    private function installChannableFeedHook()
+    {
+        $hookName = 'channableFeed';
+
+        if (!(int) Hook::getIdByName($hookName)) {
+            $hook = new Hook();
+            $hook->name = $hookName;
+            $hook->title = 'Channable feed - item build';
+            $hook->description = 'Se ejecuta por cada producto justo antes de añadirlo al feed de Channable, permitiendo añadir campos propios al item.';
+            $hook->position = 1;
+            $hook->add();
+        }
+
+        return $this->registerHook($hookName);
     }
 
     public function uninstall()
@@ -202,6 +228,37 @@ class CcPromoImages extends Module
         foreach (self::TIPOS as $tipo) {
             $this->deleteImage((int) $params['object']->id, $tipo);
         }
+    }
+
+    /**
+     * $params['item'] es el array asociativo (por referencia) que
+     * Channable esta construyendo para este producto; 'parent_id' es
+     * siempre el id_product (tanto si es un producto simple como si es
+     * una combinacion, ver controllers/front/feed.php linea ~1425). Las
+     * imagenes son por producto, no por combinacion, asi que basta con
+     * mirar por id_product.
+     *
+     * Los nombres de campo (vertical_image_url / horizontal_image_url)
+     * apareceran como campos de origen disponibles para mapear dentro
+     * del panel de Channable; se pueden renombrar ahi sin tocar codigo.
+     */
+    public function hookChannableFeed($params)
+    {
+        if (empty($params['item']) || !is_array($params['item'])) {
+            return;
+        }
+
+        $row = &$params['item'];
+        $idProduct = isset($row['parent_id']) ? (int) $row['parent_id'] : 0;
+
+        if (!$idProduct) {
+            return;
+        }
+
+        $images = $this->getImagesForProduct($idProduct);
+
+        $row['vertical_image_url'] = $images['vertical'] ? $images['vertical']['media_url'] : '';
+        $row['horizontal_image_url'] = $images['horizontal'] ? $images['horizontal']['media_url'] : '';
     }
 
     /**
