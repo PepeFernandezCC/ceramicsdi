@@ -90,7 +90,6 @@
         "url":  "{$urls.pages.index}",
         "name": "{$shop.name}"
       },
-      "page": "{$page.page_name}",
       "name": "{$page.meta.title}",
       "url":  "{$urls.current_url}"
     }

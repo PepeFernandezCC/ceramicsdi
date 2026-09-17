@@ -27,7 +27,7 @@
     {if $shop.logo_details}
       "logo": {
         "@type": "ImageObject",
-        "url": "{$shop.logo_details.src}"
+        "url": "{$shop.logo_details.src|replace:'http://':'https://'}"
       },
     {/if}
     "description": "{$org_description}",
@@ -107,7 +107,7 @@
       {if $shop.logo_details}
         "image": {
           "@type": "ImageObject",
-          "url":"{$shop.logo_details.src}"
+          "url":"{$shop.logo_details.src|replace:'http://':'https://'}"
         },
       {/if}
       "potentialAction": {

@@ -38,7 +38,14 @@
 
     "description": "{$page.meta.description|regex_replace:"/[\r\n]/" : " "}",
     "category": "{$product.category_name}",
-    {if !empty($product.cover)}"image" :"{$product.cover.bySize.home_default.url}",{/if}
+    {if $product.images|count > 0 || !empty($product.cover)}
+      "image": {strip}[
+        {if !empty($product.cover)}"{$product.cover.bySize.home_default.url}",{/if}
+        {foreach from=$product.images item=p_img name="p_img_list"}
+          "{$p_img.large.url}"{if not $smarty.foreach.p_img_list.last},{/if}
+        {/foreach}
+      ]{/strip},
+    {/if}
     "sku": "{if $product.reference}{$product.reference}{else}{$product.id}{/if}",
     "mpn": "{if $product.mpn}{$product.mpn}{elseif $product.reference}{$product.reference}{else}{$product.id}{/if}"
     {if $product.ean13},"gtin13": "{$product.ean13}"
@@ -46,7 +53,7 @@
     {/if}
     {if $product_manufacturer->name OR $shop.name},
     "brand": {
-      "@type": "Thing",
+      "@type": "Brand",
       "name": "{if $product_manufacturer->name}{$product_manufacturer->name|escape:'html':'UTF-8'}{else}{$shop.name}{/if}"
     },
     {/if}
@@ -107,7 +114,6 @@
     {/if}
 
     {if $hasWeight}"weight": {
-        "@context": "https://schema.org",
         "@type": "QuantitativeValue",
         "value": "{$product.weight}",
         "unitCode": "{$product.weight_unit}"
@@ -117,18 +123,9 @@
     {if $hasOffers}"offers": {
       "@type": "Offer",
       "priceCurrency": "{$currency.iso_code}",
-      "name": "{$product.name|strip_tags:false}",
       "price": "{$calculatedPrice}",
       "url":"{$product.url|regex_replace:"/#.*/":""}",
       "priceValidUntil": "{($smarty.now + (int) (60*60*24*15))|date_format:"%Y-%m-%d"}",
-      {if $product.images|count > 0}
-        "image": {strip}[
-          {if !empty($product.cover)}"{$product.cover.bySize.home_default.url}",{/if}
-          {foreach from=$product.images item=p_img name="p_img_list"}
-            "{$p_img.large.url}"{if not $smarty.foreach.p_img_list.last},{/if}
-          {/foreach}
-        ]{/strip},
-      {/if}
       "sku": "{if $product.reference}{$product.reference}{else}{$product.id}{/if}",
       "mpn": "{if $product.mpn}{$product.mpn}{elseif $product.reference}{$product.reference}{else}{$product.id}{/if}",
       {if $product.ean13}"gtin13": "{$product.ean13}",{else if $product.upc}"gtin13": "0{$product.upc}",{/if}

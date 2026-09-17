@@ -27,6 +27,12 @@
 {assign var=productMaterial value=Product::getProductAttribute($product.id, 45)}
 {assign var=ccpr value=Product::getProductRating($product.id)}
 {assign var=reviews value=Product::getProductReviews($product.id)}
+{assign var=m2Caja value=0}
+{foreach from=$product.features item='feature'}
+  {if isset($feature.id_feature) && $feature.id_feature == $FEATURE_M2_CAJA_ID}
+    {assign var=m2Caja value=$feature.value|replace:',':'.'|floatval}
+  {/if}
+{/foreach}
 <script type="application/ld+json">
   {
     "@context": "https://schema.org/",
@@ -116,7 +122,7 @@
     {if $hasWeight}"weight": {
         "@type": "QuantitativeValue",
         "value": "{$product.weight}",
-        "unitCode": "{$product.weight_unit}"
+        "unitCode": "KGM"
     },
     {/if}
 
@@ -139,6 +145,18 @@
         "@type": "Organization",
         "name": "{$shop.name}"
       }
+      {if $m2Caja > 0},
+      "referenceQuantity": {
+        "@type": "QuantitativeValue",
+        "value": {$m2Caja},
+        "unitCode": "MTK",
+        "valueReference": {
+          "@type": "QuantitativeValue",
+          "value": 1,
+          "unitCode": "MTK"
+        }
+      }
+      {/if}
     }
     {/if}
   }
