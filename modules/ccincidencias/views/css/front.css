@@ -79,6 +79,7 @@
 #cc-incidencias .cc-fotos-requirements-title {
     font-weight: 600;
     margin: 0 0 6px;
+    font-size: .875rem;
 }
 
 #cc-incidencias .cc-fotos-requirements ul {
@@ -88,6 +89,7 @@
 
 #cc-incidencias .cc-fotos-requirements li {
     margin-bottom: 2px;
+    font-size: 0.875rem;
 }
 
 #cc-incidencias .cc-fotos-label {
