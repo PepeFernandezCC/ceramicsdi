@@ -1,43 +1,61 @@
-{**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
- *
- * NOTICE OF LICENSE
- *
- * This source file is subject to the Academic Free License 3.0 (AFL-3.0)
- * that is bundled with this package in the file LICENSE.md.
- * It is also available through the world-wide-web at this URL:
- * https://opensource.org/licenses/AFL-3.0
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@prestashop.com so we can send you a copy immediately.
- *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
- * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
- *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
- * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
- *}
- {if $page.page_name == 'index' || $page.page_name == 'cms' || $page.page_name == 'contact'}
-  <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name" : "{$shop.name}",
-      "url" : "{$urls.pages.index}",
-      {if $shop.logo_details}
-        "logo": {
-          "@type": "ImageObject",
-          "url":"{$shop.logo_details.src}"
-        }
-      {/if}
-    }
-  </script>
+
+{if $language.iso_code == 'fr'}
+  {assign var="pinterest_url" value="https://www.pinterest.fr/ceramicconnectionofficial/"}
+  {assign var="org_description" value="Boutique en ligne de carreaux, dalles céramiques et autres matériaux de construction, avec distribution multilingue en Espagne, France, Royaume-Uni, Allemagne, Portugal et Pays-Bas."}
+{elseif $language.iso_code == 'de'}
+  {assign var="pinterest_url" value="https://www.pinterest.de/ceramicconnectionofficial/"}
+  {assign var="org_description" value="Online-Shop für Fliesen, Keramikböden und andere Baumaterialien mit mehrsprachigem Vertrieb in Spanien, Frankreich, dem Vereinigten Königreich, Deutschland, Portugal und den Niederlanden."}
+{elseif $language.iso_code == 'pt'}
+  {assign var="pinterest_url" value="https://www.pinterest.pt/ceramicconnectionofficial/"}
+  {assign var="org_description" value="Loja online de azulejos, ladrilhos cerâmicos e outros materiais de construção, com distribuição multilíngue em Espanha, França, Reino Unido, Alemanha, Portugal e Países Baixos."}
+{elseif $language.iso_code == 'nl'}
+  {assign var="pinterest_url" value="https://www.pinterest.com/ceramicconnectionofficial/"}
+  {assign var="org_description" value="Online winkel voor tegels, keramische vloertegels en andere bouwmaterialen, met meertalige distributie in Spanje, Frankrijk, het Verenigd Koninkrijk, Duitsland, Portugal en Nederland."}
+{elseif $language.iso_code == 'en'}
+  {assign var="pinterest_url" value="https://pinterest.com/ceramicconnectionofficial/"}
+  {assign var="org_description" value="Online store for tiles, ceramic flooring and other construction materials, with multilingual distribution across Spain, France, the United Kingdom, Germany, Portugal and the Netherlands."}
+{else}
+  {assign var="pinterest_url" value="https://www.pinterest.es/ceramicconnectionofficial/"}
+  {assign var="org_description" value="Tienda online de azulejos, baldosas cerámicas y otros materiales de construcción, con distribución multiidioma en España, Francia, Reino Unido, Alemania, Portugal y Países Bajos."}
 {/if}
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "{$shop.name}",
+    "url": "{$urls.pages.index}",
+    {if $shop.logo_details}
+      "logo": {
+        "@type": "ImageObject",
+        "url": "{$shop.logo_details.src}"
+      },
+    {/if}
+    "description": "{$org_description}",
+    "telephone": "+34623240148",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Avenida Real de Extremadura, 9",
+      "postalCode": "12200",
+      "addressLocality": "Onda",
+      "addressRegion": "Castellón",
+      "addressCountry": "ES"
+    },
+    "sameAs": [
+      "https://www.facebook.com/profile.php?id=100087192722741",
+      "https://www.instagram.com/ceramicconnection",
+      "{$pinterest_url}",
+      "https://www.tiktok.com/@ceramicconnection",
+      "https://www.youtube.com/channel/UCQ9V46QZ1KdM6E1gF1AqPQA"
+    ],
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": "+34623240148",
+      "contactType": "customer service",
+      "areaServed": ["ES", "FR", "GB", "DE", "PT", "NL"],
+      "availableLanguage": ["Spanish", "French", "English", "German", "Portuguese", "Dutch"]
+    }
+  }
+</script>
 
 {if $page.page_name == 'category'}
 
