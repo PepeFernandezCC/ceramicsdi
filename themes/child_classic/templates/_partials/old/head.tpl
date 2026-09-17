@@ -55,7 +55,10 @@
 
     {block name='head_hreflang'}
         {foreach from=$urls.alternative_langs item=pageUrl key=code}
-            {assign var="alternate_url" value=$pageUrl|regex_replace:"/\?.*$/" : ""|regex_replace:"/\/$/" : ""}
+            {assign var="alternate_url" value=$pageUrl|regex_replace:"/\?.*$/" : ""}
+            {if $page.page_name != 'index'}
+                {assign var="alternate_url" value=$alternate_url|regex_replace:"/\/$/" : ""}
+            {/if}
             {assign var="short_code" value=$code|regex_replace:"/-.*$/" : ""}
             <link rel="alternate" href="{$alternate_url}" hreflang="{$short_code}">
         {/foreach}
