@@ -42,20 +42,29 @@
     {/block}
 
     {if $page.canonical}
+        {* El controlador ha construido su propio canonical (via
+           getCanonicalURL()) - se usa tal cual, sin recortar el query
+           string: para paginas de paginacion (categoria, etc.) el
+           canonical debe ser autorreferenciado e incluir ?page=N, no
+           apuntar siempre a la pagina 1. Ver informe SEO del 17/09/2026. *}
         {assign var="clean_url" value=$page.canonical}
     {else}
-        {assign var="clean_url" value=$urls.current_url}
+        {* Sin canonical propio del controlador: se usa la URL actual,
+           recortando el query string por defecto (comportamiento previo). *}
+        {assign var="clean_url" value=$urls.current_url|regex_replace:"/\?.*$/" : ""}
     {/if}
-
-    {* Eliminar parámetros de consulta *}
-    {assign var="clean_url" value=$clean_url|regex_replace:"/\?.*$/" : ""}
-
 
     <link rel="canonical" href="{$clean_url}">
 
     {block name='head_hreflang'}
         {foreach from=$urls.alternative_langs item=pageUrl key=code}
-            {assign var="alternate_url" value=$pageUrl|regex_replace:"/\?.*$/" : ""}
+            {if $page.canonical}
+                {* Mismo motivo que arriba: el controlador ya ha construido
+                   esta URL completa (incluida la paginacion si aplica). *}
+                {assign var="alternate_url" value=$pageUrl}
+            {else}
+                {assign var="alternate_url" value=$pageUrl|regex_replace:"/\?.*$/" : ""}
+            {/if}
             {if $page.page_name != 'index'}
                 {assign var="alternate_url" value=$alternate_url|regex_replace:"/\/$/" : ""}
             {/if}
