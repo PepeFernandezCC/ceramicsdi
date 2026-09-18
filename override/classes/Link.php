@@ -626,7 +626,7 @@ class Link extends LinkCore
 			return $url . 'blog/'.$subAlias.'/' . $post_string .'.html';
 		}
 		if (isset($params['page'])){
-			return $url . 'blog/' . $params['page'] . '/';
+			return $url . 'blog/' . $params['page'];
 		}
 		return $url . 'blog/';
 	}
