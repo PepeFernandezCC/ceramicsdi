@@ -53,6 +53,17 @@ class CheckoutAddressesStep extends CheckoutAddressesStepCore
             return $this;
         }
 
+        // 4bis) Bloquear el avance a transportista si la dirección de facturación
+        // es extranjera, el importe de productos alcanza el umbral, y no tiene DNI/CIF.
+        if ($this->invoiceAddressNeedsForeignIdMissing($invoiceAddress)) {
+            $this->getCheckoutProcess()->setHasErrors(true);
+            $this->context->controller->errors[] = $this->getIncompleteAddressDniError();
+            $this->setCurrent(true);
+            $this->setComplete(false);
+
+            return $this;
+        }
+
         // 5) Lógica intracomunitaria
         $data = Address::getVatApiData($idDelivery, $idInvoice);
 
@@ -201,6 +212,45 @@ class CheckoutAddressesStep extends CheckoutAddressesStepCore
         Customer::insertIntracomunitaryLog($ok, 'DIRECCIONES: ' . $msg, $vatNumber, $customer_id, $idCountry);
 
         return $this;
+    }
+
+    /**
+     * @param Address $invoiceAddress
+     */
+    private function invoiceAddressNeedsForeignIdMissing(Address $invoiceAddress)
+    {
+        $isInvoice = (int) $invoiceAddress->is_invoice !== 0;
+        $isSpanish = (int) $invoiceAddress->id_country === 6;
+
+        if (!$isInvoice || $isSpanish) {
+            return false;
+        }
+
+        $cartProductsTotal = (float) $this->context->cart->getOrderTotal(true, Cart::ONLY_PRODUCTS);
+
+        if ($cartProductsTotal < Address::FOREIGN_ID_MIN_AMOUNT) {
+            return false;
+        }
+
+        $hasDni = trim((string) $invoiceAddress->dni) !== '';
+
+        return !$hasDni;
+    }
+
+    private function getIncompleteAddressDniError()
+    {
+        $messages = [
+            1 => 'Dirección incompleta: necesita una dirección con DNI para este importe.',
+            2 => "Adresse incomplète : une adresse avec un numéro d'identification (DNI/CIF) est nécessaire pour ce montant.",
+            3 => 'Incomplete address: an address with an ID/Tax number is required for this order amount.',
+            4 => 'Unvollständige Adresse: Für diesen Betrag wird eine Adresse mit Ausweis-/Steuernummer benötigt.',
+            5 => 'Endereço incompleto: é necessário um endereço com número de identificação fiscal para este valor.',
+            6 => 'Onvolledig adres: voor dit bedrag is een adres met een identificatienummer (ID/BTW) vereist.',
+        ];
+
+        $idLang = (int) $this->context->language->id;
+
+        return $messages[$idLang] ?? $messages[3];
     }
 
     private function debugAddressStepRequest(array $requestParams, $stage)

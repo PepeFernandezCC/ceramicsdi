@@ -86,6 +86,7 @@ class CheckoutAddressesStep extends CheckoutAddressesStepCore
             Customer::removeIntracomunitaryGroup($customer_id);
             Customer::updateCustomerSiret($customer_id, '');
             Customer::insertIntracomunitaryLog(false, 'DIRECCIONES: Cliente no apto o VAT inválido', $vat_input, $customer_id, $idCountry);
+            $this->invalidateStalePayPalOrder();
 
             // SOLO avanzamos a envío si NO estamos en edit/new
             if (!$this->getCheckoutProcess()->hasErrors() && !$isEditOrNew) {
@@ -202,6 +203,7 @@ class CheckoutAddressesStep extends CheckoutAddressesStepCore
             Address::updateIntracomunitaryAddress($idInvoice, $vatNumber);
             Customer::updateCustomerSiret($customer_id, $vatNumber);
             Customer::assignIntracomunitaryGroup($customer_id);
+            $this->invalidateStalePayPalOrder();
             $this->context->controller->success[] = $this->getTranslator()->trans(
                 'Your VAT number has been validated. Prices have been updated for intra-community supply. You can continue.',
                 [],
@@ -251,6 +253,57 @@ class CheckoutAddressesStep extends CheckoutAddressesStepCore
         $idLang = (int) $this->context->language->id;
 
         return $messages[$idLang] ?? $messages[3];
+    }
+
+    /**
+     * ps_checkout (modulo de pago oficial) congela el importe del pedido
+     * en el momento en que crea la orden de PayPal, y lo compara contra
+     * el total del carrito recalculado justo antes de confirmar el pago
+     * (ver vendor/invertus/core/.../OrderAuthorizationValidator.php,
+     * tolerancia de 0,05€). Si el cliente vuelve al paso de direcciones
+     * DESPUES de que ya se creara esa orden - p.ej. para meter un
+     * NIF/VAT intracomunitario, lo que le cambia de grupo y por tanto
+     * el total - esa orden ya creada se queda con el importe antiguo y
+     * el pago falla con "El importe de la transaccion no coincide con
+     * el del pedido". Informe SEO/incidencia del 18/09/2026.
+     *
+     * Aqui invalidamos (soft-delete, mismo mecanismo que usa el propio
+     * ps_checkout al crear una orden nueva: añadir el tag "DELETED")
+     * cualquier orden de PayPal ya creada para este carrito, para que
+     * la proxima vez que el cliente llegue al pago se genere una nueva
+     * con el total ya correcto. No toca ningun archivo de ps_checkout.
+     */
+    private function invalidateStalePayPalOrder()
+    {
+        $idCart = (int) $this->context->cart->id;
+
+        if (!$idCart) {
+            return;
+        }
+
+        if (!Db::getInstance()->executeS('SHOW TABLES LIKE "' . _DB_PREFIX_ . 'pscheckout_order"')) {
+            return;
+        }
+
+        $rows = Db::getInstance()->executeS(
+            'SELECT `id`, `tags` FROM `' . _DB_PREFIX_ . 'pscheckout_order`
+             WHERE `id_cart` = ' . $idCart . ' AND `tags` NOT LIKE "%DELETED%"'
+        );
+
+        if (!$rows) {
+            return;
+        }
+
+        foreach ($rows as $row) {
+            $tags = trim((string) $row['tags']);
+            $newTags = $tags !== '' ? $tags . ',DELETED' : 'DELETED';
+
+            Db::getInstance()->execute(
+                'UPDATE `' . _DB_PREFIX_ . 'pscheckout_order`
+                 SET `tags` = "' . pSQL($newTags) . '"
+                 WHERE `id` = "' . pSQL($row['id']) . '"'
+            );
+        }
     }
 
     private function debugAddressStepRequest(array $requestParams, $stage)
