@@ -1,23 +1,5 @@
 <?php
-/**
- * Script puntual (no forma parte de ningun modulo, no lo modifica):
- * coge la imagen que este en la posicion 5 de cada producto que NO
- * pertenezca a la categoria "Muestras" (id_category 1751) y la guarda
- * como su imagen horizontal, escribiendo directamente en la tabla y la
- * carpeta de subidas del modulo ccpromoimages (sin llamar a ningun
- * metodo de su clase ni tocar sus archivos).
- *
- * De un solo uso: subelo, ejecutalo, borralo. Protegido con un token
- * para que nadie mas pueda lanzarlo mientras este subido.
- *
- * Por CLI:
- *   php import_horizontal_images.php --dry-run
- *   php import_horizontal_images.php
- *
- * Por navegador (mismo token en los dos pasos):
- *   https://tu-tienda.com/import_horizontal_images.php?token=3a257189e4923ea2ef623e7699971280&dry_run=1
- *   https://tu-tienda.com/import_horizontal_images.php?token=3a257189e4923ea2ef623e7699971280
- */
+
 
 define('CCPROMOIMAGES_SCRIPT_TOKEN', '3a257189e4923ea2ef623e7699971280');
 
@@ -37,7 +19,7 @@ if (!$isCli) {
 require __DIR__ . '/config/config.inc.php';
 
 define('CCPROMOIMAGES_SAMPLES_CATEGORY_ID', 1751);
-define('CCPROMOIMAGES_TARGET_POSITION', 5);
+define('CCPROMOIMAGES_TARGET_POSITION', 6);
 define('CCPROMOIMAGES_TIPO', 'horizontal');
 define('CCPROMOIMAGES_UPLOADS_DIR', _PS_MODULE_DIR_ . 'ccpromoimages/uploads/');
 define('CCPROMOIMAGES_MAX_FILE_SIZE', 8388608); // 8 MB
