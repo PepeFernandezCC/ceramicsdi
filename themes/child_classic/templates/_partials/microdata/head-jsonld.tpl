@@ -150,6 +150,27 @@
   </script>
 {/if}
 
+{if isset($categoria_faq_pairs) && $categoria_faq_pairs|@count > 0}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {foreach from=$categoria_faq_pairs item=faq name=faqLoop}
+          {
+            "@type": "Question",
+            "name": "{$faq.question|escape:'html':'UTF-8'}",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "{$faq.answer|escape:'html':'UTF-8'}"
+            }
+          }{if !$smarty.foreach.faqLoop.last},{/if}
+        {/foreach}
+      ]
+    }
+  </script>
+{/if}
+
 {if isset($breadcrumb.links[1])}
   <script type="application/ld+json">
     {

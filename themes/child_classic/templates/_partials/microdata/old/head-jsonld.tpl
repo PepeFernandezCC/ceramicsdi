@@ -1,33 +1,37 @@
 
 {if $language.iso_code == 'fr'}
   {assign var="pinterest_url" value="https://www.pinterest.fr/ceramicconnectionofficial/"}
-  {assign var="org_description" value="Boutique en ligne de carreaux, dalles céramiques et autres matériaux de construction, avec distribution multilingue en Espagne, France, Royaume-Uni, Allemagne, Portugal et Pays-Bas."}
+  {assign var="org_description" value="Boutique en ligne de carreaux, dalles céramiques et autres matériaux de construction, avec distribution multilingue en Espagne, France, Royaume-Uni, Allemagne, Portugal, Pays-Bas et Belgique."}
 {elseif $language.iso_code == 'de'}
   {assign var="pinterest_url" value="https://www.pinterest.de/ceramicconnectionofficial/"}
-  {assign var="org_description" value="Online-Shop für Fliesen, Keramikböden und andere Baumaterialien mit mehrsprachigem Vertrieb in Spanien, Frankreich, dem Vereinigten Königreich, Deutschland, Portugal und den Niederlanden."}
+  {assign var="org_description" value="Online-Shop für Fliesen, Keramikböden und andere Baumaterialien mit mehrsprachigem Vertrieb in Spanien, Frankreich, dem Vereinigten Königreich, Deutschland, Portugal, den Niederlanden und Belgien."}
 {elseif $language.iso_code == 'pt'}
   {assign var="pinterest_url" value="https://www.pinterest.pt/ceramicconnectionofficial/"}
-  {assign var="org_description" value="Loja online de azulejos, ladrilhos cerâmicos e outros materiais de construção, com distribuição multilíngue em Espanha, França, Reino Unido, Alemanha, Portugal e Países Baixos."}
+  {assign var="org_description" value="Loja online de azulejos, ladrilhos cerâmicos e outros materiais de construção, com distribuição multilíngue em Espanha, França, Reino Unido, Alemanha, Portugal, Países Baixos e Bélgica."}
 {elseif $language.iso_code == 'nl'}
   {assign var="pinterest_url" value="https://www.pinterest.com/ceramicconnectionofficial/"}
-  {assign var="org_description" value="Online winkel voor tegels, keramische vloertegels en andere bouwmaterialen, met meertalige distributie in Spanje, Frankrijk, het Verenigd Koninkrijk, Duitsland, Portugal en Nederland."}
+  {assign var="org_description" value="Online winkel voor tegels, keramische vloertegels en andere bouwmaterialen, met meertalige distributie in Spanje, Frankrijk, het Verenigd Koninkrijk, Duitsland, Portugal, Nederland en België."}
 {elseif $language.iso_code == 'en'}
   {assign var="pinterest_url" value="https://pinterest.com/ceramicconnectionofficial/"}
-  {assign var="org_description" value="Online store for tiles, ceramic flooring and other construction materials, with multilingual distribution across Spain, France, the United Kingdom, Germany, Portugal and the Netherlands."}
+  {assign var="org_description" value="Online store for tiles, ceramic flooring and other construction materials, with multilingual distribution across Spain, France, the United Kingdom, Germany, Portugal, the Netherlands and Belgium."}
 {else}
   {assign var="pinterest_url" value="https://www.pinterest.es/ceramicconnectionofficial/"}
-  {assign var="org_description" value="Tienda online de azulejos, baldosas cerámicas y otros materiales de construcción, con distribución multiidioma en España, Francia, Reino Unido, Alemania, Portugal y Países Bajos."}
+  {assign var="org_description" value="Tienda online de azulejos, baldosas cerámicas y otros materiales de construcción, con distribución multiidioma en España, Francia, Reino Unido, Alemania, Portugal, Países Bajos y Bélgica."}
 {/if}
 <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "{$shop.name}",
+    "@type": "OnlineStore",
+    "@id": "https://ceramicconnection.com/#organization",
+    "name": "Ceramic Connection",
+    "legalName": "Ceramic Connection Shop S.L.",
     "url": "{$urls.pages.index}",
     {if $shop.logo_details}
       "logo": {
         "@type": "ImageObject",
-        "url": "{$shop.logo_details.src}"
+        "url": "{$shop.logo_details.src|replace:'http://':'https://'}",
+        "width": 200,
+        "height": 100
       },
     {/if}
     "description": "{$org_description}",
@@ -41,6 +45,7 @@
       "addressCountry": "ES"
     },
     "sameAs": [
+      "https://www.wikidata.org/wiki/Q141430369",
       "https://www.facebook.com/profile.php?id=100087192722741",
       "https://www.instagram.com/ceramicconnection",
       "{$pinterest_url}",
@@ -51,8 +56,34 @@
       "@type": "ContactPoint",
       "telephone": "+34623240148",
       "contactType": "customer service",
-      "areaServed": ["ES", "FR", "GB", "DE", "PT", "NL"],
-      "availableLanguage": ["Spanish", "French", "English", "German", "Portuguese", "Dutch"]
+      "areaServed": ["ES", "FR", "GB", "DE", "PT", "NL", "BE"],
+      "availableLanguage": ["es", "fr", "en", "de", "pt", "nl"]
+    },
+    "hasCertification": {
+      "@type": "Certification",
+      "name": "Trusted Shops Trustmark",
+      "certificationIdentification": "https://www.trustedshops.es/evaluacion/ceramicconnection-com",
+      "certificationStatus": "https://schema.org/CertificationActive",
+      "url": "https://www.trustedshops.es/evaluacion/ceramicconnection-com",
+      "validFrom": "2023-11-10T14:52:28+01:00",
+      "dateModified": "2026-09-11",
+      "issuedBy": {
+        "@type": "Organization",
+        "@id": "https://www.trustedshops.com/#organization",
+        "name": "Trusted Shops",
+        "url": "https://www.trustedshops.com",
+        "sameAs": [
+          "https://business.trustedshops.com/",
+          "https://www.trstd.com/"
+        ]
+      }
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": 4.4,
+      "ratingCount": 269,
+      "bestRating": 5,
+      "worstRating": 1
     }
   }
 </script>
@@ -107,7 +138,7 @@
       {if $shop.logo_details}
         "image": {
           "@type": "ImageObject",
-          "url":"{$shop.logo_details.src}"
+          "url":"{$shop.logo_details.src|replace:'http://':'https://'}"
         },
       {/if}
       "potentialAction": {

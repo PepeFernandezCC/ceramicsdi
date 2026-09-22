@@ -634,18 +634,4 @@ class FrontController extends FrontControllerCore {
 
         return true;
     }
-
-	public function getCanonicalURL()
-    {
-        if ($this->php_self === 'index' || $this->controller_name === 'index') {
-            $lang = $this->context->language;
-            $shop = $this->context->shop;
-
-            $base = Tools::getShopDomainSsl(true) . $shop->getBaseURL(true, false);
-
-            return rtrim($base, '/') . '/' . $lang->iso_code . '/';
-        }
-
-        return parent::getCanonicalURL();
-    }
 }
