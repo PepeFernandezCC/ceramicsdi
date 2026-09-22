@@ -285,7 +285,7 @@ class CcIncidenciasFormModuleFrontController extends ModuleFrontController
 
         $body = $block . "\n\n" . $humanText;
 
-        $subject = $this->module->stripHeaderBreaks(sprintf('[TICKET] %s - %s', $referenciaNorm, $tipoValue));
+        $subject = $this->module->stripHeaderBreaks(sprintf('[TICKET] %s - %s', $referenciaNorm, $this->module->ccL('email_subject_customer_text')));
         $replyToEmail = $this->module->stripHeaderBreaks($email);
         $replyToName = $this->module->stripHeaderBreaks($nombre);
 

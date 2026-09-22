@@ -82,6 +82,7 @@ return array(
         'from_order_note' => 'Incidencia del pedido %s',
 
         // Bloque de texto legible por personas dentro del correo (libre, ver apartado 9.4 del PDF)
+        'email_subject_customer_text' => 'Incidencia en su pedido',
         'email_heading' => 'Nueva incidencia recibida desde el formulario web',
         'email_label_tipo' => 'Tipo',
         'email_label_referencia' => 'Referencia del pedido',
@@ -180,6 +181,7 @@ return array(
         'order_button_label' => 'Signaler un litige',
         'from_order_note' => 'Litige de la commande %s',
 
+        'email_subject_customer_text' => 'Litige concernant votre commande',
         'email_heading' => 'Nouveau litige recu depuis le formulaire web',
         'email_label_tipo' => 'Type',
         'email_label_referencia' => 'Reference de la commande',
@@ -278,6 +280,7 @@ return array(
         'order_button_label' => 'Report an issue',
         'from_order_note' => 'Issue for order %s',
 
+        'email_subject_customer_text' => 'Issue with your order',
         'email_heading' => 'New incident received from the web form',
         'email_label_tipo' => 'Type',
         'email_label_referencia' => 'Order reference',
@@ -376,6 +379,7 @@ return array(
         'order_button_label' => 'Problem melden',
         'from_order_note' => 'Problem zu Bestellung %s',
 
+        'email_subject_customer_text' => 'Problem mit Ihrer Bestellung',
         'email_heading' => 'Neue Schadensmeldung ueber das Webformular erhalten',
         'email_label_tipo' => 'Art',
         'email_label_referencia' => 'Bestellreferenz',
@@ -474,6 +478,7 @@ return array(
         'order_button_label' => 'Comunicar incidencia',
         'from_order_note' => 'Incidencia da encomenda %s',
 
+        'email_subject_customer_text' => 'Incidencia com a sua encomenda',
         'email_heading' => 'Nova incidencia recebida atraves do formulario web',
         'email_label_tipo' => 'Tipo',
         'email_label_referencia' => 'Referencia da encomenda',
@@ -572,6 +577,7 @@ return array(
         'order_button_label' => 'Incident melden',
         'from_order_note' => 'Incident voor bestelling %s',
 
+        'email_subject_customer_text' => 'Probleem met uw bestelling',
         'email_heading' => 'Nieuw incident ontvangen via het webformulier',
         'email_label_tipo' => 'Type',
         'email_label_referencia' => 'Bestelreferentie',
