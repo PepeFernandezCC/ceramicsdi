@@ -269,9 +269,7 @@
                                     </div>
                                     <div class="blog_description{if $enable_slideshow} popup_image{/if} {if isset($blog_config.YBC_BLOG_ALLOW_TABLE_OF_CONTENT)&& $blog_config.YBC_BLOG_ALLOW_TABLE_OF_CONTENT} ybc_create_table_content{/if}">
                                         <div class="ets_begin_heading_table">&nbsp;</div>
-                                        {* Imagenes del cuerpo del post (las que vienen dentro del HTML
-                                           editado en el WYSIWYG), distintas de la imagen principal de
-                                           arriba: se cargan con lazyload nativo. *}
+                                  
                                         {if $blog_post.description}
                                             {$blog_post.description|regex_replace:"/<img(?![^>]*\bloading=)/i":"<img loading=\"lazy\" decoding=\"async\"" nofilter}
                                         {else}

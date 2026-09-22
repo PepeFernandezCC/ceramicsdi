@@ -33,15 +33,10 @@ $(document).ready(function(){
     if($('.blog_description.popup_image img').length)
     {
         $('.blog_description img').each(function(){
-            var $img = $(this);
-            // Al reconstruir la imagen para envolverla en el lightbox, conservamos
-            // tambien loading/decoding (si los tiene) para no perder el lazyload.
-            var loadingAttr = $img.attr('loading') ? ' loading="'+$img.attr('loading')+'"' : '';
-            var decodingAttr = $img.attr('decoding') ? ' decoding="'+$img.attr('decoding')+'"' : '';
-            $img.after('<a href="'+$img.attr('src')+'" class="prettyPhoto"><img width="'+$img.attr('width')+'" height="'+$img.attr('height')+'" alt="'+$img.attr('alt')+'" src="'+$img.attr('src')+'"'+loadingAttr+decodingAttr+'> </a>');
-            $img.remove();
-        });
+            $(this).after('<a href="'+$(this).attr('src')+'" class="prettyPhoto"><img width="'+$(this).attr('width')+'" height="'+$(this).attr('height')+'" alt="'+$(this).attr('alt')+'" src="'+$(this).attr('src')+'"> </a>');
+            $(this).remove();  
+        }); 
         $("a[class^='prettyPhoto']").prettyPhoto({animation_speed:'normal',theme:YBC_BLOG_GALLERY_SKIN,slideshow:YBC_BLOG_GALLERY_SPEED, autoplay_slideshow: false, social_tools: '',deeplinking: false});
-
+        
     }
 });
