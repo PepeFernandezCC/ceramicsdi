@@ -16,4 +16,4 @@
  * @copyright  ETS Software Technology Co., Ltd
  * @license    Valid for 1 website (or project) for each purchase of license
 *}
-{l s='This comment was posted by' mod='ybc_blog'} <a href="{$customerLink|escape:'html':'UTF-8'}">{$comment.name|escape:'html':'UTF-8'}</a> {l s='on' mod='ybc_blog'} <a href="{$postLink|escape:'html':'UTF-8'}" target="_blank">{$comment.post_title|escape:'html':'UTF-8'}</a> {l s='on' mod='ybc_blog'} {dateFormat date=$comment.datetime_added full=0}
+{l s='This comment was posted by' mod='ybc_blog'} <a href="{$customerLink|escape:'html':'UTF-8'}">{$comment.name|escape:'html':'UTF-8'}</a> {l s='on' mod='ybc_blog'} <a href="{$postLink|escape:'html':'UTF-8'}" target="_blank">{$comment.post_title|escape:'html':'UTF-8'}</a> {l s='on' mod='ybc_blog'} {dateFormat date=$comment.datetime_added|escape:'html':'UTF-8'}

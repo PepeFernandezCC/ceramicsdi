@@ -18,7 +18,8 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 
-if (!defined('_PS_VERSION_')) { exit; }
+if (!defined('_PS_VERSION_'))
+	exit;
 class Ybc_blog_gallery_class extends ObjectModel
 {
     public $id_gallery;
@@ -49,9 +50,7 @@ class Ybc_blog_gallery_class extends ObjectModel
 	{
 		parent::__construct($id_item, $id_lang, $id_shop);
         if($this->id)
-            $this->id_shop = (int)Db::getInstance()->getValue('SELECT id_shop FROM `'._DB_PREFIX_.'ybc_blog_gallery_shop` where id_gallery= '.(int)$this->id);
-        else
-            $this->id_shop = $id_shop;
+            $this->id_shop = Db::getInstance()->getValue('SELECT id_shop FROM `'._DB_PREFIX_.'ybc_blog_gallery_shop` where id_gallery= '.(int)$this->id);
         $languages = Language::getLanguages(false);        
         foreach($languages as $lang)
         {
@@ -69,14 +68,14 @@ class Ybc_blog_gallery_class extends ObjectModel
 	}
     public function add($autodate = true, $null_values = false)
 	{
-		if(parent::add($autodate, $null_values))
-        {
-            return Db::getInstance()->execute('
+		$context = Context::getContext();
+		$id_shop = $context->shop->id;
+		$res = parent::add($autodate, $null_values);
+		$res &= Db::getInstance()->execute('
 			INSERT INTO `'._DB_PREFIX_.'ybc_blog_gallery_shop` (`id_shop`, `id_gallery`)
-			VALUES('.(int)$this->id_shop.', '.(int)$this->id.')'
-            );
-        }
-		return false;
+			VALUES('.(int)$id_shop.', '.(int)$this->id.')'
+		);
+		return $res;
 	}
 	public function delete()
     {
@@ -97,7 +96,7 @@ class Ybc_blog_gallery_class extends ObjectModel
             Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'ybc_blog_gallery_shop` WHERE id_gallery='.(int)$this->id);
             $galleries = Db::getInstance()->executeS('
                 SELECT * FROM `'._DB_PREFIX_.'ybc_blog_gallery` g, `'._DB_PREFIX_.'ybc_blog_gallery_shop` gs
-                WHERE g.id_gallery=gs.id_gallery AND gs.id_shop="'.(int)$this->id_shop.'" ORDER BY g.sort_order asc');
+                WHERE g.id_gallery=gs.id_gallery AND gs.id_shop="'.(int)Context::getContext()->shop->id.'" ORDER BY g.sort_order asc');
             if($galleries)
             {
                 foreach($galleries as $key=> $gallery)
@@ -153,29 +152,29 @@ class Ybc_blog_gallery_class extends ObjectModel
         }
         return false;        
     }
-    public static function getGalleriesWithFilter($context, $filter = false, $sort = false, $start = false, $limit = false)
+    public static function getGalleriesWithFilter($filter = false, $sort = false, $start = false, $limit = false)
     {
         $req = "SELECT g.*, gl.title, gl.description,gl.image,gl.thumb
             FROM `"._DB_PREFIX_."ybc_blog_gallery` g
-            INNER JOIN `"._DB_PREFIX_."ybc_blog_gallery_shop` gs ON (g.id_gallery=gs.id_gallery AND gs.id_shop='".(int)$context->shop->id."')
+            INNER JOIN `"._DB_PREFIX_."ybc_blog_gallery_shop` gs ON (g.id_gallery=gs.id_gallery AND gs.id_shop='".(int)Context::getContext()->shop->id."')
             LEFT JOIN `"._DB_PREFIX_."ybc_blog_gallery_lang` gl ON g.id_gallery = gl.id_gallery
-            WHERE gl.id_lang = ".(int)$context->language->id.($filter ? $filter : '')." 
+            WHERE gl.id_lang = ".(int)Context::getContext()->language->id.($filter ? $filter : '')." 
             ORDER BY ".($sort ? $sort : '')." g.id_gallery ASC " . ($start !== false && $limit ? " LIMIT ".(int)$start.", ".(int)$limit : "");
 
         return Db::getInstance()->executeS($req);
     }
-    public static function countGalleriesWithFilter($context, $filter = false)
+    public static function countGalleriesWithFilter($filter = false)
     {
         $req = "SELECT COUNT(g.id_gallery)
             FROM `"._DB_PREFIX_."ybc_blog_gallery` g
-            INNER JOIN `"._DB_PREFIX_."ybc_blog_gallery_shop` gs ON (g.id_gallery=gs.id_gallery AND gs.id_shop='".(int)$context->shop->id."')
+            INNER JOIN `"._DB_PREFIX_."ybc_blog_gallery_shop` gs ON (g.id_gallery=gs.id_gallery AND gs.id_shop='".(int)Context::getContext()->shop->id."')
             LEFT JOIN `"._DB_PREFIX_."ybc_blog_gallery_lang` gl ON g.id_gallery = gl.id_gallery
-            WHERE gl.id_lang = ".(int)$context->language->id.($filter ? $filter : '');
+            WHERE gl.id_lang = ".(int)Context::getContext()->language->id.($filter ? $filter : '');
         return Db::getInstance()->getValue($req);
     }
     public static function updateGalleryOrdering($galleries,$page=1)
     {
-        if($page < 1)
+        if($page <1)
             $page =1;
         if($galleries)
         {
@@ -190,11 +189,11 @@ class Ybc_blog_gallery_class extends ObjectModel
         }
         return true;
     }
-    public static function getMaxSortOrder($id_shop)
+    public static function getMaxSortOrder()
     {
         return (int)Db::getInstance()->getValue('
             SELECT MAX(g.sort_order) FROM `'._DB_PREFIX_.'ybc_blog_gallery` g
-            INNER JOIN `'._DB_PREFIX_.'ybc_blog_gallery_shop` gs ON g.id_gallery=gs.id_gallery AND gs.id_shop="'.(int)$id_shop.'"'
+            INNER JOIN `'._DB_PREFIX_.'ybc_blog_gallery_shop` gs ON g.id_gallery=gs.id_gallery AND gs.id_shop="'.(int)Context::getContext()->shop->id.'"'
         );
     }
 }

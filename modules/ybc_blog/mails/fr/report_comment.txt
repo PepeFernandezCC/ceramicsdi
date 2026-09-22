@@ -1,5 +1,5 @@
-Hi {author_name}
-{reporter} just reported a comment on {post_title} as abused.
+Bonjour {author_name}
+{reporter} vient de signaler un commentaire sur {post_title} comme abusé.
 {comment}
-View comment
+Voir le commentaire
 

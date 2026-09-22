@@ -1,5 +1,5 @@
-Hi {customer_name},
-{replier} just replied to your comment on {post_title}
+Bonjour {customer_name}
+{replier} vient de répondre à votre commentaire sur {post_title}
 {comment_reply}
-View reply
+Voir la réponse
 

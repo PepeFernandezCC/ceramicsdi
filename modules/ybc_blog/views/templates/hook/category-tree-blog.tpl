@@ -17,7 +17,7 @@
  * @license    Valid for 1 website (or project) for each purchase of license
 *}
 <li style="list-style: none; position: relative;">
-    <input style="margin: 2px 7px 0 0; float: left;" type="checkbox" {if in_array($node.id_category,$disabled_categories)}disabled="disabled"{else}{if in_array($node.id_category, $selected_categories)} checked="checked"{/if}{/if} value="{$node.id_category|escape:'html':'UTF-8'}" name="{$input_name|escape:'html':'UTF-8'}[]" id="ybc_input_blog_category_{$node.id_category|escape:'html':'UTF-8'}" /><label for="ybc_input_blog_category_{$node.id_category|intval}">{if isset($node.thumb_link)}{$node.thumb_link nofilter}&nbsp;{/if}{$node.title|escape:'html':'UTF-8'}</label>
+    <input style="margin: 2px 7px 0 0; float: left;" type="checkbox" {if in_array($node.id_category,$disabled_categories)}disabled="disabled"{else}{if in_array($node.id_category, $selected_categories)} checked="checked"{/if}{/if} value="{$node.id_category|escape:'html':'UTF-8'}" name="{$name|escape:'html':'UTF-8'}[]" id="ybc_input_blog_category_{$node.id_category|escape:'html':'UTF-8'}" /><label for="ybc_input_blog_category_{$node.id_category|intval}">{if isset($node.thumb_link)}{$node.thumb_link nofilter}&nbsp;{/if}{$node.title|escape:'html':'UTF-8'}</label>
     {if $node.children|@count > 0}
             <span class="category-blog-parent">click</span>
         		<ul class="children">

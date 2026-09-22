@@ -28,12 +28,10 @@
         <div class="col-lg-12">
             <div class="row">
                 {$ybc_blog_sidebar nofilter}
-                <div class="blog_center_content col-lg-9{if $control} ybc_blog{$control|escape:'html':'UTF-8'}{/if}">
+                <div class="blog_center_content col-lg-10{if $control} ybc_blog{$control|escape:'html':'UTF-8'}{/if}">
                     <div class="panel statics_form">
                         <div class="panel-heading">
-                    		<i class="ets_svg line-chart">
-                                <svg width="16" height="14" viewBox="0 0 2048 1792" xmlns="http://www.w3.org/2000/svg"><path d="M2048 1536v128h-2048v-1536h128v1408h1920zm-128-1248v435q0 21-19.5 29.5t-35.5-7.5l-121-121-633 633q-10 10-23 10t-23-10l-233-233-416 416-192-192 585-585q10-10 23-10t23 10l233 233 464-464-121-121q-16-16-7.5-35.5t29.5-19.5h435q14 0 23 9t9 23z"/></svg>
-                            </i> {l s='Statistics' mod='ybc_blog'}
+                    		<i class="icon icon-line-chart fa fa-line-chart"></i> {l s='Statistics' mod='ybc_blog'}
                         </div>
                         <div class="form-wrapper">
                             <div class="ets_form_tab_header">
@@ -56,11 +54,9 @@
                                                     <div class="ctf_admin_filter_cotactform">
                                                         <label for="id_post_serach">{l s='Post' mod='ybc_blog'}</label>
                                                         <div class="input-group">
-                                                            <input id="post_autocomplete_input" class="ac_input" name="post_autocomplete_input" placeholder="{l s='ID or name' mod='ybc_blog'}" autocomplete="off" type="text" value="{if $ctf_post}{$ctf_post|escape:'html':'UTF-8'}{/if}" />
+                                                            <input id="post_autocomplete_input" class="ac_input" name="post_autocomplete_input" placeholder="ID or name" autocomplete="off" type="text" value="{if $ctf_post}{$ctf_post|escape:'html':'UTF-8'}{/if}" />
                                                             <span class="input-group-addon">
-                                                            <i class="ets_svg search">
-                                <svg width="14" height="14" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M1216 832q0-185-131.5-316.5t-316.5-131.5-316.5 131.5-131.5 316.5 131.5 316.5 316.5 131.5 316.5-131.5 131.5-316.5zm512 832q0 52-38 90t-90 38q-54 0-90-38l-343-342q-179 124-399 124-143 0-273.5-55.5t-225-150-150-225-55.5-273.5 55.5-273.5 150-225 225-150 273.5-55.5 273.5 55.5 225 150 150 225 55.5 273.5q0 220-124 399l343 343q37 37 37 90z"/></svg>
-                            </i>
+                                                            <i class="icon-search"></i>
                                                             </span>
                                                             <div class="tagify-container-post">
                                                                 {if $ctf_post}

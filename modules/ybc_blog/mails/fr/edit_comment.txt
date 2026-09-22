@@ -1,4 +1,4 @@
-Hi admin,
-A comment on {post_title} article is modified by {customer_name}.
-Previous version: {comment_old}
-New version: {comment}
+Bonjour admin,
+Un commentaire sur l'article {post_title} est modifié par {customer_name}.
+La version précédente: {comment_old}
+Nouvelle version: {comment}

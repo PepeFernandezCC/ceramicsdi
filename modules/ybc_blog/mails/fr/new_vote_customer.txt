@@ -1,5 +1,5 @@
-Hi {customer_name},
-Thanks for your feedback on our blog post: {post_title}
-This email is to confirm that we have received your value feedback.
-Your feedback: {feedback}
-Was the post helpful: {polls_helpful}
+Bonjour {customer_name}
+Merci pour vos commentaires sur notre article de blog: {post_title}
+Cet e-mail confirme que nous avons bien reçu vos précieux commentaires.
+Votre commentaire: {feedback}
+L'article était-il utile: {polls_helpful}

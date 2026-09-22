@@ -17,17 +17,14 @@
  * @license    Valid for 1 website (or project) for each purchase of license
 *}
 {if $authors}
-    <div class="page_blog block ybc_block_author {$blog_config.YBC_BLOG_RTL_CLASS|escape:'html':'UTF-8'} {if isset($blog_page) && $blog_page}page_{$blog_page|escape:'html':'UTF-8'}{else}page_blog{/if}">
+    {if !isset($date_format) || isset($date_format) && !$date_format}{assign var='date_format' value='F jS Y'}{/if}
+    <div class="page_blog block ybc_block_author {$blog_config.YBC_BLOG_RTL_CLASS|escape:'html':'UTF-8'} {if isset($page) && $page}page_{$page|escape:'html':'UTF-8'}{else}page_blog{/if}">
         <h4 class="title_blog title_block">{l s='Top authors' mod='ybc_blog'}</h4>
-        {if isset($blog_config.YBC_BLOG_HOME_PER_ROW) && $blog_config.YBC_BLOG_HOME_PER_ROW}
-            {assign var='product_row' value=$blog_config.YBC_BLOG_HOME_PER_ROW|intval}
-        {else}
-            {assign var='product_row' value=4}
-        {/if}
+        {assign var='product_row' value=$blog_config.YBC_BLOG_HOME_PER_ROW|intval}
         <div class="block_content">
         <ul class="">
             {foreach from=$authors item='author'}
-                <li {if $blog_page=='home'}class="col-xs-12 col-sm-4 col-lg-{12/$product_row|intval}"{/if}> 
+                <li {if $page=='home'}class="col-xs-12 col-sm-4 col-lg-{12/$product_row|intval}"{/if}> 
                     <div class="ybc-blog-comment-content">
                         {if $author.avata}
                             <div class="author_avata_show">

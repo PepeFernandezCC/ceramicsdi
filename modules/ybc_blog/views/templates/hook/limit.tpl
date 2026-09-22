@@ -25,7 +25,7 @@
             <option value="50" {if $limit==50} selected="selected"{/if}>50</option>
             <option value="100" {if $limit==100} selected="selected"{/if}>100</option>
             <option value="300" {if $limit==300} selected="selected"{/if}>300</option>
-            <option value="1000" {if $limit==1000} selected="selected"{/if}>1000</option>
+            <option value="300" {if $limit==1000} selected="selected"{/if}>1000</option>
         </select>
     </div>
 </div>

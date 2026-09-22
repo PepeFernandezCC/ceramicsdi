@@ -22,18 +22,14 @@
             <label class="control-label col-lg-3"> {l s='Author' mod='ybc_blog'}: </label>
             <div class="col-lg-9">
                 <div class="customer_author_name"><a href="{$author.link|escape:'html':'UTF-8'}">{if $author.name}{$author.name|escape:'html':'UTF-8'}{else}{$author.firstname|escape:'html':'UTF-8'}&nbsp;{$author.lastname|escape:'html':'UTF-8'}{/if}</a></div>
-                <button class="ybc_display_form_author btn btn-default"><i class="ets_svg pencil">
-                        <svg width="14" height="14" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M491 1536l91-91-235-235-91 91v107h128v128h107zm523-928q0-22-22-22-10 0-17 7l-542 542q-7 7-7 17 0 22 22 22 10 0 17-7l542-542q7-7 7-17zm-54-192l416 416-832 832h-416v-416zm683 96q0 53-37 90l-166 166-416-416 166-165q36-38 90-38 53 0 91 38l235 234q37 39 37 91z"/></svg>
-                    </i>{l s='Change' mod='ybc_blog'}</button>
+                <button class="ybc_display_form_author btn btn-default"><i class="icon-pencil"></i>{l s='Change' mod='ybc_blog'}</button>
             </div>
         </div>
     {else}
         <div class="form-group">
             <label class="control-label col-lg-3">{l s='Author' mod='ybc_blog'}:</label>
             <div class="col-lg-9">
-                <button class="ybc_display_form_author btn btn-default"><i class="ets_svg pencil">
-                        <svg width="14" height="14" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M491 1536l91-91-235-235-91 91v107h128v128h107zm523-928q0-22-22-22-10 0-17 7l-542 542q-7 7-7 17 0 22 22 22 10 0 17-7l542-542q7-7 7-17zm-54-192l416 416-832 832h-416v-416zm683 96q0 53-37 90l-166 166-416-416 166-165q36-38 90-38 53 0 91 38l235 234q37 39 37 91z"/></svg>
-                    </i>{l s='Set author' mod='ybc_blog'}</button>
+                <button class="ybc_display_form_author btn btn-default"><i class="icon-pencil"></i>{l s='Set author' mod='ybc_blog'}</button>
             </div>
         </div>
     {/if}
@@ -70,9 +66,7 @@
                             <div class="customer_author_name_choose">{if $author.name}{$author.name|escape:'html':'UTF-8'}{else}{$author.firstname|escape:'html':'UTF-8'}&nbsp;{$author.lastname|escape:'html':'UTF-8'}{/if}<span class="close_choose">x</span></div>
                         {/if}
                         <input id="customer_autocomplete_input" name="customer_autocomplete_input" placeholder="{l s='Search Community - Author by ID or name or email' mod='ybc_blog'}" autocomplete="off" class="ac_input" type="text" />
-                        <span class="input-group-addon"><i class="ets_svg search">
-                                <svg width="14" height="14" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M1216 832q0-185-131.5-316.5t-316.5-131.5-316.5 131.5-131.5 316.5 131.5 316.5 316.5 131.5 316.5-131.5 131.5-316.5zm512 832q0 52-38 90t-90 38q-54 0-90-38l-343-342q-179 124-399 124-143 0-273.5-55.5t-225-150-150-225-55.5-273.5 55.5-273.5 150-225 225-150 273.5-55.5 273.5 55.5 225 150 150 225 55.5 273.5q0 220-124 399l343 343q37 37 37 90z"/></svg>
-                            </i></span>
+                        <span class="input-group-addon"><i class="icon-search"></i></span>
         			</div>
                 </div>
             </div>

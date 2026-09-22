@@ -37,10 +37,10 @@
                             {/if}
                                 <div class="ybc_slider_image{if isset($blog_config.YBC_BLOG_LAZY_LOAD)&& $blog_config.YBC_BLOG_LAZY_LOAD} ybc_item_img_ladyload{/if}">
                                     {if $blog_config.YBC_BLOG_DISPLAY_TYPE == 'carousel'}
-                                        <img width="800" height="500" src="{if isset($blog_config.YBC_BLOG_LAZY_LOAD) && $blog_config.YBC_BLOG_LAZY_LOAD}{$link->getMediaLink("`$smarty.const._MODULE_DIR_`ybc_blog/views/img/bg-grey.png")}{else}{$slide.image|escape:'html':'UTF-8'}{/if}" alt="{$slide.caption|escape:'html':'UTF-8'}" title="{$slide.caption|escape:'html':'UTF-8'}"  {if isset($blog_config.YBC_BLOG_LAZY_LOAD)&& $blog_config.YBC_BLOG_LAZY_LOAD}
+                                        <img src="{if isset($blog_config.YBC_BLOG_LAZY_LOAD) && $blog_config.YBC_BLOG_LAZY_LOAD}{$link->getMediaLink("`$smarty.const._MODULE_DIR_`ybc_blog/views/img/bg-grey.png")}{else}{$slide.image|escape:'html':'UTF-8'}{/if}" alt="{$slide.caption|escape:'html':'UTF-8'}" title="{$slide.caption|escape:'html':'UTF-8'}"  {if isset($blog_config.YBC_BLOG_LAZY_LOAD)&& $blog_config.YBC_BLOG_LAZY_LOAD}
                                         data-original="{$slide.image|escape:'html':'UTF-8'}" class="lazyload"{/if}/>
                                     {else}
-                                        <img width="800" height="500" src="{$slide.image|escape:'html':'UTF-8'}" alt="{$slide.caption|escape:'html':'UTF-8'}" title="{$slide.caption|escape:'html':'UTF-8'}" />
+                                        <img src="{$slide.image|escape:'html':'UTF-8'}" alt="{$slide.caption|escape:'html':'UTF-8'}" title="{$slide.caption|escape:'html':'UTF-8'}" />
                                     {/if}
                                     
                                     {if isset($blog_config.YBC_BLOG_LAZY_LOAD)&& $blog_config.YBC_BLOG_LAZY_LOAD}
@@ -62,9 +62,9 @@
                 <div class="ybc-blog-thumbnail-list {$blog_config.YBC_BLOG_DISPLAY_TYPE|escape:'html':'UTF-8'}{if $blog_config.YBC_BLOG_SLIDER_DISPLAY_NAV == true} enable_dots{/if}">
                     <div class="ybc-blog-thumbnail-items">
                         {foreach from=$slides item='slide'}
-                            <div class="ybc-blog-thumbnail-item">
+                            <div class="ybc-blog-thumbnail-item" style="position: related;">
                                 <div class="ybc_slider_image{if isset($blog_config.YBC_BLOG_LAZY_LOAD)&& $blog_config.YBC_BLOG_LAZY_LOAD} ybc_item_img_ladyload{/if}">
-                                    <img width="140" height="82" src="{if isset($blog_config.YBC_BLOG_LAZY_LOAD) && $blog_config.YBC_BLOG_LAZY_LOAD}{$link->getMediaLink("`$smarty.const._MODULE_DIR_`ybc_blog/views/img/bg-grey.png")}{else}{$slide.image|escape:'html':'UTF-8'}{/if}" alt="{$slide.caption|escape:'html':'UTF-8'}" title="{$slide.caption|escape:'html':'UTF-8'}"  {if isset($blog_config.YBC_BLOG_LAZY_LOAD)&& $blog_config.YBC_BLOG_LAZY_LOAD}
+                                    <img src="{if isset($blog_config.YBC_BLOG_LAZY_LOAD) && $blog_config.YBC_BLOG_LAZY_LOAD}{$link->getMediaLink("`$smarty.const._MODULE_DIR_`ybc_blog/views/img/bg-grey.png")}{else}{$slide.image|escape:'html':'UTF-8'}{/if}" alt="{$slide.caption|escape:'html':'UTF-8'}" title="{$slide.caption|escape:'html':'UTF-8'}"  {if isset($blog_config.YBC_BLOG_LAZY_LOAD)&& $blog_config.YBC_BLOG_LAZY_LOAD} 
                                     data-original="{$slide.image|escape:'html':'UTF-8'}" class="lazyload"{/if}/>
                                     {if isset($blog_config.YBC_BLOG_LAZY_LOAD)&& $blog_config.YBC_BLOG_LAZY_LOAD}
                                     <div class="loader_lady_custom"></div>

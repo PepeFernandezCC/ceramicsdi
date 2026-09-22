@@ -112,15 +112,20 @@
                             {/if}
                         </div>
                         {if $blog_post.image}
+                            {* Imagen principal/destacada del post: se precarga (no lazy, sea cual
+                               sea el ajuste YBC_BLOG_LAZY_LOAD) para no penalizar el LCP. *}
+                            <link rel="preload" as="image" href="{$blog_post.image|escape:'html':'UTF-8'}">
                             <div class="ybc_blog_img_wrapper" itemprop="image" itemscope
                                  itemtype="http://schema.org/ImageObject">
                                 {if $enable_slideshow}<a href="{$blog_post.image|escape:'html':'UTF-8'}"
                                                          class="prettyPhoto">{/if}
-                                    <div class="ybc_image-single{if isset($blog_config.YBC_BLOG_LAZY_LOAD)&& $blog_config.YBC_BLOG_LAZY_LOAD} ybc_item_img_ladyload{/if}">
+                                    <div class="ybc_image-single">
                                         <img title="{$blog_post.title|escape:'html':'UTF-8'}"
-                                             src="{if isset($blog_config.YBC_BLOG_LAZY_LOAD) && $blog_config.YBC_BLOG_LAZY_LOAD}{$link->getMediaLink("`$smarty.const._MODULE_DIR_`ybc_blog/views/img/bg-grey.png")|escape:'html':'UTF-8'}{else}{$blog_post.image|escape:'html':'UTF-8'}{/if}"
+                                             src="{$blog_post.image|escape:'html':'UTF-8'}"
                                              alt="{$blog_post.title|escape:'html':'UTF-8'}"
-                                             itemprop="url" {if isset($blog_config.YBC_BLOG_LAZY_LOAD)&& $blog_config.YBC_BLOG_LAZY_LOAD} data-original="{$blog_post.image|escape:'html':'UTF-8'}" class="lazyload"{/if}/>
+                                             itemprop="url"
+                                             loading="eager"
+                                             fetchpriority="high"/>
                                     </div>
                                     <meta itemprop="width" content="600px"/>
                                     <meta itemprop="height" content="300px"/>
@@ -264,10 +269,13 @@
                                     </div>
                                     <div class="blog_description{if $enable_slideshow} popup_image{/if} {if isset($blog_config.YBC_BLOG_ALLOW_TABLE_OF_CONTENT)&& $blog_config.YBC_BLOG_ALLOW_TABLE_OF_CONTENT} ybc_create_table_content{/if}">
                                         <div class="ets_begin_heading_table">&nbsp;</div>
+                                        {* Imagenes del cuerpo del post (las que vienen dentro del HTML
+                                           editado en el WYSIWYG), distintas de la imagen principal de
+                                           arriba: se cargan con lazyload nativo. *}
                                         {if $blog_post.description}
-                                            {$blog_post.description nofilter}
+                                            {$blog_post.description|regex_replace:"/<img(?![^>]*\bloading=)/i":"<img loading=\"lazy\" decoding=\"async\"" nofilter}
                                         {else}
-                                            {$blog_post.short_description nofilter}
+                                            {$blog_post.short_description|regex_replace:"/<img(?![^>]*\bloading=)/i":"<img loading=\"lazy\" decoding=\"async\"" nofilter}
                                         {/if}
                                         <div class="ets_end_heading_table">&nbsp;</div>
                                     </div>

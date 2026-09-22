@@ -16,11 +16,9 @@
  * @copyright  ETS Software Technology Co., Ltd
  * @license    Valid for 1 website (or project) for each purchase of license
 *}
-{if $position_homepages}
-    <script type="text/javascript">
-        var number_home_posts_per_row = {if $blog_config.YBC_BLOG_HOME_PER_ROW}{$blog_config.YBC_BLOG_HOME_PER_ROW|intval}{else}4{/if};
-    </script>
-{/if}
+<script type="text/javascript">
+    var number_home_posts_per_row = {if $blog_config.YBC_BLOG_HOME_PER_ROW}{$blog_config.YBC_BLOG_HOME_PER_ROW|intval}{else}4{/if};
+</script>
 {foreach from =$position_homepages item='position'}
     {$homepages.$position nofilter}
 {/foreach}

@@ -18,7 +18,8 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 
-if (!defined('_PS_VERSION_')) { exit; }
+if (!defined('_PS_VERSION_'))
+	exit;
 class Ybc_blog_email_template_class extends ObjectModel
 {
     public static $instance;
@@ -55,133 +56,133 @@ class Ybc_blog_email_template_class extends ObjectModel
                 'new_comment_0' => array(
                     'og' => 'New customer commented on your post',
                     't' => $this->l('New customer commented on your post'),
-                    'desc' => $this->l('Send a notification email to admin when a customer commented on a blog post and is waiting for approval'),
+                    'desc' => 'Send a notification email to admin when a customer commented on a blog post and is waiting for approval',
                     'active'=>1,
                     'tags' => $this->l('Available tags: [highlight]{shop_name}[end_highlight], [highlight]{shop_url}[end_highlight], [highlight]{author_name}[end_highlight], [highlight]{post_title}[end_highlight], [highlight]{post_link}[end_highlight],[highlight]{link_view_comment}[end_highlight].')
                 ),
                 'new_comment_1' => array(
                     'og' => 'New customer commented on your post',
                     't' => $this->l('New customer commented on your post'),
-                    'desc' => $this->l('Send a notification email to admin when a customer commented on a blog post and was approved automatically'),
+                    'desc' => 'Send a notification email to admin when a customer commented on a blog post and was approved automatically',
                     'active'=>1,
                     'tags' => $this->l('Available tags: [highlight]{shop_name}[end_highlight], [highlight]{shop_url}[end_highlight], [highlight]{author_name}[end_highlight], [highlight]{post_title}[end_highlight], [highlight]{post_link}[end_highlight],[highlight]{link_view_comment}[end_highlight].')
                 ),
                 'new_comment_customer_0' => array( // YBC_BLOG_ENABLE_MAIL_NEW_COMMENT
                     'og' => 'Your comment has been submitted',
                     't' => $this->l('Your comment has been submitted'),
-                    'desc' => $this->l('Send a notification email to customer when his/her comment was submitted and is waiting for approval'),
+                    'desc' => 'Send a notification email to customer when his/her comment was submitted and is waiting for approval',
                     'active'=>$default ? 1 :(int)Configuration::get('YBC_BLOG_ENABLE_MAIL_NEW_COMMENT'),
                     'tags' => $this->l('Available tags: [highlight]{shop_name}[end_highlight], [highlight]{shop_url}[end_highlight], [highlight]{customer_name}[end_highlight], [highlight]{post_title}[end_highlight], [highlight]{post_link}[end_highlight].')
                 ),
                 'new_comment_customer_1'=> array(
                     'og' => 'Your comment has been submitted',
                     't' => $this->l('Your comment has been submitted'),
-                    'desc' => $this->l('Send a notification email to customer when his/her comment was submitted and was automatically approved'),
+                    'desc' => 'Send a notification email to customer when his/her comment was submitted and was automatically approved',
                     'active'=> $default ? 1 :(int)Configuration::get('YBC_BLOG_ENABLE_MAIL_NEW_COMMENT'),
                     'tags' => $this->l('Available tags: [highlight]{shop_name}[end_highlight], [highlight]{shop_url}[end_highlight], [highlight]{customer_name}[end_highlight], [highlight]{post_title}[end_highlight], [highlight]{post_link}[end_highlight].')
                 ),
                 'approved_comment' => array( // YBC_BLOG_ENABLE_MAIL_APPROVED
                     'og' => 'Your comment has been approved',
                     't' => $this->l('Your comment has been approved'),
-                    'desc' => $this->l('Send a notification email to customer when his/her comment was approved'),
+                    'desc' => 'Send a notification email to customer when his/her comment was approved',
                     'active'=> $default ? 1 :(int)Configuration::get('YBC_BLOG_ENABLE_MAIL_APPROVED'),
                     'tags' => $this->l('Available tags: [highlight]{shop_name}[end_highlight], [highlight]{shop_url}[end_highlight], [highlight]{customer_name}[end_highlight], [highlight]{post_title}[end_highlight], [highlight]{post_link}[end_highlight].')
                 ),
                 'edit_comment' => array( // YBC_BLOG_ENABLE_MAIL_EDIT_COMMENT
                     'og' => 'A comment is modified',
                     't' => $this->l('A comment is modified'),
-                    'desc' => $this->l('Send a notification email to admin when a comment was modified by a customer'),
+                    'desc' => 'Send a notification email to admin when a comment was modified by a customer',
                     'active'=> $default ? 1 :(int)Configuration::get('YBC_BLOG_ENABLE_MAIL_EDIT_COMMENT'),
                     'tags' => $this->l('Available tags: [highlight]{shop_name}[end_highlight], [highlight]{shop_url}[end_highlight], [highlight]{customer_name}[end_highlight], [highlight]{post_title}[end_highlight], [highlight]{post_link}[end_highlight], [highlight]{comment_old}[end_highlight], [highlight]{comment}[end_highlight].')
                 ),
                 'edit_comment_customer' => array( // YBC_BLOG_ENABLE_MAIL_EDIT_COMMENT_CUSTOMER
                     'og' => 'Your comment has been updated',
                     't' => $this->l('Your comment has been updated'),
-                    'desc' => $this->l('Send a notification email to customer when his/her comment was updated'),
+                    'desc' => 'Send a notification email to customer when his/her comment was updated',
                     'active'=> $default ? 1 :(int)Configuration::get('YBC_BLOG_ENABLE_MAIL_EDIT_COMMENT_CUSTOMER'),
                     'tags' => $this->l('Available tags: [highlight]{shop_name}[end_highlight], [highlight]{shop_url}[end_highlight], [highlight]{customer}[end_highlight], [highlight]{subject}[end_highlight] [highlight]{comment}[end_highlight], [highlight]{rating}[end_highlight].')
                 ),
                 'report_comment' => array( // YBC_BLOG_ENABLE_MAIL_REPORT
                     'og' => 'We have received your feedback',
                     't' => $this->l('We have received your feedback'),
-                    'desc' => $this->l('Send a notification email to admin when customer reported a comment as abused'),
+                    'desc' => 'Send a notification email to admin when customer reported a comment as abused',
                     'active'=> $default ? 1 :(int)Configuration::get('YBC_BLOG_ENABLE_MAIL_REPORT'),
                     'tags' => $this->l('Available tags: [highlight]{shop_name}[end_highlight], [highlight]{shop_url}[end_highlight], [highlight]{author_name}[end_highlight], [highlight]{post_title}[end_highlight], [highlight]{post_link}[end_highlight], [highlight]{comment}[end_highlight], [highlight]{link_view_comment}[end_highlight], [highlight]{reporter}[end_highlight].')
                 ),
                 'reported_comment_customer' => array( // YBC_BLOG_ENABLE_MAIL_REPORTED_CUSTOMER
                     'og' => 'You have successfully reported a comment as abused',
                     't' => $this->l('You have successfully reported a comment as abused'),
-                    'desc' => $this->l('Send a notification email to customer when his/her report was submitted successfully'),
+                    'desc' => 'Send a notification email to customer when his/her report was submitted successfully',
                     'active'=> $default ? 1 :(int)Configuration::get('YBC_BLOG_ENABLE_MAIL_REPORTED_CUSTOMER'),
                     'tags' => $this->l('Available tags: [highlight]{shop_name}[end_highlight], [highlight]{shop_url}[end_highlight], [highlight]{post_title}[end_highlight], [highlight]{post_link}[end_highlight], [highlight]{comment}[end_highlight], [highlight]{reporter}[end_highlight].')
                 ),
                 'admin_reply_comment_to_customer' =>array( // YBC_BLOG_ENABLE_MAIL_REPLY_CUSTOMER
                     'og' => 'New reply to your comment',
                     't' => $this->l('New reply to your comment'),
-                    'desc' => $this->l('Send a notification email to customer when his/her comment was replied by another customer'),
+                    'desc' => 'Send a notification email to customer when his/her comment was replied by another customer',
                     'active'=> $default ? 1 :(int)Configuration::get('YBC_BLOG_ENABLE_MAIL_REPLY_CUSTOMER'),
                     'tags' => $this->l('Available tags: [highlight]{shop_name}[end_highlight], [highlight]{shop_url}[end_highlight], [highlight]{post_title}[end_highlight], [highlight]{post_link}[end_highlight], [highlight]{customer_name}[end_highlight], [highlight]{replier}[end_highlight], [highlight]{comment_reply}[end_highlight].')
                 ),
                 'customer_reply_comment_to_admin_0' => array( // YBC_BLOG_ENABLE_MAIL_REPLY
                     'og' => 'A customer has replied to a comment on [post_title]',
                     't' => $this->l('A customer has replied to a comment on [post_title]'),
-                    'desc' => $this->l('Send a notification email to author when a customer replied to a comment on his/her post and is waiting for approval'),
+                    'desc' => 'Send a notification email to author when a customer replied to a comment on his/her post and is waiting for approval',
                     'active'=> $default ? 1 :(int)Configuration::get('YBC_BLOG_ENABLE_MAIL_REPLY'),
                     'tags' => $this->l('Available tags: [highlight]{shop_name}[end_highlight], [highlight]{shop_url}[end_highlight], [highlight]{post_title}[end_highlight], [highlight]{post_link}[end_highlight], [highlight]{author_name}[end_highlight], [highlight]{replier}[end_highlight], [highlight]{comment_reply}[end_highlight].')
                 ),
                 'customer_reply_comment_to_admin_1' => array(
                     'og' => 'A customer has replied to a comment on [post_title]',
                     't' => $this->l('A customer has replied to a comment on [post_title]'),
-                    'desc' => $this->l('Send a notification email to author when a customer replied to a comment on his/her post and was approved automatically'),
+                    'desc' => 'Send a notification email to author when a customer replied to a comment on his/her post and was approved automatically',
                     'active'=> $default ? 1 :(int)Configuration::get('YBC_BLOG_ENABLE_MAIL_REPLY'),
                     'tags' => $this->l('Available tags: [highlight]{shop_name}[end_highlight], [highlight]{shop_url}[end_highlight], [highlight]{post_title}[end_highlight], [highlight]{post_link}[end_highlight], [highlight]{author_name}[end_highlight], [highlight]{replier}[end_highlight], [highlight]{comment_reply}[end_highlight].')
                 ),
                 'new_vote_admin' => array( // YBC_BLOG_ENABLE_MAIL_POLLS
                     'og' => 'A customer just left a feedback on your post',
                     't' => $this->l('A customer just left a feedback on your post'),
-                    'desc' => $this->l('Send a notification email to admin when a customer left a feedback on a blog post'),
+                    'desc' => 'Send a notification email to admin when a customer left a feedback on a blog post',
                     'active'=> $default ? 1 :(int)Configuration::get('YBC_BLOG_ENABLE_MAIL_POLLS'),
                     'tags' => $this->l('Available tags: [highlight]{shop_name}[end_highlight], [highlight]{shop_url}[end_highlight], [highlight]{post_title}[end_highlight], [highlight]{post_link}[end_highlight], [highlight]{feedback}[end_highlight], [highlight]{polls_helpful}[end_highlight].')
                 ),
                 'new_vote_customer' => array( // YBC_BLOG_ENABLE_MAIL_NEW_POLLS
                     'og' => 'We have received your feedback',
                     't' => $this->l('We have received your feedback'),
-                    'desc' => $this->l('Send a notification email to customer when his/her feedback was submitted successfully'),
+                    'desc' => 'Send a notification email to customer when his/her feedback was submitted successfully',
                     'active'=> $default ? 1 :(int)Configuration::get('YBC_BLOG_ENABLE_MAIL_NEW_POLLS'),
                     'tags' => $this->l('Available tags: [highlight]{shop_name}[end_highlight], [highlight]{shop_url}[end_highlight], [highlight]{post_title}[end_highlight], [highlight]{post_link}[end_highlight], [highlight]{customer_name}[end_highlight], [highlight]{feedback}[end_highlight], [highlight]{polls_helpful}[end_highlight].')
                 ),
                 'new_blog_admin_0' => array( // YBC_BLOG_ADMIN_EMAIL_NEW_POST
                     'og' => 'Community author submitted a new post',
                     't' => $this->l('Community author submitted a new post and is waiting for approval'),
-                    'desc' => $this->l('Send a notification email to admin when a community author submitted a new post and is waiting for approval'),
+                    'desc' => 'Send a notification email to admin when a community author submitted a new post and is waiting for approval',
                     'active'=> $default ? 1 :(int)Configuration::get('YBC_BLOG_ADMIN_EMAIL_NEW_POST'),
                     'tags' => $this->l('Available tags: [highlight]{shop_name}[end_highlight], [highlight]{shop_url}[end_highlight], [highlight]{post_title}[end_highlight], [highlight]{post_link}[end_highlight], [highlight]{customer_name}[end_highlight].')
                 ),
                 'new_blog_admin_1'=> array(
                     'og' => 'Community author submitted a new post',
                     't' => $this->l('Community author submitted a new post'),
-                    'desc' => $this->l('Send a notification email to admin when a community author submitted a new post and was approved automatically'),
+                    'desc' => 'Send a notification email to admin when a community author submitted a new post and was approved automatically',
                     'active'=> $default ? 1 :(int)Configuration::get('YBC_BLOG_ADMIN_EMAIL_NEW_POST'),
                     'tags' => $this->l('Available tags: [highlight]{shop_name}[end_highlight], [highlight]{shop_url}[end_highlight], [highlight]{post_title}[end_highlight], [highlight]{post_link}[end_highlight], [highlight]{customer_name}[end_highlight].')
                 ),
                 'new_blog_customer_0'=> array( // YBC_BLOG_CUSTOMER_EMAIL_NEW_POST
                     'og' => 'Your post has been submitted',
                     't' => $this->l('Your post has been submitted and is waiting for approval'),
-                    'desc' => $this->l('Send a notification email to community author when his/her post was submitted and is waiting for approval'),
+                    'desc' => 'Send a notification email to community author when his/her post was submitted and is waiting for approval',
                     'active'=> $default ? 1 :(int)Configuration::get('YBC_BLOG_CUSTOMER_EMAIL_NEW_POST'),
                     'tags' => $this->l('Available tags: [highlight]{shop_name}[end_highlight], [highlight]{shop_url}[end_highlight], [highlight]{post_title}[end_highlight], [highlight]{post_link}[end_highlight], [highlight]{customer_name}[end_highlight].')
                 ),
                 'new_blog_customer_1'=> array(
                     'og' => 'Your post has been submitted',
                     't' => $this->l('Your post has been submitted and approved'),
-                    'desc' => $this->l('Send a notification email to community author when his/her post was submitted and was approved automatically'),
+                    'desc' => 'Send a notification email to community author when his/her post was submitted and was approved automatically',
                     'active'=> $default ? 1 :(int)Configuration::get('YBC_BLOG_CUSTOMER_EMAIL_NEW_POST'),
                     'tags' => $this->l('Available tags: [highlight]{shop_name}[end_highlight], [highlight]{shop_url}[end_highlight], [highlight]{post_title}[end_highlight], [highlight]{post_link}[end_highlight], [highlight]{customer_name}[end_highlight].')
                 ),
                 'approved_blog_customer' => array( // YBC_BLOG_CUSTOMER_EMAIL_APPROVED_POST
                     'og' => 'Your post has been approved',
                     't' => $this->l('Your post has been approved'),
-                    'desc' => $this->l('Send a notification email to customer when his/her blog post was approved'),
+                    'desc' => 'Send a notification email to customer when his/her blog post was approved',
                     'active'=> $default ? 1 :(int)Configuration::get('YBC_BLOG_CUSTOMER_EMAIL_APPROVED_POST'),
                     'tags' => $this->l('Available tags: [highlight]{shop_name}[end_highlight], [highlight]{shop_url}[end_highlight], [highlight]{post_title}[end_highlight], [highlight]{post_link}[end_highlight], [highlight]{customer_name}[end_highlight].')
                 ),
@@ -256,7 +257,7 @@ class Ybc_blog_email_template_class extends ObjectModel
         }
         return $text;
     }
-    public function renderList($context, $params=array())
+    public function renderList($params=array())
     {
         $fields_list = array(
             'input_box' => array(
@@ -264,7 +265,7 @@ class Ybc_blog_email_template_class extends ObjectModel
                 'type' => 'text',
             ),
             'id_ybc_blog_email_template' => array(
-                'title' => $this->l('ID'),
+                'title' => $this->l('Id'),
                 'width' => 40,
                 'type' => 'text',
                 'sort' => true,
@@ -351,33 +352,35 @@ class Ybc_blog_email_template_class extends ObjectModel
         $sort = "";
         $sort_type= isset($params['sort_type']) && $params['sort_type'] ? $params['sort_type']:'asc';
         $sort_value =isset($params['sort']) && $params['sort'] ? $params['sort']: 'id_ybc_blog_email_template';
-        switch ($sort_value) {
-            case 'id_ybc_blog_email_template':
-                $sort .=' et.id_ybc_blog_email_template';
-                break;
-            case 'template':
-                $sort .=' et.template';
-                break;
-            case 'subject':
-                $sort .=' etl.subject';
-                break;
-            case 'active':
-                $sort .=' et.active';
-                break;
-
+        if($sort_value)
+        {
+            switch ($sort_value) {
+                case 'id_ybc_blog_email_template':
+                    $sort .=' et.id_ybc_blog_email_template';
+                    break;
+                case 'template':
+                    $sort .=' et.template';
+                    break;
+                case 'subject':
+                    $sort .=' etl.subject';
+                    break;
+                case 'active':
+                    $sort .=' et.active';
+                    break;
+    
+            }
+            if($sort && $sort_type && in_array($sort_type,array('asc','desc')))
+                $sort .= ' '.$sort_type;
         }
-        if($sort && in_array($sort_type,array('asc','desc')))
-            $sort .= ' '.$sort_type;
-        /** @var Ybc_blog $module */
         $module = Module::getInstanceByName('ybc_blog');
-        $page = isset($params['page']) && $params['page'] ? (int)$params['page']:1;
-        if($page<1)
-            $page = 1;
-        $totalRecords = $this->getEmailTemplatesWithFilter($context->language->id, $filter, null, null, null,true);    ;
+        $page = isset($page['page']) && $params['page'] ? (int)$params['page']:1;
+        if($page<=1)
+            $page =1;
+        $totalRecords = $this->getEmailTemplatesWithFilter($filter, null, null, null,true);    ;
         $paggination = new Ybc_blog_paggination_class();            
         $paggination->total = $totalRecords;
-        $paggination->url = $context->link->getAdminLink('AdminYbcBlogSetting', true).'&control=email&page=_page_'.$module->getUrlExtra($fields_list);
-        $paggination->limit =  isset($params['paginator_ybc_email_select_limit'])  && $params['paginator_ybc_email_select_limit']? $params['paginator_ybc_email_select_limit']:20;
+        $paggination->url = Context::getContext()->link->getAdminLink('AdminModules', true).'&configure='.$module->name.'&tab_module='.$module->tab.'&module_name='.$module->name.'&control=email&page=_page_'.$module->getUrlExtra($fields_list);
+        $paggination->limit =  isset($params['paginator_ybc_email_select_limit']) ? $params['paginator_ybc_email_select_limit']:20;
         $paggination->name ='ybc_email';
         $totalPages = ceil($totalRecords / $paggination->limit);
         if($page > $totalPages)
@@ -386,10 +389,10 @@ class Ybc_blog_email_template_class extends ObjectModel
         $start = $paggination->limit * ($page - 1);
         if($start < 0)
             $start = 0;
-        $templates = $this->getEmailTemplatesWithFilter($context->language->id, $filter, $sort, $start, $paggination->limit,false);
+        $templates = $this->getEmailTemplatesWithFilter($filter, $sort, $start, $paggination->limit,false);        
         if($templates)
         {
-            $theme = (version_compare(_PS_VERSION_, '1.7', '>=') ? $context->shop->theme->getName() : $context->shop->getTheme());
+            $theme = (version_compare(_PS_VERSION_, '1.7', '>=') ? Context::getContext()->shop->theme->getName() : Context::getContext()->shop->getTheme());
             $basePathList = array(
                 _PS_ROOT_DIR_ . '/themes/' . $theme . '/modules/ybc_blog/mails/',
                 $module->getLocalPath() . 'mails/',
@@ -402,7 +405,7 @@ class Ybc_blog_email_template_class extends ObjectModel
                     $template['send_to'] = $this->l('Admin');
                 foreach ($basePathList as $path) {
                     $flag = false;
-                    $iso_path = $path . $context->language->iso_code . '/' . $template['template'];
+                    $iso_path = $path . Context::getContext()->language->iso_code . '/' . $template['template'];
                     if (@file_exists($iso_path . '.html')) {
                         $template['content_html'] = Tools::file_get_contents($iso_path . '.html');
                         $flag = true;
@@ -421,7 +424,7 @@ class Ybc_blog_email_template_class extends ObjectModel
         $listData = array(
             'name' => 'ybc_email',
             'actions' => array('view'),
-            'currentIndex' => $context->link->getAdminLink('AdminYbcBlogSetting', true).'&control=email'.($paggination->limit!=20 ? '&paginator_ybc_email_select_limit='.$paggination->limit:''),
+            'currentIndex' => Context::getContext()->link->getAdminLink('AdminModules', true).'&configure='.$module->name.'&tab_module='.$module->tab.'&module_name='.$module->name.'&control=email'.($paggination->limit!=20 ? '&paginator_ybc_email_select_limit='.$paggination->limit:''),
             'identifier' => 'id_ybc_blog_email_template',
             'show_toolbar' => true,
             'show_action' => true,
@@ -433,7 +436,7 @@ class Ybc_blog_email_template_class extends ObjectModel
             'show_reset' =>  $show_reset,
             'totalRecords' => $totalRecords,
             'preview_link' => false,
-            'sort' => $sort_value,
+            'sort' => $sort_value ? : 'id_ybc_blog_email_template',   
             'sort_type' => $sort_type,     
             'show_add_new' => false,    
             'icon'=> 'icon-email' ,
@@ -441,14 +444,15 @@ class Ybc_blog_email_template_class extends ObjectModel
         );            
         return $module->renderList($listData);   
     }
-    public static function getEmailTemplatesWithFilter($id_lang, $filter='',$sort='',$start=0,$limit=10,$total=false)
+    public static function getEmailTemplatesWithFilter($filter='',$sort='',$start=0,$limit=10,$total=false)
     {
+        $id_lang = (int)Context::getContext()->language->id;
         if($total)
             $sql ='SELECT COUNT(DISTINCT et.id_ybc_blog_email_template) FROM  `'._DB_PREFIX_.'ybc_blog_email_template` et';
         else
             $sql ='SELECT et.*,etl.subject FROM  `'._DB_PREFIX_.'ybc_blog_email_template` et';
         $sql .=' LEFT JOIN  `'._DB_PREFIX_.'ybc_blog_email_template_lang` etl ON (et.id_ybc_blog_email_template=etl.id_ybc_blog_email_template AND etl.id_lang="'.(int)$id_lang.'")
-        WHERE 1 '.((string)$filter ? : '');
+        WHERE 1 '.($filter ? $filter: '');
         if($total)
             return Db::getInstance()->getValue($sql);
         else
@@ -457,9 +461,8 @@ class Ybc_blog_email_template_class extends ObjectModel
             return Db::getInstance()->executeS($sql);
         }    
     }
-    public function renderForm($context)
+    public function renderForm()
     {
-        /** @var Ybc_blog $module */
         $module = Module::getInstanceByName('ybc_blog');
         $subjects = $this->getSubjects();
         $fields_form = array(
@@ -530,36 +533,38 @@ class Ybc_blog_email_template_class extends ObjectModel
 		$lang = new Language((int)Configuration::get('PS_LANG_DEFAULT'));
 		$helper->default_form_language = $lang->id;
 		$helper->allow_employee_form_lang = Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG') ? Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG') : 0;
+		$this->fields_form = array();
 		$helper->module = $module;
-		$helper->identifier = 'id_ybc_blog_email_template';
+		$helper->identifier = $this->identifier;
 		$helper->submit_action = 'saveEmailTemplate';
-		$helper->currentIndex = $context->link->getAdminLink('AdminYbcBlogSetting', false).'&control=email&id_ybc_blog_email_template='.$this->id;
-		$helper->token = $context->employee->id ? Tools::getAdminTokenLite('AdminYbcBlogSetting'): false;
+		$helper->currentIndex = Context::getContext()->link->getAdminLink('AdminModules', false).'&configure='.$module->name.'&tab_module='.$module->tab.'&module_name='.$module->name.'&control=email&id_ybc_blog_email_template='.$this->id;
+		$helper->token = Context::getContext()->employee->id ? Tools::getAdminTokenLite('AdminModules'): false;
 		$language = new Language((int)Configuration::get('PS_LANG_DEFAULT'));
 		$helper->tpl_vars = array(
-			'base_url' => $context->shop->getBaseURL(),
+			'base_url' => Context::getContext()->shop->getBaseURL(),
 			'language' => array(
 				'id_lang' => $language->id,
 				'iso_code' => $language->iso_code
 			),
             'PS_ALLOW_ACCENTED_CHARS_URL', (int)Configuration::get('PS_ALLOW_ACCENTED_CHARS_URL'),
 			'fields_value' => $module->getFieldsMailTemplateValues($this),
-			'languages' => $context->controller->getLanguages(),
-			'id_language' => $context->language->id,
-            'link' => $context->link,
+			'languages' => Context::getContext()->controller->getLanguages(),
+			'id_language' => Context::getContext()->language->id,
+            'link' => Context::getContext()->link,
             'post_key' => 'id_ybc_blog_email_template',
-            'cancel_url' => $context->link->getAdminLink('AdminYbcBlogSetting', true).'&control=email',
+            'cancel_url' => $module->baseAdminPath.'&control=email',
             'image_baseurl' => _PS_YBC_BLOG_IMG_.'post/',
             'image_baseurl_thumb' => _PS_YBC_BLOG_IMG_.'post/thumb/',
 		);
+		$helper->override_folder = '/';
         return $helper->generateForm(array($fields_form));	
     }
 
-    public function previewTemplate($context)
+    public function previewTemplate()
     {
         $module = Module::getInstanceByName('ybc_blog');
         $languages = Language::getLanguages();
-        $theme = (version_compare(_PS_VERSION_, '1.7', '>=') ? $context->shop->theme->getName() : $context->shop->getTheme());
+        $theme = (version_compare(_PS_VERSION_, '1.7', '>=') ? Context::getContext()->shop->theme->getName() : Context::getContext()->shop->getTheme());
         $basePathList = array(
             _PS_ROOT_DIR_ . '/themes/' . $theme . '/modules/ybc_blog/mails/',
             $module->getLocalPath() . 'mails/',
@@ -595,24 +600,28 @@ class Ybc_blog_email_template_class extends ObjectModel
             }
         }
         if($logo)
-            $PS_SHOP_LOGO = $context->link->getMediaLink(_PS_IMG_.$logo);
+            $PS_SHOP_LOGO = Context::getContext()->link->getMediaLink(_PS_IMG_.$logo);
         else
             $PS_SHOP_LOGO ='';
-        $context->smarty->assign(
+        Context::getContext()->smarty->assign(
             array(
                 'languages' => $languages,
                 'content_html' => $content_html,
                 'content_txt' => $content_txt,
-                'id_curent_lang' => $context->language->id,
+                'id_curent_lang' => Context::getContext()->language->id,
                 'PS_SHOP_LOGO' => $PS_SHOP_LOGO,
                 'PS_SHOP_NAME' => Configuration::get('PS_SHOP_NAME'),
-                'PS_SHOP_URL' => $context->link->getPageLink('index'),
+                'PS_SHOP_URL' => Context::getContext()->link->getPageLink('index'),
             )
         );
-        return $context->smarty->fetch(_PS_MODULE_DIR_.'ybc_blog/views/templates/hook/email_peview.tpl');
+        return Context::getContext()->smarty->fetch(_PS_MODULE_DIR_.'ybc_blog/views/templates/hook/email_peview.tpl');
     }
-    public static function getSubjectByTemplate($template,$id_lang)
+    public static function getSubjectByTemplate($template,$id_lang=0)
     {
+        if(!$id_lang)
+        {
+            $id_lang = Context::getContext()->language->id;
+        }
         $sql = 'SELECT et.id_ybc_blog_email_template,etl.subject FROM `'._DB_PREFIX_.'ybc_blog_email_template` et
         LEFT JOIN `'._DB_PREFIX_.'ybc_blog_email_template_lang` etl ON (et.id_ybc_blog_email_template=etl.id_ybc_blog_email_template AND etl.id_lang="'.(int)$id_lang.'")
         WHERE et.active=1 AND et.template="'.pSQL($template).'"';

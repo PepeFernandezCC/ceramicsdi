@@ -1,4 +1,4 @@
-Hi {author_name}
-{replier} has just replied to a comment on {post_title} and is waiting for your approval
+Bonjour {author_name}
+{replier} vient de répondre à un commentaire sur {post_title} et attend votre approbation
 {comment_reply}
-View reply
+Voir la réponse

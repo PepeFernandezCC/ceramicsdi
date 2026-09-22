@@ -21,13 +21,12 @@
         <div class="bootstrap">
             <div class="module_confirmation conf confirm alert alert-success">
                 <button data-dismiss="alert" class="close" type="button">×</button>
-                {l s='Import successfully' mod='ybc_blog'}
+                    {l s='Import successfully' mod='ybc_blog'} 
             </div>
         </div>
     </div>
-
 {/if}
-<form id="module_form" class="defaultForm form-horizontal" novalidate="" enctype="multipart/form-data" method="post" action="{$link->getAdminLink('AdminYbcBlogBackUp')|escape:'html':'UTF-8'}">
+<form id="module_form" class="defaultForm form-horizontal" novalidate="" enctype="multipart/form-data" method="post" action="{$link->getAdminLink('AdminModules')|escape:'html':'UTF-8'}&configure=ybc_blog&tab_module=front_office_features&module_name=ybc_blog&control=export">
     <div id="fieldset_0" class="panel">
         <div class="panel-heading">
             <i class="material-icons"></i>
@@ -36,7 +35,7 @@
         <div class="ybc_blog_export_form_content">      
             <div class="ybc_blog_export_option">
                 <div class="panel-heading">
-                    {l s='Export' mod='ybc_blog'}
+                    {l s='EXPORT' mod='ybc_blog'}
                 </div>
                 <button type="submit" name="submitExportBlog" class="submitExportBlog"><i class="icon icon-download"></i>{l s='EXPORT' mod='ybc_blog'}</button>
                 <p class="ybc_blog_export_option_note">{l s='Export entire your blog data including blog posts, blog categories, comments, polls, images, etc. and module configuration. The exported data is a complete backup of your blog module and can be restored using "IMPORT FROM BLOG" feature' mod='ybc_blog'}</p>
@@ -55,7 +54,7 @@
                         <label for="data_import_posts_categories"><input type="checkbox" id="data_import_posts_categories" name="data_import[]" value="posts_categories" {if !isset($data_import) || (isset($data_import) && is_array($data_import) && in_array('posts_categories',$data_import))}checked="checked"{/if} /> {l s='Posts and categories' mod='ybc_blog'}</label>
                     </div>
                     <div class="data-group comments">
-                        <label for="data_import_posts_comments"><input type="checkbox" id="data_import_posts_comments" name="data_import[]" value="posts_comments" {if !isset($data_import) || (isset($data_import) && is_array($data_import) && in_array('posts_comments',$data_import))}checked="checked"{/if}/> {l s='Post comments' mod='ybc_blog'}</label>
+                        <label for="data_import_posts_comments"><input type="checkbox" id="data_import_posts_comments" name="data_import[]" value="posts_comments" {if !isset($data_import) || (isset($data_import) && is_array($data_import) && in_array('posts_comments',$data_import))}checked="checked"{/if}/> {l s='Posts comments' mod='ybc_blog'}</label>
                     </div>
                     <div class="data-group comments">
                         <label for="data_import_posts_polls"><input type="checkbox" id="data_import_posts_polls" name="data_import[]" value="posts_polls" {if !isset($data_import) || (isset($data_import) && is_array($data_import) && in_array('posts_polls',$data_import))}checked="checked"{/if}/> {l s='Polls' mod='ybc_blog'}</label>

@@ -1,4 +1,4 @@
-A new post has been submitted to {shop_name} and has been approved automatically
-Author:{customer_name}
-Post title:{post_title}
-View post
+Un nouvel article a été soumis à {shop_name} et a été approuvé automatiquement
+Auteur:{customer_name}
+Titre de l'article:{post_title}
+Voir l'article

@@ -1,4 +1,4 @@
-Hi {reporter}
-You have successfully reported a comment on {post_title} as abused.
+Bonjour {reporter}
+Vous avez signalé avec succès un commentaire sur {post_title} comme abusé.
 {comment}
-Thanks for your contribution to our website
+Merci pour votre contribution à notre site web

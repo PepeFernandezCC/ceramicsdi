@@ -1,6 +1,7 @@
-Hi {customer},
-Your comment has been updated
-Subject: {subject}
-Comment: {comment}
-Rating: {rating}
-View post
+Commentaire du client mis à jour:
+Client: {customer}
+Email: {email}
+Objet: {subject}
+Commentaire: {comment}
+Évaluation: {rating}
+Voir l'article: {post_link}

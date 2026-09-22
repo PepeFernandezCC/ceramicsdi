@@ -17,17 +17,14 @@
  * @license    Valid for 1 website (or project) for each purchase of license
 *}
 {if $posts}
-    <div class="page_blog block ybc_block_comment {$blog_config.YBC_BLOG_RTL_CLASS|escape:'html':'UTF-8'} {if isset($blog_page) && $blog_page}page_{$blog_page|escape:'html':'UTF-8'}{else}page_blog{/if} {if isset($blog_page) && $blog_page=='home'}{if isset($blog_config.YBC_BLOG_HOME_POST_TYPE) && $blog_config.YBC_BLOG_HOME_POST_TYPE=='default' || count($posts)<=1}ybc_block_default{else}ybc_block_slider{/if}{else}{if isset($blog_config.YBC_BLOG_SIDEBAR_POST_TYPE) && $blog_config.YBC_BLOG_SIDEBAR_POST_TYPE=='default' || count($posts)<=1}ybc_block_default{/if}{/if}">
+    {if !isset($date_format) || isset($date_format) && !$date_format}{assign var='date_format' value='F jS Y'}{/if}
+    <div class="page_blog block ybc_block_comment {$blog_config.YBC_BLOG_RTL_CLASS|escape:'html':'UTF-8'} {if isset($page) && $page}page_{$page|escape:'html':'UTF-8'}{else}page_blog{/if} {if isset($page) && $page=='home'}{if isset($blog_config.YBC_BLOG_HOME_POST_TYPE) && $blog_config.YBC_BLOG_HOME_POST_TYPE=='default' || count($posts)<=1}ybc_block_default{else}ybc_block_slider{/if}{else}{if isset($blog_config.YBC_BLOG_SIDEBAR_POST_TYPE) && $blog_config.YBC_BLOG_SIDEBAR_POST_TYPE=='default' || count($posts)<=1}ybc_block_default{/if}{/if}">
         <h4 class="title_blog title_block">{l s='Latest comments' mod='ybc_blog'}</h4>
         <div class="block_content">
-            {if isset($blog_config.YBC_BLOG_HOME_PER_ROW) && $blog_config.YBC_BLOG_HOME_PER_ROW}
-                {assign var='product_row' value=$blog_config.YBC_BLOG_HOME_PER_ROW|intval}
-            {else}
-                {assign var='product_row' value=4}
-            {/if}
-            <ul class="{if count($posts)>1}{if isset($blog_page) && $blog_page=='home' && $blog_config.YBC_BLOG_HOME_POST_TYPE!='default'}owl-carousel{elseif (!isset($blog_page)||(isset($blog_page) && $blog_page!='home')) && $blog_config.YBC_BLOG_SIDEBAR_POST_TYPE!='default'}owl-carousel-new{/if}{/if}">
+            {assign var='product_row' value=$blog_config.YBC_BLOG_HOME_PER_ROW|intval}
+            <ul class="{if count($posts)>1}{if isset($page) && $page=='home' && $blog_config.YBC_BLOG_HOME_POST_TYPE!='default'}owl-carousel{elseif (!isset($page)||(isset($page) && $page!='home')) && $blog_config.YBC_BLOG_SIDEBAR_POST_TYPE!='default'}owl-carousel-new{/if}{/if}">
                 {foreach from=$posts item='post'}
-                    <li {if $blog_page=='home'}class="col-xs-12 col-sm-4 col-lg-{12/$product_row|intval}"{/if}>
+                    <li {if $page=='home'}class="col-xs-12 col-sm-4 col-lg-{12/$product_row|intval}"{/if}>
                         <div class="comment_item">
                             {if $post.avata}
                                 <div class="author_avata_show">
@@ -45,15 +42,22 @@
                                     </a> 
                                 </div>
                                 <div class="ybc-blog-latest-toolbar">                                         
-                                    {if $allow_rating && $post.rating}
-                                        {assign var='everage_rating' value=$post.rating}
-                                        <div title="{l s='Average rating' mod='ybc_blog'}" class="ybc_blog_review" data-rate="{$everage_rating|escape:'html':'UTF-8'}">
-                                                {if $everage_rating == 1}★☆☆☆☆
-                                                {elseif  $everage_rating == 2}★★☆☆☆
-                                                {elseif  $everage_rating == 3}★★★☆☆
-                                                {elseif  $everage_rating == 4}★★★★☆
-                                                {elseif  $everage_rating == 5}★★★★★{/if}
-                                            <span class="ybc-blog-rating-value">({number_format((float)$everage_rating, 1, '.', '')|escape:'html':'UTF-8'})</span>
+                                    {if $allow_rating && $post.rating}  
+                                        <div title="{l s='Average rating' mod='ybc_blog'}" class="ybc_blog_review">
+                                            {assign var='everage_rating' value=$post.rating}
+                                            {for $i = 1 to $everage_rating}
+                                                {if $i <= $everage_rating}
+                                                    <div class="star star_on"></div>
+                                                {else}
+                                                    <div class="star star_on_{($i-$everage_rating)*10|intval}"></div>
+                                                {/if}
+                                            {/for}
+                                            {if $post.rating<5}
+                                                {for $i = $post.rating + 1 to 5}
+                                                    <div class="star"></div>
+                                                {/for}
+                                            {/if}
+                                            (<span class="ybc-blog-rating-value">{$post.rating|intval}</span>)                                           
                                         </div>
                                     {/if}
                                 </div>
