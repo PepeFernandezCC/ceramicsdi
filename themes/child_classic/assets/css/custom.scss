@@ -5125,6 +5125,26 @@ input[type=number] {
 		}
 	}
 }
+// Enlace "estirado": convierte el enlace del titulo de una card de blog
+// (listado /blog/ y "Articulos relacionados") en el unico enlace real de la
+// card, extendido visualmente a toda su superficie via ::after. Los demas
+// elementos de la card (imagen, "leer mas") ya no son <a>, solo texto/imagen.
+.ybc-card-stretched-link {
+	// Sin position:relative aqui a proposito: el ::after debe posicionarse
+	// respecto al contenedor de la card (.post-wrapper /
+	// .ybc-blog-related-posts-list-li, que sí llevan position:relative),
+	// no respecto al propio enlace, para poder cubrir toda la card.
+	position: static;
+	&::after {
+		content: "";
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		z-index: 1;
+	}
+}
 #blog-categories {
 	.ybc-blog-list {
 		list-style: none;
@@ -5181,11 +5201,23 @@ input[type=number] {
 		&:nth-child(2n+1) {
 			border-right: 1px solid black;
 		}
+		.post-wrapper {
+			// Permite que el enlace del titulo (.ybc-card-stretched-link) se
+			// extienda visualmente a toda la card (una sola URL real por card).
+			position: relative;
+		}
 		.ybc_title_block {
 			margin-top: 0;
 			&:hover {
 				color: $color_3;
 			}
+		}
+		// Los enlaces reales que deben seguir siendo clicables por encima del
+		// overlay del enlace estirado (categorias, "me gusta").
+		.ybc-blog-categories a,
+		.ybc-blog-like-span {
+			position: relative;
+			z-index: 2;
 		}
 	}
 	li.par {
@@ -5236,6 +5268,9 @@ input[type=number] {
 			.ybc-blog-related-posts-list-li {
 				margin: 0;
 				padding: 1.25rem;
+				// Permite que el enlace del titulo (.ybc-card-stretched-link) se
+				// extienda visualmente a toda la card (una sola URL real por card).
+				position: relative;
 				&:nth-child(-n+3) {
 					border-right: 1px solid black;
 				}
@@ -5247,6 +5282,13 @@ input[type=number] {
 				}
 				.read_more {
 					margin-top: 0;
+				}
+				// Los enlaces reales que deben seguir siendo clicables por encima del
+				// overlay del enlace estirado (categorias, "me gusta").
+				.ybc-blog-categories a,
+				.ybc-blog-like-span {
+					position: relative;
+					z-index: 2;
 				}
 			}
 		}

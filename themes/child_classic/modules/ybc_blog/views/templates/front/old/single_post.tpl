@@ -814,15 +814,14 @@
                     {foreach from=$blog_post.related_posts item='rpost'}
                         <li class="ybc-blog-related-posts-list-li col-xs-12 col-sm-4 col-lg-{12/$post_row|intval} thumbnail-container">
                             {if $rpost.thumb}
-                                {* Ya no es un enlace propio: el unico enlace real de la card es el
-                                   titulo (.ybc-card-stretched-link), ver custom.scss. *}
-                                <span class="ybc_item_img{if isset($blog_config.YBC_BLOG_LAZY_LOAD)&& $blog_config.YBC_BLOG_LAZY_LOAD} ybc_item_img_ladyload{/if}">
+                                <a class="ybc_item_img{if isset($blog_config.YBC_BLOG_LAZY_LOAD)&& $blog_config.YBC_BLOG_LAZY_LOAD} ybc_item_img_ladyload{/if}"
+                                   href="{$rpost.link|escape:'html':'UTF-8'}">
                                     <img src="{if isset($blog_config.YBC_BLOG_LAZY_LOAD)&& $blog_config.YBC_BLOG_LAZY_LOAD}{$link->getMediaLink("`$smarty.const._MODULE_DIR_`ybc_blog/views/img/bg-grey.png")|escape:'html':'UTF-8'}{else}{$rpost.image|escape:'html':'UTF-8'}{/if}"
                                          alt="{$rpost.title|escape:'html':'UTF-8'}" {if isset($blog_config.YBC_BLOG_LAZY_LOAD)&& $blog_config.YBC_BLOG_LAZY_LOAD} data-original="{$rpost.image|escape:'html':'UTF-8'}" class="lazyload"{/if} />
                                     {if isset($blog_config.YBC_BLOG_LAZY_LOAD)&& $blog_config.YBC_BLOG_LAZY_LOAD}
                                         <div class="loader_lady_custom"></div>
                                     {/if}
-                                </span>
+                                </a>
                             {/if}
 
                             <div class="post-date-time">
@@ -833,7 +832,7 @@
                                       content="{date('Y-m-d',strtotime($rpost.datetime_modified))|escape:'html':'UTF-8'}"/>
                             </div>
 
-                            <a class="ybc_title_block ybc-card-stretched-link"
+                            <a class="ybc_title_block"
                                href="{$rpost.link|escape:'html':'UTF-8'}">{$rpost.title|escape:'html':'UTF-8'}</a>
                             <div class="ybc-blog-sidear-post-meta">
                                 {if $rpost.categories}
@@ -905,7 +904,8 @@
                                     <div class="blog_description">{$rpost.description|strip_tags:'UTF-8'|truncate:120:'...'|escape:'html':'UTF-8'}</div>
                                 {/if}
                             {/if}
-                            <span class="read_more">>&nbsp;{if $blog_config.YBC_BLOG_TEXT_READMORE}{$blog_config.YBC_BLOG_TEXT_READMORE|escape:'html':'UTF-8'}{else}{l s='Read More' mod='ybc_blog'}{/if}</span>
+                            <a class="read_more"
+                               href="{$rpost.link|escape:'html':'UTF-8'}">>&nbsp;{if $blog_config.YBC_BLOG_TEXT_READMORE}{$blog_config.YBC_BLOG_TEXT_READMORE|escape:'html':'UTF-8'}{else}{l s='Read More' mod='ybc_blog'}{/if}</a>
                         </li>
                     {/foreach}
                 </ul>

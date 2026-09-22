@@ -450,9 +450,6 @@ body#module-inspirationcardsmodule-detail #carousel-landings .owl-stage-outer .o
   display: flex;
   align-items: flex-start;
   gap: 28px;
-  /* Permite que el enlace "Ver Producto" se extienda a todo el article
-     (enlace "estirado") mediante el ::after de .inspiration-product__button. */
-  position: relative;
 }
 
 .inspiration-product__image {
@@ -510,19 +507,6 @@ body#module-inspirationcardsmodule-detail #carousel-landings .owl-stage-outer .o
   text-decoration: none;
   color: #111;
   background: transparent;
-}
-
-/* Sin position:relative en .inspiration-product__button a proposito: el
-   ::after debe posicionarse respecto a .inspiration-product (que sí es
-   position:relative), no respecto al propio boton, para cubrir todo el
-   article y hacerlo clicable entero. */
-.inspiration-product__button::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
 }
 
 .inspiration-detail__more {

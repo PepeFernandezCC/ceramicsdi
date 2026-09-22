@@ -3154,8 +3154,14 @@ body.noscroll .ets_mm_megamenu::before {
   color: black;
   font-weight: bold;
 }
+.my-menu .ets_mm_megamenu_content .ets_mm_megamenu_content_content .mm_menus_ul .mm_menus_li.active > .ets_mm_url {
+  text-decoration: underline !important;
+}
 .my-menu .ets_mm_megamenu_content .ets_mm_megamenu_content_content .mm_menus_ul .mm_menus_li:hover > .ets_mm_url span, .my-menu .ets_mm_megamenu_content .ets_mm_megamenu_content_content .mm_menus_ul .mm_menus_li.active > .ets_mm_url span {
   color: black;
+}
+.my-menu .ets_mm_megamenu_content .ets_mm_megamenu_content_content .mm_menus_ul .mm_menus_li.active > .ets_mm_url span {
+  text-decoration: underline !important;
 }
 .my-menu .ets_mm_megamenu_content .ets_mm_megamenu_content_content .mm_menus_ul .mm_menus_li:hover:not(.active) > .ets_mm_url {
   font-weight: normal;
@@ -5684,6 +5690,19 @@ body#order-confirmation .checkout-grid .cart-grid-tabs #checkout-payment-step .c
   margin-bottom: 0;
   align-items: center;
 }
+/* Anula el !important que views/css/payments.css de ps_checkout aplica a
+   .ps_checkout-payment-option (span.custom-radio { float:none } / label { display:inline; line-height:2.5 }),
+   sin tocar el módulo ni impedir que le siga añadiendo la clase por JS. */
+.payment-options .payment-option.ps_checkout-payment-option span.custom-radio {
+  float: left !important;
+}
+.payment-options .payment-option.ps_checkout-payment-option label {
+  display: flex !important;
+  justify-content: space-between !important;
+  margin-bottom: 0 !important;
+  align-items: center !important;
+  line-height: inherit !important;
+}
 body#checkout .checkout-grid .cart-grid-body #checkout-payment-step .content .payment-options > div:first-child .payment-option,
 body#checkout .checkout-grid .cart-grid-tabs #checkout-payment-step .content .payment-options > div:first-child .payment-option, body#order-confirmation .checkout-grid .cart-grid-body #checkout-payment-step .content .payment-options > div:first-child .payment-option,
 body#order-confirmation .checkout-grid .cart-grid-tabs #checkout-payment-step .content .payment-options > div:first-child .payment-option {
@@ -5954,6 +5973,17 @@ body#checkout .card-block.cart-summary-totals .cart-total, body#order-confirmati
   display: flex;
 }
 */
+/* Oculta el "mark" (logo) que la SDK de PayPal (ps_checkout) inyecta por JS
+   dentro del label de la opción Pay Later, para dejar solo nuestro icono propio. */
+.payment-options .ps_checkout-mark[data-funding-source=paylater] {
+  display: none !important;
+}
+/* El JS de ps_checkout sobrescribe el atributo style="" del contenedor de la
+   opción tras pintarlo, por eso el padding inline del .tpl nunca llega a verse.
+   Se aplica aquí por CSS usando data-mname, que sí sobrevive al re-render. */
+.payment-options [data-mname="ps_checkout-paylater"] {
+  padding: 15px 0;
+}
 /* AMPLIACIÓN MODIFICACIÓN PÁGINA DEL CARRITO */
 @media (min-width: 1024px) {
   #cart .cart-grid .cart-grid-body,
@@ -7699,17 +7729,9 @@ body#contact div#content-wrapper {
 .catalog-description-sticky {
   position: sticky;
   z-index: 99;
-  top: 145px
+  top: -20px
 }
-/*
-div#search_filters_wrapper {
-    position: sticky;
-    top: 148px;
-    align-self: flex-start;
-    height: fit-content;
-    z-index: 95;
-}
-*/
+
 div#search_filters_wrapper {
     position: sticky;
     top: 148px;
@@ -7726,13 +7748,13 @@ body#checkout #deliveryPriceCalculator {
 
 @media (max-width: 1252px) {
   .catalog-description-sticky {
-    top: 145px
+    top: -60px
   }
 }
 
 @media (max-width: 1223px) {
   .catalog-description-sticky {
-    top: 102px
+    top: -109px
   }
   div#search_filters_wrapper {
     top: 100px;
@@ -7745,7 +7767,7 @@ body#checkout #deliveryPriceCalculator {
     padding: 35px;
   }
   .catalog-description-sticky {
-    top: 130px
+    top: -37px
   }
 }
 
@@ -7797,4 +7819,10 @@ div#ps_checkout-payment-method-logo-block-container {
 
 body#order-confirmation .block-left {
     padding: 50px 50px 50px 50px;
+}
+
+.paypal-mark {
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
 }

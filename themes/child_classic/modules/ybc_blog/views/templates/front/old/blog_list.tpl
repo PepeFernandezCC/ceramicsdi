@@ -216,10 +216,8 @@
                                 <div class="post-wrapper">
                                     {if $is_main_page && $first_post && ($blog_layout == 'large_list' || $blog_layout == 'large_grid')}
                                         {if $post.image}
-                                            {* La imagen ya no es un enlace propio: toda la tarjeta se hace
-                                               clicable via el titulo (single link real, ver .ybc-card-link
-                                               en custom.scss), asi evitamos repetir 3 veces el mismo enlace. *}
-                                            <span class="ybc_item_img{if isset($blog_config.YBC_BLOG_LAZY_LOAD)&& $blog_config.YBC_BLOG_LAZY_LOAD} ybc_item_img_ladyload{/if}">
+                                            <a class="ybc_item_img{if isset($blog_config.YBC_BLOG_LAZY_LOAD)&& $blog_config.YBC_BLOG_LAZY_LOAD} ybc_item_img_ladyload{/if}"
+                                               href="{$post.link|escape:'html':'UTF-8'}">
                                                 <img title="{$post.title|escape:'html':'UTF-8'}"
                                                      src="{if isset($blog_config.YBC_BLOG_LAZY_LOAD) && $blog_config.YBC_BLOG_LAZY_LOAD}{$link->getMediaLink("`$smarty.const._MODULE_DIR_`ybc_blog/views/img/bg-grey.png")|escape:'html':'UTF-8'}{else}{$post.image|escape:'html':'UTF-8'}{/if}"
                                                      alt="{$post.title|escape:'html':'UTF-8'}" {if isset($blog_config.YBC_BLOG_LAZY_LOAD)&& $blog_config.YBC_BLOG_LAZY_LOAD} data-original="{$post.image|escape:'html':'UTF-8'}" class="lazyload"{/if} />
@@ -229,9 +227,10 @@
                                                          style="width: 100%;height: auto">
                                                     </svg>
                                                 {/if}
-                                            </span>
+                                            </a>
                                         {elseif $post.thumb}
-                                            <span class="ybc_item_img{if isset($blog_config.YBC_BLOG_LAZY_LOAD)&& $blog_config.YBC_BLOG_LAZY_LOAD} ybc_item_img_ladyload{/if}">
+                                            <a class="ybc_item_img{if isset($blog_config.YBC_BLOG_LAZY_LOAD)&& $blog_config.YBC_BLOG_LAZY_LOAD} ybc_item_img_ladyload{/if}"
+                                               href="{$post.link|escape:'html':'UTF-8'}">
                                                 <img title="{$post.title|escape:'html':'UTF-8'}"
                                                      src="{if isset($blog_config.YBC_BLOG_LAZY_LOAD) && $blog_config.YBC_BLOG_LAZY_LOAD}{$link->getMediaLink("`$smarty.const._MODULE_DIR_`ybc_blog/views/img/bg-grey.png")|escape:'html':'UTF-8'}{else}{$post.thumb|escape:'html':'UTF-8'}{/if}"
                                                      alt="{$post.title|escape:'html':'UTF-8'}" {if isset($blog_config.YBC_BLOG_LAZY_LOAD)&& $blog_config.YBC_BLOG_LAZY_LOAD} data-original="{$post.thumb|escape:'html':'UTF-8'}" class="lazyload"{/if} />
@@ -241,11 +240,12 @@
                                                          style="width: 100%;height: auto">
                                                     </svg>
                                                 {/if}
-                                            </span>
+                                            </a>
                                         {/if}
                                         {assign var='first_post' value=false}
                                     {elseif $post.thumb}
-                                        <span class="ybc_item_img{if isset($blog_config.YBC_BLOG_LAZY_LOAD)&& $blog_config.YBC_BLOG_LAZY_LOAD} ybc_item_img_ladyload{/if}">
+                                        <a class="ybc_item_img{if isset($blog_config.YBC_BLOG_LAZY_LOAD)&& $blog_config.YBC_BLOG_LAZY_LOAD} ybc_item_img_ladyload{/if}"
+                                           href="{$post.link|escape:'html':'UTF-8'}">
                                             <img title="{$post.title|escape:'html':'UTF-8'}"
                                                  src="{if isset($blog_config.YBC_BLOG_LAZY_LOAD) && $blog_config.YBC_BLOG_LAZY_LOAD}{$link->getMediaLink("`$smarty.const._MODULE_DIR_`ybc_blog/views/img/bg-grey.png")|escape:'html':'UTF-8'}{else}{$post.image|escape:'html':'UTF-8'}{/if}"
                                                  alt="{$post.title|escape:'html':'UTF-8'}" {if isset($blog_config.YBC_BLOG_LAZY_LOAD)&& $blog_config.YBC_BLOG_LAZY_LOAD} data-original="{$post.image|escape:'html':'UTF-8'}" class="lazyload"{/if} />
@@ -255,7 +255,7 @@
                                                      style="width: 100%;height: auto">
                                                 </svg>
                                             {/if}
-                                        </span>
+                                        </a>
                                     {/if}
                                     <div class="ybc-blog-wrapper-content">
                                         <div class="ybc-blog-wrapper-content-main">
@@ -266,11 +266,7 @@
                                                 <meta itemprop="dateModified"
                                                       content="{date('Y-m-d',strtotime($post.datetime_modified))|escape:'html':'UTF-8'}"/>
                                             </div>
-                                            {* Unico enlace real de la card (SEO: un solo href por articulo,
-                                               con texto de anclaje semantico). Se extiende visualmente a
-                                               toda la card mediante el pseudoelemento .ybc-card-stretched-link
-                                               en custom.scss, que requiere position:relative en .post-wrapper. *}
-                                            <a class="ybc_title_block ybc-card-stretched-link"
+                                            <a class="ybc_title_block"
                                                href="{$post.link|escape:'html':'UTF-8'}">{$post.title|escape:'html':'UTF-8'}</a>
                                             {if $show_categories && $post.categories}
                                                 <div class="ybc-blog-sidear-post-meta">
@@ -364,7 +360,8 @@
                                                     <p>{$post.description|strip_tags:'UTF-8'|truncate:500:'...'|escape:'html':'UTF-8'}</p>
                                                 {/if}
                                             </div>
-                                            <span class="read_more">>&nbsp;{if $blog_config.YBC_BLOG_TEXT_READMORE}{$blog_config.YBC_BLOG_TEXT_READMORE|escape:'html':'UTF-8'}{else}{l s='Read More' mod='ybc_blog'}{/if}</span>
+                                            <a class="read_more"
+                                               href="{$post.link|escape:'html':'UTF-8'}">>&nbsp;{if $blog_config.YBC_BLOG_TEXT_READMORE}{$blog_config.YBC_BLOG_TEXT_READMORE|escape:'html':'UTF-8'}{else}{l s='Read More' mod='ybc_blog'}{/if}</a>
                                         </div>
                                     </div>
                                 </div>
