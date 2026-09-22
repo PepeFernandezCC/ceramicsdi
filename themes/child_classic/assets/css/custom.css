@@ -2532,6 +2532,12 @@ input[type=number]::-webkit-outer-spin-button {
     padding: 15px !important;
   }
 }
+.container-single-blog .ybc-blog-wrapper-detail .ybc-blog-header .post-date-category-wrap {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 10px;
+}
 .container-single-blog .ybc-blog-wrapper-detail .ybc-blog-header .post-date {
   font-size: 12px;
 }

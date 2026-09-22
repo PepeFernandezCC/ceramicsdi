@@ -70,32 +70,46 @@
                         {* PLANATEC *}
                         <div class="ybc-blog-header ybc-blog-wrapper-content{if isset($blog_config.YBC_BLOG_SIDEBAR_POSITION) && $blog_config.YBC_BLOG_SIDEBAR_POSITION=='left'} content-right{else} content-left{/if}">
                             {if $blog_post}
-                                {if $show_date}
-                                    {if !$date_format}{assign var='date_format' value='F jS Y'}{/if}
-                                    <span class="post-date">
-                                    <span>{date($date_format,strtotime($blog_post.datetime_added))|escape:'html':'UTF-8'}</span>
-                                    <meta itemprop="datePublished"
-                                          content="{date('Y-m-d',strtotime($blog_post.datetime_added))|escape:'html':'UTF-8'}"/>
-                                    <meta itemprop="dateModified"
-                                          content="{date('Y-m-d',strtotime($blog_post.datetime_modified))|escape:'html':'UTF-8'}"/>
-                                </span>
+                                {* Solo se enlaza la categoria propia del articulo (id_category_default),
+                                   no todas las categorias a las que pueda pertenecer, para no diluir
+                                   la relevancia del enlace. Si por lo que sea no hay categoria por
+                                   defecto (o no esta entre las habilitadas), se usa la primera. *}
+                                {assign var='mainCat' value=null}
+                                {if $blog_post.categories}
+                                    {foreach from=$blog_post.categories item='cat'}
+                                        {if $cat.id_category == $blog_post.id_category_default}
+                                            {assign var='mainCat' value=$cat}
+                                        {/if}
+                                    {/foreach}
+                                    {if !$mainCat}
+                                        {assign var='mainCat' value=$blog_post.categories[0]}
+                                    {/if}
+                                {/if}
+                                {if $show_date || ($show_categories && $mainCat)}
+                                    <div class="post-date-category-wrap">
+                                        {if $show_date}
+                                            {if !$date_format}{assign var='date_format' value='F jS Y'}{/if}
+                                            <span class="post-date">
+                                            <span>{date($date_format,strtotime($blog_post.datetime_added))|escape:'html':'UTF-8'}</span>
+                                            <meta itemprop="datePublished"
+                                                  content="{date('Y-m-d',strtotime($blog_post.datetime_added))|escape:'html':'UTF-8'}"/>
+                                            <meta itemprop="dateModified"
+                                                  content="{date('Y-m-d',strtotime($blog_post.datetime_modified))|escape:'html':'UTF-8'}"/>
+                                        </span>
+                                        {/if}
+                                        {if $show_categories && $mainCat}
+                                            <div class="ybc-blog-categories">
+                                                <div class="be-categories">
+                                                    <a href="{$mainCat.link|escape:'html':'UTF-8'}">{ucfirst($mainCat.title)|escape:'html':'UTF-8'}</a>
+                                                </div>
+                                            </div>
+                                        {/if}
+                                    </div>
                                 {/if}
                                 <h1 class="page-heading product-listing" itemprop="mainEntityOfPage"><span
                                             class="title_cat"
                                             itemprop="headline">{$blog_post.title|escape:'html':'UTF-8'}</span>
                                 </h1>
-                                {if $show_categories && $blog_post.categories}
-                                    <div class="ybc-blog-categories">
-                                        {assign var='ik' value=0}
-                                        <div class="be-categories">
-                                            {foreach from=$blog_post.categories item='cat'}
-                                                {assign var='ik' value=$ik+1}
-                                                <a
-                                                        href="{$cat.link|escape:'html':'UTF-8'}">{ucfirst($cat.title)|escape:'html':'UTF-8'}</a>
-                                            {/foreach}
-                                        </div>
-                                    </div>
-                                {/if}
                             {/if}
                         </div>
                         {* END PLANATEC *}

@@ -5330,6 +5330,12 @@ input[type=number] {
 			border-bottom: 1px solid black;
 			overflow: hidden;
 			padding: 2.5rem;
+			.post-date-category-wrap {
+				display: flex;
+				align-items: center;
+				flex-wrap: wrap;
+				gap: 10px;
+			}
 			.post-date {
 				font-size: 12px;
 			}
