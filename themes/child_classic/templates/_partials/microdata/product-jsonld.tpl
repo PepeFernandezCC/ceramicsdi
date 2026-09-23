@@ -33,6 +33,16 @@
     {assign var=m2Caja value=$feature.value|replace:',':'.'|floatval}
   {/if}
 {/foreach}
+
+{assign var=calculatedPriceCaja value=$calculatedPrice}
+{assign var=priceM2 value=null}
+{if $m2Caja > 0}
+  {assign var=priceM2 value=$calculatedPrice/$m2Caja}
+  {if $priceM2 < $calculatedPrice}
+    {assign var=calculatedPrice value=$priceM2|string_format:"%.2f"}
+  {/if}
+{/if}
+
 <script type="application/ld+json">
   {
     "@context": "https://schema.org/",
