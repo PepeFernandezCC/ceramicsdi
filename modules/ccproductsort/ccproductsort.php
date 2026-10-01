@@ -2,14 +2,17 @@
 /**
  * CERAMIC CONNECTION - Product sort (prototype)
  *
- * Adds a sort selector to category listings: name, price, format (tile size)
- * and material.
+ * Adds a sort selector to category listings, rendered inside the active
+ * filters bar of ps_facetedsearch (theme template active-filters.tpl calls
+ * the displayProductListSort hook) so filters and sort share the same block.
  *
- * Name and price are resolved natively by ps_facetedsearch. Format and
- * material are product features, which ps_facetedsearch cannot sort by (and
- * Validate::isOrderBy blocks injecting SQL through the "order" param), so for
- * those we ask the provider for the whole filtered result set, sort it in PHP
- * by the feature value and slice the requested page ourselves.
+ * Options: featured (default), name and price. Name and price are resolved
+ * natively by ps_facetedsearch. "Featured" sorts by the product feature
+ * "Prioridad" (1 first); products without priority go after, in their
+ * category position. ps_facetedsearch cannot sort by a feature (and
+ * Validate::isOrderBy blocks injecting SQL through the "order" param), so we
+ * ask the provider for the whole filtered result set, sort it in PHP and
+ * slice the requested page ourselves.
  */
 
 use PrestaShop\PrestaShop\Core\Product\Search\SortOrder;
@@ -20,25 +23,22 @@ if (!defined('_PS_VERSION_')) {
 
 class CcProductSort extends Module
 {
-    const SORT_FIELD_FORMAT = 'ccformato';
-    const SORT_FIELD_MATERIAL = 'ccmaterial';
-
     /** Upper bound of products fetched when sorting in PHP. */
     const MAX_PRODUCTS_TO_SORT = 5000;
 
     /**
-     * Original pagination/sort of the query while a feature sort is running,
+     * Original pagination of the query while the priority sort is running,
      * set in the "before" hook and restored in the "after" hook.
      *
      * @var array|null
      */
-    protected $pendingFeatureSort = null;
+    protected $pendingPrioritySort = null;
 
     public function __construct()
     {
         $this->name = 'ccproductsort';
         $this->tab = 'front_office_features';
-        $this->version = '0.1.0';
+        $this->version = '0.2.0';
         $this->author = 'CERAMIC CONNECTION';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -46,7 +46,7 @@ class CcProductSort extends Module
         parent::__construct();
 
         $this->displayName = $this->l('CC Product sort');
-        $this->description = $this->l('Sort selector for category listings: name, price, format and material.');
+        $this->description = $this->l('Sort selector for category listings: featured (by priority), name and price.');
         $this->ps_versions_compliancy = ['min' => '1.7.6', 'max' => _PS_VERSION_];
     }
 
@@ -55,13 +55,13 @@ class CcProductSort extends Module
         return parent::install()
             && $this->registerHook('actionProductSearchProviderRunQueryBefore')
             && $this->registerHook('actionProductSearchProviderRunQueryAfter')
-            && $this->registerHook('displayHeaderCategory')
+            && $this->registerHook('displayProductListSort')
             && $this->registerHook('actionFrontControllerSetMedia');
     }
 
     /**
      * Sort options shown to the customer, keyed by the "order" URL value.
-     * An empty key means the default category order.
+     * An empty key means the default order (priority).
      *
      * @return array
      */
@@ -73,34 +73,25 @@ class CcProductSort extends Module
             'product.name.desc' => $this->l('Name, Z to A'),
             'product.price.asc' => $this->l('Price, low to high'),
             'product.price.desc' => $this->l('Price, high to low'),
-            'product.' . self::SORT_FIELD_FORMAT . '.asc' => $this->l('Format, small to large'),
-            'product.' . self::SORT_FIELD_FORMAT . '.desc' => $this->l('Format, large to small'),
-            'product.' . self::SORT_FIELD_MATERIAL . '.asc' => $this->l('Material, A to Z'),
         ];
     }
 
-    /**
-     * Feature ID backing each custom sort field.
-     *
-     * @return array
-     */
-    protected function getFeatureSortFields()
+    protected function isCategoryPage()
     {
-        return [
-            self::SORT_FIELD_FORMAT => (int) FrontController::FEATURE_MEDIDA_ID,
-            self::SORT_FIELD_MATERIAL => (int) FrontController::FEATURE_MATERIAL,
-        ];
+        return isset($this->context->controller->php_self)
+            && $this->context->controller->php_self === 'category';
     }
 
     public function hookActionFrontControllerSetMedia()
     {
-        if ($this->context->controller->php_self !== 'category') {
+        if (!$this->isCategoryPage()) {
             return;
         }
 
         $this->context->controller->registerStylesheet(
             'module-ccproductsort',
-            'modules/' . $this->name . '/views/css/ccproductsort.css'
+            'modules/' . $this->name . '/views/css/ccproductsort.css',
+            ['priority' => 1100]
         );
         $this->context->controller->registerJavascript(
             'module-ccproductsort',
@@ -109,8 +100,16 @@ class CcProductSort extends Module
         );
     }
 
-    public function hookDisplayHeaderCategory()
+    /**
+     * Rendered from the theme's ps_facetedsearch active-filters.tpl, so it is
+     * also re-rendered on every AJAX facet/sort update.
+     */
+    public function hookDisplayProductListSort()
     {
+        if (!$this->isCategoryPage()) {
+            return '';
+        }
+
         $current = (string) Tools::getValue('order');
         $options = $this->getSortOptions();
 
@@ -123,27 +122,22 @@ class CcProductSort extends Module
     }
 
     /**
-     * If a feature sort is requested, swap it for the default order and ask
-     * for every matching product (page 1, big page size).
+     * On category pages without an explicit sort, ask for every matching
+     * product in category position order (page 1, big page size) so it can
+     * be re-sorted by priority afterwards.
      */
     public function hookActionProductSearchProviderRunQueryBefore($params)
     {
-        $this->pendingFeatureSort = null;
+        $this->pendingPrioritySort = null;
 
         $query = $params['query'];
-        $sortOrder = $query->getSortOrder();
-        $featureFields = $this->getFeatureSortFields();
 
-        if (!$sortOrder
-            || $sortOrder->getEntity() !== 'product'
-            || !isset($featureFields[$sortOrder->getField()])
-        ) {
+        if ($query->getQueryType() !== 'category' || Tools::getValue('order')) {
             return;
         }
 
-        $this->pendingFeatureSort = [
-            'sortOrder' => $sortOrder,
-            'idFeature' => $featureFields[$sortOrder->getField()],
+        $this->pendingPrioritySort = [
+            'sortOrder' => $query->getSortOrder(),
             'page' => $query->getPage(),
             'resultsPerPage' => $query->getResultsPerPage(),
         ];
@@ -156,104 +150,61 @@ class CcProductSort extends Module
 
     public function hookActionProductSearchProviderRunQueryAfter($params)
     {
-        $query = $params['query'];
-        $result = $params['result'];
-
-        $result->setAvailableSortOrders(array_merge(
-            $result->getAvailableSortOrders(),
-            $this->getCustomSortOrders()
-        ));
-
-        if ($this->pendingFeatureSort === null) {
+        if ($this->pendingPrioritySort === null) {
             return;
         }
 
-        $pending = $this->pendingFeatureSort;
-        $this->pendingFeatureSort = null;
+        $query = $params['query'];
+        $result = $params['result'];
+        $pending = $this->pendingPrioritySort;
+        $this->pendingPrioritySort = null;
 
-        $products = $this->sortProductsByFeature(
-            $result->getProducts(),
-            $pending['idFeature'],
-            $pending['sortOrder']->getField(),
-            $pending['sortOrder']->getDirection()
-        );
+        $products = $this->sortProductsByPriority($result->getProducts());
 
         $offset = ($pending['page'] - 1) * $pending['resultsPerPage'];
         $result->setProducts(array_slice($products, $offset, $pending['resultsPerPage']));
 
-        // Restore the query so pagination, facet URLs and the "current" sort
-        // order reflect what the customer asked for.
+        // Restore the query so pagination and facet URLs stay as requested.
         $query
             ->setSortOrder($pending['sortOrder'])
             ->setPage($pending['page'])
             ->setResultsPerPage($pending['resultsPerPage']);
-        $result->setCurrentSortOrder($pending['sortOrder']);
     }
 
     /**
-     * SortOrder objects for the feature sorts, so they also show up in
-     * $listing.sort_orders.
-     *
-     * @return SortOrder[]
-     */
-    protected function getCustomSortOrders()
-    {
-        $sortOrders = [];
-        foreach ($this->getSortOptions() as $key => $label) {
-            if ($key === '') {
-                continue;
-            }
-            list($entity, $field, $direction) = explode('.', $key);
-            if (!array_key_exists($field, $this->getFeatureSortFields())) {
-                continue;
-            }
-            $sortOrder = new SortOrder($entity, $field, $direction);
-            $sortOrders[] = $sortOrder->setLabel($label);
-        }
-
-        return $sortOrders;
-    }
-
-    /**
-     * Products without a value (or, for format, without a parseable size)
-     * always go last. Ties keep the incoming (category position) order.
+     * Priority ascending (1 first). Products without a numeric priority go
+     * last. Ties keep the incoming (category position) order.
      *
      * @param array $products rows from the search provider, with id_product
-     * @param int $idFeature
-     * @param string $field
-     * @param string $direction
      *
      * @return array
      */
-    protected function sortProductsByFeature(array $products, $idFeature, $field, $direction)
+    protected function sortProductsByPriority(array $products)
     {
         if (count($products) < 2) {
             return $products;
         }
 
-        $values = $this->getFeatureValues(array_column($products, 'id_product'), $idFeature);
+        $values = $this->getFeatureValues(
+            array_column($products, 'id_product'),
+            (int) FrontController::FEATURE_PRIORITY
+        );
 
         $keyed = [];
         foreach ($products as $position => $product) {
-            $value = isset($values[$product['id_product']]) ? $values[$product['id_product']] : null;
+            $value = isset($values[$product['id_product']]) ? trim($values[$product['id_product']]) : '';
             $keyed[] = [
                 'product' => $product,
                 'position' => $position,
-                'key' => $field === self::SORT_FIELD_FORMAT
-                    ? $this->getFormatSortKey($value)
-                    : $this->getTextSortKey($value),
+                'key' => is_numeric($value) ? (float) $value : null,
             ];
         }
 
-        $sign = strtolower($direction) === 'desc' ? -1 : 1;
-
-        usort($keyed, function ($a, $b) use ($sign) {
+        usort($keyed, function ($a, $b) {
             if ($a['key'] === null || $b['key'] === null) {
                 $cmp = ($a['key'] === null) - ($b['key'] === null);
-            } elseif (is_string($a['key'])) {
-                $cmp = $sign * strnatcmp($a['key'], $b['key']);
             } else {
-                $cmp = $sign * ($a['key'] <=> $b['key']);
+                $cmp = $a['key'] <=> $b['key'];
             }
 
             return $cmp !== 0 ? $cmp : $a['position'] - $b['position'];
@@ -294,40 +245,5 @@ class CcProductSort extends Module
         }
 
         return $values;
-    }
-
-    /**
-     * Surface of the piece in cm², from the first "AxB" in values like
-     * "20x20 cm", "10 x 11,55 cm", "MALLA 30x30 cm" or
-     * "20x20 PRECORTADO (10x10)". Values like "Saco de 3 kg" return null.
-     *
-     * @param string|null $value
-     *
-     * @return float|null
-     */
-    protected function getFormatSortKey($value)
-    {
-        if ($value === null
-            || !preg_match('/(\d+(?:[.,]\d+)?)\s*[x×]\s*(\d+(?:[.,]\d+)?)/iu', $value, $matches)
-        ) {
-            return null;
-        }
-
-        return (float) str_replace(',', '.', $matches[1]) * (float) str_replace(',', '.', $matches[2]);
-    }
-
-    /**
-     * @param string|null $value
-     *
-     * @return string|null
-     */
-    protected function getTextSortKey($value)
-    {
-        $value = $value === null ? '' : trim($value);
-        if ($value === '') {
-            return null;
-        }
-
-        return Tools::strtolower(Tools::replaceAccentedChars($value));
     }
 }

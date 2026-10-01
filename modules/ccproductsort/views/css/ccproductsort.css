@@ -1,11 +1,35 @@
+/* Active filters + sort selector share the same bar (active-filters.tpl) */
+#js-active-search-filters.active_filters--with-sort {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+}
+
+#js-active-search-filters .active_filters__list {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+#js-active-search-filters .active_filters__list:empty,
+#js-active-search-filters .active_filters__list > .hidden-xs-up:only-child {
+  display: none;
+}
+
+#js-active-search-filters .active_filters__list ul {
+  margin: 0;
+}
+
 .ccproductsort {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
   gap: 10px;
-  padding: 10px 16px;
-  border-top: 1px solid #000;
+  margin-left: auto;
   font-family: "Jost", sans-serif;
+  margin-bottom: 10px;
 }
 
 .ccproductsort__label {
@@ -14,15 +38,17 @@
   font-weight: 600;
   text-transform: uppercase;
   color: #000;
+  white-space: nowrap;
 }
 
 .ccproductsort__select {
   min-width: 220px;
   padding: 6px 32px 6px 10px;
-  border: 1px solid #000;
+  border: 0;
   border-radius: 0;
   background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23000' stroke-width='2' fill='none'/%3E%3C/svg%3E") no-repeat right 10px center;
   font-size: 13px;
+  line-height: 1.6;
   color: #000;
   cursor: pointer;
   -webkit-appearance: none;
@@ -31,7 +57,7 @@
 
 @media (max-width: 767px) {
   .ccproductsort {
-    justify-content: space-between;
+    width: 100%;
   }
 
   .ccproductsort__select {
