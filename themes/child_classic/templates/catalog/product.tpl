@@ -99,6 +99,8 @@
                     {assign var="id_cart" value=Context::getContext()->cart->id} 
                     {assign var="productColor" value="none"}
                     {assign var="validAspect" value=false}
+                    {assign var="validAspectId" value=null}
+                    {assign var="validAspectName" value=null}
                     {assign var="conversionRate" value=1}
                     {assign var="otherMaterialsArray" value=[81, 82, 88]}
                     {assign var="isByPiece" value=false}

@@ -176,7 +176,7 @@
 
         <div class="row product-container js-product-container product-bc-container">
 
-            <div id="bread-crumps-container" class="bread-crumps margin-bc-product bc-product-position" data-color="{$productColor}" data-location="product" data-category="{$category->id}"></div>
+            <div id="bread-crumps-container" class="bread-crumps margin-bc-product bc-product-position">{CcBreadcrumbs::renderProduct($category, $productColor, $validAspect, $validAspectId, $validAspectName) nofilter}</div>
 
 
             <div class="col-md-6 col-xs-12" id="product-images-block">
