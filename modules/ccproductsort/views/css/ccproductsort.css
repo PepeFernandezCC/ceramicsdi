@@ -55,13 +55,43 @@
   appearance: none;
 }
 
+.ccproductsort__mobile-text {
+  display: none;
+}
+
+/* Mobile: short "Sort" button, the label goes inside it. The real select is
+   transparent and on top, so the native options keep their own size. */
 @media (max-width: 767px) {
-  .ccproductsort {
-    width: 100%;
+  .ccproductsort__label {
+    display: none;
+  }
+
+  .ccproductsort__field {
+    position: relative;
+    background: #fff;
+  }
+
+  .ccproductsort__field:focus-within {
+    outline: 2px solid #e6a100;
+  }
+
+  .ccproductsort__mobile-text {
+    display: block;
+    padding: 6px 32px 6px 10px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23000' stroke-width='2' fill='none'/%3E%3C/svg%3E") no-repeat right 10px center;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #000;
+    white-space: nowrap;
   }
 
   .ccproductsort__select {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     min-width: 0;
-    flex: 1;
+    opacity: 0;
   }
 }

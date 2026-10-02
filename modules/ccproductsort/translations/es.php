@@ -10,3 +10,4 @@ $_MODULE['<{ccproductsort}prestashop>ccproductsort_e21f2ef58ff858167655c18a874f9
 $_MODULE['<{ccproductsort}prestashop>ccproductsort_e2174d7435696694b8f4d984d99eef03'] = 'Precio: de menor a mayor';
 $_MODULE['<{ccproductsort}prestashop>ccproductsort_0ee81913615b71aba7dc8bbf1f144672'] = 'Precio: de mayor a menor';
 $_MODULE['<{ccproductsort}prestashop>sort_33d8042bd735c559cc3206f4bc99aedc'] = 'Ordenar por';
+$_MODULE['<{ccproductsort}prestashop>sort_6b46ae48421828d9973deec5fa9aa0c3'] = 'Ordenar';
