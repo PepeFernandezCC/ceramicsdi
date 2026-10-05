@@ -142,11 +142,11 @@ $( document ).ready( function () {
             track.addEventListener("touchstart", (e) => {
                startX = e.touches[0].clientX;
                moveX = 0;
-            });
+            }, { passive: true });
 
             track.addEventListener("touchmove", (e) => {
                moveX = e.touches[0].clientX - startX;
-            });
+            }, { passive: true });
 
             track.addEventListener("touchend", () => {
                if (moveX > 50) goTo(index - 1);        // swipe derecha

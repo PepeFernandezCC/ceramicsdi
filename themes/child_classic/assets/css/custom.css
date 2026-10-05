@@ -1354,7 +1354,7 @@ body:not(#category):not(#search) #wrapper #content-wrapper {
 @media (max-width: 1200px) {
   #product .product-container #product-content-block .product-flags {
     top: 110px;
-    right: -15px;
+    right: 0px;
   }
   #product .product-container #product-content-block .product-flags-out {
     top: 0;
