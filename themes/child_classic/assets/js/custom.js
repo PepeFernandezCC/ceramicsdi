@@ -680,6 +680,48 @@ $( document ).ready( function () {
 
       $( ".owl-carousel-image-products-mobile" ).find( '.video-item' ).find( '.product-video' ).css( 'height', sliderHeightImg + ' !important' );
 
+      /* VÍDEO DE PRODUCTO: solo se descarga y reproduce cuando está visible.
+         Hay un <video> en la galería móvil, otro en la de escritorio y owl clona los slides (loop),
+         antes se descargaban y reproducían todos a la vez. Se usa el mismo archivo, sin pérdida de calidad. */
+      const lazyVideos = Array.from( document.querySelectorAll( 'video.js-lazy-video' ) )
+         .filter( ( video ) => !video.closest( '.owl-item.cloned' ) );
+
+      if ( lazyVideos.length && 'IntersectionObserver' in window ) {
+
+         const videoObserver = new IntersectionObserver( ( entries ) => {
+            entries.forEach( ( entry ) => {
+               const video = entry.target;
+
+               if ( entry.isIntersecting ) {
+                  if ( !video.dataset.loaded ) {
+                     video.querySelectorAll( 'source[data-src]' ).forEach( ( source ) => {
+                        source.src = source.dataset.src;
+                     } );
+                     video.preload = 'auto';
+                     video.load();
+                     video.dataset.loaded = '1';
+                  }
+                  const playPromise = video.play();
+                  if ( playPromise ) playPromise.catch( () => {} );
+               } else if ( video.dataset.loaded ) {
+                  video.pause();
+               }
+            } );
+         }, { threshold: 0.25 } );
+
+         lazyVideos.forEach( ( video ) => videoObserver.observe( video ) );
+
+      } else {
+         // Navegadores sin IntersectionObserver: comportamiento anterior
+         lazyVideos.forEach( ( video ) => {
+            video.querySelectorAll( 'source[data-src]' ).forEach( ( source ) => {
+               source.src = source.dataset.src;
+            } );
+            video.load();
+            video.play();
+         } );
+      }
+
       function setHeightVideo() {
 
          let $productContainer = $( '#product' ).find( '.product-container' );

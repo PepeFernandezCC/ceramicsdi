@@ -30,8 +30,8 @@
 
         {if $smarty.foreach.productImages.iteration == 2 and $videoProductRoute != false}
             <div class="product-cover product-video">
-                <video id="productVideoMobile" autoplay loop muted playsinline preload="auto" style="max-width: 100%; height: 99.7%;" >
-                    <source src="{$videoProductRoute.sourceMp4}" type="{$videoProductRoute.typeMp4}">
+                <video id="productVideoMobile" class="js-lazy-video" loop muted playsinline preload="none" poster="{$product.cover.bySize.large_default.url}" style="max-width: 100%; height: 99.7%;">
+                    <source data-src="{$videoProductRoute.sourceMp4}" type="{$videoProductRoute.typeMp4}">
                     Tu navegador no soporta la etiqueta de video.
                 </video>
             </div>
@@ -71,8 +71,8 @@
         {foreach from=$product.images item=image name=productImages}
             {if $smarty.foreach.productImages.iteration == 2 and $videoProductRoute != false}
                 <div class="product-cover product-video">
-                    <video id="productVideo" autoplay loop muted playsinline preload="auto" style="max-width: 100%; height: 99.7%;">
-                        <source src="{$videoProductRoute.sourceMp4}" type="{$videoProductRoute.typeMp4}">
+                    <video id="productVideo" class="js-lazy-video" loop muted playsinline preload="none" poster="{$product.cover.bySize.large_default.url}" style="max-width: 100%; height: 99.7%;">
+                        <source data-src="{$videoProductRoute.sourceMp4}" type="{$videoProductRoute.typeMp4}">
                         Tu navegador no soporta la etiqueta de video.
                     </video>
                 </div>

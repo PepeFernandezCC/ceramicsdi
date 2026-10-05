@@ -37,8 +37,9 @@ $( document ).ready( function () {
             let i = 0;
 
             function update() {
-               const w = root.querySelector('.cards-viewport').getBoundingClientRect().width;
-               track.style.transform = `translateX(-${i * w}px)`;
+               // Desplaza hasta la posición real del slide (no depende de que slide y viewport midan igual)
+               const offset = slides[i].offsetLeft - slides[0].offsetLeft;
+               track.style.transform = `translateX(-${offset}px)`;
                prev.disabled = (i === 0);
                next.disabled = (i === slides.length - 1);
             }
@@ -99,125 +100,57 @@ $( document ).ready( function () {
          $('#promo-code').css('display', 'none');
       }
 
-      /* CARRUSEL JUNTAS */
-      if (document.getElementById('board-section')){
+      /* CARRUSEL IMÁGENES JUNTA RECOMENDADA + PRODUCTOS COMPLEMENTARIOS */
 
-         const track = document.querySelector(".carousel-track");
-         const images = track.querySelectorAll("img");
-         const prevBtn = document.querySelector(".carousel-btn.prev");
-         const nextBtn = document.querySelector(".carousel-btn.next");
-         let index = 0;
+      if (document.getElementById('board-section')) {
+         /* CARRUSEL IMÁGENES EN CADA BOARD-CARD */
 
-         function updateCarousel() {
-            const width = images[0].clientWidth;
-            track.style.transform = `translateX(-${index * width}px)`;
-         }
-
-         nextBtn.addEventListener("click", () => {
-            index = (index + 1) % images.length;
-            updateCarousel();
-         });
-
-         prevBtn.addEventListener("click", () => {
-            index = (index - 1 + images.length) % images.length;
-            updateCarousel();
-         });
-
-         window.addEventListener("resize", updateCarousel);
-
-         // ---- Soporte táctil para móviles ----
-         let startX = 0;
-         let moveX = 0;
-
-         track.addEventListener("touchstart", (e) => {
-            startX = e.touches[0].clientX;
-         });
-
-         track.addEventListener("touchmove", (e) => {
-            moveX = e.touches[0].clientX - startX;
-         });
-
-         track.addEventListener("touchend", () => {
-            if (moveX > 50) { // swipe derecha
-               index = (index - 1 + images.length) % images.length;
-               updateCarousel();
-            } else if (moveX < -50) { // swipe izquierda
-               index = (index + 1) % images.length;
-               updateCarousel();
-            }
-            moveX = 0;
-         });
-
-      }
-  
-      /* CAROUSEL PRODUCTOS COMPLEMENTARIOS */
-
-      if (document.getElementById('complement-products-box')) {
-         /* CARRUSEL IMÁGENES EN CADA BOARD-CARD (COMPLEMENTS) */
-
-         const carousels = document.querySelectorAll("[data-img-carousel]");
+         const carousels = document.querySelectorAll("#board-section [data-img-carousel]");
 
          carousels.forEach((carousel) => {
             const track = carousel.querySelector("[data-img-track]");
             const images = track ? track.querySelectorAll("img") : [];
-            const prevBtn = carousel.querySelector("[data-img-prev]");
-            const nextBtn = carousel.querySelector("[data-img-next]");
+            const dots = carousel.querySelectorAll("[data-img-dot]");
 
             // Si no hay suficientes imágenes, no hace falta carrusel
-            if (!track || images.length <= 1) {
-               if (prevBtn) prevBtn.style.display = "none";
-               if (nextBtn) nextBtn.style.display = "none";
-               return;
-            }
+            if (!track || images.length <= 1) return;
 
             let index = 0;
             let startX = 0;
             let moveX = 0;
 
-            function getSlideWidth() {
-               // Mejor que images[0].clientWidth cuando hay imágenes lazy o tamaños variables
-               const first = images[0];
-               const w = first.getBoundingClientRect().width;
-               return w || first.clientWidth || carousel.clientWidth;
-            }
-
             function updateCarousel() {
-               const width = getSlideWidth();
-               track.style.transform = `translateX(-${index * width}px)`;
+               // En % para no depender del ancho de imágenes lazy aún sin cargar
+               track.style.transform = `translateX(-${index * 100}%)`;
+               dots.forEach((dot, i) => dot.classList.toggle("active", i === index));
             }
 
-            function goNext() {
-               index = (index + 1) % images.length;
+            function goTo(i) {
+               index = (i + images.length) % images.length;
                updateCarousel();
             }
 
-            function goPrev() {
-               index = (index - 1 + images.length) % images.length;
-               updateCarousel();
-            }
-
-            nextBtn && nextBtn.addEventListener("click", goNext);
-            prevBtn && prevBtn.addEventListener("click", goPrev);
-
-            // Recalcular si cambia el tamaño
-            window.addEventListener("resize", updateCarousel);
-
-            // Si las imágenes cargan después (lazy), re-ajustar
-            images.forEach((img) => img.addEventListener("load", updateCarousel));
+            dots.forEach((dot) => {
+               dot.addEventListener("click", (e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  goTo(parseInt(dot.dataset.imgDot, 10));
+               });
+            });
 
             // Soporte táctil móvil (por carrusel)
             track.addEventListener("touchstart", (e) => {
                startX = e.touches[0].clientX;
                moveX = 0;
-            });
+            }, { passive: true });
 
             track.addEventListener("touchmove", (e) => {
                moveX = e.touches[0].clientX - startX;
-            });
+            }, { passive: true });
 
             track.addEventListener("touchend", () => {
-               if (moveX > 50) goPrev();        // swipe derecha
-               else if (moveX < -50) goNext();  // swipe izquierda
+               if (moveX > 50) goTo(index - 1);        // swipe derecha
+               else if (moveX < -50) goTo(index + 1);  // swipe izquierda
                moveX = 0;
             });
 
@@ -883,7 +816,11 @@ $( document ).ready( function () {
 
       let $customFilterWrapper = $( '#custom-filter-wrapper' );
 
-      $customFilterWrapper.find( 'button' ).on( 'click', function () {
+      // El botón no se repinta en las recargas ajax del listado, pero
+      // initializeCustom() se vuelve a ejecutar en cada updateProductList: sin el
+      // .off() se apilaba un handler por recarga y cada click hacía N slideToggle
+      // seguidos (el panel se abría y cerraba varias veces).
+      $customFilterWrapper.find( 'button' ).off( 'click.ccFilterToggle' ).on( 'click.ccFilterToggle', function () {
 
          $( '.custom-filter-mobile' ).slideToggle( 'hidden-xs-down' );
 
