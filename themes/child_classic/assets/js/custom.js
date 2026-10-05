@@ -863,9 +863,23 @@ $( document ).ready( function () {
       // initializeCustom() se vuelve a ejecutar en cada updateProductList: sin el
       // .off() se apilaba un handler por recarga y cada click hacía N slideToggle
       // seguidos (el panel se abría y cerraba varias veces).
-      $customFilterWrapper.find( 'button' ).off( 'click.ccFilterToggle' ).on( 'click.ccFilterToggle', function () {
+      // Móvil (<768px): los filtros son un panel lateral que entra desde la izquierda.
+      // Escritorio: se mantiene el despliegue hacia abajo de siempre.
+      const isMobileFilters = () => window.matchMedia( '(max-width: 767px)' ).matches;
 
-         $( '.custom-filter-mobile' ).slideToggle( 'hidden-xs-down' );
+      $customFilterWrapper.find( '.js-cc-filters-toggle' ).off( 'click.ccFilterToggle' ).on( 'click.ccFilterToggle', function () {
+
+         if ( isMobileFilters() ) {
+            $( 'body' ).toggleClass( 'cc-filters-open' );
+         } else {
+            $( '.custom-filter-mobile' ).slideToggle( 'hidden-xs-down' );
+         }
+
+      } );
+
+      $( document ).off( 'click.ccFilterClose' ).on( 'click.ccFilterClose', '.js-cc-filters-close', function () {
+
+         $( 'body' ).removeClass( 'cc-filters-open' );
 
       } );
 

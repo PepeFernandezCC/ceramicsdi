@@ -8001,3 +8001,118 @@ body#order-confirmation .block-left {
   margin: 0 !important;
   border: 0 !important;
 }
+
+/* ============================================================
+   BARRA FILTRAR + ORDENAR
+   ============================================================ */
+
+/* El texto "Filtrar" y el icono van en un único botón */
+#search_filters #custom-filter-wrapper .custom-filter-toggle {
+  align-items: center;
+  gap: 8px;
+  color: #000;
+  cursor: pointer;
+}
+
+/* Escritorio: mismo aspecto que antes (texto a la izquierda, icono a la derecha) */
+@media (min-width: 768px) {
+  #search_filters #custom-filter-wrapper .custom-filter-toggle {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+/* Móvil: Filtrar a la izquierda, Ordenar a la derecha, panel lateral desde la izquierda */
+@media (max-width: 767px) {
+
+  #search_filters #custom-filter-wrapper .custom-filter-sort .ccproductsort {
+    margin: 0;
+  }
+
+  /* la regla general de los span de la barra (mayúsculas, 0.8em) no aplica al botón de ordenar */
+  #search_filters #custom-filter-wrapper .ccproductsort__mobile-text {
+    text-transform: none;
+    font-size: 13px;
+  }
+
+  /* el selector de la barra gris se oculta: en móvil se usa el de la barra Filtrar */
+  #js-active-search-filters .ccproductsort--list {
+    display: none;
+  }
+
+  /* la barra gris solo aparece cuando hay filtros activos */
+  #js-active-search-filters:not(.active_filters--has-filters) {
+    display: none !important;
+  }
+
+  /* Panel de filtros lateral */
+  .custom-filter-mobile {
+    display: block !important; /* anula el display:none y el inline del antiguo slideToggle */
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 85%;
+    max-width: 360px;
+    padding-top: 50px;
+    background: #fff;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    z-index: 2;
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition: transform .3s ease, visibility 0s linear .3s;
+    box-shadow: 2px 0 12px rgba(0, 0, 0, .2);
+  }
+
+  body.cc-filters-open .custom-filter-mobile {
+    transform: translateX(0);
+    visibility: visible;
+    transition: transform .3s ease, visibility 0s linear 0s;
+  }
+
+  .cc-filters-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 4px;
+    border: 0;
+    background: transparent;
+    color: #000;
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  .cc-filters-close:focus {
+    outline: none;
+  }
+
+  .cc-filters-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, .45);
+    z-index: 1;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .3s ease, visibility 0s linear .3s;
+  }
+
+  body.cc-filters-open .cc-filters-backdrop {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity .3s ease, visibility 0s linear 0s;
+  }
+
+  /* con el panel abierto: la columna (sticky, z-index 666) pasa por encima del header fijo (999)
+     y la página de detrás no hace scroll */
+  body.cc-filters-open #left-column {
+    z-index: 100000;
+  }
+
+  body.cc-filters-open {
+    overflow: hidden;
+  }
+}

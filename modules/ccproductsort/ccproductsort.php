@@ -104,7 +104,7 @@ class CcProductSort extends Module
      * Rendered from the theme's ps_facetedsearch active-filters.tpl, so it is
      * also re-rendered on every AJAX facet/sort update.
      */
-    public function hookDisplayProductListSort()
+    public function hookDisplayProductListSort($params = [])
     {
         if (!$this->isCategoryPage()) {
             return '';
@@ -113,9 +113,15 @@ class CcProductSort extends Module
         $current = (string) Tools::getValue('order');
         $options = $this->getSortOptions();
 
+        // The selector can be printed more than once (filters bar on mobile +
+        // active filters bar), each instance needs its own id.
+        $instance = isset($params['instance']) ? preg_replace('/[^a-z0-9_-]/i', '', (string) $params['instance']) : '';
+
         $this->context->smarty->assign([
             'ccproductsort_options' => $options,
             'ccproductsort_current' => isset($options[$current]) ? $current : '',
+            'ccproductsort_id' => 'ccproductsort-select' . ($instance !== '' ? '-' . $instance : ''),
+            'ccproductsort_instance' => $instance,
         ]);
 
         return $this->display(__FILE__, 'views/templates/hook/sort.tpl');

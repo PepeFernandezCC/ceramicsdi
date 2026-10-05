@@ -64,19 +64,11 @@
 
     <div id="search_filters_wrapper" style="display: flex;flex-direction: column-reverse;">
 
-        <div {* PLANATEC *}class="custom-filter-mobile"{* END PLANATEC *} id="cc-filters-panel">
-
-            {* CC: en movil el panel entra desde la izquierda; boton para cerrarlo *}
-            <button type="button" class="cc-filters-close hidden-md-up js-cc-filters-close" aria-label="{l s='Close' d='Shop.Theme.Global'}">
-                <i class="material-icons">close</i>
-            </button>
+        <div {* PLANATEC *}class="custom-filter-mobile"{* END PLANATEC *}>
 
             {$listing.rendered_facets nofilter}
 
         </div>
-
-        {* CC: fondo oscuro detras del panel de filtros en movil *}
-        <div class="cc-filters-backdrop hidden-md-up js-cc-filters-close"></div>
 
         
 
@@ -86,18 +78,13 @@
 
                 <div id="custom-filter-wrapper">
 
-                    {* CC: texto + icono en un mismo boton (en movil a la izquierda, con Ordenar a la derecha) *}
-                    <button type="button" class="btn custom-filter-toggle js-cc-filters-toggle" aria-controls="cc-filters-panel">
+                    <span>{l s='Filter' d='Shop.Theme.Actions'}</span>
 
-                        <span>{l s='Filter' d='Shop.Theme.Actions'}</span>
+                    <button class="btn">
 
                         <i class="material-icons d-inline">tune</i>
 
                     </button>
-
-                    <div class="custom-filter-sort hidden-md-up">
-                        {hook h='displayProductListSort' instance='mobile'}
-                    </div>
 
                 </div>
 

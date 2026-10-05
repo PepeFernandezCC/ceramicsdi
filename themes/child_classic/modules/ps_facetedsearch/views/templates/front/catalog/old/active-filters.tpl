@@ -16,7 +16,10 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
-<section id="js-active-search-filters" class="{if $activeFilters|count}active_filters{else}hide{/if}">
+{* CC: el selector de ordenacion (modulo ccproductsort) va en esta misma barra *}
+{capture name='ccproductsort'}{hook h='displayProductListSort'}{/capture}
+<section id="js-active-search-filters" class="{if $activeFilters|count || $smarty.capture.ccproductsort|trim}active_filters{else}hide{/if}{if $smarty.capture.ccproductsort|trim} active_filters--with-sort{/if}">
+    <div class="active_filters__list">
     {block name='active_filters_title'}
         <p class="h6 {if $activeFilters|count}active-filter-title{else}hidden-xs-up{/if}">{l s='Active filters' d='Shop.Theme.Global'}</p>
     {/block}
@@ -43,4 +46,7 @@
             </li>
         </ul>
     {/if}
+    </div>
+
+    {$smarty.capture.ccproductsort nofilter}
 </section>
