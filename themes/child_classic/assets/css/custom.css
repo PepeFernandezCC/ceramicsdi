@@ -6606,6 +6606,7 @@ span.at-contact {
       padding: 5px;
       font-weight: 700;
       border: 1px solid black !important;
+      cursor: pointer;
   }
 
   .modals-block {
@@ -6878,6 +6879,35 @@ div#board-section {
 
 .carousel-btn.prev { left: 0; }
 .carousel-btn.next { right: 0; }
+
+/* Puntos de navegación de imágenes (productos complementarios) */
+.img-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 0 4px;
+}
+
+.img-dot {
+  width: 18px;
+  height: 4px;
+  padding: 0;
+  border: none;
+  border-radius: 2px;
+  background: #ccc;
+  cursor: pointer;
+  outline: none;
+  transition: background .2s, width .2s;
+}
+
+.img-dot:focus { outline: none; }
+
+.img-dot:hover { background: #999; }
+
+.img-dot.active {
+  width: 28px;
+  background: #333;
+}
 
 .w100 {
   width: 100% !important;
@@ -7292,6 +7322,7 @@ span.manage-addresses {
 .cards-viewport{
   overflow:hidden;
   width:100%;
+  min-width:0; /* que no crezca con el contenido y desplace las flechas */
 }
 
 .cards-track{
@@ -7302,7 +7333,31 @@ span.manage-addresses {
 
 .cards-slide{
   flex:0 0 100%;
+  min-width:0; /* cada slide mide exactamente el viewport, aunque la imagen sea más ancha */
   box-sizing:border-box;
+  overflow:hidden;
+}
+
+.cards-slide .board-card{
+  padding:0 6px; /* margen para que nada toque los bordes del viewport */
+}
+
+.cards-slide .esquina-img-carousel{
+  max-width:100%;
+}
+
+.cards-slide .board-info{
+  width:100%;
+  max-width:230px;
+}
+
+.cards-slide .board-button{
+  width:100%; /* el botón tiene 230px fijos y desbordaba la tarjeta en móvil */
+}
+
+.cards-slide .board-title{
+  overflow-wrap:anywhere;
+  text-align:center;
 }
 
 .cards-btn {

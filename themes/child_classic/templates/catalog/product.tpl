@@ -771,8 +771,6 @@
                                                             <h2 class="product_H2">{l s='Recommended board' d='Shop.Theme.Catalog'}</h2>
                                                             <div class="board-card">
                                                                 <div class="board-img-carousel" data-img-carousel>
-                                                                    <button type="button" class="carousel-btn prev" data-img-prev aria-label="Previous">‹</button>
-
                                                                     <div class="carousel-track" data-img-track>
                                                                         {if $hasCover}
                                                                             <img loading="lazy" src="{$imageCoverUrl}" alt="{$cardBoard.name} - cover"/>
@@ -782,7 +780,12 @@
                                                                         {/if}
                                                                     </div>
 
-                                                                    <button type="button" class="carousel-btn next" data-img-next aria-label="Next">›</button>
+                                                                    {if $hasCover && $hasDust}
+                                                                        <div class="img-dots" data-img-dots>
+                                                                            <button type="button" class="img-dot active" data-img-dot="0" aria-label="1"></button>
+                                                                            <button type="button" class="img-dot" data-img-dot="1" aria-label="2"></button>
+                                                                        </div>
+                                                                    {/if}
                                                                 </div>
 
                                                                 <div class="board-info">
@@ -813,15 +816,19 @@
                                                                         <div class="pc-carousel-card">
                                                                             <div class="board-card">
                                                                                 <div class="esquina-img-carousel" data-img-carousel>
-                                                                                    <button type="button" class="carousel-btn prev" data-img-prev aria-label="Previous">‹</button>
-
                                                                                     <div class="carousel-track" data-img-track>
                                                                                     {foreach from=$complement.images item='imageItem'}
                                                                                         <img loading="lazy" src="{$imageItem.url}"  alt="{$imageItem.legend}"/>
                                                                                     {/foreach}
                                                                                     </div>
 
-                                                                                    <button type="button" class="carousel-btn next" data-img-next aria-label="Next">›</button>
+                                                                                    {if count($complement.images) > 1}
+                                                                                        <div class="img-dots" data-img-dots>
+                                                                                            {foreach from=$complement.images item='imageItem' name='dots'}
+                                                                                                <button type="button" class="img-dot{if $smarty.foreach.dots.first} active{/if}" data-img-dot="{$smarty.foreach.dots.index}" aria-label="{$smarty.foreach.dots.iteration}"></button>
+                                                                                            {/foreach}
+                                                                                        </div>
+                                                                                    {/if}
                                                                                 </div>
 
                                                                             
