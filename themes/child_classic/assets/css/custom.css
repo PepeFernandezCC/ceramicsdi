@@ -6256,7 +6256,9 @@ body#checkout .card-block.cart-summary-totals .cart-total, body#order-confirmati
 
 
 /*# sourceMappingURL=custom.css.map */
-@media (max-width: 1024px) {
+/* Solo cuando se ve el carrusel móvil (owl, hidden-sm-up = <576px).
+   Por encima se muestra la galería de escritorio y con altura fija se desbordaba sobre el footer */
+@media (max-width: 575px) {
   .fix-height-477-mobile {
     height: 477px;
   }
@@ -6884,8 +6886,53 @@ div#board-section {
 .img-dots {
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 6px;
+  height: 4px; /* misma altura aunque esté vacío (una sola imagen) */
   padding: 8px 0 4px;
+  box-sizing: content-box;
+}
+
+/* Imágenes cuadradas en ambos carruseles para que midan lo mismo */
+#board-section [data-img-track] img {
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+}
+
+/* ALINEACIÓN JUNTA RECOMENDADA / PRODUCTO COMPLEMENTARIO (escritorio) */
+@media (min-width: 769px) {
+  #board-section {
+    align-items: stretch;
+  }
+
+  /* el bloque de complementarios se centraba verticalmente y bajaba su título */
+  #board-section .pc-cards-carousel {
+    align-items: flex-start;
+  }
+  #board-section .cards-btn {
+    align-self: center;
+  }
+
+  #board-section .board-card {
+    justify-content: flex-start;
+  }
+
+  /* títulos de sección con la misma altura aunque uno salte de línea */
+  #board-section h2.product_H2 {
+    min-height: 2.5em;
+    line-height: 1.25;
+    margin-top: 0;
+  }
+
+  /* nombre del producto reservando 2 líneas: Ref y botón caen en la misma línea */
+  #board-section .board-title {
+    line-height: 1.25;
+    min-height: calc(2.5em + 20px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
 }
 
 .img-dot {
@@ -7342,6 +7389,7 @@ span.manage-addresses {
   padding:0 6px; /* margen para que nada toque los bordes del viewport */
 }
 
+
 .cards-slide .esquina-img-carousel{
   max-width:100%;
 }
@@ -7358,6 +7406,16 @@ span.manage-addresses {
 .cards-slide .board-title{
   overflow-wrap:anywhere;
   text-align:center;
+}
+
+@media (min-width:769px){
+  /* en escritorio el viewport se estiraba al 40% y dejaba las flechas muy separadas */
+  .pc-cards-carousel{
+    justify-content:center;
+  }
+  .cards-viewport{
+    max-width:260px;
+  }
 }
 
 .cards-btn {
@@ -7397,6 +7455,10 @@ span.manage-addresses {
 @media (max-width:769px) {
   .sampleText {
       margin-top: 20px;
+  }
+
+  .cards-slide {
+    margin-top: 15px;
   }
 }
 

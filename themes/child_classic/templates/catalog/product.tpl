@@ -768,7 +768,7 @@
                                                 <div class="recomendation-board {if empty($complements)}w100{/if}">
                                                     <div class="cards-slide">
                                                         <div class="pc-carousel-card">
-                                                            <h2 class="product_H2">{l s='Recommended board' d='Shop.Theme.Catalog'}</h2>
+                                                            <h2 class="product_H2" style="margin-bottom: 0">{l s='Recommended board' d='Shop.Theme.Catalog'}</h2>
                                                             <div class="board-card">
                                                                 <div class="board-img-carousel" data-img-carousel>
                                                                     <div class="carousel-track" data-img-track>
@@ -780,12 +780,12 @@
                                                                         {/if}
                                                                     </div>
 
-                                                                    {if $hasCover && $hasDust}
-                                                                        <div class="img-dots" data-img-dots>
+                                                                    <div class="img-dots" data-img-dots>
+                                                                        {if $hasCover && $hasDust}
                                                                             <button type="button" class="img-dot active" data-img-dot="0" aria-label="1"></button>
                                                                             <button type="button" class="img-dot" data-img-dot="1" aria-label="2"></button>
-                                                                        </div>
-                                                                    {/if}
+                                                                        {/if}
+                                                                    </div>
                                                                 </div>
 
                                                                 <div class="board-info">
@@ -807,7 +807,7 @@
                                                     <div id="complement-products-box" class="pc-cards-carousel" data-cards-carousel>
                                                         <button type="button" class="cards-btn prev" data-cards-prev aria-label="Previous">⟨</button>
                                                         <div class="cards-viewport">
-                                                            <div><h2 class="product_H2">{l s='Producto Complementario' d='Shop.Theme.Catalog'}</h2></div>
+                                                            <div><h2 class="product_H2" style="margin-bottom: 0">{l s='Producto Complementario' d='Shop.Theme.Catalog'}</h2></div>
                                                             <div class="cards-track">
                                                                 
                                                                 {foreach from=$complements item='complement'}  
@@ -822,13 +822,13 @@
                                                                                     {/foreach}
                                                                                     </div>
 
-                                                                                    {if count($complement.images) > 1}
-                                                                                        <div class="img-dots" data-img-dots>
+                                                                                    <div class="img-dots" data-img-dots>
+                                                                                        {if count($complement.images) > 1}
                                                                                             {foreach from=$complement.images item='imageItem' name='dots'}
                                                                                                 <button type="button" class="img-dot{if $smarty.foreach.dots.first} active{/if}" data-img-dot="{$smarty.foreach.dots.index}" aria-label="{$smarty.foreach.dots.iteration}"></button>
                                                                                             {/foreach}
-                                                                                        </div>
-                                                                                    {/if}
+                                                                                        {/if}
+                                                                                    </div>
                                                                                 </div>
 
                                                                             
