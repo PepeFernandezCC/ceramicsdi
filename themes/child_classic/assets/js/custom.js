@@ -110,7 +110,8 @@ $( document ).ready( function () {
          carousels.forEach((carousel) => {
             const track = carousel.querySelector("[data-img-track]");
             const images = track ? track.querySelectorAll("img") : [];
-            const dots = carousel.querySelectorAll("[data-img-dot]");
+            // los guiones están fuera del carrusel (que tiene overflow:hidden) para que no se recorte su zona clicable
+            const dots = (carousel.closest(".board-card") || carousel).querySelectorAll("[data-img-dot]");
 
             // Si no hay suficientes imágenes, no hace falta carrusel
             if (!track || images.length <= 1) return;

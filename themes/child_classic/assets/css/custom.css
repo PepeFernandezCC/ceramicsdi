@@ -6891,6 +6891,8 @@ div#board-section {
   height: 4px; /* misma altura aunque esté vacío (una sola imagen) */
   padding: 8px 0 4px;
   box-sizing: content-box;
+  position: relative;
+  z-index: 1; /* la zona clicable ampliada queda por encima del título de debajo */
 }
 
 /* Imágenes cuadradas en ambos carruseles para que midan lo mismo */
@@ -6936,23 +6938,46 @@ div#board-section {
 }
 
 .img-dot {
+  position: relative;
   width: 18px;
   height: 4px;
   padding: 0;
   border: none;
-  border-radius: 2px;
-  background: #ccc;
+  background: transparent;
   cursor: pointer;
   outline: none;
-  transition: background .2s, width .2s;
+  transition: width .2s;
+}
+
+/* el guion visible */
+.img-dot::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 2px;
+  background: #ccc;
+  transition: background .2s;
+}
+
+/* zona clicable ampliada e invisible: el guion se ve igual pero es más fácil de pulsar */
+.img-dot::after {
+  content: "";
+  position: absolute;
+  top: -10px;
+  bottom: -10px;
+  left: -3px;  /* la mitad del gap: las zonas de guiones vecinos se tocan sin solaparse */
+  right: -3px;
 }
 
 .img-dot:focus { outline: none; }
 
-.img-dot:hover { background: #999; }
+.img-dot:hover::before { background: #999; }
 
 .img-dot.active {
   width: 28px;
+}
+
+.img-dot.active::before {
   background: #333;
 }
 

@@ -779,13 +779,13 @@
                                                                             <img loading="lazy" src="{$imageDustUrl}"  alt="{$cardBoard.name} - sample"/>
                                                                         {/if}
                                                                     </div>
+                                                                </div>
 
-                                                                    <div class="img-dots" data-img-dots>
-                                                                        {if $hasCover && $hasDust}
-                                                                            <button type="button" class="img-dot active" data-img-dot="0" aria-label="1"></button>
-                                                                            <button type="button" class="img-dot" data-img-dot="1" aria-label="2"></button>
-                                                                        {/if}
-                                                                    </div>
+                                                                <div class="img-dots" data-img-dots>
+                                                                    {if $hasCover && $hasDust}
+                                                                        <button type="button" class="img-dot active" data-img-dot="0" aria-label="1"></button>
+                                                                        <button type="button" class="img-dot" data-img-dot="1" aria-label="2"></button>
+                                                                    {/if}
                                                                 </div>
 
                                                                 <div class="board-info">
@@ -821,15 +821,15 @@
                                                                                         <img loading="lazy" src="{$imageItem.url}"  alt="{$imageItem.legend}"/>
                                                                                     {/foreach}
                                                                                     </div>
-
-                                                                                    <div class="img-dots" data-img-dots>
-                                                                                        {if count($complement.images) > 1}
-                                                                                            {foreach from=$complement.images item='imageItem' name='dots'}
-                                                                                                <button type="button" class="img-dot{if $smarty.foreach.dots.first} active{/if}" data-img-dot="{$smarty.foreach.dots.index}" aria-label="{$smarty.foreach.dots.iteration}"></button>
-                                                                                            {/foreach}
-                                                                                        {/if}
-                                                                                    </div>
                                                                                 </div>
+
+                                                                                <div class="img-dots" data-img-dots>
+                                                                                    {if count($complement.images) > 1}
+                                                                                        {foreach from=$complement.images item='imageItem' name='dots'}
+                                                                                            <button type="button" class="img-dot{if $smarty.foreach.dots.first} active{/if}" data-img-dot="{$smarty.foreach.dots.index}" aria-label="{$smarty.foreach.dots.iteration}"></button>
+                                                                                        {/foreach}
+                                                                                    {/if}
+                                                                                    </div>
 
                                                                             
                                                                                 <div class="board-info">
