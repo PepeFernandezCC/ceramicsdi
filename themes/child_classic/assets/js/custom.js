@@ -883,7 +883,11 @@ $( document ).ready( function () {
 
       let $customFilterWrapper = $( '#custom-filter-wrapper' );
 
-      $customFilterWrapper.find( 'button' ).on( 'click', function () {
+      // El botón no se repinta en las recargas ajax del listado, pero
+      // initializeCustom() se vuelve a ejecutar en cada updateProductList: sin el
+      // .off() se apilaba un handler por recarga y cada click hacía N slideToggle
+      // seguidos (el panel se abría y cerraba varias veces).
+      $customFilterWrapper.find( 'button' ).off( 'click.ccFilterToggle' ).on( 'click.ccFilterToggle', function () {
 
          $( '.custom-filter-mobile' ).slideToggle( 'hidden-xs-down' );
 
