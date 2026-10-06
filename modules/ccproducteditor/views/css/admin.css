@@ -1,0 +1,207 @@
+#ccpe-app .ccpe-filters .form-group {
+  margin: 0 18px 10px 0;
+  vertical-align: top;
+}
+#ccpe-app .ccpe-filters label {
+  margin-right: 6px;
+}
+#ccpe-app .ccpe-filters .ccpe-inline-check {
+  margin-left: 8px;
+  font-weight: normal;
+}
+#ccpe-app .ccpe-id-input {
+  width: 100px;
+}
+#ccpe-app [hidden] {
+  display: none !important;
+}
+
+/* Barra de acciones */
+#ccpe-app .ccpe-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+#ccpe-app .ccpe-pagination {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+#ccpe-app .ccpe-dirty-count {
+  margin-left: 10px;
+  color: #c05c00;
+  font-weight: bold;
+  text-transform: none;
+}
+#ccpe-app.ccpe-busy .ccpe-table-wrap {
+  opacity: .5;
+  pointer-events: none;
+}
+#ccpe-app .alert ul {
+  margin: 8px 0 0;
+  max-height: 260px;
+  overflow: auto;
+}
+
+/* Tabla con scroll y cabecera / primeras columnas fijas */
+#ccpe-app .ccpe-table-wrap {
+  overflow: auto;
+  max-height: calc(100vh - 260px);
+  border: 1px solid #dbe6e9;
+}
+#ccpe-app .ccpe-table {
+  margin: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  width: max-content;
+  min-width: 100%;
+}
+#ccpe-app .ccpe-table th,
+#ccpe-app .ccpe-table td {
+  padding: 4px 6px;
+  vertical-align: middle;
+  border-bottom: 1px solid #eef2f3;
+  background: #fff;
+  white-space: nowrap;
+}
+#ccpe-app .ccpe-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #f5f8f9;
+  font-size: 11px;
+  white-space: normal;
+  min-width: 90px;
+  max-width: 200px;
+}
+#ccpe-app .ccpe-table .ccpe-sticky {
+  position: sticky;
+  z-index: 1;
+}
+#ccpe-app .ccpe-table thead .ccpe-sticky {
+  z-index: 3;
+}
+#ccpe-app .ccpe-col-active {
+  left: 0;
+  width: 60px;
+  min-width: 60px !important;
+}
+#ccpe-app .ccpe-col-id {
+  left: 60px;
+  width: 60px;
+  min-width: 60px !important;
+  box-shadow: 2px 0 0 #dbe6e9;
+}
+#ccpe-app .ccpe-empty {
+  padding: 30px !important;
+  text-align: center;
+  color: #6c868e;
+}
+
+/* Anchos de columnas */
+#ccpe-app .ccpe-table input.form-control,
+#ccpe-app .ccpe-table select.form-control {
+  height: 28px;
+  padding: 2px 6px;
+  font-size: 12px;
+  width: 140px;
+}
+#ccpe-app td[data-key="name"] input,
+#ccpe-app td[data-key="link_rewrite"] input {
+  width: 240px;
+}
+#ccpe-app td[data-key="available_now"] input,
+#ccpe-app td[data-key="available_later"] input {
+  width: 200px;
+}
+#ccpe-app td[data-key="price"] input,
+#ccpe-app td[data-key="weight"] input,
+#ccpe-app td[data-key="quantity"] input {
+  width: 85px;
+  text-align: right;
+}
+#ccpe-app td[data-key="id_tax_rules_group"] select,
+#ccpe-app td[data-key="out_of_stock"] select {
+  width: 190px;
+}
+
+/* Características */
+#ccpe-app .ccpe-feature select {
+  display: inline-block;
+  margin: 1px 2px 1px 0;
+}
+#ccpe-app .ccpe-add {
+  border: 1px dashed #bbcdd2;
+  background: transparent;
+  color: #6c868e;
+  border-radius: 3px;
+  width: 22px;
+  height: 22px;
+  line-height: 1;
+  padding: 0;
+  vertical-align: middle;
+}
+#ccpe-app .ccpe-add:hover {
+  border-color: #25b9d7;
+  color: #25b9d7;
+}
+
+/* Estado de edición */
+#ccpe-app tr.ccpe-row-dirty .ccpe-col-id {
+  border-left: 3px solid #fab000;
+}
+#ccpe-app td.ccpe-cell-dirty {
+  background: #fff8e1;
+}
+#ccpe-app td.ccpe-invalid {
+  background: #fde8e8;
+}
+#ccpe-app td.ccpe-invalid input {
+  border-color: #e44;
+}
+
+/* Interruptor activo */
+#ccpe-app .ccpe-switch {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+  margin: 0;
+  cursor: pointer;
+}
+#ccpe-app .ccpe-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+#ccpe-app .ccpe-switch span {
+  position: absolute;
+  inset: 0;
+  background: #c05c67;
+  border-radius: 20px;
+  transition: background .15s;
+}
+#ccpe-app .ccpe-switch span::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform .15s;
+}
+#ccpe-app .ccpe-switch input:checked + span {
+  background: #70b580;
+}
+#ccpe-app .ccpe-switch input:checked + span::before {
+  transform: translateX(16px);
+}
+#ccpe-app .ccpe-switch input:disabled + span {
+  opacity: .5;
+  cursor: not-allowed;
+}
