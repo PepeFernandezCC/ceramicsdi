@@ -21,6 +21,19 @@ class CcFreeSampleDiscount extends Module
     const SAMPLE_UNIT_PRICE_CENTS = 1;
 
     /**
+     * Rule lifetime, renewed on every sync (cart/checkout page view). Kept
+     * short so rules of abandoned carts expire and get purged quickly.
+     */
+    const RULE_LIFETIME = '+2 days';
+
+    /**
+     * Minimum order age before the rule of an ordered cart is purged. Leaves
+     * time for PaymentModule::validateOrder() to finish every order of a
+     * split cart, which all read the same cart rule.
+     */
+    const ORDERED_CART_GRACE_MINUTES = 10;
+
+    /**
      * Use a tax-included voucher amount.
      *
      * This avoids carts such as:
@@ -35,7 +48,7 @@ class CcFreeSampleDiscount extends Module
     {
         $this->name = 'ccfreesamplediscount';
         $this->tab = 'pricing_promotion';
-        $this->version = '0.1.5';
+        $this->version = '0.1.6';
         $this->author = 'CERAMIC CONNECTION';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -199,34 +212,56 @@ class CcFreeSampleDiscount extends Module
         }
 
         $this->syncCartRuleForCart($cart);
-        $this->garbageCollectExpiredRules();
+        $this->maybeGarbageCollectRules();
     }
 
     /**
-     * Best-effort cleanup for rules left behind by ABANDONED carts (never
-     * validated into an order, so hookActionValidateOrder() never runs for
-     * them): once a rule is past its date_to it can never be used again
-     * (quantity_per_user=1, single cart), so it is safe to delete.
+     * Probabilistic cleanup on cart/checkout views. Runs ~5% of the time.
      *
-     * No cron/scheduled task infrastructure is assumed here, so this piggy-
-     * backs on the actionCartSave hook (already very frequent) instead, but
-     * only runs ~0.5% of the time and only deletes a small batch, so it
-     * stays cheap per-request while still keeping the table from growing
-     * unbounded again like it did before the 2026-09-14 incident.
+     * Deliberately NOT run from hookActionValidateOrder(): each
+     * CartRule::delete() runs ~10 queries (some scanning whole tables), and
+     * that hook runs in the middle of PaymentModule::validateOrder(), also
+     * inside payment gateway notifications (Redsys...).
      */
-    protected function garbageCollectExpiredRules($batchSize = 50)
+    protected function maybeGarbageCollectRules()
     {
-        if (mt_rand(1, 200) !== 1) {
+        if (mt_rand(1, 20) !== 1) {
             return;
         }
 
+        $this->garbageCollectRules();
+    }
+
+    /**
+     * Delete module rules that can never be used again:
+     *  - expired ones (abandoned carts: date_to is renewed on every sync,
+     *    so an expired rule belongs to a cart nobody has touched in days);
+     *  - rules of carts that already became an order more than
+     *    ORDERED_CART_GRACE_MINUTES ago and were not deleted by
+     *    hookActionValidateOrder() (e.g. rules left from before 2026-09-14).
+     *
+     * Safe for orders: ps_order_cart_rule keeps its own snapshot
+     * (name/value) for order history and invoices.
+     *
+     * @param int $batchSize
+     */
+    protected function garbageCollectRules($batchSize = 20)
+    {
         try {
+            $prefix = self::CART_RULE_CODE_PREFIX;
             $ids = Db::getInstance()->executeS('
-                SELECT id_cart_rule
-                FROM `' . _DB_PREFIX_ . 'cart_rule`
-                WHERE code LIKE "' . pSQL(self::CART_RULE_CODE_PREFIX) . '%"
-                  AND date_to < NOW()
-                ORDER BY id_cart_rule ASC
+                SELECT cr.id_cart_rule
+                FROM `' . _DB_PREFIX_ . 'cart_rule` cr
+                WHERE cr.code LIKE "' . pSQL($prefix) . '%"
+                  AND (
+                    cr.date_to < NOW()
+                    OR EXISTS (
+                        SELECT 1 FROM `' . _DB_PREFIX_ . 'orders` o
+                        WHERE o.id_cart = CAST(SUBSTRING(cr.code, ' . (Tools::strlen($prefix) + 1) . ') AS UNSIGNED)
+                          AND o.date_add < NOW() - INTERVAL ' . (int) self::ORDERED_CART_GRACE_MINUTES . ' MINUTE
+                    )
+                  )
+                ORDER BY cr.id_cart_rule ASC
                 LIMIT ' . (int) $batchSize
             );
 
@@ -240,9 +275,9 @@ class CcFreeSampleDiscount extends Module
                     $cartRule->delete();
                 }
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             PrestaShopLogger::addLog(
-                sprintf('[%s] garbageCollectExpiredRules: %s', $this->name, $e->getMessage()),
+                sprintf('[%s] garbageCollectRules: %s', $this->name, $e->getMessage()),
                 2,
                 null,
                 null,
@@ -253,33 +288,43 @@ class CcFreeSampleDiscount extends Module
     }
 
     /**
-     * Once the order is validated, delete the module's cart rule.
+     * Once the order is validated, delete this cart's rule (the order keeps
+     * its own snapshot in ps_order_cart_rule for history/invoices).
      *
-     * Safe to delete even though the order already used it: ps_order_cart_rule
-     * keeps its own snapshot (name/value/value_tax_excl) to render order
-     * history/invoices, it does not need this row to keep existing (see
-     * classes/order/OrderCartRule.php). Earlier this only deactivated the
-     * rule "to avoid interfering with order history" - that caution was not
-     * actually needed, and it left thousands of expired, never-reusable
-     * (quantity_per_user=1) rules piling up in ps_cart_rule (and, via
-     * cart_rule_combination, a multi-million-row table) - see the
-     * performance incident report from 2026-09-14.
+     * This hook runs in the middle of PaymentModule::validateOrder(): the
+     * order exists but its status/history and confirmation email are not
+     * saved yet. Any uncaught error here would leave a half-created order,
+     * so everything is wrapped in catch (Throwable) and only this cart's
+     * rule is deleted (bulk cleanup runs in maybeGarbageCollectRules()).
+     *
+     * Note: this hook runs once per order inside validateOrder()'s loop, so
+     * a cart split into several orders would lose the discount on the 2nd+
+     * order. The store never splits carts (checked 2026-10-06: 0 of 7704
+     * orders), so the rule is deleted right away.
      *
      * @param array $params
      */
     public function hookActionValidateOrder($params)
     {
-        if (empty($params['cart']) || !Validate::isLoadedObject($params['cart'])) {
-            return;
-        }
+        try {
+            if (empty($params['cart']) || !Validate::isLoadedObject($params['cart'])) {
+                return;
+            }
 
-        $cart = $params['cart'];
-        $cartRule = $this->findModuleCartRuleForCart((int) $cart->id);
-        if (!Validate::isLoadedObject($cartRule)) {
-            return;
+            $cartRule = $this->findModuleCartRuleForCart((int) $params['cart']->id);
+            if (Validate::isLoadedObject($cartRule)) {
+                $cartRule->delete();
+            }
+        } catch (Throwable $e) {
+            PrestaShopLogger::addLog(
+                sprintf('[%s] hookActionValidateOrder: %s', $this->name, $e->getMessage()),
+                2,
+                null,
+                'Cart',
+                isset($params['cart']->id) ? (int) $params['cart']->id : null,
+                true
+            );
         }
-
-        $cartRule->delete();
     }
 
     /**
@@ -313,14 +358,14 @@ class CcFreeSampleDiscount extends Module
                 $cartRule->reduction_tax = self::DISCOUNT_TAX_INCLUDED ? 1 : 0;
                 $cartRule->reduction_currency = (int) $cart->id_currency;
                 $cartRule->active = 1;
-                $cartRule->date_to = date('Y-m-d H:i:s', strtotime('+30 days'));
+                $cartRule->date_to = date('Y-m-d H:i:s', strtotime(self::RULE_LIFETIME));
                 $cartRule->update();
 
                 if (!$this->cartHasRule($cart, (int) $cartRule->id)) {
                     $cart->addCartRule((int) $cartRule->id);
                 }
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             PrestaShopLogger::addLog(
                 sprintf('[%s] %s', $this->name, $e->getMessage()),
                 3,
@@ -484,7 +529,7 @@ class CcFreeSampleDiscount extends Module
         $cartRule->code = self::CART_RULE_CODE_PREFIX . (int) $cart->id;
         $cartRule->id_customer = (int) $cart->id_customer;
         $cartRule->date_from = date('Y-m-d H:i:s', strtotime('-1 day'));
-        $cartRule->date_to = date('Y-m-d H:i:s', strtotime('+30 days'));
+        $cartRule->date_to = date('Y-m-d H:i:s', strtotime(self::RULE_LIFETIME));
         $cartRule->quantity = 1;
         $cartRule->quantity_per_user = 1;
         $cartRule->priority = 1;

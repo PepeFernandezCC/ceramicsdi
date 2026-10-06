@@ -20,7 +20,9 @@ Descuento por muestras gratis    -0,02 €
 - Detección: productos con `price_wt` redondeado a 1 céntimo.
 - Descuento: regla de carrito automática llamada `Descuento por muestras gratis`.
 - Código interno de la regla: `CCFREESAMPLE-{id_cart}`.
-- Al validar pedido, la regla se desactiva para que no quede reutilizable.
+- La regla caduca a las 48 h; cada visita al carrito/checkout la renueva.
+- Al validar el pedido, la regla de ese carrito se borra (el pedido guarda su copia en `ps_order_cart_rule`).
+- Limpieza (`garbageCollectRules`): borra las reglas caducadas (carritos abandonados) y las de carritos con pedido de hace más de 10 min. Se ejecuta en ~5 % de las visitas al carrito/checkout, en lotes de 20. No se ejecuta al validar pedido para no ralentizar ni arriesgar el checkout.
 
 ## Instalación
 
