@@ -19,8 +19,9 @@ class AdminCcProductEditorController extends ModuleAdminController
     public function setMedia($isNewTheme = false)
     {
         parent::setMedia($isNewTheme);
-        $this->addCSS($this->module->getPathUri() . 'views/css/admin.css');
-        $this->addJS($this->module->getPathUri() . 'views/js/admin.js');
+
+        $this->addCSS($this->module->getPathUri() . 'views/css/admin.css?v=' . filemtime($this->module->getLocalPath() . 'views/css/admin.css'), 'all', null, false);
+        $this->addJS($this->module->getPathUri() . 'views/js/admin.js?v=' . filemtime($this->module->getLocalPath() . 'views/js/admin.js'));
     }
 
     public function initContent()

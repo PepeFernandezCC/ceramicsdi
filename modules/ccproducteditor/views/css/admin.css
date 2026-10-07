@@ -93,7 +93,24 @@
   left: 60px;
   width: 60px;
   min-width: 60px !important;
+}
+/* Anchos fijos para que el "left" de cada columna fija sea la suma exacta de las anteriores
+   (ancho del input + 12px de padding de la celda) */
+#ccpe-app .ccpe-table .ccpe-col-reference {
+  left: 120px;
+  width: 152px;
+  min-width: 152px !important;
+  max-width: 152px;
+}
+#ccpe-app .ccpe-table .ccpe-col-name {
+  left: 272px;
+  width: 160px;
+  min-width: 160px !important;
+  max-width: 252px;
   box-shadow: 2px 0 0 #dbe6e9;
+}
+#ccpe-app .ccpe-table .ccpe-sticky {
+  box-sizing: border-box;
 }
 #ccpe-app .ccpe-empty {
   padding: 30px !important;

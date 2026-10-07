@@ -8,6 +8,9 @@
 (function () {
   'use strict';
 
+  // Columnas de campos que quedan fijas al hacer scroll horizontal (además de Activo e ID)
+  var STICKY_FIELDS = ['reference', 'name'];
+
   var app;
   var config;
   var table;
@@ -140,6 +143,10 @@
 
     return fetch(url, { method: 'POST', body: body || new FormData(), credentials: 'same-origin' })
       .then(function (response) {
+        // Si la sesión del admin ha caducado, PrestaShop redirige al login y fetch() sigue la redirección
+        if (response.redirected && response.url.indexOf('controller=AdminLogin') !== -1) {
+          throw new Error('Tu sesión del back-office ha caducado. Recarga la página (F5) o vuelve a iniciar sesión e inténtalo de nuevo.');
+        }
         return response.text().then(function (text) {
           try {
             return JSON.parse(text);
@@ -256,13 +263,17 @@
 
   /* ---------- Render ---------- */
 
+  function stickyClass(key) {
+    return STICKY_FIELDS.indexOf(key) !== -1 ? 'ccpe-sticky ' : '';
+  }
+
   function renderTable() {
     var head = '<tr>';
     head += '<th class="ccpe-sticky ccpe-col-active">' + escapeHtml(config.fields.active.label) + '</th>';
     head += '<th class="ccpe-sticky ccpe-col-id">ID</th>';
     Object.keys(config.fields).forEach(function (key) {
       if (key !== 'active') {
-        head += '<th class="ccpe-col-' + key + '">' + escapeHtml(config.fields[key].label) + '</th>';
+        head += '<th class="' + stickyClass(key) + 'ccpe-col-' + key + '">' + escapeHtml(config.fields[key].label) + '</th>';
       }
     });
     state.features.forEach(function (feature) {
@@ -296,7 +307,7 @@
       }
       var field = config.fields[key];
       var value = row[key];
-      html += '<td data-key="' + key + '">';
+      html += '<td' + (STICKY_FIELDS.indexOf(key) !== -1 ? ' class="ccpe-sticky ccpe-col-' + key + '"' : '') + ' data-key="' + key + '">';
       if (field.type === 'choice') {
         html += '<select class="form-control input-sm ccpe-lazy" data-field="' + key + '" data-list="' + field.choices + '"' + disabled + '>'
           + '<option value="' + escapeHtml(value) + '" selected>' + escapeHtml(choiceLabel(field.choices, value)) + '</option></select>';
