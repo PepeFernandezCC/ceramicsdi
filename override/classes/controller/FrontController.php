@@ -49,6 +49,7 @@ class FrontController extends FrontControllerCore {
 	public const FEATURE_MATERIAL		 	   = '45';
 	public const FEATURE_COLOR		 	   	   = '46';
 	public const FEATURE_POOL_VALIDATE_ID	   = '50';
+	public const FEATURE_ASPECT				   = '54';
 	public const FEATURE_SHOW_STOCK 	 	   = '55';
 	public const FEATURE_SAMPLE_AVAILABLE	   = '56';
 	public const FEATURE_COLLECTION			   = '57';
@@ -65,6 +66,8 @@ class FrontController extends FrontControllerCore {
 	public const FEATURE_DESCRIPTION_NL		   = '68';
 	public const FEATURE_TOP_PRODUCT		   = '69';
 	public const FEATURE_EAN_COPY			   = '70';
+	public const FEATURE_RECOMMENDED_PRODUCT   = '74';
+	public const FEATURE_LANDING			   = '75';
 	public const FEATURE_CUSTOM_STOCK		   = '76';
 	public const FEATURE_CUSTOM_OUT_OF_STOCK   = '77';
 	public const FEATURE_ESQUINA			   = '79';
@@ -279,6 +282,9 @@ class FrontController extends FrontControllerCore {
 				self::FEATURE_TOP_PRODUCT,
 				self::FEATURE_COLLECTION,
 				self::FEATURE_USA_PT,
+				self::FEATURE_LANDING,
+				self::FEATURE_RECOMMENDED_PRODUCT,
+				self::FEATURE_ASPECT,
 				self::FEATURE_PRICE_RANGE
 			]
 		);
