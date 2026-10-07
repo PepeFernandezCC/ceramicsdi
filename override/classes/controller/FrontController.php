@@ -44,12 +44,14 @@ class FrontController extends FrontControllerCore {
 	public const FEATURE_PRODUCTOS_ID    	   = '27';
 	public const FEATURE_M2_PIEZA_ID           = '30';
 	public const FEATURE_MARCA_ID        	   = '39';
+	public const FEATURE_PRICE_RANGE		   = '42';
 	public const FEATURE_WEB_PRICE       	   = '44';
 	public const FEATURE_MATERIAL		 	   = '45';
 	public const FEATURE_COLOR		 	   	   = '46';
 	public const FEATURE_POOL_VALIDATE_ID	   = '50';
 	public const FEATURE_SHOW_STOCK 	 	   = '55';
 	public const FEATURE_SAMPLE_AVAILABLE	   = '56';
+	public const FEATURE_COLLECTION			   = '57';
 	public const FEATURE_PRIORITY			   = '58';
 	public const FEATURE_USE_IMAGE			   = '59';
 	public const FEATURE_PREPARE_DAYS		   = '60';
@@ -67,9 +69,10 @@ class FrontController extends FrontControllerCore {
 	public const FEATURE_CUSTOM_OUT_OF_STOCK   = '77';
 	public const FEATURE_ESQUINA			   = '79';
 	public const FEATURE_PRODUCTO_COMPLEMENTARIO = '80';
-	public const FEATURE_META_CAMPAIGN = '81';
-	public const FEATURE_METROS_LINEALES = '82';
-	public const FEATURE_MUESTRA_DE_PAGO_ID = '43'; // En la demo es el 31
+	public const FEATURE_META_CAMPAIGN 		   = '81';
+	public const FEATURE_METROS_LINEALES 	   = '82';
+	public const FEATURE_USA_PT				   = '84';
+	public const FEATURE_MUESTRA_DE_PAGO_ID    = '43'; // En la demo es el 31
 	public const FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2       = 'Por m2';
 	public const FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2_FR    = 'Par m2';
 	public const FEATURE_TIPOLOGIA_PRECIO_VALUE_POR_M2_EN    = 'Per m2';
@@ -273,7 +276,10 @@ class FrontController extends FrontControllerCore {
 				self::FEATURE_EAN_COPY,
 				self::FEATURE_CUSTOM_STOCK,
 				self::FEATURE_CUSTOM_OUT_OF_STOCK,
-				self::FEATURE_TOP_PRODUCT
+				self::FEATURE_TOP_PRODUCT,
+				self::FEATURE_COLLECTION,
+				self::FEATURE_USA_PT,
+				self::FEATURE_PRICE_RANGE
 			]
 		);
 		$this->context->smarty->assign(

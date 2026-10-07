@@ -404,9 +404,11 @@ class FrontController extends FrontControllerCore {
 			if ( $res && Db::getInstance()->numRows() > 0 ) {
 				$this->context->smarty->assign( 'categoria_contenido_extra', $res[ 'content' ] );
 				$this->context->smarty->assign( 'categoria_texto_boton', $res[ 'button_text' ] );
+				$this->context->smarty->assign( 'categoria_faq_pairs', $this->buildCategoryFaqPairs( $res[ 'content' ] ) );
 			} else {
 				$this->context->smarty->assign( 'categoria_contenido_extra', null );
 				$this->context->smarty->assign( 'categoria_texto_boton', null );
+				$this->context->smarty->assign( 'categoria_faq_pairs', array() );
 			}
 		}
 
@@ -466,7 +468,60 @@ class FrontController extends FrontControllerCore {
 		
 		return $questions;
 	}
-	
+
+	/**
+	 * Busca pares <h3> + <p> inmediato dentro del contenido extra de
+	 * categoria del modulo planatec (el mismo HTML que se pinta en
+	 * #category-extra-content) y los devuelve listos para generar el
+	 * schema FAQPage. Solo LEE el HTML, nunca lo modifica: el contenido
+	 * visible en la pagina (incluidos los <a>/<strong> dentro del <p>)
+	 * sigue siendo exactamente el mismo, esto es una capa aparte.
+	 *
+	 * @param string|null $html
+	 *
+	 * @return array<int, array{question: string, answer: string}>
+	 */
+	private function buildCategoryFaqPairs( $html ) {
+		$pairs = array();
+
+		if ( empty( $html ) || strpos( $html, '<h3' ) === false ) {
+			return $pairs;
+		}
+
+		$dom = new DOMDocument();
+		libxml_use_internal_errors( true );
+		$dom->loadHTML( '<?xml encoding="utf-8" ?>' . $html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD );
+		libxml_clear_errors();
+
+		foreach ( $dom->getElementsByTagName( 'h3' ) as $heading ) {
+			$sibling = $heading->nextSibling;
+
+			// Nos saltamos los nodos de texto en blanco (saltos de linea/espacios)
+			// entre el </h3> y el siguiente elemento, sin tocar el DOM.
+			while ( $sibling instanceof DOMText && trim( $sibling->textContent ) === '' ) {
+				$sibling = $sibling->nextSibling;
+			}
+
+			if ( ! $sibling instanceof DOMElement || strtolower( $sibling->tagName ) !== 'p' ) {
+				continue;
+			}
+
+			$question = trim( $heading->textContent );
+			$answer   = trim( $sibling->textContent );
+
+			if ( $question === '' || $answer === '' ) {
+				continue;
+			}
+
+			$pairs[] = array(
+				'question' => $question,
+				'answer'   => $answer,
+			);
+		}
+
+		return $pairs;
+	}
+
 	private function getSocialLinks() {
 		$social_links = array();
 		$id_lang      = (int) $this->context->language->id;
