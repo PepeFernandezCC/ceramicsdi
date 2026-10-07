@@ -25,7 +25,7 @@ class CcProductEditor extends Module
         $this->name = 'ccproducteditor';
         $this->tab = 'administration';
         $this->version = '1.0.0';
-        $this->author = 'Ceramic Connection';
+        $this->author = 'José Fernández';
         $this->need_instance = 0;
         $this->bootstrap = true;
 

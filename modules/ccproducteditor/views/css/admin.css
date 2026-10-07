@@ -84,26 +84,43 @@
 #ccpe-app .ccpe-table thead .ccpe-sticky {
   z-index: 3;
 }
-#ccpe-app .ccpe-col-active {
+/* Ancho de la columna de selección (0 si el empleado no puede editar y no se pinta) */
+#ccpe-app .ccpe-table {
+  --ccpe-select-w: 0px;
+}
+#ccpe-app .ccpe-table.ccpe-selectable {
+  --ccpe-select-w: 32px;
+}
+#ccpe-app .ccpe-col-select {
   left: 0;
+  width: 32px;
+  min-width: 32px !important;
+  text-align: center;
+}
+#ccpe-app .ccpe-col-select input {
+  margin: 0;
+  cursor: pointer;
+}
+#ccpe-app .ccpe-col-active {
+  left: var(--ccpe-select-w);
   width: 60px;
   min-width: 60px !important;
 }
 #ccpe-app .ccpe-col-id {
-  left: 60px;
+  left: calc(var(--ccpe-select-w) + 60px);
   width: 60px;
   min-width: 60px !important;
 }
 /* Anchos fijos para que el "left" de cada columna fija sea la suma exacta de las anteriores
    (ancho del input + 12px de padding de la celda) */
 #ccpe-app .ccpe-table .ccpe-col-reference {
-  left: 120px;
+  left: calc(var(--ccpe-select-w) + 120px);
   width: 152px;
   min-width: 152px !important;
   max-width: 152px;
 }
 #ccpe-app .ccpe-table .ccpe-col-name {
-  left: 272px;
+  left: calc(var(--ccpe-select-w) + 272px);
   width: 160px;
   min-width: 160px !important;
   max-width: 252px;
@@ -164,6 +181,33 @@
 #ccpe-app .ccpe-add:hover {
   border-color: #25b9d7;
   color: #25b9d7;
+}
+
+/* Barra de edición masiva */
+#ccpe-app .ccpe-bulk {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  background: #e8f6f9;
+  border: 1px solid #b5e3ec;
+  border-radius: 4px;
+}
+#ccpe-app .ccpe-bulk[hidden] {
+  display: none !important;
+}
+#ccpe-app .ccpe-bulk .form-control {
+  width: auto;
+  max-width: 260px;
+  height: 30px;
+}
+#ccpe-app .ccpe-bulk #ccpe-bulk-value input {
+  width: 200px;
+}
+#ccpe-app tr.ccpe-row-selected td:not(.ccpe-cell-dirty):not(.ccpe-invalid) {
+  background: #eef9fb;
 }
 
 /* Estado de edición */

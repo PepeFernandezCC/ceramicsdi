@@ -23,8 +23,13 @@
     choices: {},       // lista => [[id, texto]]
     page: 1,
     pages: 1,
-    dirty: {}          // id => {fields: {}, features: {}}
+    dirty: {},         // id => {fields: {}, features: {}}
+    selected: {},      // id => true (productos marcados para edición masiva)
+    lastSelected: null // índice en state.order del último clic, para seleccionar rangos con Mayús
   };
+
+  // Campos que identifican a cada producto: no tiene sentido darles el mismo valor a varios
+  var BULK_EXCLUDED_FIELDS = ['reference', 'name', 'link_rewrite', 'ean13'];
 
   document.addEventListener('DOMContentLoaded', function () {
     app = document.getElementById('ccpe-app');
@@ -49,6 +54,12 @@
         loadProducts(1);
       }
     });
+
+    var bulkTarget = document.getElementById('ccpe-bulk-target');
+    if (bulkTarget) {
+      bulkTarget.addEventListener('change', renderBulkValue);
+      document.getElementById('ccpe-bulk-mode').addEventListener('change', renderBulkValue);
+    }
 
     var importFile = document.getElementById('ccpe-import-file');
     if (importFile) {
@@ -114,7 +125,21 @@
         if (confirmDiscard()) {
           document.getElementById('ccpe-import-file').click();
         }
+      } else if (action === 'bulk-apply') {
+        applyBulk();
+      } else if (action === 'bulk-clear') {
+        setSelection(state.order, false);
       }
+      return;
+    }
+
+    if (event.target.id === 'ccpe-select-all') {
+      setSelection(state.order, event.target.checked);
+      return;
+    }
+
+    if (event.target.classList.contains('ccpe-select')) {
+      onSelectRow(event.target, event.shiftKey);
       return;
     }
 
@@ -172,6 +197,8 @@
       state.rows = {};
       state.order = [];
       state.dirty = {};
+      state.selected = {};
+      state.lastSelected = null;
       state.features = data.features;
       state.featureValues = data.featureValues;
       state.choices = data.choices;
@@ -184,6 +211,7 @@
       document.getElementById('ccpe-total').textContent = data.total;
       renderTable();
       renderPagination();
+      renderBulkTargets();
       updateToolbar();
       if (afterMessage) {
         showMessage.apply(null, afterMessage);
@@ -269,6 +297,10 @@
 
   function renderTable() {
     var head = '<tr>';
+    if (config.canEdit) {
+      head += '<th class="ccpe-sticky ccpe-col-select"><input type="checkbox" id="ccpe-select-all"'
+        + ' title="Seleccionar todos los productos de esta página"></th>';
+    }
     head += '<th class="ccpe-sticky ccpe-col-active">' + escapeHtml(config.fields.active.label) + '</th>';
     head += '<th class="ccpe-sticky ccpe-col-id">ID</th>';
     Object.keys(config.fields).forEach(function (key) {
@@ -281,6 +313,7 @@
     });
     head += '</tr>';
     table.tHead.innerHTML = head;
+    table.classList.toggle('ccpe-selectable', config.canEdit);
 
     if (!state.order.length) {
       table.tBodies[0].innerHTML = '<tr><td class="ccpe-empty" colspan="99">No hay productos con estos filtros.</td></tr>';
@@ -297,6 +330,10 @@
   function rowHtml(row) {
     var disabled = config.canEdit ? '' : ' disabled';
     var html = '<tr data-id="' + row.id + '">';
+    if (config.canEdit) {
+      html += '<td class="ccpe-sticky ccpe-col-select"><input type="checkbox" class="ccpe-select"'
+        + ' title="Seleccionar para edición masiva (Mayús + clic selecciona un rango)"></td>';
+    }
     html += '<td class="ccpe-sticky ccpe-col-active" data-key="active"><label class="ccpe-switch">'
       + '<input type="checkbox" data-field="active"' + (row.active === '1' ? ' checked' : '') + disabled + '><span></span></label></td>';
     html += '<td class="ccpe-sticky ccpe-col-id"><a href="' + productLink(row.id) + '" target="_blank" rel="noopener">' + row.id + '</a></td>';
@@ -324,7 +361,7 @@
       var values = row.features[feature[0]] || [];
       html += '<td class="ccpe-feature" data-feature="' + feature[0] + '">';
       if (!values.length) {
-        html += config.canEdit ? '<button type="button" class="btn btn-default btn-xs ccpe-assign">Asignar</button>' : '';
+        html += assignButtonHtml();
       } else {
         values.forEach(function (value) {
           html += featureSelectHtml(value);
@@ -344,6 +381,10 @@
       : '<option value="" selected>— sin valor —</option>';
 
     return '<select class="form-control input-sm ccpe-lazy ccpe-fv"' + disabled + '>' + option + '</select>';
+  }
+
+  function assignButtonHtml() {
+    return config.canEdit ? '<button type="button" class="btn btn-default btn-xs ccpe-assign">Asignar</button>' : '';
   }
 
   function addButtonHtml() {
@@ -390,13 +431,18 @@
       options = state.choices[select.getAttribute('data-list')] || [];
     }
 
+    select.innerHTML = optionsHtml(options);
+    select.value = current;
+    select.setAttribute('data-populated', '1');
+  }
+
+  function optionsHtml(options) {
     var html = '';
     options.forEach(function (option) {
       html += '<option value="' + escapeHtml(String(option[0])) + '">' + escapeHtml(option[1] === '' ? '—' : option[1]) + '</option>';
     });
-    select.innerHTML = html;
-    select.value = current;
-    select.setAttribute('data-populated', '1');
+
+    return html;
   }
 
   function choiceLabel(list, id) {
@@ -414,6 +460,9 @@
 
   function onEdit(event) {
     var target = event.target;
+    if (target.classList.contains('ccpe-select')) {
+      return;
+    }
     if (target.getAttribute('data-field') === 'link_rewrite' && target.value !== target.value.toLowerCase()) {
       var position = target.selectionStart;
       target.value = target.value.toLowerCase();
@@ -516,6 +565,225 @@
       save.disabled = count === 0;
     }
     document.getElementById('ccpe-dirty-count').textContent = count ? count + ' con cambios sin guardar' : '';
+    updateBulk();
+  }
+
+  /* ---------- Selección y edición masiva ---------- */
+
+  /*
+   * La edición masiva no habla con el servidor: escribe el valor en las celdas de los productos
+   * seleccionados y llama a refreshCell(), igual que si se hubiera editado a mano. Así el cambio
+   * queda pendiente (amarillo), se valida y se guarda con «Guardar cambios» como cualquier otro.
+   */
+
+  function onSelectRow(checkbox, range) {
+    var index = indexOfId(checkbox.closest('tr').getAttribute('data-id'));
+    var ids = [state.order[index]];
+    if (range && state.lastSelected !== null) {
+      ids = state.order.slice(Math.min(index, state.lastSelected), Math.max(index, state.lastSelected) + 1);
+    }
+    state.lastSelected = index;
+    setSelection(ids, checkbox.checked);
+  }
+
+  function setSelection(ids, selected) {
+    ids.forEach(function (id) {
+      var tr = rowElement(id);
+      if (selected) {
+        state.selected[id] = true;
+      } else {
+        delete state.selected[id];
+      }
+      tr.classList.toggle('ccpe-row-selected', selected);
+      tr.querySelector('.ccpe-select').checked = selected;
+    });
+    updateBulk();
+  }
+
+  function selectedIds() {
+    return state.order.filter(function (id) { return state.selected[id]; });
+  }
+
+  function updateBulk() {
+    var bulk = document.getElementById('ccpe-bulk');
+    if (!bulk) {
+      return;
+    }
+    var count = selectedIds().length;
+    bulk.hidden = count === 0;
+    document.getElementById('ccpe-bulk-count').textContent = count === 1 ? '1 producto seleccionado' : count + ' productos seleccionados';
+    bulk.querySelectorAll('[data-ccpe-action]').forEach(function (button) {
+      button.disabled = app.classList.contains('ccpe-busy');
+    });
+
+    var all = document.getElementById('ccpe-select-all');
+    if (all) {
+      all.checked = count > 0 && count === state.order.length;
+      all.indeterminate = count > 0 && count < state.order.length;
+    }
+  }
+
+  function renderBulkTargets() {
+    var select = document.getElementById('ccpe-bulk-target');
+    if (!select) {
+      return;
+    }
+    var previous = select.value;
+    var html = '<option value="">— Campo o característica —</option><optgroup label="Campos">';
+    Object.keys(config.fields).forEach(function (key) {
+      if (BULK_EXCLUDED_FIELDS.indexOf(key) === -1) {
+        html += '<option value="field:' + key + '">' + escapeHtml(config.fields[key].label) + '</option>';
+      }
+    });
+    html += '</optgroup><optgroup label="Características">';
+    state.features.forEach(function (feature) {
+      html += '<option value="feature:' + feature[0] + '">' + escapeHtml(feature[1]) + '</option>';
+    });
+    select.innerHTML = html + '</optgroup>';
+    // Se conserva la elección al recargar (p. ej. al guardar y pasar a la página siguiente)
+    select.value = previous;
+    if (select.selectedIndex === -1) {
+      select.value = '';
+    }
+    renderBulkValue();
+  }
+
+  function bulkTarget() {
+    var value = document.getElementById('ccpe-bulk-target').value;
+    if (!value) {
+      return null;
+    }
+    var parts = value.split(':');
+
+    return { type: parts[0], key: parts[1], value: value };
+  }
+
+  /** Pinta el control del valor según el destino: desplegable para listas/características, texto para el resto */
+  function renderBulkValue() {
+    var target = bulkTarget();
+    var mode = document.getElementById('ccpe-bulk-mode');
+    var container = document.getElementById('ccpe-bulk-value');
+    var previous = container.firstElementChild && target && container.getAttribute('data-target') === target.value
+      ? container.firstElementChild.value
+      : null;
+    var html = '';
+
+    mode.hidden = !target || target.type !== 'feature';
+    if (target && target.type === 'feature') {
+      var empty = mode.value === 'replace' ? [['', '— sin valor (quitar todos) —']] : [];
+      html = '<select class="form-control input-sm">' + optionsHtml(empty.concat(state.featureValues[target.key] || [])) + '</select>';
+    } else if (target) {
+      var field = config.fields[target.key];
+      if (field.type === 'bool') {
+        html = '<select class="form-control input-sm">' + optionsHtml([['1', 'Sí'], ['0', 'No']]) + '</select>';
+      } else if (field.type === 'choice') {
+        html = '<select class="form-control input-sm">' + optionsHtml(state.choices[field.choices] || []) + '</select>';
+      } else {
+        html = '<input type="text" class="form-control input-sm" placeholder="Nuevo valor"'
+          + (field.max ? ' maxlength="' + field.max + '"' : '') + '>';
+      }
+    }
+    container.innerHTML = html;
+    container.setAttribute('data-target', target ? target.value : '');
+
+    var control = container.firstElementChild;
+    if (control && previous !== null) {
+      control.value = previous;
+      if (control.tagName === 'SELECT' && control.selectedIndex === -1) {
+        control.selectedIndex = 0;
+      }
+    }
+  }
+
+  function applyBulk() {
+    var target = bulkTarget();
+    var control = document.getElementById('ccpe-bulk-value').firstElementChild;
+    if (!target || !control) {
+      showMessage('warning', 'Elige el campo o la característica que quieres cambiar.');
+      return;
+    }
+    var ids = selectedIds();
+    var value = control.value;
+    var label = document.getElementById('ccpe-bulk-target').selectedOptions[0].text;
+    var skipped = 0;
+
+    if (target.type === 'field') {
+      if (!isValid(target.key, value)) {
+        showMessage('danger', 'El valor «' + value + '» no es válido para «' + label + '».');
+        return;
+      }
+      ids.forEach(function (id) {
+        var td = rowElement(id).querySelector('td[data-key="' + target.key + '"]');
+        var input = td.querySelector('[data-field]');
+        if (input.disabled) {
+          skipped++;
+          return;
+        }
+        if (input.type === 'checkbox') {
+          input.checked = value === '1';
+        } else {
+          if (input.tagName === 'SELECT') {
+            populate(input);
+          }
+          input.value = value;
+        }
+        refreshCell(td);
+      });
+    } else {
+      var mode = document.getElementById('ccpe-bulk-mode').value;
+      if (value === '' && mode !== 'replace') {
+        showMessage('warning', 'La característica «' + label + '» no tiene valores predefinidos.');
+        return;
+      }
+      var text = control.selectedOptions[0].text;
+      ids.forEach(function (id) {
+        applyFeatureValue(rowElement(id).querySelector('td[data-feature="' + target.key + '"]'), mode, value, text);
+      });
+    }
+
+    var applied = ids.length - skipped;
+    showMessage('success', '«' + label + '» modificado en ' + applied + (applied === 1 ? ' producto' : ' productos')
+      + (skipped ? ' (' + skipped + ' omitidos por tener combinaciones)' : '')
+      + '. Revisa los cambios y pulsa «Guardar cambios» para guardarlos.');
+  }
+
+  function applyFeatureValue(td, mode, idValue, text) {
+    if (mode === 'replace') {
+      td.innerHTML = idValue ? featureSelectHtml([idValue, text]) + addButtonHtml() : assignButtonHtml();
+    } else if (mode === 'add') {
+      if (featureIds(td).indexOf(parseInt(idValue, 10)) !== -1) {
+        return;
+      }
+      if (td.querySelector('select')) {
+        td.querySelector('.ccpe-add').insertAdjacentHTML('beforebegin', featureSelectHtml([idValue, text]));
+      } else {
+        td.innerHTML = featureSelectHtml([idValue, text]) + addButtonHtml();
+      }
+    } else {
+      td.querySelectorAll('select').forEach(function (select) {
+        if (select.value === idValue) {
+          select.remove();
+        }
+      });
+      if (!td.querySelector('select')) {
+        td.innerHTML = assignButtonHtml();
+      }
+    }
+    refreshCell(td);
+  }
+
+  function rowElement(id) {
+    return table.querySelector('tbody tr[data-id="' + id + '"]');
+  }
+
+  function indexOfId(id) {
+    for (var i = 0; i < state.order.length; i++) {
+      if (String(state.order[i]) === String(id)) {
+        return i;
+      }
+    }
+
+    return -1;
   }
 
   /* ---------- Utilidades ---------- */

@@ -64,6 +64,21 @@
       <div class="ccpe-pagination" id="ccpe-pagination"></div>
     </div>
 
+    {if $ccpe_can_edit}
+      <div class="ccpe-bulk" id="ccpe-bulk" hidden>
+        <strong id="ccpe-bulk-count"></strong>
+        <select id="ccpe-bulk-target" class="form-control input-sm" aria-label="Campo o característica a cambiar"></select>
+        <select id="ccpe-bulk-mode" class="form-control input-sm" aria-label="Operación" hidden>
+          <option value="replace">Reemplazar por</option>
+          <option value="add">Añadir</option>
+          <option value="remove">Quitar</option>
+        </select>
+        <span id="ccpe-bulk-value"></span>
+        <button type="button" class="btn btn-primary btn-sm" data-ccpe-action="bulk-apply">Aplicar a los seleccionados</button>
+        <button type="button" class="btn btn-link btn-sm" data-ccpe-action="bulk-clear">Quitar selección</button>
+      </div>
+    {/if}
+
     <div id="ccpe-messages"></div>
 
     <div class="ccpe-table-wrap">
