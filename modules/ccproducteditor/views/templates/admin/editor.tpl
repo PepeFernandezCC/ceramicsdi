@@ -14,8 +14,9 @@
         <label for="ccpe-mode">Productos</label>
         <select id="ccpe-mode" name="mode" class="form-control">
           <option value="all">Todos</option>
-          <option value="category">Por categoría</option>
           <option value="range">Por rango de IDs</option>
+          <option value="supplier">Por proveedor</option>
+          <option value="category">Por categoría</option>
           <option value="category_range">Rango de IDs dentro de una categoría</option>
         </select>
       </div>
@@ -35,6 +36,15 @@
         <input id="ccpe-id-to" type="number" min="1" name="id_to" class="form-control ccpe-id-input">
       </div>
       <div class="form-group">
+        <label for="ccpe-supplier">Proveedor</label>
+        <select id="ccpe-supplier" name="id_supplier" class="form-control">
+          <option value="0">Todos</option>
+          {foreach $ccpe_suppliers as $id_supplier => $supplier_name}
+            <option value="{$id_supplier|intval}">{$supplier_name|escape:'html':'UTF-8'}</option>
+          {/foreach}
+        </select>
+      </div>
+      <div class="form-group">
         <label for="ccpe-per-page">Por página</label>
         <select id="ccpe-per-page" name="per_page" class="form-control">
           {foreach $ccpe_per_page_options as $option}
@@ -52,6 +62,11 @@
       <span class="ccpe-dirty-count" id="ccpe-dirty-count"></span>
     </div>
 
+    <ul class="nav nav-tabs ccpe-tabs" role="tablist">
+      <li class="active"><a href="#" data-ccpe-view="info" role="tab"><i class="icon-info-circle"></i> Información del producto</a></li>
+      <li><a href="#" data-ccpe-view="categories" role="tab"><i class="icon-folder-open"></i> Categorías</a></li>
+    </ul>
+
     <div class="ccpe-toolbar">
       {if $ccpe_can_edit}
         <button type="button" class="btn btn-success" data-ccpe-action="save" disabled><i class="icon-save"></i> Guardar cambios</button>
@@ -67,13 +82,24 @@
     {if $ccpe_can_edit}
       <div class="ccpe-bulk" id="ccpe-bulk" hidden>
         <strong id="ccpe-bulk-count"></strong>
-        <select id="ccpe-bulk-target" class="form-control input-sm" aria-label="Campo o característica a cambiar"></select>
-        <select id="ccpe-bulk-mode" class="form-control input-sm" aria-label="Operación" hidden>
-          <option value="replace">Reemplazar por</option>
-          <option value="add">Añadir</option>
-          <option value="remove">Quitar</option>
-        </select>
-        <span id="ccpe-bulk-value"></span>
+        <span class="ccpe-bulk-group" data-ccpe-view-only="info">
+          <select id="ccpe-bulk-target" class="form-control input-sm" aria-label="Campo o característica a cambiar"></select>
+          <select id="ccpe-bulk-mode" class="form-control input-sm" aria-label="Operación" hidden>
+            <option value="replace">Reemplazar por</option>
+            <option value="add">Añadir</option>
+            <option value="remove">Quitar</option>
+          </select>
+          <span id="ccpe-bulk-value"></span>
+        </span>
+        <span class="ccpe-bulk-group" data-ccpe-view-only="categories" hidden>
+          <select id="ccpe-bulk-cat-mode" class="form-control input-sm" aria-label="Operación">
+            <option value="add">Añadir la categoría</option>
+            <option value="remove">Quitar la categoría</option>
+            <option value="default">Añadir y poner por defecto</option>
+          </select>
+          <input type="text" id="ccpe-bulk-cat" class="form-control input-sm ccpe-cat-search" list="ccpe-category-list"
+                 placeholder="Busca una categoría…" aria-label="Categoría">
+        </span>
         <button type="button" class="btn btn-primary btn-sm" data-ccpe-action="bulk-apply">Aplicar a los seleccionados</button>
         <button type="button" class="btn btn-link btn-sm" data-ccpe-action="bulk-clear">Quitar selección</button>
       </div>
@@ -81,11 +107,18 @@
 
     <div id="ccpe-messages"></div>
 
-    <div class="ccpe-table-wrap">
+    <div class="ccpe-table-wrap" data-ccpe-view-only="info">
       <table class="table ccpe-table" id="ccpe-table">
         <thead></thead>
         <tbody><tr><td class="ccpe-empty">Selecciona los productos y pulsa «Cargar productos».</td></tr></tbody>
       </table>
     </div>
+    <div class="ccpe-table-wrap" data-ccpe-view-only="categories" hidden>
+      <table class="table ccpe-table ccpe-cat-table" id="ccpe-cat-table">
+        <thead></thead>
+        <tbody><tr><td class="ccpe-empty">Selecciona los productos y pulsa «Cargar productos».</td></tr></tbody>
+      </table>
+    </div>
+    <datalist id="ccpe-category-list"></datalist>
   </div>
 </div>

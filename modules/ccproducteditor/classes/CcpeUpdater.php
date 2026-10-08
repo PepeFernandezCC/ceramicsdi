@@ -19,11 +19,15 @@ class CcpeUpdater
     /** @var array [id_product => [id_feature => [id_value => ['value', 'custom']]]] */
     private $productFeatures;
 
+    /** @var array [id_product => int[] id_category] */
+    private $productCategories;
+
     /** @var Db */
     private $db;
 
-    public function __construct($idLang, $idShop, array $products, array $productFeatures)
+    public function __construct($idLang, $idShop, array $products, array $productFeatures, array $productCategories = [])
     {
+        $this->productCategories = $productCategories;
         $this->idLang = (int) $idLang;
         $this->idShop = (int) $idShop;
         $this->products = $products;
@@ -95,6 +99,23 @@ class CcpeUpdater
                 unset($fieldValue);
             }
 
+            if (isset($row['id_category_default']) && (int) $row['id_category_default'] !== (int) $product->id_category_default) {
+                $product->id_category_default = (int) $row['id_category_default'];
+                $productChanged = true;
+            }
+
+            // Las categorías se asocian antes de guardar para que la categoría por defecto ya esté entre ellas
+            $categoriesChanged = false;
+            if (isset($row['categories'])) {
+                $currentCategories = isset($this->productCategories[$idProduct]) ? $this->productCategories[$idProduct] : [];
+                if (!$this->sameIds($currentCategories, $row['categories'])) {
+                    if (!$product->updateCategories($row['categories'])) {
+                        throw new PrestaShopException('PrestaShop no ha podido actualizar las categorías.');
+                    }
+                    $categoriesChanged = true;
+                }
+            }
+
             if ($productChanged) {
                 if (isset($row['fields']['id_supplier'])) {
                     $this->ensureProductSupplier($idProduct, (int) $row['fields']['id_supplier']);
@@ -124,9 +145,9 @@ class CcpeUpdater
                 $featuresChanged = true;
             }
 
-            // Product::update() ya lanza este hook; si solo cambiaron características lo lanzamos
+            // Product::update() ya lanza este hook; si solo cambiaron características o categorías lo lanzamos
             // para que módulos como ps_facetedsearch reindexen el producto.
-            if ($featuresChanged && !$productChanged) {
+            if (($featuresChanged || $categoriesChanged) && !$productChanged) {
                 Hook::exec('actionProductUpdate', ['id_product' => $idProduct, 'product' => $product]);
             }
 
@@ -136,7 +157,7 @@ class CcpeUpdater
             throw $e;
         }
 
-        return $productChanged || $stockChanged || $featuresChanged;
+        return $productChanged || $stockChanged || $featuresChanged || $categoriesChanged;
     }
 
     private function replaceFeatureValues($idProduct, $idFeature, array $currentValues, array $newIds)

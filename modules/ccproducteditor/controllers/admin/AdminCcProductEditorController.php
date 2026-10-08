@@ -1,8 +1,8 @@
 <?php
 /**
  * Pantalla del editor masivo. Las acciones se llaman por AJAX (ajax=1&action=...):
- *  - loadProducts: listado paginado
- *  - saveProducts: guarda los cambios hechos en el listado
+ *  - loadProducts: listado paginado (datos del producto, características y categorías)
+ *  - saveProducts: guarda los cambios hechos en el listado (pestañas Información y Categorías)
  *  - exportCsv / importCsv: CSV
  *  - downloadLog: descarga el log de una importación
  */
@@ -28,11 +28,18 @@ class AdminCcProductEditorController extends ModuleAdminController
     {
         $idLang = (int) $this->context->employee->id_lang;
         $repository = new CcpeRepository($idLang, (int) $this->context->shop->id);
+        $choices = $repository->getChoices();
+
+        $categories = [];
+        foreach ($repository->getCategoryList() as $idCategory => $category) {
+            $categories[] = [$idCategory, $category['name'], $category['path']];
+        }
 
         $this->context->smarty->assign([
             'ccpe_languages' => Language::getLanguages(false),
             'ccpe_id_lang' => $idLang,
             'ccpe_categories' => $repository->getCategoryTree(),
+            'ccpe_suppliers' => array_filter($choices['suppliers'], 'strlen'),
             'ccpe_per_page_options' => self::PER_PAGE_OPTIONS,
             'ccpe_can_edit' => $this->access('edit'),
             'ccpe_config' => json_encode([
@@ -40,6 +47,7 @@ class AdminCcProductEditorController extends ModuleAdminController
                 'productUrl' => str_replace('999999999', '{id}', $this->context->link->getAdminLink('AdminProducts', true, ['id_product' => 999999999, 'updateproduct' => 1])),
                 'fields' => CcpeFields::all(),
                 'multiSeparator' => CcpeFields::CSV_MULTI_SEPARATOR,
+                'categories' => $categories,
                 'canEdit' => (bool) $this->access('edit'),
             ]),
         ]);
@@ -65,6 +73,7 @@ class AdminCcProductEditorController extends ModuleAdminController
 
         $products = $repository->getProducts($filters, ($page - 1) * $perPage, $perPage);
         $productFeatures = $repository->getProductFeatures(array_column($products, 'id_product'));
+        $productCategories = $repository->getProductCategories(array_column($products, 'id_product'));
 
         $rows = [];
         foreach ($products as $product) {
@@ -73,6 +82,8 @@ class AdminCcProductEditorController extends ModuleAdminController
                 'id' => $idProduct,
                 'has_combinations' => (int) $product['cache_default_attribute'] > 0,
                 'features' => new stdClass(),
+                'categories' => isset($productCategories[$idProduct]) ? $productCategories[$idProduct] : [],
+                'id_category_default' => (int) $product['id_category_default'],
             ];
             foreach (CcpeFields::all() as $key => $definition) {
                 $row[$key] = $definition['type'] === CcpeFields::TYPE_DECIMAL
@@ -118,17 +129,20 @@ class AdminCcProductEditorController extends ModuleAdminController
 
         $rawRows = [];
         foreach ($payload as $item) {
-            $rawRows[] = [
-                'line' => null,
-                'raw' => [
-                    'id_product' => isset($item['id']) ? (int) $item['id'] : 0,
-                    'fields' => isset($item['fields']) && is_array($item['fields']) ? $item['fields'] : [],
-                    'features' => isset($item['features']) && is_array($item['features']) ? $item['features'] : [],
-                ],
+            $raw = [
+                'id_product' => isset($item['id']) ? (int) $item['id'] : 0,
+                'fields' => isset($item['fields']) && is_array($item['fields']) ? $item['fields'] : [],
+                'features' => isset($item['features']) && is_array($item['features']) ? $item['features'] : [],
             ];
+            // Solo llegan si se han tocado en la pestaña Categorías
+            if (isset($item['categories']) && is_array($item['categories'])) {
+                $raw['categories'] = $item['categories'];
+                $raw['id_category_default'] = isset($item['id_category_default']) ? $item['id_category_default'] : null;
+            }
+            $rawRows[] = ['line' => null, 'raw' => $raw];
         }
 
-        list($rows, $errors, $products, $productFeatures) = $this->validateRows($rawRows, $idLang, CcpeValidator::SOURCE_GRID);
+        list($rows, $errors, $products, $productFeatures, $productCategories) = $this->validateRows($rawRows, $idLang, CcpeValidator::SOURCE_GRID);
         if ($errors) {
             $this->sendJson([
                 'success' => false,
@@ -137,7 +151,7 @@ class AdminCcProductEditorController extends ModuleAdminController
             ]);
         }
 
-        $updater = new CcpeUpdater($idLang, (int) $this->context->shop->id, $products, $productFeatures);
+        $updater = new CcpeUpdater($idLang, (int) $this->context->shop->id, $products, $productFeatures, $productCategories);
         $result = $updater->apply($rows);
 
         $this->sendJson([
@@ -256,7 +270,7 @@ class AdminCcProductEditorController extends ModuleAdminController
      *
      * @param array $rawRows [['line' => int|null, 'raw' => array]]
      *
-     * @return array [filas normalizadas, errores, productos actuales, características actuales]
+     * @return array [filas normalizadas, errores, productos actuales, características actuales, categorías actuales]
      */
     private function validateRows(array $rawRows, $idLang, $source)
     {
@@ -264,6 +278,7 @@ class AdminCcProductEditorController extends ModuleAdminController
         $ids = array_map(function ($row) { return (int) $row['raw']['id_product']; }, $rawRows);
         $products = $repository->getProductsByIds($ids);
         $productFeatures = $repository->getProductFeatures(array_keys($products));
+        $productCategories = $repository->getProductCategories(array_keys($products));
 
         $validator = new CcpeValidator(
             $repository->getFeatures(),
@@ -271,7 +286,8 @@ class AdminCcProductEditorController extends ModuleAdminController
             $repository->getChoices(),
             $repository->getDeletedTaxGroups(),
             $products,
-            $productFeatures
+            $productFeatures,
+            $repository->getCategoryList()
         );
 
         $rows = [];
@@ -287,13 +303,13 @@ class AdminCcProductEditorController extends ModuleAdminController
             }
         }
 
-        return [$rows, $errors, $products, $productFeatures];
+        return [$rows, $errors, $products, $productFeatures, $productCategories];
     }
 
     private function getFiltersFromRequest()
     {
         $mode = (string) Tools::getValue('mode', CcpeRepository::MODE_ALL);
-        if (!in_array($mode, [CcpeRepository::MODE_ALL, CcpeRepository::MODE_CATEGORY, CcpeRepository::MODE_RANGE, CcpeRepository::MODE_CATEGORY_RANGE], true)) {
+        if (!in_array($mode, [CcpeRepository::MODE_ALL, CcpeRepository::MODE_CATEGORY, CcpeRepository::MODE_RANGE, CcpeRepository::MODE_CATEGORY_RANGE, CcpeRepository::MODE_SUPPLIER], true)) {
             $mode = CcpeRepository::MODE_ALL;
         }
 
@@ -303,6 +319,7 @@ class AdminCcProductEditorController extends ModuleAdminController
             'subcategories' => (bool) Tools::getValue('subcategories'),
             'id_from' => (int) Tools::getValue('id_from'),
             'id_to' => (int) Tools::getValue('id_to'),
+            'id_supplier' => (int) Tools::getValue('id_supplier'),
         ];
     }
 

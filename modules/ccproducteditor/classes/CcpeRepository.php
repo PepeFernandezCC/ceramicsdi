@@ -8,6 +8,7 @@ class CcpeRepository
     const MODE_CATEGORY = 'category';
     const MODE_RANGE = 'range';
     const MODE_CATEGORY_RANGE = 'category_range';
+    const MODE_SUPPLIER = 'supplier';
 
     /** @var int */
     private $idLang;
@@ -174,7 +175,65 @@ class CcpeRepository
     }
 
     /**
-     * @param array $filters ['mode', 'id_category', 'subcategories', 'id_from', 'id_to']
+     * Categorías de cada producto, en el orden del árbol.
+     *
+     * @param int[] $productIds
+     *
+     * @return array [id_product => int[] id_category]
+     */
+    public function getProductCategories(array $productIds)
+    {
+        $result = [];
+        foreach (array_chunk(array_map('intval', $productIds), 1000) as $chunk) {
+            $rows = $this->db->executeS('
+                SELECT cp.id_product, cp.id_category
+                FROM `' . _DB_PREFIX_ . 'category_product` cp
+                INNER JOIN `' . _DB_PREFIX_ . 'category` c ON c.id_category = cp.id_category
+                WHERE cp.id_product IN (' . implode(',', $chunk) . ')
+                ORDER BY c.nleft ASC');
+
+            foreach ($rows ?: [] as $row) {
+                $result[(int) $row['id_product']][] = (int) $row['id_category'];
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Todas las categorías asignables (incluida Inicio, excluida la raíz) con su ruta completa,
+     * para las etiquetas y el buscador de la pestaña Categorías.
+     *
+     * @return array [id_category => ['name' => string, 'path' => string]] en el orden del árbol
+     */
+    public function getCategoryList()
+    {
+        $rows = $this->db->executeS('
+            SELECT c.id_category, c.id_parent, cl.name
+            FROM `' . _DB_PREFIX_ . 'category` c
+            INNER JOIN `' . _DB_PREFIX_ . 'category_shop` cs ON cs.id_category = c.id_category AND cs.id_shop = ' . $this->idShop . '
+            LEFT JOIN `' . _DB_PREFIX_ . 'category_lang` cl
+                ON cl.id_category = c.id_category AND cl.id_lang = ' . $this->idLang . ' AND cl.id_shop = ' . $this->idShop . '
+            WHERE c.id_category <> ' . (int) Configuration::get('PS_ROOT_CATEGORY') . '
+            ORDER BY c.nleft ASC');
+
+        // Al ir en orden nleft, el padre siempre se procesa antes que sus hijos
+        $categories = [];
+        foreach ($rows ?: [] as $row) {
+            $id = (int) $row['id_category'];
+            $parent = (int) $row['id_parent'];
+            $name = (string) $row['name'];
+            $categories[$id] = [
+                'name' => $name,
+                'path' => isset($categories[$parent]) ? $categories[$parent]['path'] . ' › ' . $name : $name,
+            ];
+        }
+
+        return $categories;
+    }
+
+    /**
+     * @param array $filters ['mode', 'id_category', 'subcategories', 'id_from', 'id_to', 'id_supplier']
      *
      * @return int
      */
@@ -223,7 +282,7 @@ class CcpeRepository
                 IFNULL(sa.quantity, 0) AS quantity, p.id_manufacturer, p.id_supplier,
                 IFNULL(sa.out_of_stock, ' . CcpeFields::OUT_OF_STOCK_DEFAULT . ') AS out_of_stock,
                 pl.available_now, pl.available_later, p.weight, pl.link_rewrite, p.ean13,
-                ps.cache_default_attribute
+                ps.cache_default_attribute, ps.id_category_default
             FROM `' . _DB_PREFIX_ . 'product` p
             INNER JOIN `' . _DB_PREFIX_ . 'product_shop` ps ON ps.id_product = p.id_product AND ps.id_shop = ' . $this->idShop . '
             LEFT JOIN `' . _DB_PREFIX_ . 'product_lang` pl
@@ -265,6 +324,18 @@ class CcpeRepository
             if ((int) $filters['id_to'] > 0) {
                 $conditions[] = 'p.id_product <= ' . (int) $filters['id_to'];
             }
+        }
+
+        // En el modo «Por proveedor» el proveedor es obligatorio; en los demás es un filtro opcional
+        if ($mode === self::MODE_SUPPLIER && empty($filters['id_supplier'])) {
+            $conditions[] = '0';
+        }
+
+        // El proveedor por defecto (p.id_supplier) no siempre está en product_supplier, por eso se miran ambos
+        if (!empty($filters['id_supplier'])) {
+            $idSupplier = (int) $filters['id_supplier'];
+            $conditions[] = '(p.id_supplier = ' . $idSupplier . ' OR EXISTS (SELECT 1 FROM `' . _DB_PREFIX_ . 'product_supplier` psu
+                WHERE psu.id_product = p.id_product AND psu.id_supplier = ' . $idSupplier . '))';
         }
 
         return implode(' AND ', $conditions);

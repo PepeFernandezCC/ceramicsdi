@@ -4,6 +4,10 @@
  * Los desplegables se pintan solo con la opción actual y se rellenan con todas las opciones
  * la primera vez que el usuario interactúa con ellos: con 100 productos x 70 características
  * pintar todas las opciones de golpe dejaría el navegador bloqueado.
+ *
+ * Hay dos pestañas sobre los mismos productos: «Información del producto» (#ccpe-table) y
+ * «Categorías» (#ccpe-cat-table). Las dos tablas se pintan al cargar y la pestaña solo cambia
+ * cuál se ve, así los cambios pendientes y la selección se mantienen al cambiar de pestaña.
  */
 (function () {
   'use strict';
@@ -14,7 +18,11 @@
   var app;
   var config;
   var table;
+  var catTable;
   var state = {
+    view: 'info',      // pestaña visible: 'info' | 'categories'
+    categoryById: {},  // id_category => [id, nombre, ruta]
+    categoryOrder: {}, // id_category => posición en el árbol (para ordenar las etiquetas)
     loaded: false,
     rows: {},          // id => fila recibida del servidor
     order: [],
@@ -23,7 +31,7 @@
     choices: {},       // lista => [[id, texto]]
     page: 1,
     pages: 1,
-    dirty: {},         // id => {fields: {}, features: {}}
+    dirty: {},         // id => {fields: {}, features: {}, [categories: [], id_category_default: int]}
     selected: {},      // id => true (productos marcados para edición masiva)
     lastSelected: null // índice en state.order del último clic, para seleccionar rangos con Mayús
   };
@@ -38,6 +46,8 @@
     }
     config = JSON.parse(app.getAttribute('data-config'));
     table = document.getElementById('ccpe-table');
+    catTable = document.getElementById('ccpe-cat-table');
+    initCategories();
 
     var mode = document.getElementById('ccpe-mode');
     mode.addEventListener('change', toggleFilterFields);
@@ -48,6 +58,8 @@
     table.addEventListener('focusin', onSelectInteraction);
     table.addEventListener('input', onEdit);
     table.addEventListener('change', onEdit);
+    catTable.addEventListener('input', onCategoryInput);
+    catTable.addEventListener('change', onCategoryInputChange);
 
     document.getElementById('ccpe-lang').addEventListener('change', function () {
       if (state.loaded && confirmDiscard()) {
@@ -87,12 +99,20 @@
     var showRange = mode === 'range' || mode === 'category_range';
     app.querySelectorAll('.ccpe-when-category').forEach(function (el) { el.hidden = !showCategory; });
     app.querySelectorAll('.ccpe-when-range').forEach(function (el) { el.hidden = !showRange; });
+
+    // En «Por proveedor» se usa el mismo desplegable de Proveedor, pero sin la opción «Todos»
+    var supplier = document.getElementById('ccpe-supplier');
+    var bySupplier = mode === 'supplier';
+    supplier.options[0].disabled = bySupplier;
+    if (bySupplier && supplier.value === '0' && supplier.options.length > 1) {
+      supplier.selectedIndex = 1;
+    }
   }
 
   function filterParams() {
     var form = document.getElementById('ccpe-filters');
     var params = new URLSearchParams();
-    ['id_lang', 'mode', 'id_category', 'id_from', 'id_to', 'per_page'].forEach(function (name) {
+    ['id_lang', 'mode', 'id_category', 'id_from', 'id_to', 'id_supplier', 'per_page'].forEach(function (name) {
       params.set(name, form.elements[name].value);
     });
     params.set('subcategories', form.elements.subcategories.checked ? '1' : '0');
@@ -109,6 +129,19 @@
   /* ---------- Acciones ---------- */
 
   function onClick(event) {
+    var tab = event.target.closest('[data-ccpe-view]');
+    if (tab) {
+      event.preventDefault();
+      setView(tab.getAttribute('data-ccpe-view'));
+      return;
+    }
+
+    var tagButton = event.target.closest('.ccpe-tag button');
+    if (tagButton) {
+      onTagButton(tagButton);
+      return;
+    }
+
     var button = event.target.closest('[data-ccpe-action]');
     if (button) {
       event.preventDefault();
@@ -133,7 +166,7 @@
       return;
     }
 
-    if (event.target.id === 'ccpe-select-all') {
+    if (event.target.classList.contains('ccpe-select-all')) {
       setSelection(state.order, event.target.checked);
       return;
     }
@@ -210,6 +243,7 @@
       });
       document.getElementById('ccpe-total').textContent = data.total;
       renderTable();
+      renderCategoryTable();
       renderPagination();
       renderBulkTargets();
       updateToolbar();
@@ -231,7 +265,13 @@
       return;
     }
     var payload = Object.keys(state.dirty).map(function (id) {
-      return { id: parseInt(id, 10), fields: state.dirty[id].fields, features: state.dirty[id].features };
+      var diff = state.dirty[id];
+      var item = { id: parseInt(id, 10), fields: diff.fields, features: diff.features };
+      if (diff.categories) {
+        item.categories = diff.categories;
+        item.id_category_default = diff.id_category_default;
+      }
+      return item;
     });
     if (!payload.length) {
       return;
@@ -298,8 +338,7 @@
   function renderTable() {
     var head = '<tr>';
     if (config.canEdit) {
-      head += '<th class="ccpe-sticky ccpe-col-select"><input type="checkbox" id="ccpe-select-all"'
-        + ' title="Seleccionar todos los productos de esta página"></th>';
+      head += '<th class="ccpe-sticky ccpe-col-select">' + selectAllHtml() + '</th>';
     }
     head += '<th class="ccpe-sticky ccpe-col-active">' + escapeHtml(config.fields.active.label) + '</th>';
     head += '<th class="ccpe-sticky ccpe-col-id">ID</th>';
@@ -331,8 +370,7 @@
     var disabled = config.canEdit ? '' : ' disabled';
     var html = '<tr data-id="' + row.id + '">';
     if (config.canEdit) {
-      html += '<td class="ccpe-sticky ccpe-col-select"><input type="checkbox" class="ccpe-select"'
-        + ' title="Seleccionar para edición masiva (Mayús + clic selecciona un rango)"></td>';
+      html += '<td class="ccpe-sticky ccpe-col-select">' + selectRowHtml() + '</td>';
     }
     html += '<td class="ccpe-sticky ccpe-col-active" data-key="active"><label class="ccpe-switch">'
       + '<input type="checkbox" data-field="active"' + (row.active === '1' ? ' checked' : '') + disabled + '><span></span></label></td>';
@@ -372,6 +410,14 @@
     });
 
     return html + '</tr>';
+  }
+
+  function selectAllHtml() {
+    return '<input type="checkbox" class="ccpe-select-all" title="Seleccionar todos los productos de esta página">';
+  }
+
+  function selectRowHtml() {
+    return '<input type="checkbox" class="ccpe-select" title="Seleccionar para edición masiva (Mayús + clic selecciona un rango)">';
   }
 
   function featureSelectHtml(value) {
@@ -508,14 +554,20 @@
     }
 
     td.classList.toggle('ccpe-cell-dirty', changed);
-    if (Object.keys(diff.fields).length || Object.keys(diff.features).length) {
+    storeDiff(id, diff);
+    updateToolbar();
+  }
+
+  /** Guarda (o descarta si ya no queda nada) los cambios pendientes del producto y marca su fila en las dos tablas */
+  function storeDiff(id, diff) {
+    if (Object.keys(diff.fields).length || Object.keys(diff.features).length || diff.categories) {
       state.dirty[id] = diff;
-      tr.classList.add('ccpe-row-dirty');
     } else {
       delete state.dirty[id];
-      tr.classList.remove('ccpe-row-dirty');
     }
-    updateToolbar();
+    rowElements(id).forEach(function (tr) {
+      tr.classList.toggle('ccpe-row-dirty', !!state.dirty[id]);
+    });
   }
 
   function featureIds(td) {
@@ -588,14 +640,15 @@
 
   function setSelection(ids, selected) {
     ids.forEach(function (id) {
-      var tr = rowElement(id);
       if (selected) {
         state.selected[id] = true;
       } else {
         delete state.selected[id];
       }
-      tr.classList.toggle('ccpe-row-selected', selected);
-      tr.querySelector('.ccpe-select').checked = selected;
+      rowElements(id).forEach(function (tr) {
+        tr.classList.toggle('ccpe-row-selected', selected);
+        tr.querySelector('.ccpe-select').checked = selected;
+      });
     });
     updateBulk();
   }
@@ -616,11 +669,10 @@
       button.disabled = app.classList.contains('ccpe-busy');
     });
 
-    var all = document.getElementById('ccpe-select-all');
-    if (all) {
+    app.querySelectorAll('.ccpe-select-all').forEach(function (all) {
       all.checked = count > 0 && count === state.order.length;
       all.indeterminate = count > 0 && count < state.order.length;
-    }
+    });
   }
 
   function renderBulkTargets() {
@@ -696,6 +748,10 @@
   }
 
   function applyBulk() {
+    if (state.view === 'categories') {
+      applyBulkCategory();
+      return;
+    }
     var target = bulkTarget();
     var control = document.getElementById('ccpe-bulk-value').firstElementChild;
     if (!target || !control) {
@@ -774,6 +830,245 @@
 
   function rowElement(id) {
     return table.querySelector('tbody tr[data-id="' + id + '"]');
+  }
+
+  /** Fila del producto en las dos tablas (Información y Categorías) */
+  function rowElements(id) {
+    return app.querySelectorAll('tbody tr[data-id="' + id + '"]');
+  }
+
+  /* ---------- Pestañas ---------- */
+
+  function setView(view) {
+    state.view = view;
+    app.querySelectorAll('[data-ccpe-view]').forEach(function (tab) {
+      tab.parentNode.classList.toggle('active', tab.getAttribute('data-ccpe-view') === view);
+    });
+    app.querySelectorAll('[data-ccpe-view-only]').forEach(function (el) {
+      el.hidden = el.getAttribute('data-ccpe-view-only') !== view;
+    });
+  }
+
+  /* ---------- Pestaña Categorías ---------- */
+
+  /*
+   * Igual que en la otra pestaña, nada se guarda al momento: añadir, quitar o cambiar la categoría
+   * por defecto deja el producto con cambios pendientes y se guarda con «Guardar cambios».
+   * Hasta guardar, las etiquetas muestran también lo que se va a quitar (tachado) y lo nuevo (en verde).
+   */
+
+  function initCategories() {
+    var html = '';
+    config.categories.forEach(function (category, index) {
+      state.categoryById[category[0]] = category;
+      state.categoryOrder[category[0]] = index;
+      html += '<option value="' + escapeHtml(category[2] + ' (ID ' + category[0] + ')') + '"></option>';
+    });
+    document.getElementById('ccpe-category-list').innerHTML = html;
+  }
+
+  /** @return {number|null} id de la categoría elegida en un buscador («Ruta (ID n)») */
+  function parseCategoryInput(text) {
+    var match = /\(ID (\d+)\)\s*$/.exec(text);
+    var id = match ? parseInt(match[1], 10) : null;
+
+    return id && state.categoryById[id] ? id : null;
+  }
+
+  function renderCategoryTable() {
+    var head = '<tr>';
+    if (config.canEdit) {
+      head += '<th class="ccpe-col-select">' + selectAllHtml() + '</th>';
+    }
+    head += '<th class="ccpe-col-id">ID</th><th>' + escapeHtml(config.fields.reference.label) + '</th>'
+      + '<th>' + escapeHtml(config.fields.name.label) + '</th>'
+      + '<th>Categorías <small>(<i class="icon-star"></i> = por defecto)</small></th></tr>';
+    catTable.tHead.innerHTML = head;
+
+    if (!state.order.length) {
+      catTable.tBodies[0].innerHTML = '<tr><td class="ccpe-empty" colspan="99">No hay productos con estos filtros.</td></tr>';
+      return;
+    }
+
+    var html = '';
+    state.order.forEach(function (id) {
+      var row = state.rows[id];
+      html += '<tr data-id="' + id + '">';
+      if (config.canEdit) {
+        html += '<td class="ccpe-col-select">' + selectRowHtml() + '</td>';
+      }
+      html += '<td class="ccpe-col-id"><a href="' + productLink(id) + '" target="_blank" rel="noopener">' + id + '</a></td>'
+        + '<td>' + escapeHtml(row.reference) + '</td>'
+        + '<td class="ccpe-cat-name">' + escapeHtml(row.name) + '</td>'
+        + '<td class="ccpe-cats">' + categoryCellHtml(id) + '</td></tr>';
+    });
+    catTable.tBodies[0].innerHTML = html;
+  }
+
+  /** Categorías que tendrá el producto al guardar (las originales si no se han tocado) */
+  function currentCategories(id) {
+    var diff = state.dirty[id];
+    var row = state.rows[id];
+
+    return diff && diff.categories
+      ? { ids: diff.categories, def: diff.id_category_default }
+      : { ids: row.categories, def: row.id_category_default };
+  }
+
+  function categoryCellHtml(id) {
+    var row = state.rows[id];
+    var current = currentCategories(id);
+    // Se muestran las actuales más las que se van a quitar, en el orden del árbol
+    var shown = row.categories.concat(current.ids.filter(function (cid) { return row.categories.indexOf(cid) === -1; }));
+    shown.sort(function (a, b) {
+      return treePosition(a) - treePosition(b);
+    });
+
+    var html = '';
+    shown.forEach(function (cid) {
+      var category = state.categoryById[cid] || [cid, 'ID ' + cid, 'Categoría ID ' + cid];
+      var assigned = current.ids.indexOf(cid) !== -1;
+      var isDefault = assigned && cid === current.def;
+      var classes = 'ccpe-tag'
+        + (!assigned ? ' ccpe-tag-removed' : (row.categories.indexOf(cid) === -1 ? ' ccpe-tag-added' : ''))
+        + (isDefault ? ' ccpe-tag-default' : '');
+      html += '<span class="' + classes + '" data-category="' + cid + '" title="'
+        + escapeHtml(category[2] + ' (ID ' + cid + ')' + (isDefault ? ' — categoría por defecto' : '')) + '">'
+        + (isDefault ? '<i class="icon-star"></i> ' : '') + escapeHtml(category[1]);
+      if (config.canEdit) {
+        if (!assigned) {
+          html += '<button type="button" data-tag="restore" title="Volver a añadir">↺</button>';
+        } else if (!isDefault) {
+          html += '<button type="button" data-tag="default" title="Poner como categoría por defecto">☆</button>'
+            + '<button type="button" data-tag="remove" title="Quitar del producto">×</button>';
+        }
+      }
+      html += '</span>';
+    });
+
+    if (config.canEdit) {
+      html += '<input type="text" class="form-control input-sm ccpe-cat-input" list="ccpe-category-list"'
+        + ' placeholder="+ Añadir categoría" aria-label="Añadir categoría">';
+    }
+
+    return html;
+  }
+
+  function treePosition(idCategory) {
+    return state.categoryOrder[idCategory] === undefined ? Infinity : state.categoryOrder[idCategory];
+  }
+
+  /**
+   * @param {number|string} id producto
+   * @param {number[]} ids categorías que tendrá
+   * @param {number} def categoría por defecto
+   *
+   * @return {HTMLElement} la celda repintada
+   */
+  function setCategories(id, ids, def) {
+    var row = state.rows[id];
+    var diff = state.dirty[id] || { fields: {}, features: {} };
+    ids = ids.filter(function (cid, index) { return ids.indexOf(cid) === index; }).sort(numeric);
+    var changed = ids.join(',') !== row.categories.slice().sort(numeric).join(',') || def !== row.id_category_default;
+
+    if (changed) {
+      diff.categories = ids;
+      diff.id_category_default = def;
+    } else {
+      delete diff.categories;
+      delete diff.id_category_default;
+    }
+    storeDiff(id, diff);
+
+    var td = catTable.querySelector('tbody tr[data-id="' + id + '"] td.ccpe-cats');
+    td.innerHTML = categoryCellHtml(id);
+    td.classList.toggle('ccpe-cell-dirty', changed);
+    updateToolbar();
+
+    return td;
+  }
+
+  function onTagButton(button) {
+    var id = button.closest('tr').getAttribute('data-id');
+    var cid = parseInt(button.closest('.ccpe-tag').getAttribute('data-category'), 10);
+    var current = currentCategories(id);
+    var action = button.getAttribute('data-tag');
+
+    if (action === 'remove') {
+      if (current.ids.length === 1) {
+        showMessage('warning', 'El producto debe pertenecer al menos a una categoría.');
+        return;
+      }
+      setCategories(id, current.ids.filter(function (other) { return other !== cid; }), current.def);
+    } else if (action === 'restore') {
+      setCategories(id, current.ids.concat(cid), current.def);
+    } else if (action === 'default') {
+      setCategories(id, current.ids, cid);
+    }
+  }
+
+  /** Al elegir una opción de la lista el valor queda como «Ruta (ID n)» y se añade al momento */
+  function onCategoryInput(event) {
+    var input = event.target;
+    if (!input.classList.contains('ccpe-cat-input')) {
+      return;
+    }
+    input.classList.remove('ccpe-input-invalid');
+    var cid = parseCategoryInput(input.value);
+    if (!cid) {
+      return;
+    }
+    var id = input.closest('tr').getAttribute('data-id');
+    var current = currentCategories(id);
+    setCategories(id, current.ids.concat(cid), current.def).querySelector('.ccpe-cat-input').focus();
+  }
+
+  /** Texto escrito a mano que no corresponde a ninguna categoría */
+  function onCategoryInputChange(event) {
+    var input = event.target;
+    if (input.classList.contains('ccpe-cat-input') && input.value.trim() !== '' && !parseCategoryInput(input.value)) {
+      input.classList.add('ccpe-input-invalid');
+    }
+  }
+
+  function applyBulkCategory() {
+    var cid = parseCategoryInput(document.getElementById('ccpe-bulk-cat').value);
+    if (!cid) {
+      showMessage('warning', 'Elige una categoría de la lista (escribe parte del nombre para buscarla).');
+      return;
+    }
+    var mode = document.getElementById('ccpe-bulk-cat-mode').value;
+    var ids = selectedIds();
+    var skipped = 0;
+
+    ids.forEach(function (id) {
+      var current = currentCategories(id);
+      var list = current.ids.slice();
+      var def = current.def;
+      if (mode === 'remove') {
+        if (list.indexOf(cid) === -1) {
+          return;
+        }
+        // Ni la categoría por defecto ni la única que tiene el producto se pueden quitar
+        if (def === cid || list.length === 1) {
+          skipped++;
+          return;
+        }
+        list = list.filter(function (other) { return other !== cid; });
+      } else {
+        list.push(cid);
+        if (mode === 'default') {
+          def = cid;
+        }
+      }
+      setCategories(id, list, def);
+    });
+
+    var applied = ids.length - skipped;
+    var verb = mode === 'remove' ? 'quitada de ' : (mode === 'default' ? 'puesta por defecto en ' : 'añadida a ');
+    showMessage('success', 'Categoría «' + state.categoryById[cid][1] + '» ' + verb + applied + (applied === 1 ? ' producto' : ' productos')
+      + (skipped ? ' (' + skipped + ' omitidos porque es su categoría por defecto o la única que tienen)' : '')
+      + '. Revisa los cambios y pulsa «Guardar cambios» para guardarlos.');
   }
 
   function indexOfId(id) {

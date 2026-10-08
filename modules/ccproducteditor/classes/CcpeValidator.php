@@ -2,8 +2,10 @@
 /**
  * Valida y normaliza las filas recibidas del listado (ids) o del CSV (textos).
  *
- * Fila de entrada: ['id_product' => int, 'fields' => [campo => string], 'features' => [id_feature => ids[] | string]]
- * Fila normalizada: ['id_product' => int, 'fields' => [campo => valor], 'features' => [id_feature => int[]]]
+ * Fila de entrada: ['id_product' => int, 'fields' => [campo => string], 'features' => [id_feature => ids[] | string],
+ *                   opcional (solo listado): 'categories' => ids[], 'id_category_default' => id|null]
+ * Fila normalizada: ['id_product' => int, 'fields' => [campo => valor], 'features' => [id_feature => int[]],
+ *                   y si venían categorías: 'categories' => int[], 'id_category_default' => int]
  */
 class CcpeValidator
 {
@@ -31,8 +33,12 @@ class CcpeValidator
     /** @var array [id_product => [id_feature => [id_value => ['value', 'custom']]]] */
     private $productFeatures;
 
-    public function __construct(array $features, array $predefinedValues, array $choices, array $deletedTaxGroups, array $products, array $productFeatures)
+    /** @var array [id_category => ['name', 'path']] categorías asignables */
+    private $categories;
+
+    public function __construct(array $features, array $predefinedValues, array $choices, array $deletedTaxGroups, array $products, array $productFeatures, array $categories = [])
     {
+        $this->categories = $categories;
         $this->features = $features;
         $this->predefinedValues = $predefinedValues;
         $this->choices = $choices;
@@ -99,7 +105,49 @@ class CcpeValidator
             }
         }
 
+        if (isset($raw['categories'])) {
+            $categoryErrors = [];
+            list($ids, $idDefault) = $this->resolveCategories($idProduct, (array) $raw['categories'], $raw['id_category_default'], $categoryErrors);
+            if ($categoryErrors) {
+                $errors = array_merge($errors, $categoryErrors);
+            } else {
+                $normalized['categories'] = $ids;
+                $normalized['id_category_default'] = $idDefault;
+            }
+        }
+
         return [$normalized, $errors];
+    }
+
+    /**
+     * @param mixed $idDefault id de la nueva categoría por defecto, o null para mantener la actual
+     *
+     * @return array [int[] ids, int id categoría por defecto]
+     */
+    private function resolveCategories($idProduct, array $ids, $idDefault, array &$errors)
+    {
+        $result = [];
+        foreach ($ids as $id) {
+            if (!ctype_digit((string) $id) || !isset($this->categories[(int) $id])) {
+                $errors[] = 'La categoría con ID ' . $id . ' no existe.';
+                continue;
+            }
+            $result[] = (int) $id;
+        }
+        $result = array_values(array_unique($result));
+        sort($result);
+
+        if (!$result && !$errors) {
+            $errors[] = 'El producto debe pertenecer al menos a una categoría.';
+        }
+
+        $idDefault = $idDefault === null || $idDefault === '' ? (int) $this->products[$idProduct]['id_category_default'] : (int) $idDefault;
+        if ($result && !in_array($idDefault, $result, true)) {
+            $name = isset($this->categories[$idDefault]) ? $this->categories[$idDefault]['name'] : 'ID ' . $idDefault;
+            $errors[] = 'La categoría por defecto «' . $name . '» no está entre las categorías del producto. Añádela o elige otra por defecto (☆).';
+        }
+
+        return [$result, $idDefault];
     }
 
     private function validateField($idProduct, $key, array $definition, $value, $source, &$error)

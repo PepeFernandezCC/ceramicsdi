@@ -266,3 +266,90 @@
   opacity: .5;
   cursor: not-allowed;
 }
+
+/* Pestañas */
+#ccpe-app .ccpe-tabs {
+  margin-bottom: 12px;
+}
+#ccpe-app .ccpe-bulk-group {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+#ccpe-app .ccpe-bulk #ccpe-bulk-cat {
+  width: 340px;
+  max-width: 340px;
+}
+
+/* Pestaña Categorías: etiquetas */
+#ccpe-app .ccpe-cat-table td {
+  vertical-align: top;
+}
+#ccpe-app .ccpe-cat-table .ccpe-cat-name {
+  white-space: normal;
+  min-width: 180px;
+  max-width: 280px;
+}
+#ccpe-app .ccpe-cat-table td.ccpe-cats {
+  white-space: normal;
+  min-width: 420px;
+  width: 100%;
+}
+#ccpe-app .ccpe-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin: 2px 4px 2px 0;
+  padding: 2px 4px 2px 8px;
+  border: 1px solid #bbcdd2;
+  border-radius: 12px;
+  background: #f5f8f9;
+  font-size: 12px;
+  line-height: 18px;
+  cursor: default;
+}
+#ccpe-app .ccpe-tag button {
+  border: 0;
+  background: transparent;
+  padding: 0 4px;
+  color: #6c868e;
+  font-size: 13px;
+  line-height: 18px;
+  cursor: pointer;
+}
+#ccpe-app .ccpe-tag button:hover {
+  color: #25b9d7;
+}
+#ccpe-app .ccpe-tag button[data-tag="remove"]:hover {
+  color: #e44;
+}
+#ccpe-app .ccpe-tag-default {
+  border-color: #25b9d7;
+  background: #e8f6f9;
+  font-weight: bold;
+  padding-right: 8px;
+}
+#ccpe-app .ccpe-tag-default .icon-star {
+  color: #f5a623;
+}
+#ccpe-app .ccpe-tag-added {
+  border-color: #70b580;
+  background: #eaf6ec;
+}
+#ccpe-app .ccpe-tag-removed {
+  border-style: dashed;
+  border-color: #e08a8a;
+  background: #fdf1f1;
+  color: #a05050;
+  text-decoration: line-through;
+}
+#ccpe-app .ccpe-cat-table input.ccpe-cat-input {
+  display: inline-block;
+  width: 220px;
+  margin: 2px 0;
+  vertical-align: middle;
+}
+#ccpe-app input.ccpe-input-invalid {
+  border-color: #e44;
+}
