@@ -117,8 +117,10 @@ class CcpeUpdater
             }
 
             if ($productChanged) {
-                if (isset($row['fields']['id_supplier'])) {
-                    $this->ensureProductSupplier($idProduct, (int) $row['fields']['id_supplier']);
+                // Solo si el proveedor cambia de verdad: el CSV siempre trae la columna y no queremos tocar
+                // productos con varios proveedores asociados cuando se edita otro campo
+                if (isset($row['fields']['id_supplier']) && (int) $row['fields']['id_supplier'] !== (int) $current['id_supplier']) {
+                    $this->replaceProductSuppliers($idProduct, (int) $row['fields']['id_supplier']);
                 }
                 if (!$product->update()) {
                     throw new PrestaShopException('PrestaShop no ha podido guardar el producto.');
@@ -184,8 +186,15 @@ class CcpeUpdater
         }
     }
 
-    private function ensureProductSupplier($idProduct, $idSupplier)
+    /**
+     * Deja el producto asociado únicamente al nuevo proveedor (o a ninguno si es 0), como si en la
+     * pestaña Opciones del producto se desmarcaran los demás. Se borran también las filas de las
+     * combinaciones, con su referencia y precio de proveedor.
+     */
+    private function replaceProductSuppliers($idProduct, $idSupplier)
     {
+        $this->db->delete('product_supplier', 'id_product = ' . (int) $idProduct . ' AND id_supplier <> ' . (int) $idSupplier);
+
         if ($idSupplier <= 0 || ProductSupplier::getIdByProductAndSupplier($idProduct, 0, $idSupplier)) {
             return;
         }
