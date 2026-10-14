@@ -112,7 +112,7 @@ class CategoryController extends CategoryControllerCore
 
 		foreach ($languages as $lang) {
 			$idLang = (int) $lang['id_lang'];
-			$categoryUrl = $this->context->link->getCategoryLink($this->category, null, $idLang);
+			$categoryUrl = $this->context->link->getCategoryLink((int) $this->category->id, null, $idLang);
 
 			if ($page > 1) {
 				$categoryUrl .= (strpos($categoryUrl, '?') === false ? '?' : '&') . 'page=' . $page;

@@ -64,4 +64,63 @@ class CategoryController extends CategoryControllerCore
 		$sql->where('`id_lang` = '.(int)$id_lang.' AND `id_shop` = '.(int)$id_shop.' AND `link_rewrite` = "'.pSQL($rew).'"');
 		return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
 	}
+
+	/**
+	 * Canonical autorreferenciada, incluyendo la paginacion (?page=N) si la
+	 * hay. Antes, al no sobrescribir esto, el canonical de cualquier
+	 * pagina de categoria caia en $urls.current_url y head.tpl le
+	 * recortaba el query string entero - asi que TODAS las paginas de
+	 * paginacion (?page=2, ?page=3...) apuntaban siempre a la pagina 1,
+	 * en vez de a si mismas como recomienda Google para listados
+	 * paginados. Ver informe SEO del 17/09/2026.
+	 */
+	public function getCanonicalURL()
+	{
+		if (!Validate::isLoadedObject($this->category)) {
+			return parent::getCanonicalURL();
+		}
+
+		$page = (int) Tools::getValue('page');
+		$categoryUrl = $this->context->link->getCategoryLink($this->category);
+
+		if ($page > 1) {
+			$categoryUrl .= (strpos($categoryUrl, '?') === false ? '?' : '&') . 'page=' . $page;
+		}
+
+		return $categoryUrl;
+	}
+
+	/**
+	 * hreflang de cada idioma apuntando a su propia pagina de paginacion
+	 * (mismo numero de pagina), no a la pagina 1 de cada idioma. Mismo
+	 * motivo que getCanonicalURL() - ver informe SEO del 17/09/2026.
+	 */
+	protected function getAlternativeLangsUrl()
+	{
+		if (!Validate::isLoadedObject($this->category)) {
+			return parent::getAlternativeLangsUrl();
+		}
+
+		$languages = Language::getLanguages(true, $this->context->shop->id);
+
+		if (count($languages) < 2) {
+			return [];
+		}
+
+		$page = (int) Tools::getValue('page');
+		$alternativeLangs = [];
+
+		foreach ($languages as $lang) {
+			$idLang = (int) $lang['id_lang'];
+			$categoryUrl = $this->context->link->getCategoryLink($this->category, null, $idLang);
+
+			if ($page > 1) {
+				$categoryUrl .= (strpos($categoryUrl, '?') === false ? '?' : '&') . 'page=' . $page;
+			}
+
+			$alternativeLangs[$lang['language_code']] = $categoryUrl;
+		}
+
+		return $alternativeLangs;
+	}
 }
