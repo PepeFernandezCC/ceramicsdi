@@ -57,75 +57,49 @@
       <section class="cc-language-section">
         <h2>{l s='Contact us in the language you prefer:' d='Shop.Theme.Global'}</h2>
 
-        <div class="cc-language-grid">
+        {* Mismo email y teléfonos para todos los idiomas: una sola tarjeta con las 4 banderas *}
+        <article class="cc-language-card">
+          <div class="cc-language-card__flags">
+            <span>
+              <img src="/themes/child_classic/assets/img/web/spain.png" alt="Spain flag" loading="lazy">
+              ES
+            </span>
 
-          <article class="cc-language-card">
-            <div class="cc-language-card__flags">
-              <span>
-                <img src="/themes/child_classic/assets/img/web/spain.png" alt="Spain flag" loading="lazy">
-                ES
-              </span>
+            <span>
+              <img src="/themes/child_classic/assets/img/web/france.png" alt="France flag" loading="lazy">
+              FR
+            </span>
 
-              <span>
-                <img src="/themes/child_classic/assets/img/web/germany.png" alt="Germany flag" loading="lazy">
-                DE
-              </span>
-            </div>
+            <span>
+              <img src="/themes/child_classic/assets/img/web/united-kingdom.png" alt="United Kingdom flag" loading="lazy">
+              EN
+            </span>
 
-            <ul class="cc-contact-list">
-              <li>
-                <i class="fas fa-at"></i>
-                <a href="mailto:info@ceramicconnection.es">info@ceramicconnection.es</a>
-              </li>
+            <span>
+              <img src="/themes/child_classic/assets/img/web/germany.png" alt="Germany flag" loading="lazy">
+              DE
+            </span>
+          </div>
 
-              <li>
-                <i class="fas fa-phone-alt"></i>
-                <a href="tel:+34964188917">+34 964 188 917</a>
-              </li>
+          <ul class="cc-contact-list">
+            <li>
+              <i class="fas fa-at"></i>
+              <a href="mailto:info@ceramicconnection.es">info@ceramicconnection.es</a>
+            </li>
 
-              <li>
-                <i class="fa-brands fa-whatsapp"></i>
-                <a href="https://wa.me/34623240148" target="_blank" rel="noopener">
-                  +34 623 240 148
-                </a>
-              </li>
-            </ul>
-          </article>
+            <li>
+              <i class="fas fa-phone-alt"></i>
+              <a href="tel:+34964188917">+34 964 188 917</a>
+            </li>
 
-          <article class="cc-language-card">
-            <div class="cc-language-card__flags">
-              <span>
-                <img src="/themes/child_classic/assets/img/web/france.png" alt="France flag" loading="lazy">
-                FR
-              </span>
-
-              <span>
-                <img src="/themes/child_classic/assets/img/web/united-kingdom.png" alt="United Kingdom flag" loading="lazy">
-                EN
-              </span>
-            </div>
-
-            <ul class="cc-contact-list">
-              <li>
-                <i class="fas fa-at"></i>
-                <a href="mailto:info@ceramicconnection.es">info@ceramicconnection.es</a>
-              </li>
-
-              <li>
-                <i class="fas fa-phone-alt"></i>
-                <a href="tel:+34964188917">+34 964 188 917</a>
-              </li>
-
-              <li>
-                <i class="fa-brands fa-whatsapp"></i>
-                <a href="https://wa.me/34623240148" target="_blank" rel="noopener">
-                  +34 623 240 148
-                </a>
-              </li>
-            </ul>
-          </article>
-
-        </div>
+            <li>
+              <i class="fa-brands fa-whatsapp"></i>
+              <a href="https://wa.me/34623240148" target="_blank" rel="noopener">
+                +34 623 240 148
+              </a>
+            </li>
+          </ul>
+        </article>
       </section>
 
       <div class="cc-whatsapp-widget">

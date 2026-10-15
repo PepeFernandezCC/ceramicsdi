@@ -1354,7 +1354,7 @@ body:not(#category):not(#search) #wrapper #content-wrapper {
 @media (max-width: 1200px) {
   #product .product-container #product-content-block .product-flags {
     top: 110px;
-    right: -15px;
+    right: 0px;
   }
   #product .product-container #product-content-block .product-flags-out {
     top: 0;
@@ -6256,7 +6256,9 @@ body#checkout .card-block.cart-summary-totals .cart-total, body#order-confirmati
 
 
 /*# sourceMappingURL=custom.css.map */
-@media (max-width: 1024px) {
+/* Solo cuando se ve el carrusel móvil (owl, hidden-sm-up = <576px).
+   Por encima se muestra la galería de escritorio y con altura fija se desbordaba sobre el footer */
+@media (max-width: 575px) {
   .fix-height-477-mobile {
     height: 477px;
   }
@@ -6606,6 +6608,7 @@ span.at-contact {
       padding: 5px;
       font-weight: 700;
       border: 1px solid black !important;
+      cursor: pointer;
   }
 
   .modals-block {
@@ -6878,6 +6881,105 @@ div#board-section {
 
 .carousel-btn.prev { left: 0; }
 .carousel-btn.next { right: 0; }
+
+/* Puntos de navegación de imágenes (productos complementarios) */
+.img-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  height: 4px; /* misma altura aunque esté vacío (una sola imagen) */
+  padding: 8px 0 4px;
+  box-sizing: content-box;
+  position: relative;
+  z-index: 1; /* la zona clicable ampliada queda por encima del título de debajo */
+}
+
+/* Imágenes cuadradas en ambos carruseles para que midan lo mismo */
+#board-section [data-img-track] img {
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+}
+
+/* ALINEACIÓN JUNTA RECOMENDADA / PRODUCTO COMPLEMENTARIO (escritorio) */
+@media (min-width: 769px) {
+  #board-section {
+    align-items: stretch;
+  }
+
+  /* el bloque de complementarios se centraba verticalmente y bajaba su título */
+  #board-section .pc-cards-carousel {
+    align-items: flex-start;
+  }
+  #board-section .cards-btn {
+    align-self: center;
+  }
+
+  #board-section .board-card {
+    justify-content: flex-start;
+  }
+
+  /* títulos de sección con la misma altura aunque uno salte de línea */
+  #board-section h2.product_H2 {
+    min-height: 2.5em;
+    line-height: 1.25;
+    margin-top: 0;
+  }
+
+  /* nombre del producto reservando 2 líneas: Ref y botón caen en la misma línea */
+  #board-section .board-title {
+    line-height: 1.25;
+    min-height: calc(2.5em + 20px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+}
+
+.img-dot {
+  position: relative;
+  width: 18px;
+  height: 4px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  outline: none;
+  transition: width .2s;
+}
+
+/* el guion visible */
+.img-dot::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 2px;
+  background: #ccc;
+  transition: background .2s;
+}
+
+/* zona clicable ampliada e invisible: el guion se ve igual pero es más fácil de pulsar */
+.img-dot::after {
+  content: "";
+  position: absolute;
+  top: -10px;
+  bottom: -10px;
+  left: -3px;  /* la mitad del gap: las zonas de guiones vecinos se tocan sin solaparse */
+  right: -3px;
+}
+
+.img-dot:focus { outline: none; }
+
+.img-dot:hover::before { background: #999; }
+
+.img-dot.active {
+  width: 28px;
+}
+
+.img-dot.active::before {
+  background: #333;
+}
 
 .w100 {
   width: 100% !important;
@@ -7292,6 +7394,7 @@ span.manage-addresses {
 .cards-viewport{
   overflow:hidden;
   width:100%;
+  min-width:0; /* que no crezca con el contenido y desplace las flechas */
 }
 
 .cards-track{
@@ -7302,7 +7405,42 @@ span.manage-addresses {
 
 .cards-slide{
   flex:0 0 100%;
+  min-width:0; /* cada slide mide exactamente el viewport, aunque la imagen sea más ancha */
   box-sizing:border-box;
+  overflow:hidden;
+}
+
+.cards-slide .board-card{
+  padding:0 6px; /* margen para que nada toque los bordes del viewport */
+}
+
+
+.cards-slide .esquina-img-carousel{
+  max-width:100%;
+}
+
+.cards-slide .board-info{
+  width:100%;
+  max-width:230px;
+}
+
+.cards-slide .board-button{
+  width:100%; /* el botón tiene 230px fijos y desbordaba la tarjeta en móvil */
+}
+
+.cards-slide .board-title{
+  overflow-wrap:anywhere;
+  text-align:center;
+}
+
+@media (min-width:769px){
+  /* en escritorio el viewport se estiraba al 40% y dejaba las flechas muy separadas */
+  .pc-cards-carousel{
+    justify-content:center;
+  }
+  .cards-viewport{
+    max-width:260px;
+  }
 }
 
 .cards-btn {
@@ -7342,6 +7480,10 @@ span.manage-addresses {
 @media (max-width:769px) {
   .sampleText {
       margin-top: 20px;
+  }
+
+  .cards-slide {
+    margin-top: 15px;
   }
 }
 
@@ -7800,7 +7942,7 @@ body#checkout #deliveryPriceCalculator {
     padding: 35px;
   }
   .catalog-description-sticky {
-    top: -37px
+    top: -16px
   }
 }
 
@@ -7858,4 +8000,119 @@ body#order-confirmation .block-left {
   padding: 0 !important;
   margin: 0 !important;
   border: 0 !important;
+}
+
+/* ============================================================
+   BARRA FILTRAR + ORDENAR
+   ============================================================ */
+
+/* El texto "Filtrar" y el icono van en un único botón */
+#search_filters #custom-filter-wrapper .custom-filter-toggle {
+  align-items: center;
+  gap: 8px;
+  color: #000;
+  cursor: pointer;
+}
+
+/* Escritorio: mismo aspecto que antes (texto a la izquierda, icono a la derecha) */
+@media (min-width: 768px) {
+  #search_filters #custom-filter-wrapper .custom-filter-toggle {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+/* Móvil: Filtrar a la izquierda, Ordenar a la derecha, panel lateral desde la izquierda */
+@media (max-width: 767px) {
+
+  #search_filters #custom-filter-wrapper .custom-filter-sort .ccproductsort {
+    margin: 0;
+  }
+
+  /* la regla general de los span de la barra (mayúsculas, 0.8em) no aplica al botón de ordenar */
+  #search_filters #custom-filter-wrapper .ccproductsort__mobile-text {
+    text-transform: none;
+    font-size: 13px;
+  }
+
+  /* el selector de la barra gris se oculta: en móvil se usa el de la barra Filtrar */
+  #js-active-search-filters .ccproductsort--list {
+    display: none;
+  }
+
+  /* la barra gris solo aparece cuando hay filtros activos */
+  #js-active-search-filters:not(.active_filters--has-filters) {
+    display: none !important;
+  }
+
+  /* Panel de filtros lateral */
+  .custom-filter-mobile {
+    display: block !important; /* anula el display:none y el inline del antiguo slideToggle */
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 85%;
+    max-width: 360px;
+    padding-top: 50px;
+    background: #fff;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    z-index: 2;
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition: transform .3s ease, visibility 0s linear .3s;
+    box-shadow: 2px 0 12px rgba(0, 0, 0, .2);
+  }
+
+  body.cc-filters-open .custom-filter-mobile {
+    transform: translateX(0);
+    visibility: visible;
+    transition: transform .3s ease, visibility 0s linear 0s;
+  }
+
+  .cc-filters-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 4px;
+    border: 0;
+    background: transparent;
+    color: #000;
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  .cc-filters-close:focus {
+    outline: none;
+  }
+
+  .cc-filters-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, .45);
+    z-index: 1;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .3s ease, visibility 0s linear .3s;
+  }
+
+  body.cc-filters-open .cc-filters-backdrop {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity .3s ease, visibility 0s linear 0s;
+  }
+
+  /* con el panel abierto: la columna (sticky, z-index 666) pasa por encima del header fijo (999)
+     y la página de detrás no hace scroll */
+  body.cc-filters-open #left-column {
+    z-index: 100000;
+  }
+
+  body.cc-filters-open {
+    overflow: hidden;
+  }
 }
